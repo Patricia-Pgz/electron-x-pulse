@@ -1,0 +1,27 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+
+# Ignore project-specific files that can be user-specific
+*.iml
+workspace.xml
+modules.xml
+encodings.xml
+
+# Ignore IDE-specific files
+.idea/caches/
+.idea/vcs.xml
+.idea/gradle.xml
+.idea/libraries/
+.idea/misc.xml
+.idea/runConfigurations/
+
+# Keep necessary files
+!.idea/*.iml  # Keep module files
+!.idea/vcs.xml  # Optionally keep VCS settings
+!.idea/runConfigurations/  # Optionally keep run configurations
