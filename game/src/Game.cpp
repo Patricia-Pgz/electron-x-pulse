@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Mesh.h"
 
 namespace gl3 {
     void Game::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
@@ -44,37 +45,22 @@ namespace gl3 {
     }
 
     void Game::run() {
-        // Vertex shader
-        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-        glCompileShader(vertexShader);
-
-        // Fragment shader
-        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-        glCompileShader(fragmentShader);
-
-        // Shader program
-        shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
-        glLinkProgram(shaderProgram);
-        glUseProgram(shaderProgram);
-        glDetachShader(shaderProgram, vertexShader);
-        glDetachShader(shaderProgram, fragmentShader);
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
-
-        unsigned int VBO;
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        shader = new Shader(std::string(vertexShaderSource), std::string(fragmentShaderSource));
+        shader->use();
 
         unsigned int VAO;
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) nullptr);
-        glEnableVertexAttribArray(0);
+
+        mesh = new Mesh({
+                                 0.5f, 0.025f, 0.0f,
+                                 0.0f, 0.3f, 0.0f,
+                                 -0.2f, 0.05f, 0.0f,
+
+                                 0.5f, -0.025f, 0.0f,
+                                 0.0f, -0.3f, 0.0f,
+                                 -0.2f, -0.05f, 0.0f
+                         });
 
         glfwSetTime(1.0 / 60);
 
@@ -85,7 +71,6 @@ namespace gl3 {
             glfwPollEvents();
         }
 
-        glDeleteBuffers(1, &VBO);
         glDeleteVertexArrays(1, &VAO);
     }
 
@@ -120,13 +105,10 @@ namespace gl3 {
         glClearColor(0.172f, 0.243f, 0.313f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        int mvpLocation = glGetUniformLocation(shaderProgram, "mvp");
-        glUniformMatrix4fv(mvpLocation, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
-
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        shader->setMatrix("mvp", mvpMatrix);
+        mesh->draw();
 
         glfwSwapBuffers(window);
-
     }
 
     void Game::updateDeltaTime() {
@@ -136,6 +118,8 @@ namespace gl3 {
     }
 
     Game::~Game() {
+        delete shader;
+        delete mesh;
         glfwTerminate();
     }
 }

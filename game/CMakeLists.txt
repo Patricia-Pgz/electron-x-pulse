@@ -3,7 +3,11 @@ cmake_minimum_required(VERSION 3.18)
 # set variables for source files
 set(SOURCE_FILES src/main.cpp
         src/Game.cpp
-        src/Game.h)
+        src/Game.h
+        src/Shader.cpp
+        src/Shader.h
+        src/Mesh.cpp
+        src/Mesh.h)
 
 # set executable name
 set(EXE_FILE Game)

@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "Shader.h"
+#include "Mesh.h"
 
 namespace gl3 {
     class Game {
@@ -22,7 +24,8 @@ namespace gl3 {
 
         GLFWwindow *window = nullptr;
         glm::mat4 mvpMatrix;
-        unsigned int shaderProgram;
+        Shader *shader = nullptr;
+        Mesh *mesh = nullptr;
 
         const char *vertexShaderSource = R"(
             #version 460 core
@@ -40,16 +43,6 @@ namespace gl3 {
                 fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
             }
         )";
-
-        float vertices[18] = {
-            0.5f, 0.025f, 0.0f,
-            0.0f, 0.3f, 0.0f,
-            -0.2f, 0.05f, 0.0f,
-
-            0.5f, -0.025f, 0.0f,
-            0.0f, -0.3f, 0.0f,
-            -0.2f, -0.05f, 0.0f
-    };
 
         float zRotation = 0.0f;
         float rotationSpeed = 120.0f;
