@@ -1,5 +1,10 @@
 #include "Game.h"
-#include "Mesh.h"
+#include "entities/Planet.h"
+#include "entities/Enemy.h"
+#include <stdexcept>
+#include <random>
+#include <iostream>
+#include "Assets.h"
 
 namespace gl3 {
     void Game::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
@@ -27,6 +32,11 @@ namespace gl3 {
         if(glGetError() != GL_NO_ERROR) {
             throw std::runtime_error("gl error");
         }
+        audio.init();
+        audio.setGlobalVolume(0.1f);
+        backGroundSound.load(resolveAssetPath("audio/Senses.mp3").string().c_str());
+        backGroundSound.setSingleInstance(true);
+        backGroundSound.setLooping(true);
     }
 
     glm::mat4 Game::calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale) {
@@ -45,24 +55,32 @@ namespace gl3 {
     }
 
     void Game::run() {
-        shader = new Shader(std::string(vertexShaderSource), std::string(fragmentShaderSource));
-        shader->use();
-
         unsigned int VAO;
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 
-        mesh = new Mesh({
-                                 0.5f, 0.025f, 0.0f,
-                                 0.0f, 0.3f, 0.0f,
-                                 -0.2f, 0.05f, 0.0f,
+        std::mt19937 randomNumberEngine{ static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count()) };
+        std::uniform_real_distribution positionDist{-2.0, 2.0};
+        std::uniform_real_distribution scaleDist{0.2, 0.6};
+        std::uniform_real_distribution colorDist{0.0, 1.0};
+        for(auto i = 0; i < 100; ++i) {
+            auto randomPosition = glm::vec3(static_cast<float>(positionDist(randomNumberEngine) * 1.5), static_cast<float>(positionDist(randomNumberEngine) * 1.5) , 0);
+            auto randomScale = static_cast<float>(scaleDist(randomNumberEngine));
+            auto c = colorDist(randomNumberEngine);
+            auto randomColor = glm::vec4( c, c, c, 1.0f);
+            auto entity = std::make_unique<Planet>(randomPosition, randomScale, randomColor);
+            entities.push_back(std::move(entity));
+        }
 
-                                 0.5f, -0.025f, 0.0f,
-                                 0.0f, -0.3f, 0.0f,
-                                 -0.2f, -0.05f, 0.0f
-                         });
+        auto spaceShip = std::make_unique<Ship>(glm::vec3(-2, 0, 0));
+        ship = spaceShip.get();
+        entities.push_back(std::move(spaceShip));
+
+        auto enemy = std::make_unique<Enemy>(glm::vec3(2, 0, 0), -90, 0.25f);
+        entities.push_back(std::move(enemy));
 
         glfwSetTime(1.0 / 60);
+        audio.play(backGroundSound);
 
         while(!glfwWindowShouldClose(window)) {
             update();
@@ -79,34 +97,18 @@ namespace gl3 {
             glfwSetWindowShouldClose(window, true);
         }
 
-        if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            zRotation += rotationSpeed * deltaTime;
+        for(auto &entity: entities) {
+            entity->update(this, deltaTime);
         }
-
-        if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            zRotation -= rotationSpeed * deltaTime;
-        }
-
-        if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            yTranslate += sin(glm::radians(zRotation)) * translationSpeed * deltaTime;
-            xTranslate += cos(glm::radians(zRotation)) * translationSpeed * deltaTime;
-        }
-
-        if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            yTranslate -= sin(glm::radians(zRotation)) * translationSpeed * deltaTime;
-            xTranslate -= cos(glm::radians(zRotation)) * translationSpeed * deltaTime;
-        }
-
-        mvpMatrix = calculateMvpMatrix(glm::vec3(xTranslate, yTranslate, 0), zRotation,
-                                       glm::vec3(.25f, .25f, .25f));
     }
 
     void Game::draw() {
         glClearColor(0.172f, 0.243f, 0.313f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        shader->setMatrix("mvp", mvpMatrix);
-        mesh->draw();
+        for(auto &entity: entities) {
+            entity->draw(this);
+        }
 
         glfwSwapBuffers(window);
     }
@@ -118,8 +120,6 @@ namespace gl3 {
     }
 
     Game::~Game() {
-        delete shader;
-        delete mesh;
         glfwTerminate();
     }
 }

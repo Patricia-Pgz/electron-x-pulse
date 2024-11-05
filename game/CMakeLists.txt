@@ -1,13 +1,14 @@
 cmake_minimum_required(VERSION 3.18)
 
 # set variables for source files
-set(SOURCE_FILES src/main.cpp
-        src/Game.cpp
-        src/Game.h
-        src/Shader.cpp
-        src/Shader.h
-        src/Mesh.cpp
-        src/Mesh.h)
+set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/rendering/Shader.cpp src/rendering/Shader.h src/rendering/Mesh.cpp src/rendering/Mesh.h src/entities/Entity.cpp src/entities/Entity.h src/entities/Ship.cpp src/entities/Ship.h
+        src/Assets.h
+        src/entities/Planet.cpp
+        src/entities/Planet.h
+        src/entities/Enemy.cpp
+        src/entities/Enemy.h
+        src/entities/Missile.cpp
+        src/entities/Missile.h)
 
 # set executable name
 set(EXE_FILE Game)
@@ -19,4 +20,11 @@ add_executable(${EXE_FILE} ${SOURCE_FILES})
 target_compile_features(${EXE_FILE} PRIVATE cxx_std_20)
 
 # link with dependencies
-target_link_libraries(${EXE_FILE} PRIVATE glad glfw glm)
+target_link_libraries(${EXE_FILE} PRIVATE glad glfw glm soloud)
+
+target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT=./assets/)
+
+# copy assets to output directory before build
+add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${EXE_FILE}>/assets)
