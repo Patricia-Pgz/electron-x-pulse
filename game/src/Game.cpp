@@ -1,10 +1,11 @@
 #include "Game.h"
-#include "entities/Planet.h"
-#include "entities/Enemy.h"
 #include <stdexcept>
 #include <random>
 #include <iostream>
+#include "entities/Planet.h"
+#include "entities/Enemy.h"
 #include "Assets.h"
+#include "physics/ContactListener.h"
 
 namespace gl3 {
     void Game::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
@@ -15,7 +16,7 @@ namespace gl3 {
         if(!glfwInit()) {
             throw std::runtime_error("Failed to initialize glfw");
         }
-
+        std::cout << "initialized" ;
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -32,11 +33,19 @@ namespace gl3 {
         if(glGetError() != GL_NO_ERROR) {
             throw std::runtime_error("gl error");
         }
+
         audio.init();
         audio.setGlobalVolume(0.1f);
-        backGroundSound.load(resolveAssetPath("audio/Senses.mp3").string().c_str());
-        backGroundSound.setSingleInstance(true);
-        backGroundSound.setLooping(true);
+
+        // Create the physics world
+        b2WorldDef worldDef = b2DefaultWorldDef();
+        // We use worldDef to define our physics world
+        worldDef.gravity = b2Vec2{0.f, 0.f};
+        physicsWorld = b2CreateWorld(&worldDef);
+    }
+
+    Game::~Game() {
+        glfwTerminate();
     }
 
     glm::mat4 Game::calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale) {
@@ -63,27 +72,32 @@ namespace gl3 {
         std::uniform_real_distribution positionDist{-2.0, 2.0};
         std::uniform_real_distribution scaleDist{0.2, 0.6};
         std::uniform_real_distribution colorDist{0.0, 1.0};
-        for(auto i = 0; i < 100; ++i) {
+        for(auto i = 0; i < 10; ++i) {
             auto randomPosition = glm::vec3(static_cast<float>(positionDist(randomNumberEngine) * 1.5), static_cast<float>(positionDist(randomNumberEngine) * 1.5) , 0);
             auto randomScale = static_cast<float>(scaleDist(randomNumberEngine));
             auto c = colorDist(randomNumberEngine);
             auto randomColor = glm::vec4( c, c, c, 1.0f);
-            auto entity = std::make_unique<Planet>(randomPosition, randomScale, randomColor);
+            auto entity = std::make_unique<Planet>(randomPosition, randomScale, randomColor, physicsWorld);
             entities.push_back(std::move(entity));
         }
 
-        auto spaceShip = std::make_unique<Ship>(glm::vec3(-2, 0, 0));
+        auto spaceShip = std::make_unique<Ship>(glm::vec3(-2, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f), physicsWorld);
         ship = spaceShip.get();
         entities.push_back(std::move(spaceShip));
 
-        auto enemy = std::make_unique<Enemy>(glm::vec3(2, 0, 0), -90, 0.25f);
+        auto enemy = std::make_unique<Enemy>(glm::vec3(2, 0, 0), 0, 0.1f, physicsWorld);
         entities.push_back(std::move(enemy));
 
+        backgroundMusic = std::make_unique<SoLoud::Wav>();
+        backgroundMusic->load(resolveAssetPath("audio/Senses.mp3").string().c_str());
+        backgroundMusic->setLooping(true);
+        audio.playBackground(*backgroundMusic);
+
         glfwSetTime(1.0 / 60);
-        audio.play(backGroundSound);
 
         while(!glfwWindowShouldClose(window)) {
             update();
+            updatePhysics();
             draw();
             updateDeltaTime();
             glfwPollEvents();
@@ -119,7 +133,24 @@ namespace gl3 {
         lastFrameTime = frameTime;
     }
 
-    Game::~Game() {
-        glfwTerminate();
+    void Game::updatePhysics() {
+        const float fixedTimeStep = 1.0f / 60.0f;
+        const int subStepCount = 4; // recommended sub-step count
+        accumulator += deltaTime;
+        if(accumulator >= fixedTimeStep){
+            b2World_Step(physicsWorld, fixedTimeStep, subStepCount);
+            ContactListener::checkForCollision(physicsWorld);
+
+            // Update the entities based on what happened in the physics step
+            for (const std::unique_ptr<Entity>& entity: entities) {
+                entity->updateBasedOnPhysics();
+            }
+            accumulator -= fixedTimeStep;
+        }
     }
+
+    const b2WorldId Game::getPhysicsWorld() const {
+        return physicsWorld;
+    }
+
 }

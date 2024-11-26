@@ -8,7 +8,10 @@ set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/rendering/Shader.cpp s
         src/entities/Enemy.cpp
         src/entities/Enemy.h
         src/entities/Missile.cpp
-        src/entities/Missile.h)
+        src/entities/Missile.h
+        src/physics/ContactListener.cpp
+        src/physics/ContactListener.h
+)
 
 # set executable name
 set(EXE_FILE Game)
@@ -20,7 +23,7 @@ add_executable(${EXE_FILE} ${SOURCE_FILES})
 target_compile_features(${EXE_FILE} PRIVATE cxx_std_20)
 
 # link with dependencies
-target_link_libraries(${EXE_FILE} PRIVATE glad glfw glm soloud)
+target_link_libraries(${EXE_FILE} PRIVATE glad glfw glm soloud box2d)
 
 target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT=./assets/)
 

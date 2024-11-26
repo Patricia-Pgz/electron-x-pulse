@@ -5,11 +5,14 @@
 namespace gl3 {
     class Missile: public Entity {
     public:
-        explicit Missile(Game *game);
-        void update(Game *game, float deltaTime) override;
+        explicit Missile(Game *game, glm::vec3 position, float zRotation, float size);
+        void startContact() override;
+
+    protected:
+        void createPhysicsBody() override;
 
     private:
-        float speed = 2.0f;
+        float speed = 5.0f;
     };
 }
 

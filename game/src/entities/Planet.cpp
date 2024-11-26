@@ -1,5 +1,9 @@
 #include "Planet.h"
 
+#include <iostream>
+
+#include "box2d/box2d.h"
+
 namespace gl3 {
     struct glData {
         std::vector<float> vertices;
@@ -39,12 +43,44 @@ namespace gl3 {
 
     const glData glCircleData = getCircleVertices(0.075f);
 
-    Planet::Planet(glm::vec3 position, float size, glm::vec4 color) : Entity(
-            Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
-            Mesh(glCircleData.vertices, glCircleData.indices),
-            position,
-            0,
-            glm::vec3(size, size, size),
-            color) {
+    Planet::Planet(glm::vec3 position, float size, glm::vec4 color, b2WorldId physicsWorld)
+        : Entity(Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
+                 Mesh(glCircleData.vertices, glCircleData.indices),
+                 position,
+                 0,
+                 glm::vec3(size, size, size),
+                 color,
+                 physicsWorld)
+    {
+        Planet::createPhysicsBody();
     }
+
+    void Planet::createPhysicsBody()
+    {
+
+        b2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = b2_staticBody;
+        bodyDef.position = {position.x, position.y};
+        bodyDef.userData = this;
+        body = b2CreateBody(physicsWorld, &bodyDef);
+
+        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        shapeDef.density = 1.0f;
+        shapeDef.friction = 0.5f;
+        shapeDef.restitution = 0.1f;
+
+        b2Circle circle;
+        // local center
+        circle.center = b2Vec2{0.f, 0.0f};
+        // 1 in glm equals 0.0025 in box2d, be aware that the scale influences the mass of the body
+        circle.radius = scale.x * 0.0025f;
+
+        shape = b2CreateCircleShape(body, &shapeDef, &circle);
+    }
+
+
+    void Planet::startContact() {
+        std::cout << "Planet start contact" << std::endl;
+    }
+
 }
