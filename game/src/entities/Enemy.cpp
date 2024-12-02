@@ -154,5 +154,4 @@ namespace gl3
     {
         std::cout << "Enemy start contact" << std::endl;
     }
-
 }

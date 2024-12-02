@@ -16,7 +16,7 @@ namespace gl3 {
         if(!glfwInit()) {
             throw std::runtime_error("Failed to initialize glfw");
         }
-        std::cout << "initialized" ;
+
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

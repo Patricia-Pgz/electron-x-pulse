@@ -57,6 +57,7 @@ namespace gl3 {
         shapeDef.density = 1.0f;
         shapeDef.friction = 0.0f;
         shapeDef.restitution = 0.1f;
+        shapeDef.enableContactEvents = true;
 
         // approximation of polygon shape
         b2Vec2 vertices[] =
@@ -77,9 +78,8 @@ namespace gl3 {
         b2Polygon polygon = b2MakePolygon(&hull, 0.1f);
         shape = b2CreatePolygonShape(body, &shapeDef, &polygon);
     }
+
     void Missile::startContact() {
         std::cout << "Missile start contact" << std::endl;
     }
-
-
 }

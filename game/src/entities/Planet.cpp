@@ -78,9 +78,7 @@ namespace gl3 {
         shape = b2CreateCircleShape(body, &shapeDef, &circle);
     }
 
-
     void Planet::startContact() {
         std::cout << "Planet start contact" << std::endl;
     }
-
 }

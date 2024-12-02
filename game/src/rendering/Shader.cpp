@@ -1,9 +1,9 @@
 #include "Shader.h"
-#include <iostream>
-#include "glm/gtc/type_ptr.hpp"
 #include <fstream>
 #include <sstream>
+#include <glm/gtc/type_ptr.hpp>
 #include "../Assets.h"
+
 
 namespace gl3 {
     struct glStatusData {
@@ -12,24 +12,15 @@ namespace gl3 {
         char infoLog[GL_INFO_LOG_LENGTH];
     };
 
-    Shader::Shader(const fs::path &vertexShaderPath, const fs::path &fragmentShaderPath)
-    {
-        vertexShader = loadAndCompileShader(GL_VERTEX_SHADER,vertexShaderPath);
+    Shader::Shader(const fs::path &vertexShaderPath, const fs::path &fragmentShaderPath) {
+        vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, vertexShaderPath);
         fragmentShader = loadAndCompileShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
-        // Shader program
         shaderProgram = glCreateProgram();
         glAttachShader(shaderProgram, vertexShader);
         glAttachShader(shaderProgram, fragmentShader);
         glLinkProgram(shaderProgram);
         glDetachShader(shaderProgram, vertexShader);
         glDetachShader(shaderProgram, fragmentShader);
-    }
-
-    std::string readText(const fs::path &filePath) {
-    std::ifstream sourceFile(resolveAssetPath(filePath));
-    std::stringstream buffer;
-    buffer << sourceFile.rdbuf();
-    return buffer.str();
     }
 
     unsigned int Shader::loadAndCompileShader(GLuint shaderType, const fs::path &shaderPath) {
@@ -50,6 +41,14 @@ namespace gl3 {
 
         return shaderID;
     }
+
+    std::string Shader::readText(const fs::path &filePath) {
+        std::ifstream sourceFile(resolveAssetPath(filePath));
+        std::stringstream buffer;
+        buffer << sourceFile.rdbuf();
+        return buffer.str();
+    }
+
     void Shader::setMatrix(const std::string &uniformName, glm::mat4 matrix) const {
         auto uniformLocation = glGetUniformLocation(shaderProgram, uniformName.c_str());
         glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix));
@@ -59,17 +58,13 @@ namespace gl3 {
         auto uniformLocation = glGetUniformLocation(shaderProgram, uniformName.c_str());
         glUniform4fv(uniformLocation, 1, glm::value_ptr(vector));
     }
-    void Shader::use() const
-    {
+
+    void Shader::use() const {
         glUseProgram(shaderProgram);
     }
 
-    Shader::~Shader()
-    {
+    Shader::~Shader() {
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
     }
-
-
-
-} // gl3
+}

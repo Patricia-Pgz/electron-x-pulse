@@ -109,6 +109,7 @@ namespace gl3 {
         b2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.friction = 0.5f;
         shapeDef.restitution = 0.1f;
+        shapeDef.enableContactEvents = true;
 
         b2Vec2 vertices[] =
         {
@@ -149,7 +150,7 @@ namespace gl3 {
     }
 
 
-    void Ship::startContact(){
+    void Ship::startContact() {
         std::cout << "Ship start contact" << std::endl;
     }
 }
