@@ -5,6 +5,8 @@
 #include "entities/Planet.h"
 #include "entities/Enemy.h"
 #include "Assets.h"
+#include "entities/Obstacle.h"
+#include "entities/Platform.h"
 #include "physics/ContactListener.h"
 
 namespace gl3 {
@@ -40,7 +42,7 @@ namespace gl3 {
         // Create the physics world
         b2WorldDef worldDef = b2DefaultWorldDef();
         // We use worldDef to define our physics world
-        worldDef.gravity = b2Vec2{0.f, 0.f};
+        worldDef.gravity = b2Vec2{0.f, -9.81f};
         physicsWorld = b2CreateWorld(&worldDef);
     }
 
@@ -69,24 +71,39 @@ namespace gl3 {
         glBindVertexArray(VAO);
 
         std::mt19937 randomNumberEngine{ static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count()) };
-        std::uniform_real_distribution positionDist{-2.0, 2.0};
+        std::uniform_real_distribution positionDist{0.0, 2.0};
         std::uniform_real_distribution scaleDist{0.2, 0.6};
         std::uniform_real_distribution colorDist{0.0, 1.0};
         for(auto i = 0; i < 10; ++i) {
-            auto randomPosition = glm::vec3(static_cast<float>(positionDist(randomNumberEngine) * 1.5), static_cast<float>(positionDist(randomNumberEngine) * 1.5) , 0);
+            if(i%2 != 0)
+            {
+            auto randomPosition = glm::vec3(i, -0.75f, 0);
             auto randomScale = static_cast<float>(scaleDist(randomNumberEngine));
             auto c = colorDist(randomNumberEngine);
             auto randomColor = glm::vec4( c, c, c, 1.0f);
-            auto entity = std::make_unique<Planet>(randomPosition, randomScale, randomColor, physicsWorld);
+            auto entity = std::make_unique<Platform>(randomPosition, randomScale, randomColor, physicsWorld);
             entities.push_back(std::move(entity));
+            } else
+            {
+                auto position = glm::vec3(i, -0.875f, 0.0f);
+                auto entity = std::make_unique<Obstacle>(position, 0.5f, glm::vec4(1, 1, 1, 1), physicsWorld);
+                entities.push_back(std::move(entity));
+            }
+
         }
+
+        b2BodyDef bodyDef = b2DefaultBodyDef();
+        b2BodyId groundId = b2CreateBody( physicsWorld, &bodyDef );
+        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        b2Segment segment = { { -20.0f, -1.0f }, { 20.0f, -1.0f } };
+        b2CreateSegmentShape( groundId, &shapeDef, &segment );
 
         auto spaceShip = std::make_unique<Ship>(glm::vec3(-2, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f), physicsWorld);
         ship = spaceShip.get();
         entities.push_back(std::move(spaceShip));
 
-        auto enemy = std::make_unique<Enemy>(glm::vec3(2, 0, 0), 0, 0.1f, physicsWorld);
-        entities.push_back(std::move(enemy));
+        /*auto enemy = std::make_unique<Enemy>(glm::vec3(2, 0, 0), 0, 0.1f, physicsWorld);
+        entities.push_back(std::move(enemy));*/
 
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(resolveAssetPath("audio/Senses.mp3").string().c_str());
@@ -143,6 +160,10 @@ namespace gl3 {
 
             // Update the entities based on what happened in the physics step
             for (const std::unique_ptr<Entity>& entity: entities) {
+                if (dynamic_cast<Ship*>(entity.get()) == nullptr)
+                {
+                    b2Body_SetLinearVelocity( entity->getBody(), { -1.0f, 0.0f });
+                }
                 entity->updateBasedOnPhysics();
             }
             accumulator -= fixedTimeStep;

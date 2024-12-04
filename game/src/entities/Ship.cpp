@@ -4,22 +4,20 @@
 
 #include "../Game.h"
 #include "../Assets.h"
+#include <cmath>
 
 
 namespace gl3 {
     Ship::Ship(glm::vec3 position, float zRotation, glm::vec3 scale, b2WorldId physicsWorld) : Entity(
             Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
             Mesh({
-                         0.5f, 0.025f, 0.0f,
-                         0.0f, 0.3f, 0.0f,
-                         -0.2f, 0.05f, 0.0f,
-
-                         0.5f, -0.025f, 0.0f,
-                         0.0f, -0.3f, 0.0f,
-                         -0.2f, -0.05f, 0.0f
+                -0.5f, 0.5f, 0.0f,
+                -0.5f, -0.5f, 0.0f,
+                0.5f, 0.5f, 0.0f,
+                0.5f, -0.5f, 0.0f
                  },
                  {0, 1, 2,
-                  3, 4, 5}),
+                     1, 2, 3}),
             position,
             zRotation,
             scale,
@@ -42,59 +40,14 @@ namespace gl3 {
 
         auto body = getBody();
 
-        if(glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE || glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE) {
-            b2Body_SetAngularVelocity(body, 0);
+        if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && static_cast<int>(std::round(position.x)) % 2 == 0) { //Jump
+            b2Body_ApplyLinearImpulseToCenter(body, b2Vec2{0.0f, m_jumpImpulse}, true);
         }
 
-        if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            b2Body_ApplyTorque(body, rotationSpeed, true);
-        }
-
-        if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            b2Body_ApplyTorque(body, -rotationSpeed, true);
-        }
-
-        if(glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE || glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE) {
-            b2Body_SetLinearVelocity(body, b2Vec2_zero);
-        }
-
-        if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            float x = cos(glm::radians(zRotation)) * translationSpeed;
-            float y = sin(glm::radians(zRotation)) * translationSpeed;
-            b2Body_ApplyLinearImpulseToCenter(body, b2Vec2{x, y}, true);
-        }
-
-        if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            float x = -cos(glm::radians(zRotation)) * translationSpeed;
-            float y = -sin(glm::radians(zRotation)) * translationSpeed;
-            b2Body_ApplyLinearImpulseToCenter(body, b2Vec2{x, y}, true);
-        }
-
-        countdownUntilNextShot -= deltaTime;
-        if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && countdownUntilNextShot <= 0) {
-            audio.play(firingSound);
-            auto angle = glm::radians(zRotation);
-            glm::vec3 forwardVec = {glm::cos(angle), glm::sin(angle), 0.f};
-            glm::vec3 offset {forwardVec.x * getScale().x / 2 , forwardVec.y * getScale().y / 2, 0};
-            // - 90 because mesh up is +y
-            auto missile =
-                std::make_unique<Missile>(game, game->getShip()->position + offset, zRotation - 90, 0.05f);
-            missiles.push_back(std::move(missile));
-            countdownUntilNextShot = timeBetweenShots;
-        }
-        for (auto &m: missiles) {
-            m->update(game, deltaTime);
-        }
-        if (missiles.size() >= 100) {
-            missiles.erase(missiles.begin());
-        }
     }
 
     void Ship::draw(Game *game) {
         Entity::draw(game);
-        for (auto &m: missiles) {
-            m->draw(game);
-        }
     }
 
     void Ship::createPhysicsBody()
@@ -102,51 +55,25 @@ namespace gl3 {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = b2_dynamicBody;
         bodyDef.position = {position.x, position.y};
-        bodyDef.rotation = b2MakeRot(glm::radians(zRotation));
+        //bodyDef.rotation = b2MakeRot(glm::radians(zRotation));
+        bodyDef.fixedRotation = true;
+        bodyDef.linearDamping = 0.5f;
+
         bodyDef.userData = this;
         body = b2CreateBody(physicsWorld, &bodyDef);
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.friction = 0.5f;
+        shapeDef.friction = 0.1f;
         shapeDef.restitution = 0.1f;
         shapeDef.enableContactEvents = true;
 
-        b2Vec2 vertices[] =
-        {
-            {0.5f, 0.025f},
-            {0.0f, 0.3f},
-            {-0.2f, 0.05f},
-            {0.5f, -0.025f},
-            {0.0f, -0.3f},
-            {-0.2f, -0.05f}
-        };
-
-        for (auto& point: vertices)
-        {
-            point.x *= scale.x;
-            point.y *= scale.y;
-        }
-
-        b2Hull hull = b2ComputeHull(vertices, 6);
-        b2Polygon polygon = b2MakePolygon(&hull, 0.1f);
-        shape = b2CreatePolygonShape(body, &shapeDef, &polygon);
-
-        b2MassData massData;
-        massData.mass = 1.0f;
-        massData.center = b2Vec2{0.0f, 0.0f};
-        massData.rotationalInertia = 1.f;
-        b2Body_SetMassData(body, massData);
+        b2Polygon box = b2MakeBox(scale.x * 0.5f, scale.y * 0.5f);
+        shape = b2CreatePolygonShape(body, &shapeDef, &box);
     }
 
     void Ship::updateBasedOnPhysics()
     {
         Entity::updateBasedOnPhysics();
-
-        // Don't forget to update the missiles
-        for (auto& m: missiles)
-        {
-            m->updateBasedOnPhysics();
-        }
     }
 
 

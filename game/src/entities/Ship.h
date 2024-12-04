@@ -22,6 +22,8 @@ namespace gl3 {
     private:
         SoLoud::Soloud audio;
         SoLoud::Wav firingSound;
+        bool m_canJump = true;
+        float m_jumpImpulse = 0.1f;
         float translationSpeed = 3.0f;
         float rotationSpeed = 360.0f;
         const float timeBetweenShots = 0.1;

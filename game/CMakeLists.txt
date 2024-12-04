@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.18)
 # set variables for source files
 set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/rendering/Shader.cpp src/rendering/Shader.h src/rendering/Mesh.cpp src/rendering/Mesh.h src/entities/Entity.cpp src/entities/Entity.h src/entities/Ship.cpp src/entities/Ship.h src/Assets.h src/entities/Planet.cpp src/entities/Planet.h src/entities/Enemy.cpp src/entities/Enemy.h src/entities/Missile.cpp src/entities/Missile.h
         src/physics/ContactListener.h
+        src/entities/Platform.cpp
+        src/entities/Platform.h
+        src/entities/Obstacle.cpp
+        src/entities/Obstacle.h
 )
 
 # set executable name
