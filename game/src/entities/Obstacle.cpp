@@ -29,16 +29,17 @@ namespace gl3
 
 
     // Use a fixed box size (can be parameterized)
-    const glData glTriangleData = getTriangleVertices(0.5f, 0.5f);
+    const glData glBoxData = getTriangleVertices(0.5f, 0.5f);
 
     Obstacle::Obstacle(glm::vec3 position, float size, glm::vec4 color, b2WorldId physicsWorld)
     : Entity(Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
-             Mesh(glTriangleData.vertices, glTriangleData.indices),
+             Mesh(glBoxData.vertices, glBoxData.indices),
              position,
              0,
              glm::vec3(size, size, 0.0f),
              color,
-             physicsWorld)
+             physicsWorld,
+             "obstacle")
     {
         Obstacle::createPhysicsBody();
     }
@@ -53,9 +54,10 @@ namespace gl3
         body = b2CreateBody(physicsWorld, &bodyDef);
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();
-        /*shapeDef.density = 1.0f;
-        shapeDef.friction = 0.5f;
-        shapeDef.restitution = 0.1f;*/
+        shapeDef.friction = 0.0f;
+        //shapeDef.density = 1.0f;
+        //shapeDef.friction = 0.01f;
+        shapeDef.restitution = 0.0f;
 
         b2Vec2 vertices[] = {
             b2Vec2(-scale.x * 0.5f, -scale.y * 0.5f), // Bottom-left

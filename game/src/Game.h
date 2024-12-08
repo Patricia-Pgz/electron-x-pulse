@@ -17,9 +17,9 @@ namespace gl3 {
         virtual ~Game();
         void run();
         glm::mat4 calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale);
-        Ship *getShip() { return ship; }
-        GLFWwindow *getWindow() { return window; }
-        const b2WorldId getPhysicsWorld() const;
+        [[nodiscard]] Ship *getShip() const { return ship; }
+        GLFWwindow *getWindow() const { return window; }
+        b2WorldId getPhysicsWorld() const;
 
     private:
         static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -27,12 +27,15 @@ namespace gl3 {
         void draw();
         void updateDeltaTime();
         void updatePhysics();
+        void resetEntities();
+        void reset();
 
         GLFWwindow *window = nullptr;
         std::vector<std::unique_ptr<Entity>> entities;
         Ship *ship = nullptr;
         SoLoud::Soloud audio;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
+        float groundLevel = -1;
         float lastFrameTime = 1.0f/60;
         float deltaTime = 1.0f/60;
         b2WorldId physicsWorld;

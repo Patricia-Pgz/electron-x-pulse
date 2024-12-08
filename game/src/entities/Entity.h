@@ -17,9 +17,11 @@ namespace gl3{
                float zRotation = 0.0f,
                glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f),
                glm::vec4 color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-               b2WorldId physicsWorld = b2_nullWorldId);
+               b2WorldId physicsWorld = b2_nullWorldId,
+               std::string tag = "undefined");
 
         virtual ~Entity();
+
 
         virtual void update(Game *game, float deltaTime) {}
 
@@ -33,8 +35,15 @@ namespace gl3{
         void setScale(const glm::vec3 &scale) { Entity::scale = scale; }
         [[nodiscard]] b2BodyId getBody() const;
         [[nodiscard]] b2ShapeId getShape() const;
+
         virtual void updateBasedOnPhysics();
         virtual void startContact();
+
+        void resetToInitialState();
+
+        // Tag system
+        void setTag(const std::string& tag) { this->tag = tag; }
+        [[nodiscard]] const std::string& getTag() const { return tag; }
 
     protected:
         virtual void createPhysicsBody() = 0;
@@ -45,9 +54,14 @@ namespace gl3{
         b2WorldId physicsWorld;
         b2BodyId body;
         b2ShapeId shape;
+        std::string tag;
+
     private:
         Shader shader;
         Mesh mesh;
+        glm::vec3 initialPosition;
+        float initialZRotation;
+        glm::vec3 initialScale;
     };
 }
 

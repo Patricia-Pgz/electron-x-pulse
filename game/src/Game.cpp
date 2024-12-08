@@ -9,13 +9,17 @@
 #include "entities/Platform.h"
 #include "physics/ContactListener.h"
 
-namespace gl3 {
-    void Game::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+namespace gl3
+{
+    void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+    {
         glViewport(0, 0, width, height);
     }
 
-    Game::Game(int width, int height, const std::string &title) {
-        if(!glfwInit()) {
+    Game::Game(int width, int height, const std::string& title)
+    {
+        if (!glfwInit())
+        {
             throw std::runtime_error("Failed to initialize glfw");
         }
 
@@ -25,14 +29,16 @@ namespace gl3 {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-        if(window == nullptr) {
+        if (window == nullptr)
+        {
             throw std::runtime_error("Failed to create window");
         }
 
         glfwMakeContextCurrent(window);
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-        gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-        if(glGetError() != GL_NO_ERROR) {
+        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+        if (glGetError() != GL_NO_ERROR)
+        {
             throw std::runtime_error("gl error");
         }
 
@@ -46,64 +52,76 @@ namespace gl3 {
         physicsWorld = b2CreateWorld(&worldDef);
     }
 
-    Game::~Game() {
+    Game::~Game()
+    {
         glfwTerminate();
     }
 
-    glm::mat4 Game::calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale) {
+    glm::mat4 Game::calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale)
+    {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, position);
         model = glm::scale(model, scale);
         model = glm::rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 90.0f),
+        glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 1.0f),
                                      glm::vec3(0.0f, 0.0f, 0.0),
                                      glm::vec3(0.0, 1.0, 0.0));
 
-        glm::mat4 projection = glm::perspective(glm::radians(2.0f), 1000.0f / 600.0f, 0.1f, 100.0f);
+        // Switch to orthographic projection
+        float left = -1280 / 2 / 100, right = 1280 / 2 / 100, bottom = -720 / 2 / 100, top = 720 / 2 / 100, nearPlane =
+                  0.1f, farPlane = 100.0f;
+        glm::mat4 projection = glm::ortho(left, right, bottom, top, nearPlane, farPlane);
 
         return projection * view * model;
     }
 
-    void Game::run() {
+    void Game::run()
+    {
         unsigned int VAO;
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 
-        std::mt19937 randomNumberEngine{ static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count()) };
-        std::uniform_real_distribution positionDist{0.0, 2.0};
-        std::uniform_real_distribution scaleDist{0.2, 0.6};
+        std::mt19937 randomNumberEngine{
+            static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count())
+        };
+        std::uniform_real_distribution yScaleDist{0.0, 1.3};
+        std::uniform_real_distribution xScaleDist{0.2, 0.6};
         std::uniform_real_distribution colorDist{0.0, 1.0};
-        for(auto i = 0; i < 10; ++i) {
-            if(i%2 != 0)
+        for (auto i = 0; i < 10; ++i)
+        {
+            if (i % 2 != 0)
             {
-            auto randomPosition = glm::vec3(i, -0.75f, 0);
-            auto randomScale = static_cast<float>(scaleDist(randomNumberEngine));
-            auto c = colorDist(randomNumberEngine);
-            auto randomColor = glm::vec4( c, c, c, 1.0f);
-            auto entity = std::make_unique<Platform>(randomPosition, randomScale, randomColor, physicsWorld);
-            entities.push_back(std::move(entity));
-            } else
-            {
-                auto position = glm::vec3(i, -0.875f, 0.0f);
-                auto entity = std::make_unique<Obstacle>(position, 0.5f, glm::vec4(1, 1, 1, 1), physicsWorld);
+                auto yScale = static_cast<float>(yScaleDist(randomNumberEngine));
+                auto randomXScale = static_cast<float>(xScaleDist(randomNumberEngine));
+                auto c = colorDist(randomNumberEngine);
+                std::cout << std::to_string(randomXScale);
+                auto randomColor = glm::vec4(0, c, c, 1.0f);
+                auto entity = std::make_unique<Platform>(glm::vec3(i, groundLevel + yScale / 2, 0.0f), 1.0f, yScale,
+                                                         randomColor, physicsWorld);
                 entities.push_back(std::move(entity));
             }
-
+            else
+            {
+                auto position = glm::vec3(i, -0.875f, 0.0f);
+                auto entity = std::make_unique<Obstacle>(position, 0.5f, glm::vec4(1, 0, 0, 1), physicsWorld);
+                entities.push_back(std::move(entity));
+            }
         }
+        auto groundHeight = 2.0f;
+        auto groundPlatform = std::make_unique<Platform>(glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), 40.0f,
+                                                         groundHeight, glm::vec4(0, 0.7, 0.3, 1), physicsWorld);
+        groundPlatform->setTag("ground");
+        entities.push_back(std::move(groundPlatform));
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody( physicsWorld, &bodyDef );
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
-        b2Segment segment = { { -20.0f, -1.0f }, { 20.0f, -1.0f } };
-        b2CreateSegmentShape( groundId, &shapeDef, &segment );
-
-        auto spaceShip = std::make_unique<Ship>(glm::vec3(-2, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f), physicsWorld);
+        auto spaceShip = std::make_unique<Ship>(glm::vec3(-2, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f),
+                                                physicsWorld);
         ship = spaceShip.get();
         entities.push_back(std::move(spaceShip));
-
-        /*auto enemy = std::make_unique<Enemy>(glm::vec3(2, 0, 0), 0, 0.1f, physicsWorld);
-        entities.push_back(std::move(enemy));*/
+        ship->setOnDestroyedCallback([&]()
+        {
+            reset();
+        });
 
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(resolveAssetPath("audio/Senses.mp3").string().c_str());
@@ -112,7 +130,8 @@ namespace gl3 {
 
         glfwSetTime(1.0 / 60);
 
-        while(!glfwWindowShouldClose(window)) {
+        while (!glfwWindowShouldClose(window))
+        {
             update();
             updatePhysics();
             draw();
@@ -123,46 +142,55 @@ namespace gl3 {
         glDeleteVertexArrays(1, &VAO);
     }
 
-    void Game::update() {
-        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    void Game::update()
+    {
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        {
             glfwSetWindowShouldClose(window, true);
         }
 
-        for(auto &entity: entities) {
+        for (auto& entity : entities)
+        {
             entity->update(this, deltaTime);
         }
     }
 
-    void Game::draw() {
+    void Game::draw()
+    {
         glClearColor(0.172f, 0.243f, 0.313f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        for(auto &entity: entities) {
+        for (auto& entity : entities)
+        {
             entity->draw(this);
         }
 
         glfwSwapBuffers(window);
     }
 
-    void Game::updateDeltaTime() {
+    void Game::updateDeltaTime()
+    {
         float frameTime = glfwGetTime();
         deltaTime = frameTime - lastFrameTime;
         lastFrameTime = frameTime;
     }
 
-    void Game::updatePhysics() {
+    void Game::updatePhysics()
+    {
         const float fixedTimeStep = 1.0f / 60.0f;
         const int subStepCount = 4; // recommended sub-step count
         accumulator += deltaTime;
-        if(accumulator >= fixedTimeStep){
+        if (accumulator >= fixedTimeStep)
+        {
             b2World_Step(physicsWorld, fixedTimeStep, subStepCount);
             ContactListener::checkForCollision(physicsWorld);
 
             // Update the entities based on what happened in the physics step
-            for (const std::unique_ptr<Entity>& entity: entities) {
-                if (dynamic_cast<Ship*>(entity.get()) == nullptr)
+            for (const std::unique_ptr<Entity>& entity : entities)
+            {
+                if (entity->getTag() != "player" && entity->getTag() != "ground")
                 {
-                    b2Body_SetLinearVelocity( entity->getBody(), { -1.0f, 0.0f });
+                    b2Body_SetLinearVelocity(entity->getBody(), {-1.0f, 0.0f});
                 }
                 entity->updateBasedOnPhysics();
             }
@@ -170,8 +198,31 @@ namespace gl3 {
         }
     }
 
-    const b2WorldId Game::getPhysicsWorld() const {
+    b2WorldId Game::getPhysicsWorld() const
+    {
         return physicsWorld;
     }
 
+    void Game::reset()
+    {
+        std::cout << "Game reset!" << std::endl;
+        // Reset all entities to their initial states
+        resetEntities();
+
+        // Reset game-specific variables
+        lastFrameTime = 1.0f / 60;
+        deltaTime = 1.0f / 60;
+        accumulator = 0.f;
+
+        // Optionally reload the level or reinitialize other states
+        // ...
+    }
+
+    void Game::resetEntities()
+    {
+        for (const std::unique_ptr<Entity>& entity : entities)
+        {
+            entity->resetToInitialState();
+        }
+    }
 }

@@ -28,17 +28,17 @@ namespace gl3 {
         return boxData;
     }
 
-    // Use a fixed box size (can be parameterized)
-    const glData glTriangleData = getBoxVertices(0.5f, 0.5f);
+    const glData glBoxData = getBoxVertices(1.0f, 1.0f);
 
-    Platform::Platform(glm::vec3 position, float size, glm::vec4 color, b2WorldId physicsWorld)
+    Platform::Platform(glm::vec3 position,  float width, float height, glm::vec4 color, b2WorldId physicsWorld)
     : Entity(Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
-             Mesh(glTriangleData.vertices, glTriangleData.indices),
+             Mesh(glBoxData.vertices, glBoxData.indices),
              position,
              0,
-             glm::vec3(size, 1.0, 0.0f),
+             glm::vec3(width, height, 0.0f),
              color,
-             physicsWorld)
+             physicsWorld,
+             "platform")
     {
         Platform::createPhysicsBody();
     }
@@ -53,9 +53,9 @@ namespace gl3 {
         body = b2CreateBody(physicsWorld, &bodyDef);
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();
-        /*shapeDef.density = 1.0f;
-        shapeDef.friction = 0.5f;
-        shapeDef.restitution = 0.1f;*/
+        //shapeDef.density = 1.0f;
+        shapeDef.friction = 0.0f;
+        shapeDef.restitution = 0.0f;
 
         b2Polygon box = b2MakeBox(scale.x * 0.5f, scale.y * 0.5f);
         shape = b2CreatePolygonShape(body, &shapeDef, &box);
