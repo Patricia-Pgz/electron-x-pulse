@@ -7,7 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <soloud.h>
 #include <soloud_wav.h>
-#include "entities/Ship.h"
+#include "entities/Player.h"
 #include <box2d/box2d.h>
 
 namespace gl3 {
@@ -17,7 +17,7 @@ namespace gl3 {
         virtual ~Game();
         void run();
         glm::mat4 calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale);
-        [[nodiscard]] Ship *getShip() const { return ship; }
+        [[nodiscard]] Player *getShip() const { return ship; }
         GLFWwindow *getWindow() const { return window; }
         b2WorldId getPhysicsWorld() const;
 
@@ -32,7 +32,7 @@ namespace gl3 {
 
         GLFWwindow *window = nullptr;
         std::vector<std::unique_ptr<Entity>> entities;
-        Ship *ship = nullptr;
+        Player *ship = nullptr;
         SoLoud::Soloud audio;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
         float groundLevel = -1;

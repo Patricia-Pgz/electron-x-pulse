@@ -1,4 +1,4 @@
-#include "Ship.h"
+#include "Player.h"
 
 #include <iostream>
 
@@ -11,7 +11,7 @@
 
 namespace gl3
 {
-    Ship::Ship(glm::vec3 position, float zRotation, glm::vec3 scale, b2WorldId physicsWorld) : Entity(
+    Player::Player(glm::vec3 position, float zRotation, glm::vec3 scale, b2WorldId physicsWorld) : Entity(
         Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
         Mesh({
                  -0.5f, 0.5f, 0.0f,
@@ -26,7 +26,7 @@ namespace gl3
         position,
         zRotation,
         scale,
-        {1, 1, 1, 1},
+        {0.4, 0.2, 0.5, 1},
         physicsWorld,
         "player")
     {
@@ -34,10 +34,10 @@ namespace gl3
         audio.setGlobalVolume(0.1f);
         firingSound.load(resolveAssetPath("audio/shot.mp3").string().c_str());
         firingSound.setSingleInstance(true);
-        Ship::createPhysicsBody();
+        Player::createPhysicsBody();
     }
 
-    void Ship::update(Game* game, float deltaTime)
+    void Player::update(Game* game, float deltaTime)
     {
         auto window = game->getWindow();
 
@@ -98,12 +98,12 @@ namespace gl3
         }
     }
 
-    void Ship::draw(Game* game)
+    void Player::draw(Game* game)
     {
         Entity::draw(game);
     }
 
-    void Ship::createPhysicsBody()
+    void Player::createPhysicsBody()
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = b2_dynamicBody;
@@ -124,16 +124,15 @@ namespace gl3
         shape = b2CreatePolygonShape(body, &shapeDef, &box);
     }
 
-    void Ship::updateBasedOnPhysics()
-    {
-        Entity::updateBasedOnPhysics();
-        b2Vec2 position = b2Body_GetPosition(body);
+    void Player::updateBasedOnPhysics()
+    {   b2Vec2 position = b2Body_GetPosition(body);
         position.x = this->position.x; // Force the X position to remain constant (locked)
         b2Body_SetTransform(body, position, b2Body_GetRotation(body));
+        Entity::updateBasedOnPhysics();
     }
 
 
-    void Ship::startContact()
+    void Player::startContact()
     {
         std::cout << "Ship start contact" << std::endl;
         m_jumping = false;

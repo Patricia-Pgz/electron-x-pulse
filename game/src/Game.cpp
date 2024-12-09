@@ -2,8 +2,6 @@
 #include <stdexcept>
 #include <random>
 #include <iostream>
-#include "entities/Planet.h"
-#include "entities/Enemy.h"
 #include "Assets.h"
 #include "entities/Obstacle.h"
 #include "entities/Platform.h"
@@ -85,36 +83,36 @@ namespace gl3
         std::mt19937 randomNumberEngine{
             static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count())
         };
-        std::uniform_real_distribution yScaleDist{0.0, 1.3};
-        std::uniform_real_distribution xScaleDist{0.2, 0.6};
-        std::uniform_real_distribution colorDist{0.0, 1.0};
-        for (auto i = 0; i < 10; ++i)
+        std::uniform_real_distribution yScaleDist{0.4, 1.1};
+        std::uniform_real_distribution xScaleDist{0.8, 1.0};
+        std::uniform_real_distribution colorDist{0.2, 1.0};
+        for (auto i = 0; i < 40; ++i)
         {
             if (i % 2 != 0)
             {
-                auto yScale = static_cast<float>(yScaleDist(randomNumberEngine));
+                auto randomYScale = static_cast<float>(yScaleDist(randomNumberEngine));
                 auto randomXScale = static_cast<float>(xScaleDist(randomNumberEngine));
                 auto c = colorDist(randomNumberEngine);
                 std::cout << std::to_string(randomXScale);
-                auto randomColor = glm::vec4(0, c, c, 1.0f);
-                auto entity = std::make_unique<Platform>(glm::vec3(i, groundLevel + yScale / 2, 0.0f), 1.0f, yScale,
+                auto randomColor = glm::vec4(0.1, c, c, 1.0f);
+                auto entity = std::make_unique<Platform>(glm::vec3(i, groundLevel + randomYScale / 2, 0.0f), randomXScale, randomYScale,
                                                          randomColor, physicsWorld);
                 entities.push_back(std::move(entity));
             }
             else
             {
                 auto position = glm::vec3(i, -0.875f, 0.0f);
-                auto entity = std::make_unique<Obstacle>(position, 0.5f, glm::vec4(1, 0, 0, 1), physicsWorld);
+                auto entity = std::make_unique<Obstacle>(position, 0.5f, glm::vec4(1.0, 0.1, 0.05, 1), physicsWorld);
                 entities.push_back(std::move(entity));
             }
         }
         auto groundHeight = 2.0f;
         auto groundPlatform = std::make_unique<Platform>(glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), 40.0f,
-                                                         groundHeight, glm::vec4(0, 0.7, 0.3, 1), physicsWorld);
+                                                         groundHeight, glm::vec4(0.2, 0.8, 0.8, 1), physicsWorld);
         groundPlatform->setTag("ground");
         entities.push_back(std::move(groundPlatform));
 
-        auto spaceShip = std::make_unique<Ship>(glm::vec3(-2, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f),
+        auto spaceShip = std::make_unique<Player>(glm::vec3(-2, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f),
                                                 physicsWorld);
         ship = spaceShip.get();
         entities.push_back(std::move(spaceShip));
@@ -157,7 +155,7 @@ namespace gl3
 
     void Game::draw()
     {
-        glClearColor(0.172f, 0.243f, 0.313f, 1.0f);
+        glClearColor(0.8f, 0.8f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         for (auto& entity : entities)
@@ -213,6 +211,9 @@ namespace gl3
         lastFrameTime = 1.0f / 60;
         deltaTime = 1.0f / 60;
         accumulator = 0.f;
+
+        audio.stopAudioSource(*backgroundMusic);
+        audio.playBackground(*backgroundMusic);
 
         // Optionally reload the level or reinitialize other states
         // ...

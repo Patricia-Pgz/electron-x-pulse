@@ -55,7 +55,6 @@ namespace gl3 {
         b2ShapeDef shapeDef = b2DefaultShapeDef();
         //shapeDef.density = 1.0f;
         shapeDef.friction = 0.0f;
-        shapeDef.restitution = 0.0f;
 
         b2Polygon box = b2MakeBox(scale.x * 0.5f, scale.y * 0.5f);
         shape = b2CreatePolygonShape(body, &shapeDef, &box);
