@@ -13,11 +13,11 @@
 namespace gl3 {
     class Game {
     public:
-        Game(int width, int height, const std::string &title);
+        Game(int width, int height, const std::string &title, glm::vec3 camPos, float camZoom);
         virtual ~Game();
         void run();
         glm::mat4 calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale);
-        [[nodiscard]] Player *getShip() const { return ship; }
+        [[nodiscard]] Player *getShip() const { return player; }
         GLFWwindow *getWindow() const { return window; }
         b2WorldId getPhysicsWorld() const;
 
@@ -27,12 +27,19 @@ namespace gl3 {
         void draw();
         void updateDeltaTime();
         void updatePhysics();
+        void calculateWindowBounds();
+        bool isInVisibleWindow(const b2Vec2& position) const;
         void resetEntities();
+        void setCameraPosition(const glm::vec3& position);
+        void setZoom(float newZoom);
         void reset();
 
         GLFWwindow *window = nullptr;
+        glm::vec3 cameraPosition;
+        float zoom;
+        float windowLeft, windowRight, windowBottom, windowTop;
         std::vector<std::unique_ptr<Entity>> entities;
-        Player *ship = nullptr;
+        Player *player = nullptr;
         SoLoud::Soloud audio;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
         float groundLevel = -1;

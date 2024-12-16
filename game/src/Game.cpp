@@ -11,10 +11,12 @@ namespace gl3
 {
     void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height)
     {
+        Game* gameInstance = static_cast<Game*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
+        gameInstance->calculateWindowBounds();
     }
 
-    Game::Game(int width, int height, const std::string& title)
+    Game::Game(int width, int height, const std::string& title, glm::vec3 camPos, float camZoom): cameraPosition(camPos), zoom(camZoom)
     {
         if (!glfwInit())
         {
@@ -33,13 +35,14 @@ namespace gl3
         }
 
         glfwMakeContextCurrent(window);
+        glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         if (glGetError() != GL_NO_ERROR)
         {
             throw std::runtime_error("gl error");
         }
-
+        calculateWindowBounds();
         audio.init();
         audio.setGlobalVolume(0.1f);
 
@@ -57,19 +60,16 @@ namespace gl3
 
     glm::mat4 Game::calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale)
     {
-        glm::mat4 model = glm::mat4(1.0f);
+        auto model = glm::mat4(1.0f);
         model = glm::translate(model, position);
         model = glm::scale(model, scale);
         model = glm::rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 1.0f),
-                                     glm::vec3(0.0f, 0.0f, 0.0),
-                                     glm::vec3(0.0, 1.0, 0.0));
+        glm::mat4 view = glm::lookAt(cameraPosition,
+                                     glm::vec3(0.0f, 0.0f, 0.0f),
+                                     glm::vec3(0.0f, 1.0f, 0.0f));
 
-        // Switch to orthographic projection
-        float left = -1280 / 2 / 100, right = 1280 / 2 / 100, bottom = -720 / 2 / 100, top = 720 / 2 / 100, nearPlane =
-                  0.1f, farPlane = 100.0f;
-        glm::mat4 projection = glm::ortho(left, right, bottom, top, nearPlane, farPlane);
+        glm::mat4 projection = glm::ortho(windowLeft, windowRight, windowBottom, windowTop, 0.1f, 100.0f);
 
         return projection * view * model;
     }
@@ -106,17 +106,17 @@ namespace gl3
                 entities.push_back(std::move(entity));
             }
         }
-        auto groundHeight = 2.0f;
+        auto groundHeight = 4.0f;
         auto groundPlatform = std::make_unique<Platform>(glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), 40.0f,
                                                          groundHeight, glm::vec4(0.2, 0.8, 0.8, 1), physicsWorld);
         groundPlatform->setTag("ground");
         entities.push_back(std::move(groundPlatform));
 
-        auto spaceShip = std::make_unique<Player>(glm::vec3(-2, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f),
+        auto tempPlayer = std::make_unique<Player>(glm::vec3(-2, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f),
                                                 physicsWorld);
-        ship = spaceShip.get();
-        entities.push_back(std::move(spaceShip));
-        ship->setOnDestroyedCallback([&]()
+        player = tempPlayer.get();
+        entities.push_back(std::move(tempPlayer));
+        player->setOnDestroyedCallback([&]()
         {
             reset();
         });
@@ -149,7 +149,10 @@ namespace gl3
 
         for (auto& entity : entities)
         {
-            entity->update(this, deltaTime);
+            if (isInVisibleWindow(b2Body_GetPosition(entity->getBody())))
+            {
+                entity->update(this, deltaTime);
+            }
         }
     }
 
@@ -160,7 +163,10 @@ namespace gl3
 
         for (auto& entity : entities)
         {
-            entity->draw(this);
+            if(isInVisibleWindow(b2Body_GetPosition(entity->getBody())))
+            {
+                entity->draw(this);
+            }
         }
 
         glfwSwapBuffers(window);
@@ -190,15 +196,60 @@ namespace gl3
                 {
                     b2Body_SetLinearVelocity(entity->getBody(), {-1.0f, 0.0f});
                 }
-                entity->updateBasedOnPhysics();
+                if(isInVisibleWindow(b2Body_GetPosition(entity->getBody())))
+                {
+                    entity->updateBasedOnPhysics();
+                }
+                // If entity is far off-screen, sleep it to save performance
+                if (b2Body_GetPosition(entity->getBody()).x < windowLeft - 1.0f) // Arbitrary value to check if the entity is far off-screen
+                {
+                    b2Body_SetAwake(entity->getBody(), false); // Sleep the body
+                }
+                else
+                {
+                    b2Body_SetAwake(entity->getBody(), true); // Wake the body if it’s back on screen
+                }
             }
             accumulator -= fixedTimeStep;
         }
     }
 
+    void Game::calculateWindowBounds()
+    {
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+
+        float halfWidth = (width / 2.0f) * zoom;
+        float halfHeight = (height / 2.0f) * zoom;
+
+        windowLeft = cameraPosition.x - halfWidth;
+        windowRight = cameraPosition.x + halfWidth;
+        windowBottom = cameraPosition.y - halfHeight;
+        windowTop = cameraPosition.y + halfHeight;
+    }
+
+    bool Game::isInVisibleWindow(const b2Vec2& position) const
+    {
+        float margin = 1.0f; // Optional margin
+        return position.x >= (windowLeft - margin) &&
+               position.x <= (windowRight + margin) &&
+               position.y >= (windowBottom - margin) &&
+               position.y <= (windowTop + margin);
+    }
+
     b2WorldId Game::getPhysicsWorld() const
     {
         return physicsWorld;
+    }
+
+    void Game::setCameraPosition(const glm::vec3& position)
+    {
+        cameraPosition = position;
+    }
+
+    void Game::setZoom(float newZoom)
+    {
+        zoom = newZoom;
     }
 
     void Game::reset()
@@ -218,10 +269,7 @@ namespace gl3
     {
         for (const std::unique_ptr<Entity>& entity : entities)
         {
-            if(entity->getTag() != "ground")
-            {
                 entity->resetToInitialState();
-            }
         }
     }
 }
