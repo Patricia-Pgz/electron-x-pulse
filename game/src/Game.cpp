@@ -205,12 +205,6 @@ namespace gl3
     {
         std::cout << "Game reset!" << std::endl;
 
-
-        // Reset game-specific variables
-        lastFrameTime = 1.0f / 60;
-        deltaTime = 1.0f / 60;
-        accumulator = 0.f;
-
         audio.stopAudioSource(*backgroundMusic);
         audio.playBackground(*backgroundMusic);
 
