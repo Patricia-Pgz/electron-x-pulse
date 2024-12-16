@@ -204,8 +204,7 @@ namespace gl3
     void Game::reset()
     {
         std::cout << "Game reset!" << std::endl;
-        // Reset all entities to their initial states
-        resetEntities();
+
 
         // Reset game-specific variables
         lastFrameTime = 1.0f / 60;
@@ -215,6 +214,8 @@ namespace gl3
         audio.stopAudioSource(*backgroundMusic);
         audio.playBackground(*backgroundMusic);
 
+        // Reset all entities to their initial states
+        resetEntities();
         // Optionally reload the level or reinitialize other states
         // ...
     }
@@ -223,7 +224,10 @@ namespace gl3
     {
         for (const std::unique_ptr<Entity>& entity : entities)
         {
-            entity->resetToInitialState();
+            if(entity->getTag() != "ground")
+            {
+                entity->resetToInitialState();
+            }
         }
     }
 }

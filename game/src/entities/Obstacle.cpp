@@ -71,6 +71,16 @@ namespace gl3
         shape = b2CreatePolygonShape(body, &shapeDef, &triangle);
     }
 
+    void Obstacle::resetToInitialState()
+    {
+        Entity::resetToInitialState();
+        if (const auto body = getBody(); b2Body_IsValid(body))
+        {
+            b2Body_SetLinearVelocity(body, {-1.0f, 0.0f});
+        }
+    }
+
+
     void Obstacle::startContact() {
         std::cout << "Obstacle start contact" << std::endl;
     }

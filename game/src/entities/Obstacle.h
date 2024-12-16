@@ -7,6 +7,7 @@ namespace gl3 {
     public:
         explicit Obstacle(glm::vec3 position = glm::vec3(0, 0, 0), float size = 1, glm::vec4 color = glm::vec4(1, 0, 0, 1), b2WorldId physicsWorld = b2_nullWorldId);
         void startContact() override;
+        void resetToInitialState() override;
     protected:
         void createPhysicsBody() override;
     };

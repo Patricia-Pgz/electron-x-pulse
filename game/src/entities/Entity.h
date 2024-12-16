@@ -39,7 +39,7 @@ namespace gl3{
         virtual void updateBasedOnPhysics();
         virtual void startContact();
 
-        void resetToInitialState();
+        virtual void resetToInitialState();
 
         // Tag system
         void setTag(const std::string& tag) { this->tag = tag; }

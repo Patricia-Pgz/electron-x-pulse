@@ -60,6 +60,16 @@ namespace gl3 {
         shape = b2CreatePolygonShape(body, &shapeDef, &box);
     }
 
+    void Platform::resetToInitialState()
+    {
+        Entity::resetToInitialState();
+        if (const auto body = getBody(); b2Body_IsValid(body))
+        {
+            b2Body_SetLinearVelocity(body, {-1.0f, 0.0f});
+        }
+    }
+
+
     void Platform::startContact() {
         std::cout << "Platform start contact" << std::endl;
     }
