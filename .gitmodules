@@ -13,3 +13,6 @@
 [submodule "extern/box2d"]
 	path = extern/box2d
 	url = https://github.com/erincatto/box2d.git
+[submodule "extern/aubio"]
+	path = extern/aubio
+	url = https://github.com/aubio/aubio.git

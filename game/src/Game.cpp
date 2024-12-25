@@ -6,6 +6,7 @@
 #include "entities/Obstacle.h"
 #include "entities/Platform.h"
 #include "physics/ContactListener.h"
+#include "../aubio/src/aubio.h"
 
 namespace gl3
 {
