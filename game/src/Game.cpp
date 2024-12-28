@@ -123,9 +123,60 @@ namespace gl3
         });
 
         backgroundMusic = std::make_unique<SoLoud::Wav>();
-        backgroundMusic->load(resolveAssetPath("audio/Senses.mp3").string().c_str());
+        backgroundMusic->load(resolveAssetPath("audio/Senses.mp3").c_str());
         backgroundMusic->setLooping(true);
         audio.playBackground(*backgroundMusic);
+
+        std::string audio_file = resolveAssetPath("audio/Senses.wav");
+
+        uint_t hop_size = 512;     // Size of each hop
+        uint_t buffer_size = 2048; // Size of the analysis buffer
+        uint_t samplerate = 0;     // Will be set by the file
+
+        // Create aubio source object
+        aubio_source_t* source = new_aubio_source(audio_file.c_str(), samplerate, hop_size);
+        if (!source) {
+            std::cerr << "Error: Failed to open audio source!" << std::endl;
+        }
+
+        // Get actual samplerate
+        samplerate = aubio_source_get_samplerate(source);
+
+        // Create aubio tempo object
+        aubio_tempo_t* tempo = new_aubio_tempo("default", buffer_size, hop_size, samplerate);
+        if (!tempo) {
+            std::cerr << "Error: Failed to create tempo object!" << std::endl;
+            del_aubio_source(source);
+        }
+
+        fvec_t* audio_frame = new_fvec(hop_size);  // Audio input frame buffer
+        fvec_t* beat_output = new_fvec(1);   // Beat detection output buffer
+
+        uint_t read = 0;
+        while (true) {
+            // Read a frame of audio
+            aubio_source_do(source, audio_frame, &read);
+
+            // Stop if no more frames
+            if (read == 0) break;
+
+            // Analyze for beats
+            aubio_tempo_do(tempo, audio_frame, beat_output);
+
+            // Check if a beat was detected
+            if (fvec_get_sample(beat_output, 0) > 0.0f) {
+                std::cout << "Beat detected at: " << aubio_tempo_get_last_s(tempo) << " seconds" << std::endl;
+            }
+        }
+
+        del_fvec(beat_output);
+        del_fvec(audio_frame);
+        del_aubio_tempo(tempo);
+        del_aubio_source(source);
+
+        aubio_cleanup();
+
+
 
         glfwSetTime(1.0 / 60);
 

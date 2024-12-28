@@ -32,7 +32,7 @@ namespace gl3
     {
         audio.init();
         audio.setGlobalVolume(0.1f);
-        firingSound.load(resolveAssetPath("audio/shot.mp3").string().c_str());
+        firingSound.load(resolveAssetPath("audio/shot.mp3").c_str());
         firingSound.setSingleInstance(true);
         Player::createPhysicsBody();
     }
