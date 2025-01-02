@@ -87,7 +87,7 @@ namespace gl3
         std::uniform_real_distribution yScaleDist{0.4, 1.1};
         std::uniform_real_distribution xScaleDist{0.8, 1.0};
         std::uniform_real_distribution colorDist{0.2, 1.0};
-        for (auto i = 0; i < 40; ++i)
+        /*for (auto i = 0; i < 40; ++i)
         {
             if (i % 2 != 0)
             {
@@ -106,14 +106,14 @@ namespace gl3
                 auto entity = std::make_unique<Obstacle>(position, 0.5f, glm::vec4(1.0, 0.1, 0.05, 1), physicsWorld);
                 entities.push_back(std::move(entity));
             }
-        }
+        }*/
         auto groundHeight = 4.0f;
         auto groundPlatform = std::make_unique<Platform>(glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), 40.0f,
                                                          groundHeight, glm::vec4(0.2, 0.8, 0.8, 1), physicsWorld);
         groundPlatform->setTag("ground");
         entities.push_back(std::move(groundPlatform));
 
-        auto tempPlayer = std::make_unique<Player>(glm::vec3(-2, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f),
+        auto tempPlayer = std::make_unique<Player>(glm::vec3(initialPlayerPositionX, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f),
                                                 physicsWorld);
         player = tempPlayer.get();
         entities.push_back(std::move(tempPlayer));
@@ -123,11 +123,11 @@ namespace gl3
         });
 
         backgroundMusic = std::make_unique<SoLoud::Wav>();
-        backgroundMusic->load(resolveAssetPath("audio/Senses.mp3").c_str());
+        backgroundMusic->load(resolveAssetPath("audio/click.wav").c_str());
         backgroundMusic->setLooping(true);
-        audio.playBackground(*backgroundMusic);
 
-        std::string audio_file = resolveAssetPath("audio/Senses.wav");
+        std::string audio_file = resolveAssetPath("audio/click.wav");
+        std::vector<float> beatPositions;
 
         uint_t hop_size = 512;     // Size of each hop
         uint_t buffer_size = 2048; // Size of the analysis buffer
@@ -143,7 +143,7 @@ namespace gl3
         samplerate = aubio_source_get_samplerate(source);
 
         // Create aubio tempo object
-        aubio_tempo_t* tempo = new_aubio_tempo("default", buffer_size, hop_size, samplerate);
+        aubio_tempo_t* tempo = new_aubio_tempo("complex", buffer_size, hop_size, samplerate);
         if (!tempo) {
             std::cerr << "Error: Failed to create tempo object!" << std::endl;
             del_aubio_source(source);
@@ -160,12 +160,17 @@ namespace gl3
             // Stop if no more frames
             if (read == 0) break;
 
+            aubio_tempo_set_threshold(tempo, 0.9);
+
             // Analyze for beats
             aubio_tempo_do(tempo, audio_frame, beat_output);
 
             // Check if a beat was detected
             if (fvec_get_sample(beat_output, 0) > 0.0f) {
-                std::cout << "Beat detected at: " << aubio_tempo_get_last_s(tempo) << " seconds" << std::endl;
+                float beatTime = aubio_tempo_get_last_s(tempo);
+                float beatPosition = initialPlayerPositionX + beatTime * -scrollSpeed;
+                beatPositions.push_back(beatPosition);
+                std::cout << "Beat detected at X position: " << beatPosition << std::endl;
             }
         }
 
@@ -176,7 +181,17 @@ namespace gl3
 
         aubio_cleanup();
 
+        //TODO: horizontale linie für timeline + bessere position und nicht collidieren + beat detection anpassen/besser einstellen
 
+        for (const float& beatPosition : beatPositions) {
+                auto timeLineColor = glm::vec4(0.1, 0.1, 1.0, 1.0f);
+                auto entity = std::make_unique<Platform>(glm::vec3(beatPosition, groundLevel + 1.0f / 2, 0.0f), 0.05f, 1,
+                                                         timeLineColor, physicsWorld);
+                entities.push_back(std::move(entity));
+        }
+
+
+        audio.playBackground(*backgroundMusic);
 
         glfwSetTime(1.0 / 60);
 
@@ -246,7 +261,7 @@ namespace gl3
             {
                 if (entity->getTag() != "player" && entity->getTag() != "ground")
                 {
-                    b2Body_SetLinearVelocity(entity->getBody(), {-1.0f, 0.0f});
+                    b2Body_SetLinearVelocity(entity->getBody(), {scrollSpeed, 0.0f});
                 }
                 if(isInVisibleWindow(b2Body_GetPosition(entity->getBody())))
                 {

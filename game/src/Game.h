@@ -27,6 +27,7 @@ namespace gl3 {
         void draw();
         void updateDeltaTime();
         void updatePhysics();
+        void drawTimeline();
         void calculateWindowBounds();
         bool isInVisibleWindow(const b2Vec2& position) const;
         void resetEntities();
@@ -47,6 +48,12 @@ namespace gl3 {
         float deltaTime = 1.0f/60;
         b2WorldId physicsWorld;
         float accumulator = 0.f;
+
+        float bpm = 120.0f; // Default BPM, updated dynamically
+        float distancePerBeat = 1.0f; // Example: player travels 1 unit per beat
+        float scrollSpeed = -1.0f;
+        bool isAudioPlaying = false;
+        float initialPlayerPositionX = -2;
     };
 }
 
