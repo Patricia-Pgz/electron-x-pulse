@@ -30,7 +30,7 @@ namespace gl3 {
 
     const glData glBoxData = getBoxVertices(1.0f, 1.0f);
 
-    Platform::Platform(glm::vec3 position,  float width, float height, glm::vec4 color, b2WorldId physicsWorld)
+    Platform::Platform(glm::vec3 position,  float width, float height, glm::vec4 color, b2WorldId physicsWorld, bool makeBody)
     : Entity(Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
              Mesh(glBoxData.vertices, glBoxData.indices),
              position,
@@ -40,6 +40,7 @@ namespace gl3 {
              physicsWorld,
              "platform")
     {
+        if(!makeBody)return;
         Platform::createPhysicsBody();
     }
 

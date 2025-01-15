@@ -23,6 +23,7 @@ namespace gl3 {
         void createPhysicsBody() override;
 
     private:
+        void applyJumpImpulse();
         SoLoud::Soloud audio;
         SoLoud::Wav firingSound;
         bool m_jumping =false;

@@ -10,6 +10,27 @@
 
 namespace gl3
 {
+
+    std::vector<float> generateBeatTimestamps(const float songLength, const float beatInterval, float &offset) {
+        std::vector<float> beatTimestamps;
+
+        // Ensure valid inputs
+        if (songLength <= 0.0f || beatInterval <= 0.0) {
+            std::cerr << "Invalid song length or beat interval!" << std::endl;
+            return beatTimestamps;
+        }
+
+        // Convert song length to the number of beats
+        const int totalBeats = static_cast<int>(songLength / beatInterval);
+
+        // Generate timestamps
+        for (int i = 0; i <= totalBeats; ++i) {
+            beatTimestamps.push_back(static_cast<float>(i) * beatInterval + offset);
+        }
+
+        return beatTimestamps;
+    }
+
     void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height)
     {
         Game* gameInstance = static_cast<Game*>(glfwGetWindowUserPointer(window));
@@ -81,32 +102,6 @@ namespace gl3
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 
-        std::mt19937 randomNumberEngine{
-            static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count())
-        };
-        std::uniform_real_distribution yScaleDist{0.4, 1.1};
-        std::uniform_real_distribution xScaleDist{0.8, 1.0};
-        std::uniform_real_distribution colorDist{0.2, 1.0};
-        /*for (auto i = 0; i < 40; ++i)
-        {
-            if (i % 2 != 0)
-            {
-                auto randomYScale = static_cast<float>(yScaleDist(randomNumberEngine));
-                auto randomXScale = static_cast<float>(xScaleDist(randomNumberEngine));
-                auto c = colorDist(randomNumberEngine);
-                std::cout << std::to_string(randomXScale);
-                auto randomColor = glm::vec4(0.1, c, c, 1.0f);
-                auto entity = std::make_unique<Platform>(glm::vec3(i, groundLevel + randomYScale / 2, 0.0f), randomXScale, randomYScale,
-                                                         randomColor, physicsWorld);
-                entities.push_back(std::move(entity));
-            }
-            else
-            {
-                auto position = glm::vec3(i, -0.875f, 0.0f);
-                auto entity = std::make_unique<Obstacle>(position, 0.5f, glm::vec4(1.0, 0.1, 0.05, 1), physicsWorld);
-                entities.push_back(std::move(entity));
-            }
-        }*/
         auto groundHeight = 4.0f;
         auto groundPlatform = std::make_unique<Platform>(glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), 40.0f,
                                                          groundHeight, glm::vec4(0.2, 0.8, 0.8, 1), physicsWorld);
@@ -165,14 +160,16 @@ namespace gl3
             // Analyze for beats
             aubio_tempo_do(tempo, audio_frame, beat_output);
 
-            // Check if a beat was detected
+            /*// Check if a beat was detected TODO als andere beatdetection anbieten
             if (fvec_get_sample(beat_output, 0) > 0.0f) {
                 float beatTime = aubio_tempo_get_last_s(tempo);
                 float beatPosition = initialPlayerPositionX + beatTime * -scrollSpeed;
                 beatPositions.push_back(beatPosition);
                 std::cout << "Beat detected at X position: " << beatPosition << std::endl;
-            }
+            }*/
         }
+        bpm = aubio_tempo_get_bpm(tempo);
+        beatPositions = generateBeatTimestamps(static_cast<float>(backgroundMusic->getLength()), 60/bpm, initialPlayerPositionX);
 
         del_fvec(beat_output);
         del_fvec(audio_frame);
@@ -183,10 +180,46 @@ namespace gl3
 
         //TODO: horizontale linie für timeline + bessere position und nicht collidieren + beat detection anpassen/besser einstellen
 
+        std::mt19937 randomNumberEngine{
+            static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count())
+        };
+        std::uniform_real_distribution yScaleDist{0.4, 1.1};
+        std::uniform_real_distribution xScaleDist{0.5, 0.8};
+        std::uniform_real_distribution colorDist{0.2, 1.0};
+        size_t index = 0;
+
+        for (auto beat : beatPositions)
+        {
+            if (index % 2 != 0)
+            {
+                auto randomYScale = static_cast<float>(yScaleDist(randomNumberEngine));
+                auto randomXScale = static_cast<float>(xScaleDist(randomNumberEngine));
+                auto c = colorDist(randomNumberEngine);
+                std::cout << std::to_string(randomXScale);
+                auto randomColor = glm::vec4(0.1, c, c, 1.0f);
+                auto entity = std::make_unique<Platform>(glm::vec3(beat, groundLevel + randomYScale / 2, 0.0f), randomXScale, randomYScale,
+                                                         randomColor, physicsWorld);
+                entities.push_back(std::move(entity));
+            }
+            else
+            {
+                auto position = glm::vec3(beat, -0.875f, 0.0f);
+                auto entity = std::make_unique<Obstacle>(position, 0.5f, glm::vec4(1.0, 0.1, 0.05, 1), physicsWorld);
+                entities.push_back(std::move(entity));
+            }
+            index++;
+        }
+
+        auto horizontalLine = std::make_unique<Platform>(glm::vec3(0, groundLevel, 0.0f), 40,
+                                         0.05f, glm::vec4(0.1, 0.1, 1.0, 1.0f), physicsWorld, false);
+        horizontalLine->setTag("beat");
+        entities.push_back(std::move(horizontalLine));
+
         for (const float& beatPosition : beatPositions) {
                 auto timeLineColor = glm::vec4(0.1, 0.1, 1.0, 1.0f);
-                auto entity = std::make_unique<Platform>(glm::vec3(beatPosition, groundLevel + 1.0f / 2, 0.0f), 0.05f, 1,
-                                                         timeLineColor, physicsWorld);
+                auto entity = std::make_unique<Platform>(glm::vec3(beatPosition, groundLevel, 0.0f), 0.05f, 1,
+                                                         timeLineColor, physicsWorld, false);
+                entity->setTag("beat");
                 entities.push_back(std::move(entity));
         }
 
@@ -194,6 +227,13 @@ namespace gl3
         audio.playBackground(*backgroundMusic);
 
         glfwSetTime(1.0 / 60);
+        for (const std::unique_ptr<Entity>& entity : entities)
+        {
+            if (entity->getTag() != "player" && entity->getTag() != "ground" && entity->getTag() != "beat")
+            {
+                b2Body_SetLinearVelocity(entity->getBody(), {-1.0f, 0.0f});
+            }
+        }
 
         while (!glfwWindowShouldClose(window))
         {
@@ -216,8 +256,9 @@ namespace gl3
 
         for (auto& entity : entities)
         {
-            if (isInVisibleWindow(b2Body_GetPosition(entity->getBody())))
+            if (isInVisibleWindow(b2Vec2(entity->getPosition().x, entity->getPosition().y)))
             {
+
                 entity->update(this, deltaTime);
             }
         }
@@ -230,7 +271,7 @@ namespace gl3
 
         for (auto& entity : entities)
         {
-            if(isInVisibleWindow(b2Body_GetPosition(entity->getBody())))
+            if(isInVisibleWindow(b2Vec2(entity->getPosition().x, entity->getPosition().y)))
             {
                 entity->draw(this);
             }
@@ -249,7 +290,7 @@ namespace gl3
     void Game::updatePhysics()
     {
         const float fixedTimeStep = 1.0f / 60.0f;
-        const int subStepCount = 4; // recommended sub-step count
+        const int subStepCount = 8; // recommended sub-step count
         accumulator += deltaTime;
         if (accumulator >= fixedTimeStep)
         {
@@ -259,10 +300,21 @@ namespace gl3
             // Update the entities based on what happened in the physics step
             for (const std::unique_ptr<Entity>& entity : entities)
             {
-                if (entity->getTag() != "player" && entity->getTag() != "ground")
+                if(entity->getTag() == "beat")
                 {
-                    b2Body_SetLinearVelocity(entity->getBody(), {scrollSpeed, 0.0f});
+                    glm::vec3 position = entity->getPosition();
+
+                    // Update position based on scroll speed and deltaTime
+                    position.x += scrollSpeed * deltaTime;
+
+                    // Apply the new position to the entity
+                    entity->setPosition(position);
+                    continue;
                 }
+                /*if (entity->getTag() != "player" && entity->getTag() != "ground")
+                {
+                    b2Body_SetLinearVelocity(entity->getBody(), {0.5f, 0.0f});
+                }*/
                 if(isInVisibleWindow(b2Body_GetPosition(entity->getBody())))
                 {
                     entity->updateBasedOnPhysics();
@@ -328,6 +380,13 @@ namespace gl3
 
         // Reset all entities to their initial states
         resetEntities();
+        for (const std::unique_ptr<Entity>& entity : entities)
+        {
+            if (entity->getTag() != "player" && entity->getTag() != "ground" && entity->getTag() != "beat")
+            {
+                b2Body_SetLinearVelocity(entity->getBody(), {-1.0f, 0.0f});
+            }
+        }
         // Optionally reload the level or reinitialize other states
         // ...
     }

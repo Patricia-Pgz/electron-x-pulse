@@ -93,9 +93,24 @@ namespace gl3
         if (canJump && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
             //Jump
-            b2Body_ApplyLinearImpulseToCenter(body, b2Vec2{0.0f, m_jumpImpulse}, true);
+            //b2Body_ApplyLinearImpulseToCenter(body, b2Vec2{0.0f, m_jumpImpulse}, true);
+            applyJumpImpulse();
             m_jumping = true;
         }
+    }
+
+    void Player::applyJumpImpulse() {
+        const float gravity = 9.81f; // (absolute value of gravity)
+        const float jumpHeight = 1.0f; // Desired jump height (1 unit)
+
+        // Calculate the initial velocity required to reach the jump height
+        float initialVelocity = std::sqrt(2 * gravity * jumpHeight);
+        std::cout << initialVelocity;
+        std::cout << b2Body_GetMass(body);
+
+        b2Vec2 jumpImpulse(0.0f, initialVelocity * b2Body_GetMass(body));
+
+        b2Body_ApplyLinearImpulseToCenter(body,jumpImpulse, true );
     }
 
     void Player::draw(Game* game)

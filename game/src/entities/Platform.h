@@ -5,7 +5,7 @@ namespace gl3 {
 
     class Platform: public Entity {
     public:
-        explicit Platform(glm::vec3 position = glm::vec3(0, 0, 0),  float width = 1, float height = 1, glm::vec4 color = glm::vec4(1, 1, 1, 1), b2WorldId physicsWorld = b2_nullWorldId);
+        explicit Platform(glm::vec3 position = glm::vec3(0, 0, 0),  float width = 1, float height = 1, glm::vec4 color = glm::vec4(1, 1, 1, 1), b2WorldId physicsWorld = b2_nullWorldId, bool makeBody = true);
     protected:
         void createPhysicsBody() override;
 
