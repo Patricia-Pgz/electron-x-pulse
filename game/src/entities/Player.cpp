@@ -11,6 +11,25 @@
 
 namespace gl3
 {
+    struct JumpConfig {
+        float gravity;
+        float bpm;
+        float beatsPerJump;
+    };
+
+    b2Vec2 calculateJumpImpulse(b2BodyId& body, const JumpConfig& config) {
+        float secondsPerBeat = 60.0f / static_cast<float>(config.bpm);
+
+        float jumpDuration = config.beatsPerJump * secondsPerBeat;
+
+        float initialVelocity = (config.gravity * jumpDuration) / 2.0f;
+
+        float bodyMass = b2Body_GetMass(body);
+        b2Vec2 jumpImpulse(0.0f, initialVelocity * bodyMass);
+
+        return jumpImpulse;
+    }
+
     Player::Player(glm::vec3 position, float zRotation, glm::vec3 scale, b2WorldId physicsWorld) : Entity(
         Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
         Mesh({
@@ -94,24 +113,20 @@ namespace gl3
         {
             //Jump
             //b2Body_ApplyLinearImpulseToCenter(body, b2Vec2{0.0f, m_jumpImpulse}, true);
-            applyJumpImpulse();
+            applyJumpImpulse(game);
             m_jumping = true;
         }
     }
 
-    void Player::applyJumpImpulse() {
-        const float gravity = 9.81f; // (absolute value of gravity)
-        const float jumpHeight = 1.0f; // Desired jump height (1 unit)
 
-        // Calculate the initial velocity required to reach the jump height
-        float initialVelocity = std::sqrt(2 * gravity * jumpHeight);
-        std::cout << initialVelocity;
-        std::cout << b2Body_GetMass(body);
 
-        b2Vec2 jumpImpulse(0.0f, initialVelocity * b2Body_GetMass(body));
+    void Player::applyJumpImpulse(Game* game) {
+        b2Vec2 jumpImpulse = calculateJumpImpulse(body, JumpConfig(9.81, game->bpm, 2.0f));
 
         b2Body_ApplyLinearImpulseToCenter(body,jumpImpulse, true );
     }
+
+
 
     void Player::draw(Game* game)
     {
@@ -131,6 +146,7 @@ namespace gl3
         body = b2CreateBody(physicsWorld, &bodyDef);
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();
+        shapeDef.density = 0.1f;
         shapeDef.friction = 0.0f;
         shapeDef.restitution = 0.0f;
         shapeDef.enableContactEvents = true;

@@ -10,12 +10,13 @@
 
 namespace gl3
 {
-
-    std::vector<float> generateBeatTimestamps(const float songLength, const float beatInterval, float &offset) {
+    std::vector<float> generateBeatTimestamps(const float songLength, const float beatInterval, float& offset)
+    {
         std::vector<float> beatTimestamps;
 
         // Ensure valid inputs
-        if (songLength <= 0.0f || beatInterval <= 0.0) {
+        if (songLength <= 0.0f || beatInterval <= 0.0)
+        {
             std::cerr << "Invalid song length or beat interval!" << std::endl;
             return beatTimestamps;
         }
@@ -24,7 +25,8 @@ namespace gl3
         const int totalBeats = static_cast<int>(songLength / beatInterval);
 
         // Generate timestamps
-        for (int i = 0; i <= totalBeats; ++i) {
+        for (int i = 0; i <= totalBeats; ++i)
+        {
             beatTimestamps.push_back(static_cast<float>(i) * beatInterval + offset);
         }
 
@@ -33,12 +35,38 @@ namespace gl3
 
     void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height)
     {
-        Game* gameInstance = static_cast<Game*>(glfwGetWindowUserPointer(window));
+        auto gameInstance = static_cast<Game*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
         gameInstance->calculateWindowBounds();
     }
 
-    Game::Game(int width, int height, const std::string& title, glm::vec3 camPos, float camZoom): cameraPosition(camPos), zoom(camZoom)
+    void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) //TODO implement scrolling with Camera (+ limit to 0-width/2 and song/levellength+width/2
+    {
+        auto gameInstance = static_cast<Game*>(glfwGetWindowUserPointer(window));
+        gameInstance->scroll_callback_fun(yoffset);
+    }
+
+    void Game::scroll_callback_fun(double yOffset)
+    {
+        float cameraX = cameraPosition.x;
+        float scrollSpeed = 0.5f;
+        float minScrollX = 0.0f; // Minimum scroll limit
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        float maxScrollX = (levelLength + static_cast<float>(width)/2 *zoom - initialPlayerPositionX);  // Maximum scroll limit
+
+        cameraX += static_cast<float>(yOffset) * scrollSpeed;
+
+        if (cameraX < minScrollX) cameraX = minScrollX;
+        if (cameraX > maxScrollX) cameraX = maxScrollX;
+
+        cameraPosition.x = cameraX;
+        cameraCenter.x = cameraX;
+        calculateWindowBounds();
+    }
+
+    Game::Game(int width, int height, const std::string& title, glm::vec3 camPos,
+               float camZoom): cameraPosition(camPos), zoom(camZoom)
     {
         if (!glfwInit())
         {
@@ -60,6 +88,7 @@ namespace gl3
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+        glfwSetScrollCallback(window, scroll_callback);
         if (glGetError() != GL_NO_ERROR)
         {
             throw std::runtime_error("gl error");
@@ -88,7 +117,7 @@ namespace gl3
         model = glm::rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
 
         glm::mat4 view = glm::lookAt(cameraPosition,
-                                     glm::vec3(0.0f, 0.0f, 0.0f),
+                                     cameraCenter,
                                      glm::vec3(0.0f, 1.0f, 0.0f));
 
         glm::mat4 projection = glm::ortho(windowLeft, windowRight, windowBottom, windowTop, 0.1f, 100.0f);
@@ -108,8 +137,9 @@ namespace gl3
         groundPlatform->setTag("ground");
         entities.push_back(std::move(groundPlatform));
 
-        auto tempPlayer = std::make_unique<Player>(glm::vec3(initialPlayerPositionX, 0, 0), 0.0f, glm::vec3(0.25f, 0.25f, 0.25f),
-                                                physicsWorld);
+        auto tempPlayer = std::make_unique<Player>(glm::vec3(initialPlayerPositionX, groundLevel + 0.25/2, 0), 0.0f,
+                                                   glm::vec3(0.25f, 0.25f, 0.25f),
+                                                   physicsWorld);
         player = tempPlayer.get();
         entities.push_back(std::move(tempPlayer));
         player->setOnDestroyedCallback([&]()
@@ -118,19 +148,20 @@ namespace gl3
         });
 
         backgroundMusic = std::make_unique<SoLoud::Wav>();
-        backgroundMusic->load(resolveAssetPath("audio/click.wav").c_str());
+        backgroundMusic->load(resolveAssetPath("audio/Senses.wav").c_str());
         backgroundMusic->setLooping(true);
 
-        std::string audio_file = resolveAssetPath("audio/click.wav");
+        std::string audio_file = resolveAssetPath("audio/Senses.wav");
         std::vector<float> beatPositions;
 
-        uint_t hop_size = 512;     // Size of each hop
+        uint_t hop_size = 512; // Size of each hop
         uint_t buffer_size = 2048; // Size of the analysis buffer
-        uint_t samplerate = 0;     // Will be set by the file
+        uint_t samplerate = 0; // Will be set by the file
 
         // Create aubio source object
         aubio_source_t* source = new_aubio_source(audio_file.c_str(), samplerate, hop_size);
-        if (!source) {
+        if (!source)
+        {
             std::cerr << "Error: Failed to open audio source!" << std::endl;
         }
 
@@ -139,16 +170,18 @@ namespace gl3
 
         // Create aubio tempo object
         aubio_tempo_t* tempo = new_aubio_tempo("complex", buffer_size, hop_size, samplerate);
-        if (!tempo) {
+        if (!tempo)
+        {
             std::cerr << "Error: Failed to create tempo object!" << std::endl;
             del_aubio_source(source);
         }
 
-        fvec_t* audio_frame = new_fvec(hop_size);  // Audio input frame buffer
-        fvec_t* beat_output = new_fvec(1);   // Beat detection output buffer
+        fvec_t* audio_frame = new_fvec(hop_size); // Audio input frame buffer
+        fvec_t* beat_output = new_fvec(1); // Beat detection output buffer
 
         uint_t read = 0;
-        while (true) {
+        while (true)
+        {
             // Read a frame of audio
             aubio_source_do(source, audio_frame, &read);
 
@@ -169,7 +202,10 @@ namespace gl3
             }*/
         }
         bpm = aubio_tempo_get_bpm(tempo);
-        beatPositions = generateBeatTimestamps(static_cast<float>(backgroundMusic->getLength()), 60/bpm, initialPlayerPositionX);
+        beatPositions = generateBeatTimestamps(static_cast<float>(backgroundMusic->getLength()), 60 / bpm,
+                                               initialPlayerPositionX);
+        levelLength = backgroundMusic->getLength();
+
 
         del_fvec(beat_output);
         del_fvec(audio_frame);
@@ -178,61 +214,80 @@ namespace gl3
 
         aubio_cleanup();
 
-        //TODO: horizontale linie für timeline + bessere position und nicht collidieren + beat detection anpassen/besser einstellen
-
         std::mt19937 randomNumberEngine{
             static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count())
         };
-        std::uniform_real_distribution yScaleDist{0.4, 1.1};
-        std::uniform_real_distribution xScaleDist{0.5, 0.8};
+        std::uniform_real_distribution yScaleDist{0.3, 0.3};
+        std::uniform_real_distribution xScaleDist{0.4, 0.7};
         std::uniform_real_distribution colorDist{0.2, 1.0};
         size_t index = 0;
 
-        for (auto beat : beatPositions)
+        if (currentGameState == GameState::Level || currentGameState == GameState::PreviewWithTesting || currentGameState == GameState::PreviewWithScrolling)
         {
-            if (index % 2 != 0)
+            int beatIndex = 1;
+            for (auto beat : beatPositions)
             {
-                auto randomYScale = static_cast<float>(yScaleDist(randomNumberEngine));
-                auto randomXScale = static_cast<float>(xScaleDist(randomNumberEngine));
-                auto c = colorDist(randomNumberEngine);
-                std::cout << std::to_string(randomXScale);
-                auto randomColor = glm::vec4(0.1, c, c, 1.0f);
-                auto entity = std::make_unique<Platform>(glm::vec3(beat, groundLevel + randomYScale / 2, 0.0f), randomXScale, randomYScale,
-                                                         randomColor, physicsWorld);
-                entities.push_back(std::move(entity));
+                if (index % 2 == 0)
+                {
+                    auto randomYScale = static_cast<float>(yScaleDist(randomNumberEngine));
+                    auto randomXScale = static_cast<float>(xScaleDist(randomNumberEngine));
+                    auto c = colorDist(randomNumberEngine);
+                    auto height = beatIndex % 2 != 0? 0.25f: 0.5f;
+                    auto randomColor = glm::vec4(0.1, c, c, 1.0f);
+                    auto entity = std::make_unique<Platform>(glm::vec3(beat, groundLevel + height/2, 0.0f),0.5f, height,
+                                                             randomColor, physicsWorld);
+                    entities.push_back(std::move(entity));
+                    beatIndex++;
+                }
+                else
+                {
+                    /*auto position = glm::vec3(beat, -0.875f, 0.0f);
+                    auto entity = std::make_unique<
+                        Obstacle>(position, 0.5f, glm::vec4(1.0, 0.1, 0.05, 1), physicsWorld);
+                    entities.push_back(std::move(entity));*/
+                }
+                index++;
             }
-            else
-            {
-                auto position = glm::vec3(beat, -0.875f, 0.0f);
-                auto entity = std::make_unique<Obstacle>(position, 0.5f, glm::vec4(1.0, 0.1, 0.05, 1), physicsWorld);
-                entities.push_back(std::move(entity));
-            }
-            index++;
         }
 
-        auto horizontalLine = std::make_unique<Platform>(glm::vec3(0, groundLevel, 0.0f), 40,
-                                         0.05f, glm::vec4(0.1, 0.1, 1.0, 1.0f), physicsWorld, false);
-        horizontalLine->setTag("beat");
-        entities.push_back(std::move(horizontalLine));
+        if(currentGameState == GameState::PreviewWithScrolling || currentGameState == GameState::PreviewWithTesting)
+        {
+            auto horizontalLine = std::make_unique<Platform>(glm::vec3(0, groundLevel, 0.0f), 40,
+                                                 0.05f, glm::vec4(0.1, 0.1, 1.0, 1.0f), physicsWorld, false);
+            horizontalLine->setTag("timeline");
+            entities.push_back(std::move(horizontalLine));
 
-        for (const float& beatPosition : beatPositions) {
+            for (auto beatPosition : beatPositions)
+            {
                 auto timeLineColor = glm::vec4(0.1, 0.1, 1.0, 1.0f);
-                auto entity = std::make_unique<Platform>(glm::vec3(beatPosition, groundLevel, 0.0f), 0.05f, 1,
+                auto entity = std::make_unique<Platform>(glm::vec3(beatPosition, groundLevel, 0.0f), 0.05f, 0.5f,
                                                          timeLineColor, physicsWorld, false);
                 entity->setTag("beat");
                 entities.push_back(std::move(entity));
+            }
         }
 
 
-        audio.playBackground(*backgroundMusic);
+
+
+
 
         glfwSetTime(1.0 / 60);
-        for (const std::unique_ptr<Entity>& entity : entities)
+        if(currentGameState != GameState::Menu && currentGameState != GameState::PreviewWithScrolling)
         {
-            if (entity->getTag() != "player" && entity->getTag() != "ground" && entity->getTag() != "beat")
+            audio.playBackground(*backgroundMusic);
+
+            for (const std::unique_ptr<Entity>& entity : entities)
             {
-                b2Body_SetLinearVelocity(entity->getBody(), {-1.0f, 0.0f});
+                if (entity->getTag() == "platform" || entity->getTag() == "obstacle")
+                {
+                    b2Body_SetLinearVelocity(entity->getBody(), {-1.0f, 0.0f});
+                }
             }
+
+        } else
+        {
+            b2Body_SetAwake(player->getBody(), false);
         }
 
         while (!glfwWindowShouldClose(window))
@@ -258,7 +313,6 @@ namespace gl3
         {
             if (isInVisibleWindow(b2Vec2(entity->getPosition().x, entity->getPosition().y)))
             {
-
                 entity->update(this, deltaTime);
             }
         }
@@ -269,9 +323,9 @@ namespace gl3
         glClearColor(0.8f, 0.8f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        for (auto& entity : entities)
+        for (const auto& entity : entities)
         {
-            if(isInVisibleWindow(b2Vec2(entity->getPosition().x, entity->getPosition().y)))
+            if (isInVisibleWindow(b2Vec2(entity->getPosition().x, entity->getPosition().y)))
             {
                 entity->draw(this);
             }
@@ -297,15 +351,17 @@ namespace gl3
             b2World_Step(physicsWorld, fixedTimeStep, subStepCount);
             ContactListener::checkForCollision(physicsWorld);
 
+            if(currentGameState == GameState::PreviewWithScrolling) return;
             // Update the entities based on what happened in the physics step
             for (const std::unique_ptr<Entity>& entity : entities)
             {
-                if(entity->getTag() == "beat")
+                if (entity->getTag() == "timeline") continue;
+                if (entity->getTag() == "beat")
                 {
                     glm::vec3 position = entity->getPosition();
 
                     // Update position based on scroll speed and deltaTime
-                    position.x += scrollSpeed * deltaTime;
+                    position.x += scrollSpeed * fixedTimeStep;
 
                     // Apply the new position to the entity
                     entity->setPosition(position);
@@ -315,12 +371,13 @@ namespace gl3
                 {
                     b2Body_SetLinearVelocity(entity->getBody(), {0.5f, 0.0f});
                 }*/
-                if(isInVisibleWindow(b2Body_GetPosition(entity->getBody())))
+                if (isInVisibleWindow(b2Body_GetPosition(entity->getBody())))
                 {
                     entity->updateBasedOnPhysics();
                 }
                 // If entity is far off-screen, sleep it to save performance
-                if (b2Body_GetPosition(entity->getBody()).x < windowLeft - 1.0f) // Arbitrary value to check if the entity is far off-screen
+                if (b2Body_GetPosition(entity->getBody()).x < windowLeft - 1.0f)
+                // Arbitrary value to check if the entity is far off-screen
                 {
                     b2Body_SetAwake(entity->getBody(), false); // Sleep the body
                 }
@@ -345,15 +402,16 @@ namespace gl3
         windowRight = cameraPosition.x + halfWidth;
         windowBottom = cameraPosition.y - halfHeight;
         windowTop = cameraPosition.y + halfHeight;
+
     }
 
     bool Game::isInVisibleWindow(const b2Vec2& position) const
     {
         float margin = 1.0f; // Optional margin
         return position.x >= (windowLeft - margin) &&
-               position.x <= (windowRight + margin) &&
-               position.y >= (windowBottom - margin) &&
-               position.y <= (windowTop + margin);
+            position.x <= (windowRight + margin) &&
+            position.y >= (windowBottom - margin) &&
+            position.y <= (windowTop + margin);
     }
 
     b2WorldId Game::getPhysicsWorld() const
@@ -380,13 +438,17 @@ namespace gl3
 
         // Reset all entities to their initial states
         resetEntities();
-        for (const std::unique_ptr<Entity>& entity : entities)
+        if(currentGameState != GameState::Menu && currentGameState != GameState::PreviewWithScrolling)
         {
-            if (entity->getTag() != "player" && entity->getTag() != "ground" && entity->getTag() != "beat")
+            for (const std::unique_ptr<Entity>& entity : entities)
             {
-                b2Body_SetLinearVelocity(entity->getBody(), {-1.0f, 0.0f});
+                if (entity->getTag() == "platform" || entity->getTag() == "obstacle")
+                {
+                    b2Body_SetLinearVelocity(entity->getBody(), {-1.0f, 0.0f});
+                }
             }
         }
+
         // Optionally reload the level or reinitialize other states
         // ...
     }
@@ -395,7 +457,7 @@ namespace gl3
     {
         for (const std::unique_ptr<Entity>& entity : entities)
         {
-                entity->resetToInitialState();
+            entity->resetToInitialState();
         }
     }
 }
