@@ -121,7 +121,7 @@ namespace gl3
 
 
     void Player::applyJumpImpulse(Game* game) {
-        b2Vec2 jumpImpulse = calculateJumpImpulse(body, JumpConfig(9.81, game->bpm, 2.0f));
+        b2Vec2 jumpImpulse = calculateJumpImpulse(body, JumpConfig(9.81, game->bpm, 1.0f));
 
         b2Body_ApplyLinearImpulseToCenter(body,jumpImpulse, true );
     }
@@ -140,7 +140,7 @@ namespace gl3
         bodyDef.position = {position.x, position.y};
         //bodyDef.rotation = b2MakeRot(glm::radians(zRotation));
         bodyDef.fixedRotation = true;
-        //bodyDef.linearDamping = 0.5f;
+        bodyDef.linearDamping = 0.0f;
 
         bodyDef.userData = static_cast<void*>(this);
         body = b2CreateBody(physicsWorld, &bodyDef);

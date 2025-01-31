@@ -48,21 +48,33 @@ namespace gl3
 
     void Game::scroll_callback_fun(double yOffset)
     {
-        float cameraX = cameraPosition.x;
+        float cameraX = 0.0f;/*cameraPosition.x;*/
         float scrollSpeed = 0.5f;
         float minScrollX = 0.0f; // Minimum scroll limit
         int width, height;
         glfwGetWindowSize(window, &width, &height);
         float maxScrollX = (levelLength + static_cast<float>(width)/2 *zoom - initialPlayerPositionX);  // Maximum scroll limit
 
-        cameraX += static_cast<float>(yOffset) * scrollSpeed;
-
+        cameraX = static_cast<float>(yOffset) * scrollSpeed;
         if (cameraX < minScrollX) cameraX = minScrollX;
         if (cameraX > maxScrollX) cameraX = maxScrollX;
 
-        cameraPosition.x = cameraX;
+        std::cout << cameraX;
+
+        for (auto &entity : entities)
+        {
+            if(entity->getTag() != "beat" &&  entity->getTag() != "timeline")
+            {
+                b2Body_SetTransform(entity->getBody(), b2Vec2(b2Body_GetPosition(entity->getBody()).x + cameraX, b2Body_GetPosition(entity->getBody()).y), b2Body_GetRotation(entity->getBody()));
+            } else
+            {
+                entity->setPosition(glm::vec3(entity->getPosition().x + cameraX, entity->getPosition().y, 0.0f));
+            }
+        }
+
+        /*cameraPosition.x = cameraX;
         cameraCenter.x = cameraX;
-        calculateWindowBounds();
+        calculateWindowBounds();*/
     }
 
     Game::Game(int width, int height, const std::string& title, glm::vec3 camPos,
@@ -222,17 +234,17 @@ namespace gl3
         std::uniform_real_distribution colorDist{0.2, 1.0};
         size_t index = 0;
 
-        if (currentGameState == GameState::Level || currentGameState == GameState::PreviewWithTesting || currentGameState == GameState::PreviewWithScrolling)
+        /*if (currentGameState == GameState::Level || currentGameState == GameState::PreviewWithTesting || currentGameState == GameState::PreviewWithScrolling)
         {
             int beatIndex = 1;
             for (auto beat : beatPositions)
             {
-                if (index % 2 == 0)
+                if (true)
                 {
                     auto randomYScale = static_cast<float>(yScaleDist(randomNumberEngine));
                     auto randomXScale = static_cast<float>(xScaleDist(randomNumberEngine));
                     auto c = colorDist(randomNumberEngine);
-                    auto height = beatIndex % 2 != 0? 0.25f: 0.5f;
+                    auto height = 0.25f;
                     auto randomColor = glm::vec4(0.1, c, c, 1.0f);
                     auto entity = std::make_unique<Platform>(glm::vec3(beat, groundLevel + height/2, 0.0f),0.5f, height,
                                                              randomColor, physicsWorld);
@@ -244,11 +256,11 @@ namespace gl3
                     /*auto position = glm::vec3(beat, -0.875f, 0.0f);
                     auto entity = std::make_unique<
                         Obstacle>(position, 0.5f, glm::vec4(1.0, 0.1, 0.05, 1), physicsWorld);
-                    entities.push_back(std::move(entity));*/
+                    entities.push_back(std::move(entity));#1#
                 }
                 index++;
             }
-        }
+        }*/
 
         if(currentGameState == GameState::PreviewWithScrolling || currentGameState == GameState::PreviewWithTesting)
         {
@@ -346,7 +358,7 @@ namespace gl3
         const float fixedTimeStep = 1.0f / 60.0f;
         const int subStepCount = 8; // recommended sub-step count
         accumulator += deltaTime;
-        if (accumulator >= fixedTimeStep)
+        /*if (accumulator >= fixedTimeStep)*/
         {
             b2World_Step(physicsWorld, fixedTimeStep, subStepCount);
             ContactListener::checkForCollision(physicsWorld);
@@ -367,6 +379,8 @@ namespace gl3
                     entity->setPosition(position);
                     continue;
                 }
+                std::cout << b2Body_GetLinearVelocity(entity->getBody()).x << std::endl;
+
                 /*if (entity->getTag() != "player" && entity->getTag() != "ground")
                 {
                     b2Body_SetLinearVelocity(entity->getBody(), {0.5f, 0.0f});

@@ -51,6 +51,7 @@ namespace gl3
         bodyDef.type = b2_kinematicBody;
         bodyDef.position = {position.x, position.y};
         bodyDef.userData = this;
+        bodyDef.linearDamping = 0.0f;
         body = b2CreateBody(physicsWorld, &bodyDef);
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();

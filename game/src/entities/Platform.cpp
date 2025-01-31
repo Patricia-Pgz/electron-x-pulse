@@ -50,6 +50,7 @@ namespace gl3 {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = b2_kinematicBody;
         bodyDef.position = {position.x, position.y};
+        bodyDef.linearDamping = 0.0f;
         bodyDef.userData = this;
         body = b2CreateBody(physicsWorld, &bodyDef);
 
