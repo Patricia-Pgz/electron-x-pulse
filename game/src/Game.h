@@ -19,6 +19,16 @@ namespace gl3 {
         PreviewWithTesting
     };
 
+    struct GameObject
+    {
+        float positionX;
+        float positionY;
+        bool isPlatform;
+        float scaleY;
+        float scaleX;
+        glm::vec4 color;
+    };
+
     class Game
     {
     public:
@@ -31,6 +41,8 @@ namespace gl3 {
         b2WorldId getPhysicsWorld() const;
         void scroll_callback_fun(double yOffset);
         float bpm = 0.0f; // Default BPM, updated dynamically //TODO not public
+        float distancePerBeat = 2.0f; // Example: player travels 1 unit per beat
+
 
 
 
@@ -40,9 +52,9 @@ namespace gl3 {
         void draw();
         void updateDeltaTime();
         void updatePhysics();
-        void drawTimeline();
         void calculateWindowBounds();
         bool isInVisibleWindow(const b2Vec2& position) const;
+        void onGameStateChange();
         void resetEntities();
         void setCameraPosition(const glm::vec3& position);
         void setZoom(float newZoom);
@@ -55,7 +67,8 @@ namespace gl3 {
         float zoom;
         float windowLeft, windowRight, windowBottom, windowTop;
 
-        GameState currentGameState = GameState::PreviewWithTesting;
+        GameState previousGameState = GameState::Menu;
+        GameState currentGameState = GameState::Menu;
         std::vector<std::unique_ptr<Entity>> entities;
         Player *player = nullptr;
         SoLoud::Soloud audio;
@@ -67,8 +80,10 @@ namespace gl3 {
         b2WorldId physicsWorld;
         float accumulator = 0.f;
 
-        float distancePerBeat = 1.0f; // Example: player travels 1 unit per beat
-        float scrollSpeed = -1.0f;
+        bool loadLevelFromFile = true;
+        float levelSpeed = -1.f;
+
+        float scrollSpeed = -1.f;
         bool isAudioPlaying = false;
         float initialPlayerPositionX = -2;
     };

@@ -29,7 +29,7 @@ namespace gl3
 
 
     // Use a fixed box size (can be parameterized)
-    const glData glBoxData = getTriangleVertices(0.5f, 0.5f);
+    const glData glBoxData = getTriangleVertices(1.f, 1.f);
 
     Obstacle::Obstacle(glm::vec3 position, float size, glm::vec4 color, b2WorldId physicsWorld)
     : Entity(Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
@@ -63,10 +63,9 @@ namespace gl3
         b2Vec2 vertices[] = {
             b2Vec2(-scale.x * 0.5f, -scale.y * 0.5f), // Bottom-left
             b2Vec2(scale.x * 0.5f, -scale.y * 0.5f),  // Bottom-right
-            b2Vec2(0.0f, scale.y * 0.5f),             // Top-center
                    b2Vec2( 0.0f,scale.y * 0.5f)};  // Top-center
 
-        b2Hull hull = b2ComputeHull(vertices, 4);
+        b2Hull hull = b2ComputeHull(vertices, 3);
 
         b2Polygon triangle = b2MakePolygon(&hull, 0.1f); // Create a polygon shape with the 3 vertices
         shape = b2CreatePolygonShape(body, &shapeDef, &triangle);

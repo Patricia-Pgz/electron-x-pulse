@@ -45,7 +45,7 @@ namespace gl3
         position,
         zRotation,
         scale,
-        {0.4, 0.2, 0.5, 1},
+        {0., 0.7, 0.9, 1},
         physicsWorld,
         "player")
     {
@@ -121,7 +121,7 @@ namespace gl3
 
 
     void Player::applyJumpImpulse(Game* game) {
-        b2Vec2 jumpImpulse = calculateJumpImpulse(body, JumpConfig(9.81, game->bpm, 1.0f));
+        b2Vec2 jumpImpulse = calculateJumpImpulse(body, JumpConfig(9.81, game->bpm, game->distancePerBeat));
 
         b2Body_ApplyLinearImpulseToCenter(body,jumpImpulse, true );
     }
