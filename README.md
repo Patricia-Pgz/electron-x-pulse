@@ -6,13 +6,13 @@
 
 |  General Info  | |
 | ---|---|
-| Working Title | `Edit me!` |
+| Working Title | ElectronX Pulse |
 | Final Title | `Edit me!` |
-| Student | `Name`, `edit-me`@stud-mail.uni-wuerzburg.de, `s######` |
-| Target Platform(s) | `Edit me!` |
-| Start Date | 21.10.2019 |
+| Student | Patricia Pongratz, patricia.pongratz@stud-mail.uni-wuerzburg.de, s363344 |
+| Target Platform(s) | Windows |
+| Start Date | 01.11.2024 |
 | Study Program | Games Engineering B.Sc.|
-| Engine Version | Unity 2021.3.11f1 or Unreal 5.0.3 |
+| Engine Version | Electrine 0.1 |
 
 ### Abstract
 
