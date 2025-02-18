@@ -3,10 +3,8 @@ cmake-build-debug
 cmake-build-release
 
 # Ignore IDE settings that are user-specific
-.idea/misc.xml
-.idea/modules.xml
-.idea/workspace.xml
-.idea/encodings.xml
+
+.idea/
 
 # Ignore CMake-related files and directories
 CMakeLists.txt.user
