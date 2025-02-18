@@ -1,0 +1,1047 @@
+# project aubio (0.5.0-alpha) configured on Tue Feb 18 19:33:26 2025 by
+# waf 2.0.26 (abi 20, python 30d01f0 on win32)
+# using ./waf configure
+#
+----------------------------------------
+Setting top to
+C:\C++Projekte\29-gl3-pongratz\code\extern\aubio
+----------------------------------------
+Setting out to
+C:\C++Projekte\29-gl3-pongratz\code\extern\aubio\build
+----------------------------------------
+Checking for 'msvc' (C compiler)
+['C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe', '-products', '*', '-legacy', '-format', 'json']
+out: [
+  {
+    "instanceId": "07e03b05",
+    "installDate": "2024-07-10T17:12:16Z",
+    "installationName": "VisualStudio/17.12.2+35521.163",
+    "installationPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community",
+    "installationVersion": "17.12.35521.163",
+    "productId": "Microsoft.VisualStudio.Product.Community",
+    "productPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\devenv.exe",
+    "state": 4294967295,
+    "isComplete": true,
+    "isLaunchable": true,
+    "isPrerelease": false,
+    "isRebootRequired": false,
+    "displayName": "Visual Studio Community 2022",
+    "description": "Leistungsstarke IDE, kostenlos für Studenten, Open-Source-Mitwirkende und Einzelpersonen",
+    "channelId": "VisualStudio.17.Release",
+    "channelUri": "https://aka.ms/vs/17/release/channel",
+    "enginePath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\resources\\app\\ServiceHub\\Services\\Microsoft.VisualStudio.Setup.Service",
+    "installedChannelId": "VisualStudio.17.Release",
+    "installedChannelUri": "https://aka.ms/vs/17/release/channel",
+    "releaseNotes": "https://docs.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.12#17.12.2",
+    "resolvedInstallationPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community",
+    "thirdPartyNotices": "https://go.microsoft.com/fwlink/?LinkId=661288",
+    "updateDate": "2024-12-01T18:53:43.4757677Z",
+    "catalog": {
+      "buildBranch": "d17.12",
+      "buildVersion": "17.12.35521.163",
+      "id": "VisualStudio/17.12.2+35521.163",
+      "localBuild": "build-lab",
+      "manifestName": "VisualStudio",
+      "manifestType": "installer",
+      "productDisplayVersion": "17.12.2",
+      "productLine": "Dev17",
+      "productLineVersion": "2022",
+      "productMilestone": "RTW",
+      "productMilestoneIsPreRelease": "False",
+      "productName": "Visual Studio",
+      "productPatchVersion": "2",
+      "productPreReleaseMilestoneSuffix": "1.0",
+      "productSemanticVersion": "17.12.2+35521.163",
+      "requiredEngineVersion": "3.12.2149.20818"
+    },
+    "properties": {
+      "campaignId": "2030:5a83ce66dc454007a1bb37b6e5dbba00",
+      "channelManifestId": "VisualStudio.17.Release/17.12.2+35521.163",
+      "includeRecommended": "1",
+      "nickname": "",
+      "setupEngineFilePath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\setup.exe"
+    }
+  }
+]
+
+['cmd.exe', '/E:on', '/V:on', '/C', 'C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\waf-print-msvc-1.bat']
+out: **********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.12.2
+** Copyright (c) 2022 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+PATH=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\x64\;C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\2022\Community\Team Tools\DiagnosticsHub\Collector;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\dotnet\;C:\Program Files\NVIDIA Corporation\NVIDIA app\NvDLISR;C:\Program Files\CMake\bin;C:\Users\patri\scoop\shims;C:\Users\patri\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\patri\AppData\Local\Programs\Python\Python313\;C:\Users\patri\AppData\Local\Programs\Python\Launcher\;C:\Users\patri\AppData\Local\Microsoft\WindowsApps;C:\Users\patri\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\patri\.dotnet\tools;C:\Users\patri\AppData\Local\Muse Hub\lib;C:\msys64\ucrt64\bin;C:\msys64\mingw64\bin;C:\msys64\;C:\Users\patri\AppData\Local\bin;;C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\vcpkg
+INCLUDE=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um
+LIB=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+
+find program=['CL'] paths=['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\VCPackages', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\bin\\Roslyn', 'C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8 Tools\\x64\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\Tools', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Team Tools\\DiagnosticsHub\\Collector', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\\\MSBuild\\Current\\Bin\\amd64', 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\', 'C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\Wbem', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\', 'C:\\Windows\\System32\\OpenSSH\\', 'C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common', 'C:\\Program Files\\Git\\cmd', 'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\', 'C:\\Program Files\\dotnet\\', 'C:\\Program Files\\NVIDIA Corporation\\NVIDIA app\\NvDLISR', 'C:\\Program Files\\CMake\\bin', 'C:\\Users\\patri\\scoop\\shims', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Launcher\\', 'C:\\Users\\patri\\AppData\\Local\\Microsoft\\WindowsApps', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Microsoft VS Code\\bin', 'C:\\Users\\patri\\.dotnet\\tools', 'C:\\Users\\patri\\AppData\\Local\\Muse Hub\\lib', 'C:\\msys64\\ucrt64\\bin', 'C:\\msys64\\mingw64\\bin', 'C:\\msys64\\', 'C:\\Users\\patri\\AppData\\Local\\bin', '', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\vcpkg'] var='CL' -> ['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe']
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/help']
+out:                          C/C++-COMPILEROPTIONEN
+
+
+                              -OPTIMIERUNG-
+
+/O1 maximale Optimierungen (Platz bevorzugen)
+/O2 maximale Optimierungen (Geschwindigkeit bevorzugen)
+/Ob<n> Inlineerweiterung (Standard: n=0)
+/Od Optimierungen deaktivieren (Standard)
+/Og Globale Optimierung aktivieren      
+/Oi[-] Systeminterne Funktionen aktivieren
+/Os Codespeicherplatz vorrangig         /Ot Codegeschwindigkeit vorrangig
+/Ox Optimierungen (Geschwindigkeit bevorzugen)
+/favor:<blend|AMD64|INTEL64|ATOM> Prozessor auswählen, für den optimiert werden soll. Mögliche Werte:
+    blend - eine Kombination verschiedener Optimierungen für mehrere unterschiedliche x64-Prozessoren
+    AMD64 - 64-Bit-AMD-Prozessoren
+    INTEL64 - Prozessoren mit Intel(R)64-Architektur
+    ATOM - Intel(R) Atom(TM)-Prozessoren
+
+                             -CODEGENERIERUNG-
+
+/Gu[-]: Stellen Sie sicher, dass unterschiedliche Funktionen unterschiedliche Adressen aufweisen.
+/Gw[-] separate globale Variablen für Linker
+/GF Schreibgeschütztes Stringpooling aktivieren
+/Gy[-] Separate Funktionen für Linker   
+/GS[-] Sicherheitsüberprüfungen aktivieren
+/GR[-] C++-RTTI aktivieren              
+/guard:cf[-] CFG aktivieren (Control Flow Guard, Ablaufsteuerungsscchutz)
+"/guard:ehcont[-]" zum Aktivieren von EH-Fortsetzungsmetadaten (CET)
+/EHs C++-EH aktivieren (ohne SEH-Ausnahmen)
+/EHa C++-EH aktivieren (mit SEH-Ausnahmen)
+/EHc nothrow als Standard für externes "C"
+/EHr immer noexcept-Laufzeitbeendigungsprüfungen generieren
+/fp:<contract|except[-]|fast|precise|strict> Gleitkommamodell wählen:
+    contract - Gleitkommakontraktionen beim Generieren von Code berücksichtigen
+    except[-] - Gleitkommaausnahmen beim Generieren von Code berücksichtigen
+    fast - "schnelles" Gleitkommamodell mit weniger vorhersehbaren Ergebnissen
+    precise - "präzises" Gleitkommamodell; Ergebnisse sind vorhersehbar.
+    strict - "striktes" Gleitkommamodell (impliziert /fp:except)
+/Qfast_transcendentals generieren auch bei /fp:except systeminterne Inline-FP.
+/Qspectre[-] Entschärfungen für CVE 2017-5753 aktivieren
+/Qpar[-] parallele Codegenerierung aktivieren
+/Qpar-report:1 automatische Parallelisierungsdiagnose; parallelisierte Schleifen anzeigen
+/Qpar-report:2 automatische Parallelisierungsdiagnose; nicht parallelisierte Schleifen anzeigen
+/Qvec-report:1 automatische Vektorisierungsdiagnose; vektorisierte Schleifen anzeigen
+/Qvec-report:2 automatische Vektorisierungsdiagnose; nicht vektorisierte Schleifen anzeigen
+/GL[-] Link-Zeitcodegenerierung aktivieren
+/volatile:<iso|ms> flüchtiges Modell auswählen:
+    iso - Acquire-/release-Semantik bei flüchtigen Zugriffen nicht garantiert
+    ms - Acquire-/release-Semantik bei flüchtigen Zugriffen garantiert
+/GA Für Windows-Anwendung optimieren    
+/Ge Stapelüberprüfung für alle Funktionen erzwingen
+/Gs[zahl] Stapelüberprüfungsaufrufe kontrollieren
+/Gh _penter-Funktionsaufruf aktivieren  /GH _pexit-Funktionsaufruf aktivieren
+/GT Fiber-sichere TLS-Zugriffe generieren
+/RTC1 Schnelle Überprüfungen aktivieren (/RTCsu)
+/RTCc Konvertierung für kleinere Typenüberprüfungen
+/RTCs Stapelrahmen-Laufzeitüberprüfung  
+/RTCu Nicht initialisierte lokale Syntaxüberprüfungen
+/clr[:option] compile for common language runtime, where option is:
+    pure : produce IL-only output file (no native executable code)
+    safe : produce IL-only verifiable output file
+    netcore : produce assemblies targeting .NET Core runtime
+    noAssembly : do not produce an assembly
+    nostdlib : ignore the system .NET framework directory when searching for assemblies
+    nostdimport : do not import any required assemblies implicitly
+    initialAppDomain : enable initial AppDomain behavior of Visual C++ 2002
+    implicitKeepAlive- : turn off implicit emission of System::GC::KeepAlive(this)
+    char_t- : turn off metadata support for char8_t, char16_t and char32_t
+    ECMAParamArray : use rules specified in ECMA-372/14.6 for overloads with parameter arrays (implied by /clr)
+    ECMAParamArray- : use new rules for overloads with parameter arrays (implied by /clr:netcore)
+/fsanitize=address Enable address sanitizer codegen
+/homeparams Schreiben von an die Register übergebenen Parametern in den Stapel erzwingen
+/GZ Stapelüberprüfungen aktivieren (/RTCs)
+/Gv __vectorcall-Aufrufkonvention       
+/arch:<SSE2|SSE4.2|AVX|AVX2|AVX512|AVX10.x> minimum CPU architecture requirements, one of:
+   SSE2 - (default) enable use of instructions available with SSE2-enabled CPUs
+   SSE4.2 - enable use of instructions available with SSE 4.2-enabled CPUs
+   AVX - enable use of instructions available with AVX-enabled CPUs
+   AVX2 - enable use of instructions available with AVX2-enabled CPUs
+   AVX512 - enable use of instructions available with AVX-512-enabled CPUs
+   AVX10.x - enable use of instructions available with AVX10.x-enabled CPUs. Valid values of x are 1
+/QIntel-jcc-erratum: Entschärfungen für Intel JCC-Erratum aktivieren
+/Qspectre-load: Aktivieren von Spectre-Entschärfungen für alle Anweisungen, die Arbeitsspeicher laden
+/Qspectre-load-cf: Spectre-Entschärfungen für alle Ablaufsteuerungsanweisungen, die Arbeitsspeicher laden, werden aktiviert.
+/Qspectre-jmp[-] Aktiviert Spectre-Minderungen für Anweisungen zum uneingeschränkten Springen.
+/fpcvt:<IA|BC> Kompatibilität der Konvertierung von Gleitkommazahlen in ganze Zahlen ohne Vorzeichen
+   IA - Ergebnisse kompatibel mit VCVTTSD2USI-Anweisung
+   BC - Ergebnisse kompatibel mit VS2017- und früheren Compilern
+/jumptablerdata Platziert Sprungtabellen für Switch case-Anweisungen im RDATA-Abschnitt.
+/vlen=<256|512> Choose vector length of either 256 or 512 for automatic code-generation
+/vlen Choose default vector length based on /arch setting
+
+                              -AUSGABEDATEIEN-
+
+/Fa[Datei] Name der Assemblylistingdatei/FA[scu] Assemblyliste konfigurieren
+/Fd[Datei] Name der PDB-Datei           /Fe<Datei> Name der ausführbaren Datei
+/Fm[datei] Name der Zuordnungsdatei     /Fo<datei> Name der Objektdatei
+/Fp<Datei> Name der vorkompilierten Headerdatei
+/Fr[Datei] Name der Quellbrowserdatei   
+/FR[Datei ] Name der erweiterten SBR-Datei
+/Fi[datei] Vorverarbeitete Datei benennen
+/Fd: <Datei> Name der PDB-Datei         /Fe: <Datei> Name der ausführbaren Datei
+/Fm: <Datei> Name der Zuordnungsdatei   /Fo: <Datei> Name der Objektdatei
+/Fp: <Datei> Name der PCH-Datei         
+/FR: <Datei> Name der erweiterten SBR-Datei
+/Fi: <Datei> Vorverarbeitete Datei benennen
+/FT<dir>: Speicherort der für #import generierten Headerdateien
+/doc[Datei] XML-Dokumentationskommentare verarbeiten und optional die XDC-Datei benennen
+
+                              -PRÄPROZESSOR-
+
+/AI<Verz> Zu Assemblysuchpfad hinzufügen
+/FU<file> .NET-Assembly/-Modul importieren
+/FU:asFriend<file> .NET-Assembly/-Modul als Freund importieren
+/C Kommentare nicht entfernen           /D<name>{=|#}<text> Makro definieren
+/E In stdout vorverarbeiten             /EP In stdout vorverarbeiten, kein #line
+/P In Datei vorverarbeiten              
+/Fx Eingefügten Code in Datei zusammenführen
+/FI<Datei> Name der Datei, deren Einschluss erzwungen wird
+/U<Name> Vordefiniertes Makro entfernen /u Alle vordefinierten Makros entfernen
+/I<Verz> Zu Include-Suchpfad hinzufügen /X Standardspeicherorte ignorieren
+/PH generiert #pragma file_hash bei der Vorbearbeitung
+/PD: alle Makrodefinitionen drucken     
+
+                                -PROGRAMMIERSPRACHE-
+
+/std:<c++14|c++17|c++20|c++latest> C++ Standardversion
+    c++14 - ISO/IEC 14882:2014 (Standardwert)
+    c++17 - ISO/IEC 14882:2017
+    c++20 - ISO/IEC 14882:2020
+    c++latest - aktueller Entwurfsstandard (Featuregruppe kann sich ändern)
+/std:<c11|c17|clatest> C-Standardversion
+    c11 - ISO/IEC 9899:2011
+    c17 - ISO/IEC 9899:2018
+    clatest - aktueller Entwurfsstandard (Änderung des Featuresatzes vorbehalten)
+/permissive[-] nicht konformen Code zum Kompilieren aktivieren
+               (Änderungsbetreff für Featuresatz) (standardmäßig aus in C++20 und höher)
+/Za Erweiterungen deaktivieren (nicht empfohlen für C++)
+/ZW WinRT-Spracherweiterungen aktivieren/Zs Nur Syntaxüberprüfung
+/await: Aktiviert die Erweiterung für fortsetzbare Funktionen
+/await:strict: Aktiviert die Unterstützung von C++20-Standardcoroutinen für frühere Sprachversionen.
+/constexpr:depth<N>     Grenzwert für die Rekursionstiefe für constexpr-Auswertung (Standardwert: 512)
+/constexpr:backtrace<N> N constexpr-Auswertungen in der Diagnose anzeigen (Standardwert: 10)
+/constexpr:steps<N>     constexpr-Auswertung nach N Schritten beenden (Standardwert: 1048576)
+/Zi Debuginformationen aktivieren       
+/Z7 Debuginformationen nach altem Stil aktivieren
+/Zo[-] Umfangreichere Debuginformationen für optimierten Code generieren (standardmäßig aktiviert)
+/ZH:[MD5|SHA1|SHA_256] - Hashalgorithmus für die Berechnung der Dateiprüfsumme in den Debuginformationen (Standard: SHA_256)
+/Zp[n] Strukturen an n-Byte-Grenze packen
+/Zl Kein Standardbibliotheksname in OBJ-Datei
+/vd{0|1|2} vtordisp deaktivieren/aktivieren
+/vm<x> Typ von Memberzeigern            
+/Zc:arg1[,arg2] Sprachübereinstimmung. Folgende Argumente sind zulässig:
+  forScope[-]           Standard-C++ für Bereichsregeln erzwingen
+  wchar_t[-]            wchar_t ist der native Typ, nicht typedef
+  auto[-]               Neue C++-Standardbedeutung für "auto" erzwingen
+  trigraphs[-]          Trigraphen aktivieren (standardmäßig deaktiviert)
+  rvalueCast[-]         Standard-C++ für explizite Typenkonvertierungsregeln erzwingen
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  strictStrings[-]      Zeichenfolgenliteral in [char|wchar_t]* deaktivieren
+                        Konvertierung (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  implicitNoexcept[-]   Implizites "noexcept" für erforderliche Funktionen aktivieren
+  threadSafeInit[-]     Thread-sichere lokale statische Initialisierung aktivieren
+  inline[-]             Nicht referenzierte Funktion oder Daten entfernen, wenn:
+                        COMDAT oder nur interne Bindung (standardmäßig deaktiviert)
+  sizedDealloc[-]       C++14-Deallocation globaler Größe aktivieren
+                        Funktionen (standardmäßig aktiviert)
+  throwingNew[-]        Annehmen, dass der new-Operator bei einem Fehler ausgelöst wird (standardmäßig deaktiviert)
+  referenceBinding[-]   ein temporäres Element wird nicht an eine Nichtkonst. gebunden
+                        Ivalue-Verweis (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  twoPhase-             Zweiphasen-Namenssuche deaktivieren
+  ternary[-]            C++11-Standardregeln für Bedingungsoperator erzwingen
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  noexceptTypes[-]      C++17-noexcept-Regeln erzwingen (standardmäßig aktiviert in C++17 und höher)
+  alignedNew[-]         C++17-Ausrichtung dynamisch zugeordneter Objekte aktivieren (standardmäßig aktiviert)
+  hiddenFriend[-]       Standard-C++-Regeln für ausgeblendete Freunde erzwingen
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  externC[-]            Hiermit werden Standard-C++-Regeln für 'extern "C"'-Funktionen erzwungen
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  lambda[-]             Bessere Lambdaunterstützung durch Verwendung des neueren Lambdaprozessors
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  tlsGuards[-]          Laufzeitprüfungen für die TLS-Variableninitialisierung generieren (standardmäßig aktiviert)
+  zeroSizeArrayNew[-]   Aufruf von Member "new"/"delete" für Objektarrays der Größe 0 (standardmäßig aktiviert)
+  static_assert[-]      strenge Verarbeitung von "static_assert" (standardmäßig in C++20 oder höher,
+                        impliziert durch /permissive-)
+  gotoScope[-]          kann nicht über die Initialisierung einer Variablen hinausgehen (impliziert durch /permissive-).
+  templateScope[-]      Erzwingen von Standardshadowingregeln für C++-Vorlagenparameter
+  enumTypes[-]          aktivieren zugrundeliegender Standard C++ -Enumerationstypen (standardmäßig deaktiviert)
+  checkGwOdr[-]         Standard-C++-Definitionsregelverstöße erzwingen
+                        wenn /Gw aktiviert wurde (standardmäßig deaktiviert)
+  nrvo[-]               optionale Kopier- und Verschiebungsberechtigung aktivieren (standardmäßig in C++20 oder höher,
+                        impliziert durch /permissive- oder /O2)
+  __STDC__              __STDC__ zu 1 in C definieren
+  __cplusplus[-]        __cplusplus Makro meldet den unterstützten C++-Standard (standardmäßig deaktiviert).
+  char8_t[-] die native u8-Literalunterstützung von C++20 als "const char8_t" aktivieren
+                        (standardmäßig in C++20 oder höher aktiviert)
+  externConstexpr[-]    externe Bindung für constexpr-Variablen in C++ aktivieren
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  preprocessor[-]       Standardkonformitätspräprozessor in C/C++ aktivieren
+                        (standardmäßig in C11 oder höher aktiviert)
+/ZI Debuginformationen für Bearbeiten und Fortfahren aktivieren
+/openmp OpenMP 2.0-Spracherweiterungen aktivieren
+/openmp:experimental Aktivieren der OpenMP 2.0-Spracherweiterungen und der ausgewählten OpenMP 3.0 +-Spracherweiterungen
+/openmp:llvm OpenMP-Spracherweiterungen unter Verwendung der LLVM-Laufzeit
+
+                              -VERSCHIEDENES-
+
+@<file> Optionsantwortdatei             /?, /help Diese Hilfemeldung anzeigen
+/bigobj Erweitertes Objektformat generieren
+/c Nur kompilieren, nicht verknüpfen    
+/FC Bei Diagnose volle Pfadnamen verwenden
+/H<num> Maximale Länge externer Namen   /J Standardzeichentyp ist "unsigned"
+"/MP[n]" verwendet für die Kompilierung bis zu "n" Prozesse.
+/nologo Copyright-Meldung unterdrücken  /showIncludes Includedateinamen anzeigen
+/Tc<source file> Datei als C-Datei kompilieren
+/Tp<source file> Datei als CPP-Datei kompilieren
+/TC Alle Dateien als .c-Datei kompilieren
+/TP Alle Dateien als .cpp-Datei kompilieren
+/V<string> Versionszeichenfolge festlegen
+/Yc[Datei] PCH-Datei erstellen          
+/Yd Debuginformationen in jeder OBJ-Datei ablegen
+/Yl[sym] PCH-Verweis für Debugbibliothek einfügen
+/Yu[Datei] PCH-Datei verwenden          /Y- Alle PCH-Optionen deaktivieren
+/Zm<n> Maximale Speicherzuweisung (% vom Standard)
+mit /FS die Verwendung von MSPDBSRV.EXE erzwingen
+/source-charset:<iana-name>|.nnnn: Festlegen des Quellzeichensatzes.
+/execution-charset:<iana-name>|.nnnn: Festlegen des Ausführungszeichensatzes.
+/utf-8: Festlegen des Quell- und Ausführungszeichensatzes auf UTF-8
+/validate-charset[-]: Überprüfen der UTF-8-Dateien auf zulässige Zeichen.
+/fastfail[-]: Der Modus "fast-fail" wird aktiviert.
+/JMC[-] Nur eigenen Code nativ aktivieren
+/presetPadding[-] Initialisierte Auffüllung mit Nullen für stapelbasierte Klassentypen
+/volatileMetadata[-]: Generiert Metadaten für Zugriffe auf flüchtigen Speicher.
+/sourcelink [file] Datei, die Informationen zur Quellverknüpfung enthält
+
+                                -VERKNÜPFEN-
+
+/LD .DLL erstellen                      /LDd .DLL-Debugbibliothek erstellen
+/LN NETMODULE erstellen                 /F<num> Stapelgröße festlegen
+/link [Linkeroptionen und -bibliotheken]/MD Mit "MSVCRT.LIB" verknüpfen
+/MT Mit "LIBCMT.LIB" verknüpfen         
+/MDd Mit Debugbibliothek "MSVCRTD.LIB" verknüpfen
+/MTd Mit Debugbibliothek "LIBCMTD.LIB" verknüpfen
+
+                              -CODE ANALYSIS-
+
+/analyze[-] Systemeigene Analyse aktivieren
+/analyze:quiet[-] Keine Warnung an Konsole
+/analyze:log<Name> Warnungen an Datei   
+/analyze:autolog protokollieren in *.pftlog
+/analyze:autolog:ext<ext> In *. protokollieren<ext>
+/analyze:autolog- Keine Protokolldatei  
+/analyze:WX- Warnungen nicht schwerwiegend
+/analyze:stacksize<zahl> Max. Stapelrahmen
+/analyze:max_paths<zahl> Max. Pfade     /analyze:Nur Analyse, keine Codegen.
+
+                              -DIAGNOSE-
+
+/diagnostics:<Argumente,...> steuert das Format von Diagnosemeldungen:
+             classic: Behält das vorherige Format bei.
+             column[-]: Gibt Spalteninformationen aus.
+             caret[-]: Gibt die Spalte und die angegebene Quellcodezeile aus.
+/Wall Alle Warnungen deaktivieren       /w   Alle Warnungen deaktivieren
+/W<n> Warnstufe festlegen (Standard: n=1)
+/Wv:xx[.yy[.zzzzz]] Nach Version xx.yy.zzzzz eingeführte Warnungen deaktivieren
+/WX Warnungen als Fehler behandeln      /WL Einzeilige Diagnose aktivieren
+/wd<n> Warnung n deaktivieren           /we<n> Warnung n als Fehler behandeln
+/wo<n> Warnung n einmal ausgeben        /w<l><n> Warnstufe 1-4 für n festlegen
+/external:I <Pfad>:      Speicherort für externe Header
+/external:env:<Variable>:     Umgebungsvariable mit Speicherorten für externe Header
+/external:anglebrackets: Alle von spitzen Klammern (<>) eingeschlossene Header werden als extern behandelt.
+/external:W<n>:          Warnstufe für externe Header
+/external:templates[-]: Warnstufe in der gesamten Vorlageninstanziierungskette auswerten
+/sdl zusätzliche Sicherheitsfunktionen und Warnungen aktivieren
+/options: Strenge unbekannte Compileroptionen stellen einen Fehler dar.
+
+
+err: Microsoft (R) C/C++-Optimierungscompiler Version 19.42.34435 für x64
+Copyright (C) Microsoft Corporation. Alle Rechte vorbehalten.
+
+
+find program=['CL'] paths=['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\VCPackages', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\bin\\Roslyn', 'C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8 Tools\\x64\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\Tools', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Team Tools\\DiagnosticsHub\\Collector', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\\\MSBuild\\Current\\Bin\\amd64', 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\', 'C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\Wbem', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\', 'C:\\Windows\\System32\\OpenSSH\\', 'C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common', 'C:\\Program Files\\Git\\cmd', 'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\', 'C:\\Program Files\\dotnet\\', 'C:\\Program Files\\NVIDIA Corporation\\NVIDIA app\\NvDLISR', 'C:\\Program Files\\CMake\\bin', 'C:\\Users\\patri\\scoop\\shims', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Launcher\\', 'C:\\Users\\patri\\AppData\\Local\\Microsoft\\WindowsApps', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Microsoft VS Code\\bin', 'C:\\Users\\patri\\.dotnet\\tools', 'C:\\Users\\patri\\AppData\\Local\\Muse Hub\\lib', 'C:\\msys64\\ucrt64\\bin', 'C:\\msys64\\mingw64\\bin', 'C:\\msys64\\', 'C:\\Users\\patri\\AppData\\Local\\bin', '', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\vcpkg'] var='CXX' -> ['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe']
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/help']
+out:                          C/C++-COMPILEROPTIONEN
+
+
+                              -OPTIMIERUNG-
+
+/O1 maximale Optimierungen (Platz bevorzugen)
+/O2 maximale Optimierungen (Geschwindigkeit bevorzugen)
+/Ob<n> Inlineerweiterung (Standard: n=0)
+/Od Optimierungen deaktivieren (Standard)
+/Og Globale Optimierung aktivieren      
+/Oi[-] Systeminterne Funktionen aktivieren
+/Os Codespeicherplatz vorrangig         /Ot Codegeschwindigkeit vorrangig
+/Ox Optimierungen (Geschwindigkeit bevorzugen)
+/favor:<blend|AMD64|INTEL64|ATOM> Prozessor auswählen, für den optimiert werden soll. Mögliche Werte:
+    blend - eine Kombination verschiedener Optimierungen für mehrere unterschiedliche x64-Prozessoren
+    AMD64 - 64-Bit-AMD-Prozessoren
+    INTEL64 - Prozessoren mit Intel(R)64-Architektur
+    ATOM - Intel(R) Atom(TM)-Prozessoren
+
+                             -CODEGENERIERUNG-
+
+/Gu[-]: Stellen Sie sicher, dass unterschiedliche Funktionen unterschiedliche Adressen aufweisen.
+/Gw[-] separate globale Variablen für Linker
+/GF Schreibgeschütztes Stringpooling aktivieren
+/Gy[-] Separate Funktionen für Linker   
+/GS[-] Sicherheitsüberprüfungen aktivieren
+/GR[-] C++-RTTI aktivieren              
+/guard:cf[-] CFG aktivieren (Control Flow Guard, Ablaufsteuerungsscchutz)
+"/guard:ehcont[-]" zum Aktivieren von EH-Fortsetzungsmetadaten (CET)
+/EHs C++-EH aktivieren (ohne SEH-Ausnahmen)
+/EHa C++-EH aktivieren (mit SEH-Ausnahmen)
+/EHc nothrow als Standard für externes "C"
+/EHr immer noexcept-Laufzeitbeendigungsprüfungen generieren
+/fp:<contract|except[-]|fast|precise|strict> Gleitkommamodell wählen:
+    contract - Gleitkommakontraktionen beim Generieren von Code berücksichtigen
+    except[-] - Gleitkommaausnahmen beim Generieren von Code berücksichtigen
+    fast - "schnelles" Gleitkommamodell mit weniger vorhersehbaren Ergebnissen
+    precise - "präzises" Gleitkommamodell; Ergebnisse sind vorhersehbar.
+    strict - "striktes" Gleitkommamodell (impliziert /fp:except)
+/Qfast_transcendentals generieren auch bei /fp:except systeminterne Inline-FP.
+/Qspectre[-] Entschärfungen für CVE 2017-5753 aktivieren
+/Qpar[-] parallele Codegenerierung aktivieren
+/Qpar-report:1 automatische Parallelisierungsdiagnose; parallelisierte Schleifen anzeigen
+/Qpar-report:2 automatische Parallelisierungsdiagnose; nicht parallelisierte Schleifen anzeigen
+/Qvec-report:1 automatische Vektorisierungsdiagnose; vektorisierte Schleifen anzeigen
+/Qvec-report:2 automatische Vektorisierungsdiagnose; nicht vektorisierte Schleifen anzeigen
+/GL[-] Link-Zeitcodegenerierung aktivieren
+/volatile:<iso|ms> flüchtiges Modell auswählen:
+    iso - Acquire-/release-Semantik bei flüchtigen Zugriffen nicht garantiert
+    ms - Acquire-/release-Semantik bei flüchtigen Zugriffen garantiert
+/GA Für Windows-Anwendung optimieren    
+/Ge Stapelüberprüfung für alle Funktionen erzwingen
+/Gs[zahl] Stapelüberprüfungsaufrufe kontrollieren
+/Gh _penter-Funktionsaufruf aktivieren  /GH _pexit-Funktionsaufruf aktivieren
+/GT Fiber-sichere TLS-Zugriffe generieren
+/RTC1 Schnelle Überprüfungen aktivieren (/RTCsu)
+/RTCc Konvertierung für kleinere Typenüberprüfungen
+/RTCs Stapelrahmen-Laufzeitüberprüfung  
+/RTCu Nicht initialisierte lokale Syntaxüberprüfungen
+/clr[:option] compile for common language runtime, where option is:
+    pure : produce IL-only output file (no native executable code)
+    safe : produce IL-only verifiable output file
+    netcore : produce assemblies targeting .NET Core runtime
+    noAssembly : do not produce an assembly
+    nostdlib : ignore the system .NET framework directory when searching for assemblies
+    nostdimport : do not import any required assemblies implicitly
+    initialAppDomain : enable initial AppDomain behavior of Visual C++ 2002
+    implicitKeepAlive- : turn off implicit emission of System::GC::KeepAlive(this)
+    char_t- : turn off metadata support for char8_t, char16_t and char32_t
+    ECMAParamArray : use rules specified in ECMA-372/14.6 for overloads with parameter arrays (implied by /clr)
+    ECMAParamArray- : use new rules for overloads with parameter arrays (implied by /clr:netcore)
+/fsanitize=address Enable address sanitizer codegen
+/homeparams Schreiben von an die Register übergebenen Parametern in den Stapel erzwingen
+/GZ Stapelüberprüfungen aktivieren (/RTCs)
+/Gv __vectorcall-Aufrufkonvention       
+/arch:<SSE2|SSE4.2|AVX|AVX2|AVX512|AVX10.x> minimum CPU architecture requirements, one of:
+   SSE2 - (default) enable use of instructions available with SSE2-enabled CPUs
+   SSE4.2 - enable use of instructions available with SSE 4.2-enabled CPUs
+   AVX - enable use of instructions available with AVX-enabled CPUs
+   AVX2 - enable use of instructions available with AVX2-enabled CPUs
+   AVX512 - enable use of instructions available with AVX-512-enabled CPUs
+   AVX10.x - enable use of instructions available with AVX10.x-enabled CPUs. Valid values of x are 1
+/QIntel-jcc-erratum: Entschärfungen für Intel JCC-Erratum aktivieren
+/Qspectre-load: Aktivieren von Spectre-Entschärfungen für alle Anweisungen, die Arbeitsspeicher laden
+/Qspectre-load-cf: Spectre-Entschärfungen für alle Ablaufsteuerungsanweisungen, die Arbeitsspeicher laden, werden aktiviert.
+/Qspectre-jmp[-] Aktiviert Spectre-Minderungen für Anweisungen zum uneingeschränkten Springen.
+/fpcvt:<IA|BC> Kompatibilität der Konvertierung von Gleitkommazahlen in ganze Zahlen ohne Vorzeichen
+   IA - Ergebnisse kompatibel mit VCVTTSD2USI-Anweisung
+   BC - Ergebnisse kompatibel mit VS2017- und früheren Compilern
+/jumptablerdata Platziert Sprungtabellen für Switch case-Anweisungen im RDATA-Abschnitt.
+/vlen=<256|512> Choose vector length of either 256 or 512 for automatic code-generation
+/vlen Choose default vector length based on /arch setting
+
+                              -AUSGABEDATEIEN-
+
+/Fa[Datei] Name der Assemblylistingdatei/FA[scu] Assemblyliste konfigurieren
+/Fd[Datei] Name der PDB-Datei           /Fe<Datei> Name der ausführbaren Datei
+/Fm[datei] Name der Zuordnungsdatei     /Fo<datei> Name der Objektdatei
+/Fp<Datei> Name der vorkompilierten Headerdatei
+/Fr[Datei] Name der Quellbrowserdatei   
+/FR[Datei ] Name der erweiterten SBR-Datei
+/Fi[datei] Vorverarbeitete Datei benennen
+/Fd: <Datei> Name der PDB-Datei         /Fe: <Datei> Name der ausführbaren Datei
+/Fm: <Datei> Name der Zuordnungsdatei   /Fo: <Datei> Name der Objektdatei
+/Fp: <Datei> Name der PCH-Datei         
+/FR: <Datei> Name der erweiterten SBR-Datei
+/Fi: <Datei> Vorverarbeitete Datei benennen
+/FT<dir>: Speicherort der für #import generierten Headerdateien
+/doc[Datei] XML-Dokumentationskommentare verarbeiten und optional die XDC-Datei benennen
+
+                              -PRÄPROZESSOR-
+
+/AI<Verz> Zu Assemblysuchpfad hinzufügen
+/FU<file> .NET-Assembly/-Modul importieren
+/FU:asFriend<file> .NET-Assembly/-Modul als Freund importieren
+/C Kommentare nicht entfernen           /D<name>{=|#}<text> Makro definieren
+/E In stdout vorverarbeiten             /EP In stdout vorverarbeiten, kein #line
+/P In Datei vorverarbeiten              
+/Fx Eingefügten Code in Datei zusammenführen
+/FI<Datei> Name der Datei, deren Einschluss erzwungen wird
+/U<Name> Vordefiniertes Makro entfernen /u Alle vordefinierten Makros entfernen
+/I<Verz> Zu Include-Suchpfad hinzufügen /X Standardspeicherorte ignorieren
+/PH generiert #pragma file_hash bei der Vorbearbeitung
+/PD: alle Makrodefinitionen drucken     
+
+                                -PROGRAMMIERSPRACHE-
+
+/std:<c++14|c++17|c++20|c++latest> C++ Standardversion
+    c++14 - ISO/IEC 14882:2014 (Standardwert)
+    c++17 - ISO/IEC 14882:2017
+    c++20 - ISO/IEC 14882:2020
+    c++latest - aktueller Entwurfsstandard (Featuregruppe kann sich ändern)
+/std:<c11|c17|clatest> C-Standardversion
+    c11 - ISO/IEC 9899:2011
+    c17 - ISO/IEC 9899:2018
+    clatest - aktueller Entwurfsstandard (Änderung des Featuresatzes vorbehalten)
+/permissive[-] nicht konformen Code zum Kompilieren aktivieren
+               (Änderungsbetreff für Featuresatz) (standardmäßig aus in C++20 und höher)
+/Za Erweiterungen deaktivieren (nicht empfohlen für C++)
+/ZW WinRT-Spracherweiterungen aktivieren/Zs Nur Syntaxüberprüfung
+/await: Aktiviert die Erweiterung für fortsetzbare Funktionen
+/await:strict: Aktiviert die Unterstützung von C++20-Standardcoroutinen für frühere Sprachversionen.
+/constexpr:depth<N>     Grenzwert für die Rekursionstiefe für constexpr-Auswertung (Standardwert: 512)
+/constexpr:backtrace<N> N constexpr-Auswertungen in der Diagnose anzeigen (Standardwert: 10)
+/constexpr:steps<N>     constexpr-Auswertung nach N Schritten beenden (Standardwert: 1048576)
+/Zi Debuginformationen aktivieren       
+/Z7 Debuginformationen nach altem Stil aktivieren
+/Zo[-] Umfangreichere Debuginformationen für optimierten Code generieren (standardmäßig aktiviert)
+/ZH:[MD5|SHA1|SHA_256] - Hashalgorithmus für die Berechnung der Dateiprüfsumme in den Debuginformationen (Standard: SHA_256)
+/Zp[n] Strukturen an n-Byte-Grenze packen
+/Zl Kein Standardbibliotheksname in OBJ-Datei
+/vd{0|1|2} vtordisp deaktivieren/aktivieren
+/vm<x> Typ von Memberzeigern            
+/Zc:arg1[,arg2] Sprachübereinstimmung. Folgende Argumente sind zulässig:
+  forScope[-]           Standard-C++ für Bereichsregeln erzwingen
+  wchar_t[-]            wchar_t ist der native Typ, nicht typedef
+  auto[-]               Neue C++-Standardbedeutung für "auto" erzwingen
+  trigraphs[-]          Trigraphen aktivieren (standardmäßig deaktiviert)
+  rvalueCast[-]         Standard-C++ für explizite Typenkonvertierungsregeln erzwingen
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  strictStrings[-]      Zeichenfolgenliteral in [char|wchar_t]* deaktivieren
+                        Konvertierung (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  implicitNoexcept[-]   Implizites "noexcept" für erforderliche Funktionen aktivieren
+  threadSafeInit[-]     Thread-sichere lokale statische Initialisierung aktivieren
+  inline[-]             Nicht referenzierte Funktion oder Daten entfernen, wenn:
+                        COMDAT oder nur interne Bindung (standardmäßig deaktiviert)
+  sizedDealloc[-]       C++14-Deallocation globaler Größe aktivieren
+                        Funktionen (standardmäßig aktiviert)
+  throwingNew[-]        Annehmen, dass der new-Operator bei einem Fehler ausgelöst wird (standardmäßig deaktiviert)
+  referenceBinding[-]   ein temporäres Element wird nicht an eine Nichtkonst. gebunden
+                        Ivalue-Verweis (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  twoPhase-             Zweiphasen-Namenssuche deaktivieren
+  ternary[-]            C++11-Standardregeln für Bedingungsoperator erzwingen
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  noexceptTypes[-]      C++17-noexcept-Regeln erzwingen (standardmäßig aktiviert in C++17 und höher)
+  alignedNew[-]         C++17-Ausrichtung dynamisch zugeordneter Objekte aktivieren (standardmäßig aktiviert)
+  hiddenFriend[-]       Standard-C++-Regeln für ausgeblendete Freunde erzwingen
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  externC[-]            Hiermit werden Standard-C++-Regeln für 'extern "C"'-Funktionen erzwungen
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  lambda[-]             Bessere Lambdaunterstützung durch Verwendung des neueren Lambdaprozessors
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  tlsGuards[-]          Laufzeitprüfungen für die TLS-Variableninitialisierung generieren (standardmäßig aktiviert)
+  zeroSizeArrayNew[-]   Aufruf von Member "new"/"delete" für Objektarrays der Größe 0 (standardmäßig aktiviert)
+  static_assert[-]      strenge Verarbeitung von "static_assert" (standardmäßig in C++20 oder höher,
+                        impliziert durch /permissive-)
+  gotoScope[-]          kann nicht über die Initialisierung einer Variablen hinausgehen (impliziert durch /permissive-).
+  templateScope[-]      Erzwingen von Standardshadowingregeln für C++-Vorlagenparameter
+  enumTypes[-]          aktivieren zugrundeliegender Standard C++ -Enumerationstypen (standardmäßig deaktiviert)
+  checkGwOdr[-]         Standard-C++-Definitionsregelverstöße erzwingen
+                        wenn /Gw aktiviert wurde (standardmäßig deaktiviert)
+  nrvo[-]               optionale Kopier- und Verschiebungsberechtigung aktivieren (standardmäßig in C++20 oder höher,
+                        impliziert durch /permissive- oder /O2)
+  __STDC__              __STDC__ zu 1 in C definieren
+  __cplusplus[-]        __cplusplus Makro meldet den unterstützten C++-Standard (standardmäßig deaktiviert).
+  char8_t[-] die native u8-Literalunterstützung von C++20 als "const char8_t" aktivieren
+                        (standardmäßig in C++20 oder höher aktiviert)
+  externConstexpr[-]    externe Bindung für constexpr-Variablen in C++ aktivieren
+                        (standardmäßig in C++20 oder höher aktiviert, impliziert durch /permissive-)
+  preprocessor[-]       Standardkonformitätspräprozessor in C/C++ aktivieren
+                        (standardmäßig in C11 oder höher aktiviert)
+/ZI Debuginformationen für Bearbeiten und Fortfahren aktivieren
+/openmp OpenMP 2.0-Spracherweiterungen aktivieren
+/openmp:experimental Aktivieren der OpenMP 2.0-Spracherweiterungen und der ausgewählten OpenMP 3.0 +-Spracherweiterungen
+/openmp:llvm OpenMP-Spracherweiterungen unter Verwendung der LLVM-Laufzeit
+
+                              -VERSCHIEDENES-
+
+@<file> Optionsantwortdatei             /?, /help Diese Hilfemeldung anzeigen
+/bigobj Erweitertes Objektformat generieren
+/c Nur kompilieren, nicht verknüpfen    
+/FC Bei Diagnose volle Pfadnamen verwenden
+/H<num> Maximale Länge externer Namen   /J Standardzeichentyp ist "unsigned"
+"/MP[n]" verwendet für die Kompilierung bis zu "n" Prozesse.
+/nologo Copyright-Meldung unterdrücken  /showIncludes Includedateinamen anzeigen
+/Tc<source file> Datei als C-Datei kompilieren
+/Tp<source file> Datei als CPP-Datei kompilieren
+/TC Alle Dateien als .c-Datei kompilieren
+/TP Alle Dateien als .cpp-Datei kompilieren
+/V<string> Versionszeichenfolge festlegen
+/Yc[Datei] PCH-Datei erstellen          
+/Yd Debuginformationen in jeder OBJ-Datei ablegen
+/Yl[sym] PCH-Verweis für Debugbibliothek einfügen
+/Yu[Datei] PCH-Datei verwenden          /Y- Alle PCH-Optionen deaktivieren
+/Zm<n> Maximale Speicherzuweisung (% vom Standard)
+mit /FS die Verwendung von MSPDBSRV.EXE erzwingen
+/source-charset:<iana-name>|.nnnn: Festlegen des Quellzeichensatzes.
+/execution-charset:<iana-name>|.nnnn: Festlegen des Ausführungszeichensatzes.
+/utf-8: Festlegen des Quell- und Ausführungszeichensatzes auf UTF-8
+/validate-charset[-]: Überprüfen der UTF-8-Dateien auf zulässige Zeichen.
+/fastfail[-]: Der Modus "fast-fail" wird aktiviert.
+/JMC[-] Nur eigenen Code nativ aktivieren
+/presetPadding[-] Initialisierte Auffüllung mit Nullen für stapelbasierte Klassentypen
+/volatileMetadata[-]: Generiert Metadaten für Zugriffe auf flüchtigen Speicher.
+/sourcelink [file] Datei, die Informationen zur Quellverknüpfung enthält
+
+                                -VERKNÜPFEN-
+
+/LD .DLL erstellen                      /LDd .DLL-Debugbibliothek erstellen
+/LN NETMODULE erstellen                 /F<num> Stapelgröße festlegen
+/link [Linkeroptionen und -bibliotheken]/MD Mit "MSVCRT.LIB" verknüpfen
+/MT Mit "LIBCMT.LIB" verknüpfen         
+/MDd Mit Debugbibliothek "MSVCRTD.LIB" verknüpfen
+/MTd Mit Debugbibliothek "LIBCMTD.LIB" verknüpfen
+
+                              -CODE ANALYSIS-
+
+/analyze[-] Systemeigene Analyse aktivieren
+/analyze:quiet[-] Keine Warnung an Konsole
+/analyze:log<Name> Warnungen an Datei   
+/analyze:autolog protokollieren in *.pftlog
+/analyze:autolog:ext<ext> In *. protokollieren<ext>
+/analyze:autolog- Keine Protokolldatei  
+/analyze:WX- Warnungen nicht schwerwiegend
+/analyze:stacksize<zahl> Max. Stapelrahmen
+/analyze:max_paths<zahl> Max. Pfade     /analyze:Nur Analyse, keine Codegen.
+
+                              -DIAGNOSE-
+
+/diagnostics:<Argumente,...> steuert das Format von Diagnosemeldungen:
+             classic: Behält das vorherige Format bei.
+             column[-]: Gibt Spalteninformationen aus.
+             caret[-]: Gibt die Spalte und die angegebene Quellcodezeile aus.
+/Wall Alle Warnungen deaktivieren       /w   Alle Warnungen deaktivieren
+/W<n> Warnstufe festlegen (Standard: n=1)
+/Wv:xx[.yy[.zzzzz]] Nach Version xx.yy.zzzzz eingeführte Warnungen deaktivieren
+/WX Warnungen als Fehler behandeln      /WL Einzeilige Diagnose aktivieren
+/wd<n> Warnung n deaktivieren           /we<n> Warnung n als Fehler behandeln
+/wo<n> Warnung n einmal ausgeben        /w<l><n> Warnstufe 1-4 für n festlegen
+/external:I <Pfad>:      Speicherort für externe Header
+/external:env:<Variable>:     Umgebungsvariable mit Speicherorten für externe Header
+/external:anglebrackets: Alle von spitzen Klammern (<>) eingeschlossene Header werden als extern behandelt.
+/external:W<n>:          Warnstufe für externe Header
+/external:templates[-]: Warnstufe in der gesamten Vorlageninstanziierungskette auswerten
+/sdl zusätzliche Sicherheitsfunktionen und Warnungen aktivieren
+/options: Strenge unbekannte Compileroptionen stellen einen Fehler dar.
+
+
+find program=['LINK'] paths=['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\VCPackages', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\bin\\Roslyn', 'C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8 Tools\\x64\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\Tools', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Team Tools\\DiagnosticsHub\\Collector', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\\\MSBuild\\Current\\Bin\\amd64', 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\', 'C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\Wbem', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\', 'C:\\Windows\\System32\\OpenSSH\\', 'C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common', 'C:\\Program Files\\Git\\cmd', 'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\', 'C:\\Program Files\\dotnet\\', 'C:\\Program Files\\NVIDIA Corporation\\NVIDIA app\\NvDLISR', 'C:\\Program Files\\CMake\\bin', 'C:\\Users\\patri\\scoop\\shims', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Launcher\\', 'C:\\Users\\patri\\AppData\\Local\\Microsoft\\WindowsApps', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Microsoft VS Code\\bin', 'C:\\Users\\patri\\.dotnet\\tools', 'C:\\Users\\patri\\AppData\\Local\\Muse Hub\\lib', 'C:\\msys64\\ucrt64\\bin', 'C:\\msys64\\mingw64\\bin', 'C:\\msys64\\', 'C:\\Users\\patri\\AppData\\Local\\bin', '', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\vcpkg'] var='LINK_CXX' -> ['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LINK.exe']
+find program=['LIB'] paths=['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\VCPackages', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\bin\\Roslyn', 'C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8 Tools\\x64\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\Tools', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Team Tools\\DiagnosticsHub\\Collector', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\\\MSBuild\\Current\\Bin\\amd64', 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\', 'C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\Wbem', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\', 'C:\\Windows\\System32\\OpenSSH\\', 'C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common', 'C:\\Program Files\\Git\\cmd', 'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\', 'C:\\Program Files\\dotnet\\', 'C:\\Program Files\\NVIDIA Corporation\\NVIDIA app\\NvDLISR', 'C:\\Program Files\\CMake\\bin', 'C:\\Users\\patri\\scoop\\shims', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Launcher\\', 'C:\\Users\\patri\\AppData\\Local\\Microsoft\\WindowsApps', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Microsoft VS Code\\bin', 'C:\\Users\\patri\\.dotnet\\tools', 'C:\\Users\\patri\\AppData\\Local\\Muse Hub\\lib', 'C:\\msys64\\ucrt64\\bin', 'C:\\msys64\\mingw64\\bin', 'C:\\msys64\\', 'C:\\Users\\patri\\AppData\\Local\\bin', '', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\vcpkg'] var='AR' -> ['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LIB.exe']
+find program=['MT'] paths=['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\VCPackages', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\bin\\Roslyn', 'C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8 Tools\\x64\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\Tools', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Team Tools\\DiagnosticsHub\\Collector', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\\\MSBuild\\Current\\Bin\\amd64', 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\', 'C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\Wbem', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\', 'C:\\Windows\\System32\\OpenSSH\\', 'C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common', 'C:\\Program Files\\Git\\cmd', 'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\', 'C:\\Program Files\\dotnet\\', 'C:\\Program Files\\NVIDIA Corporation\\NVIDIA app\\NvDLISR', 'C:\\Program Files\\CMake\\bin', 'C:\\Users\\patri\\scoop\\shims', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Launcher\\', 'C:\\Users\\patri\\AppData\\Local\\Microsoft\\WindowsApps', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Microsoft VS Code\\bin', 'C:\\Users\\patri\\.dotnet\\tools', 'C:\\Users\\patri\\AppData\\Local\\Muse Hub\\lib', 'C:\\msys64\\ucrt64\\bin', 'C:\\msys64\\mingw64\\bin', 'C:\\msys64\\', 'C:\\Users\\patri\\AppData\\Local\\bin', '', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\vcpkg'] var='MT' -> ['C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64\\MT.exe']
+find program=['RC'] paths=['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\VCPackages', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\bin\\Roslyn', 'C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8 Tools\\x64\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\Tools', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Team Tools\\DiagnosticsHub\\Collector', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\\\x64', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\\\MSBuild\\Current\\Bin\\amd64', 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\', 'C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\Wbem', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\', 'C:\\Windows\\System32\\OpenSSH\\', 'C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common', 'C:\\Program Files\\Git\\cmd', 'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\', 'C:\\Program Files\\dotnet\\', 'C:\\Program Files\\NVIDIA Corporation\\NVIDIA app\\NvDLISR', 'C:\\Program Files\\CMake\\bin', 'C:\\Users\\patri\\scoop\\shims', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Launcher\\', 'C:\\Users\\patri\\AppData\\Local\\Microsoft\\WindowsApps', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Microsoft VS Code\\bin', 'C:\\Users\\patri\\.dotnet\\tools', 'C:\\Users\\patri\\AppData\\Local\\Muse Hub\\lib', 'C:\\msys64\\ucrt64\\bin', 'C:\\msys64\\mingw64\\bin', 'C:\\msys64\\', 'C:\\Users\\patri\\AppData\\Local\\bin', '', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\vcpkg'] var='WINRC' -> ['C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64\\RC.exe']
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\bin\HostX64\x64\CL.exe
+----------------------------------------
+Checking for header stdlib.h
+==>
+#include <stdlib.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild\conf_check_2e2626fa6fa0edcb32c66c6bf4bf35c6\test.cpp[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '..\\test.cpp', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_2e2626fa6fa0edcb32c66c6bf4bf35c6\\testbuild\\test.cpp.1.o']
+out: test.cpp
+
+[2/2] Linking [33mbuild\conf_check_2e2626fa6fa0edcb32c66c6bf4bf35c6\testbuild\testprog.exe[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LINK.exe', '/nologo', '/MANIFEST', 'test.cpp.1.o', '/OUT:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_2e2626fa6fa0edcb32c66c6bf4bf35c6\\testbuild\\testprog.exe', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.26100.0\\ucrt\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\\\lib\\10.0.26100.0\\\\um\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x86\\store\\references', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\UnionMetadata\\10.0.26100.0', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\References\\10.0.26100.0', '/LIBPATH:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319']
+['C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64\\MT.exe', '/nologo', '-manifest', 'C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_2e2626fa6fa0edcb32c66c6bf4bf35c6\\testbuild\\testprog.exe.manifest', '-outputresource:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_2e2626fa6fa0edcb32c66c6bf4bf35c6\\testbuild\\testprog.exe;1']
+yes
+----------------------------------------
+Checking for header stdio.h
+==>
+#include <stdio.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild\conf_check_5b805bff38ebbf26e656748579421dfb\test.cpp[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '/DHAVE_STDLIB_H=1', '..\\test.cpp', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_5b805bff38ebbf26e656748579421dfb\\testbuild\\test.cpp.1.o']
+out: test.cpp
+
+[2/2] Linking [33mbuild\conf_check_5b805bff38ebbf26e656748579421dfb\testbuild\testprog.exe[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LINK.exe', '/nologo', '/MANIFEST', 'test.cpp.1.o', '/OUT:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_5b805bff38ebbf26e656748579421dfb\\testbuild\\testprog.exe', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.26100.0\\ucrt\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\\\lib\\10.0.26100.0\\\\um\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x86\\store\\references', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\UnionMetadata\\10.0.26100.0', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\References\\10.0.26100.0', '/LIBPATH:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319']
+['C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64\\MT.exe', '/nologo', '-manifest', 'C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_5b805bff38ebbf26e656748579421dfb\\testbuild\\testprog.exe.manifest', '-outputresource:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_5b805bff38ebbf26e656748579421dfb\\testbuild\\testprog.exe;1']
+yes
+----------------------------------------
+Checking for header math.h
+==>
+#include <math.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild\conf_check_2d58d6441c06f74f3a53fcfb14129b7e\test.cpp[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '/DHAVE_STDLIB_H=1', '/DHAVE_STDIO_H=1', '..\\test.cpp', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_2d58d6441c06f74f3a53fcfb14129b7e\\testbuild\\test.cpp.1.o']
+out: test.cpp
+
+[2/2] Linking [33mbuild\conf_check_2d58d6441c06f74f3a53fcfb14129b7e\testbuild\testprog.exe[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LINK.exe', '/nologo', '/MANIFEST', 'test.cpp.1.o', '/OUT:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_2d58d6441c06f74f3a53fcfb14129b7e\\testbuild\\testprog.exe', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.26100.0\\ucrt\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\\\lib\\10.0.26100.0\\\\um\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x86\\store\\references', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\UnionMetadata\\10.0.26100.0', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\References\\10.0.26100.0', '/LIBPATH:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319']
+['C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64\\MT.exe', '/nologo', '-manifest', 'C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_2d58d6441c06f74f3a53fcfb14129b7e\\testbuild\\testprog.exe.manifest', '-outputresource:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_2d58d6441c06f74f3a53fcfb14129b7e\\testbuild\\testprog.exe;1']
+yes
+----------------------------------------
+Checking for header string.h
+==>
+#include <string.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild\conf_check_ea6ad05dcd506b89b41ee2e24451db21\test.cpp[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '/DHAVE_STDLIB_H=1', '/DHAVE_STDIO_H=1', '/DHAVE_MATH_H=1', '..\\test.cpp', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_ea6ad05dcd506b89b41ee2e24451db21\\testbuild\\test.cpp.1.o']
+out: test.cpp
+
+[2/2] Linking [33mbuild\conf_check_ea6ad05dcd506b89b41ee2e24451db21\testbuild\testprog.exe[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LINK.exe', '/nologo', '/MANIFEST', 'test.cpp.1.o', '/OUT:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_ea6ad05dcd506b89b41ee2e24451db21\\testbuild\\testprog.exe', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.26100.0\\ucrt\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\\\lib\\10.0.26100.0\\\\um\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x86\\store\\references', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\UnionMetadata\\10.0.26100.0', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\References\\10.0.26100.0', '/LIBPATH:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319']
+['C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64\\MT.exe', '/nologo', '-manifest', 'C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_ea6ad05dcd506b89b41ee2e24451db21\\testbuild\\testprog.exe.manifest', '-outputresource:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_ea6ad05dcd506b89b41ee2e24451db21\\testbuild\\testprog.exe;1']
+yes
+----------------------------------------
+Checking for header errno.h
+==>
+#include <errno.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild\conf_check_1e543ece9c3e546e113c8dc8c8b5450a\test.cpp[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '/DHAVE_STDLIB_H=1', '/DHAVE_STDIO_H=1', '/DHAVE_MATH_H=1', '/DHAVE_STRING_H=1', '..\\test.cpp', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_1e543ece9c3e546e113c8dc8c8b5450a\\testbuild\\test.cpp.1.o']
+out: test.cpp
+
+[2/2] Linking [33mbuild\conf_check_1e543ece9c3e546e113c8dc8c8b5450a\testbuild\testprog.exe[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LINK.exe', '/nologo', '/MANIFEST', 'test.cpp.1.o', '/OUT:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_1e543ece9c3e546e113c8dc8c8b5450a\\testbuild\\testprog.exe', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.26100.0\\ucrt\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\\\lib\\10.0.26100.0\\\\um\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x86\\store\\references', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\UnionMetadata\\10.0.26100.0', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\References\\10.0.26100.0', '/LIBPATH:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319']
+['C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64\\MT.exe', '/nologo', '-manifest', 'C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_1e543ece9c3e546e113c8dc8c8b5450a\\testbuild\\testprog.exe.manifest', '-outputresource:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_1e543ece9c3e546e113c8dc8c8b5450a\\testbuild\\testprog.exe;1']
+yes
+----------------------------------------
+Checking for header limits.h
+==>
+#include <limits.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild\conf_check_828c67e85af918ebda706f73d3f0d370\test.cpp[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '/DHAVE_STDLIB_H=1', '/DHAVE_STDIO_H=1', '/DHAVE_MATH_H=1', '/DHAVE_STRING_H=1', '/DHAVE_ERRNO_H=1', '..\\test.cpp', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_828c67e85af918ebda706f73d3f0d370\\testbuild\\test.cpp.1.o']
+out: test.cpp
+
+[2/2] Linking [33mbuild\conf_check_828c67e85af918ebda706f73d3f0d370\testbuild\testprog.exe[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LINK.exe', '/nologo', '/MANIFEST', 'test.cpp.1.o', '/OUT:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_828c67e85af918ebda706f73d3f0d370\\testbuild\\testprog.exe', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.26100.0\\ucrt\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\\\lib\\10.0.26100.0\\\\um\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x86\\store\\references', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\UnionMetadata\\10.0.26100.0', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\References\\10.0.26100.0', '/LIBPATH:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319']
+['C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64\\MT.exe', '/nologo', '-manifest', 'C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_828c67e85af918ebda706f73d3f0d370\\testbuild\\testprog.exe.manifest', '-outputresource:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_828c67e85af918ebda706f73d3f0d370\\testbuild\\testprog.exe;1']
+yes
+----------------------------------------
+Checking for header stdarg.h
+==>
+#include <stdarg.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild\conf_check_25629ea108255525aa21f61c973cad3a\test.cpp[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '/DHAVE_STDLIB_H=1', '/DHAVE_STDIO_H=1', '/DHAVE_MATH_H=1', '/DHAVE_STRING_H=1', '/DHAVE_ERRNO_H=1', '/DHAVE_LIMITS_H=1', '..\\test.cpp', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_25629ea108255525aa21f61c973cad3a\\testbuild\\test.cpp.1.o']
+out: test.cpp
+
+[2/2] Linking [33mbuild\conf_check_25629ea108255525aa21f61c973cad3a\testbuild\testprog.exe[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LINK.exe', '/nologo', '/MANIFEST', 'test.cpp.1.o', '/OUT:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_25629ea108255525aa21f61c973cad3a\\testbuild\\testprog.exe', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.26100.0\\ucrt\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\\\lib\\10.0.26100.0\\\\um\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x86\\store\\references', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\UnionMetadata\\10.0.26100.0', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\References\\10.0.26100.0', '/LIBPATH:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319']
+['C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\\\x64\\MT.exe', '/nologo', '-manifest', 'C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_25629ea108255525aa21f61c973cad3a\\testbuild\\testprog.exe.manifest', '-outputresource:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_25629ea108255525aa21f61c973cad3a\\testbuild\\testprog.exe;1']
+yes
+----------------------------------------
+Checking for header getopt.h
+==>
+#include <getopt.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild\conf_check_cfee6252f339509387ae52a3ef7fa2b4\test.cpp[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '/DHAVE_STDLIB_H=1', '/DHAVE_STDIO_H=1', '/DHAVE_MATH_H=1', '/DHAVE_STRING_H=1', '/DHAVE_ERRNO_H=1', '/DHAVE_LIMITS_H=1', '/DHAVE_STDARG_H=1', '..\\test.cpp', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_cfee6252f339509387ae52a3ef7fa2b4\\testbuild\\test.cpp.1.o']
+out: test.cpp
+C:\C++Projekte\29-gl3-pongratz\code\extern\aubio\build\conf_check_cfee6252f339509387ae52a3ef7fa2b4\test.cpp(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "getopt.h": No such file or directory
+
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: Test does not build: Traceback (most recent call last):
+  File "C:\C++Projekte\29-gl3-pongratz\code\extern\aubio\waf3-2.0.26-ee3d1365b2c64aa2d7945d50d3554f84\waflib\Configure.py", line 335, in run_build
+    bld.compile()
+    ~~~~~~~~~~~^^
+  File "C:\C++Projekte\29-gl3-pongratz\code\extern\aubio\waf3-2.0.26-ee3d1365b2c64aa2d7945d50d3554f84\waflib\Build.py", line 176, in compile
+    raise Errors.BuildError(self.producer.error)
+waflib.Errors.BuildError: Build failed
+ -> task in 'testprog' failed with exit status 2 (run with -v to display more information)
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for header unistd.h
+==>
+#include <unistd.h>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild\conf_check_60cf17e78a721f808d3c7cb38468ca85\test.cpp[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '/DHAVE_STDLIB_H=1', '/DHAVE_STDIO_H=1', '/DHAVE_MATH_H=1', '/DHAVE_STRING_H=1', '/DHAVE_ERRNO_H=1', '/DHAVE_LIMITS_H=1', '/DHAVE_STDARG_H=1', '..\\test.cpp', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_60cf17e78a721f808d3c7cb38468ca85\\testbuild\\test.cpp.1.o']
+out: test.cpp
+C:\C++Projekte\29-gl3-pongratz\code\extern\aubio\build\conf_check_60cf17e78a721f808d3c7cb38468ca85\test.cpp(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "unistd.h": No such file or directory
+
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: Test does not build: Traceback (most recent call last):
+  File "C:\C++Projekte\29-gl3-pongratz\code\extern\aubio\waf3-2.0.26-ee3d1365b2c64aa2d7945d50d3554f84\waflib\Configure.py", line 335, in run_build
+    bld.compile()
+    ~~~~~~~~~~~^^
+  File "C:\C++Projekte\29-gl3-pongratz\code\extern\aubio\waf3-2.0.26-ee3d1365b2c64aa2d7945d50d3554f84\waflib\Build.py", line 176, in compile
+    raise Errors.BuildError(self.producer.error)
+waflib.Errors.BuildError: Build failed
+ -> task in 'testprog' failed with exit status 2 (run with -v to display more information)
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for library m
+==>
+
+int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	return 0;
+}
+
+<==
+[1/2] Compiling [32mbuild\conf_check_8e76ded66dc6c67b4e4c105d8c46e7bb\test.c[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/Z7', '/FS', '/W4', '/D_CRT_SECURE_NO_WARNINGS', '/wd4305', '/wd4244', '/wd4245', '/wd4267', '/wd4100', '/Ox', '/MD', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '/DHAVE_STDLIB_H=1', '/DHAVE_STDIO_H=1', '/DHAVE_MATH_H=1', '/DHAVE_STRING_H=1', '/DHAVE_ERRNO_H=1', '/DHAVE_LIMITS_H=1', '/DHAVE_STDARG_H=1', '/DNDEBUG=1', '..\\test.c', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_8e76ded66dc6c67b4e4c105d8c46e7bb\\testbuild\\test.c.1.o']
+out: test.c
+
+[2/2] Linking [33mbuild\conf_check_8e76ded66dc6c67b4e4c105d8c46e7bb\testbuild\testprog.exe[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LINK.exe', '/nologo', '/MANIFEST', '/DEBUG', '/INCREMENTAL:NO', 'test.c.1.o', '/OUT:C:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_8e76ded66dc6c67b4e4c105d8c46e7bb\\testbuild\\testprog.exe', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.26100.0\\ucrt\\x64', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\\\lib\\10.0.26100.0\\\\um\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x64', '/LIBPATH:C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\lib\\x86\\store\\references', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\UnionMetadata\\10.0.26100.0', '/LIBPATH:C:\\Program Files (x86)\\Windows Kits\\10\\References\\10.0.26100.0', '/LIBPATH:C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319', 'm.lib']
+out: LINK : fatal error LNK1181: Eingabedatei "m.lib" kann nicht geöffnet werden.
+
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: Test does not build: Traceback (most recent call last):
+  File "C:\C++Projekte\29-gl3-pongratz\code\extern\aubio\waf3-2.0.26-ee3d1365b2c64aa2d7945d50d3554f84\waflib\Configure.py", line 335, in run_build
+    bld.compile()
+    ~~~~~~~~~~~^^
+  File "C:\C++Projekte\29-gl3-pongratz\code\extern\aubio\waf3-2.0.26-ee3d1365b2c64aa2d7945d50d3554f84\waflib\Build.py", line 176, in compile
+    raise Errors.BuildError(self.producer.error)
+waflib.Errors.BuildError: Build failed
+ -> task in 'testprog' failed with exit status 1181 (run with -v to display more information)
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for C99 __VA_ARGS__ macro
+==>
+
+#include <stdio.h>
+#define AUBIO_ERR(...) fprintf(stderr, __VA_ARGS__)
+
+<==
+[1/2] Compiling [32mbuild\conf_check_d242d729321edf3ae4c8f94007029a74\test.c[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\CL.exe', '/nologo', '/Z7', '/FS', '/W4', '/D_CRT_SECURE_NO_WARNINGS', '/wd4305', '/wd4244', '/wd4245', '/wd4267', '/wd4100', '/Ox', '/MD', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\ATLMFC\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\VS\\include', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\ucrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\um', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\shared', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\winrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.26100.0\\cppwinrt', '/I..\\..\\..\\..\\..\\..\\..\\..\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\include\\um', '/DHAVE_STDLIB_H=1', '/DHAVE_STDIO_H=1', '/DHAVE_MATH_H=1', '/DHAVE_STRING_H=1', '/DHAVE_ERRNO_H=1', '/DHAVE_LIMITS_H=1', '/DHAVE_STDARG_H=1', '/DNDEBUG=1', '/DHAVE_WIN_HACKS=1', '..\\test.c', '/FC', '/c', '/FoC:\\C++Projekte\\29-gl3-pongratz\\code\\extern\\aubio\\build\\conf_check_d242d729321edf3ae4c8f94007029a74\\testbuild\\test.c.1.o']
+out: test.c
+
+[2/2] Linking [33mbuild\conf_check_d242d729321edf3ae4c8f94007029a74\testbuild\testprog.lib[0m
+
+['C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\bin\\HostX64\\x64\\LIB.exe', '/nologo', '/OUT:testprog.lib', 'test.c.1.o']
+yes
+----------------------------------------
+Checking for size of smpl_t
+float
+----------------------------------------
+Checking for size of lsmp_t
+double
+----------------------------------------
+Checking if complex.h is enabled
+no
+----------------------------------------
+Checking for FFT implementation
+ooura
+----------------------------------------
+Checking for program 'pkg-config'
+C:\msys64\ucrt64\bin\pkg-config.exe
+find program=['pkg-config'] paths=['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\Wbem', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\', 'C:\\Windows\\System32\\OpenSSH\\', 'C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common', 'C:\\Program Files\\Git\\cmd', 'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\', 'C:\\Program Files\\dotnet\\', 'C:\\Program Files\\NVIDIA Corporation\\NVIDIA app\\NvDLISR', 'C:\\Program Files\\CMake\\bin', 'C:\\Users\\patri\\scoop\\shims', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Launcher\\', 'C:\\Users\\patri\\AppData\\Local\\Microsoft\\WindowsApps', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Microsoft VS Code\\bin', 'C:\\Users\\patri\\.dotnet\\tools', 'C:\\Users\\patri\\AppData\\Local\\Muse Hub\\lib', 'C:\\msys64\\ucrt64\\bin', 'C:\\msys64\\mingw64\\bin', 'C:\\msys64\\', 'C:\\Users\\patri\\AppData\\Local\\bin', ''] var='PKGCONFIG' -> ['C:\\msys64\\ucrt64\\bin\\pkg-config.exe']
+----------------------------------------
+Checking for 'sndfile'
+['C:\\msys64\\ucrt64\\bin\\pkg-config.exe', '--cflags', '--libs', 'sndfile', '>=', '1.0.4', 'sndfile']
+err: Package sndfile was not found in the pkg-config search path.
+Perhaps you should add the directory containing `sndfile.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'sndfile' not found
+Package 'sndfile' not found
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for 'samplerate'
+['C:\\msys64\\ucrt64\\bin\\pkg-config.exe', '--cflags', '--libs', 'samplerate', '>=', '0.0.15', 'samplerate']
+err: Package samplerate was not found in the pkg-config search path.
+Perhaps you should add the directory containing `samplerate.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'samplerate' not found
+Package 'samplerate' not found
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for 'rubberband'
+['C:\\msys64\\ucrt64\\bin\\pkg-config.exe', '--cflags', '--libs', 'rubberband']
+err: Package rubberband was not found in the pkg-config search path.
+Perhaps you should add the directory containing `rubberband.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'rubberband' not found
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for 'jack'
+['C:\\msys64\\ucrt64\\bin\\pkg-config.exe', '--cflags', '--libs', 'jack']
+err: Package jack was not found in the pkg-config search path.
+Perhaps you should add the directory containing `jack.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'jack' not found
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for 'libavcodec'
+['C:\\msys64\\ucrt64\\bin\\pkg-config.exe', '--cflags', '--libs', 'libavcodec', '>=', '54.35.0', 'libavcodec']
+err: Package libavcodec was not found in the pkg-config search path.
+Perhaps you should add the directory containing `libavcodec.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'libavcodec' not found
+Package 'libavcodec' not found
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for 'libavformat'
+['C:\\msys64\\ucrt64\\bin\\pkg-config.exe', '--cflags', '--libs', 'libavformat', '>=', '52.3.0', 'libavformat']
+err: Package libavformat was not found in the pkg-config search path.
+Perhaps you should add the directory containing `libavformat.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'libavformat' not found
+Package 'libavformat' not found
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for 'libavutil'
+['C:\\msys64\\ucrt64\\bin\\pkg-config.exe', '--cflags', '--libs', 'libavutil', '>=', '52.3.0', 'libavutil']
+err: Package libavutil was not found in the pkg-config search path.
+Perhaps you should add the directory containing `libavutil.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'libavutil' not found
+Package 'libavutil' not found
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for 'libswresample'
+['C:\\msys64\\ucrt64\\bin\\pkg-config.exe', '--cflags', '--libs', 'libswresample', '>=', '1.2.0', 'libswresample']
+err: Package libswresample was not found in the pkg-config search path.
+Perhaps you should add the directory containing `libswresample.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'libswresample' not found
+Package 'libswresample' not found
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for all libav libraries
+not found (missing avcodec)
+----------------------------------------
+Checking for 'vorbisenc vorbis ogg'
+['C:\\msys64\\ucrt64\\bin\\pkg-config.exe', '--cflags', '--libs', 'vorbisenc', 'vorbis', 'ogg']
+err: Package vorbisenc was not found in the pkg-config search path.
+Perhaps you should add the directory containing `vorbisenc.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'vorbisenc' not found
+Package 'vorbis' not found
+Package 'ogg' not found
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking for 'flac'
+['C:\\msys64\\ucrt64\\bin\\pkg-config.exe', '--cflags', '--libs', 'flac']
+err: Package flac was not found in the pkg-config search path.
+Perhaps you should add the directory containing `flac.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'flac' not found
+
+not found
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: The configuration failed
+----------------------------------------
+Checking if using source_wavread
+yes
+----------------------------------------
+Checking if using sink_wavwrite
+yes
+----------------------------------------
+Checking for program 'txt2man'
+not found
+find program=['txt2man'] paths=['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\Wbem', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\', 'C:\\Windows\\System32\\OpenSSH\\', 'C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common', 'C:\\Program Files\\Git\\cmd', 'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\', 'C:\\Program Files\\dotnet\\', 'C:\\Program Files\\NVIDIA Corporation\\NVIDIA app\\NvDLISR', 'C:\\Program Files\\CMake\\bin', 'C:\\Users\\patri\\scoop\\shims', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Launcher\\', 'C:\\Users\\patri\\AppData\\Local\\Microsoft\\WindowsApps', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Microsoft VS Code\\bin', 'C:\\Users\\patri\\.dotnet\\tools', 'C:\\Users\\patri\\AppData\\Local\\Muse Hub\\lib', 'C:\\msys64\\ucrt64\\bin', 'C:\\msys64\\mingw64\\bin', 'C:\\msys64\\', 'C:\\Users\\patri\\AppData\\Local\\bin', ''] var='TXT2MAN' -> None
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: Could not find the program ['txt2man']
+txt2man was not found (ignoring)
+----------------------------------------
+Checking for program 'doxygen'
+not found
+find program=['doxygen'] paths=['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\Wbem', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\', 'C:\\Windows\\System32\\OpenSSH\\', 'C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common', 'C:\\Program Files\\Git\\cmd', 'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\', 'C:\\Program Files\\dotnet\\', 'C:\\Program Files\\NVIDIA Corporation\\NVIDIA app\\NvDLISR', 'C:\\Program Files\\CMake\\bin', 'C:\\Users\\patri\\scoop\\shims', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Launcher\\', 'C:\\Users\\patri\\AppData\\Local\\Microsoft\\WindowsApps', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Microsoft VS Code\\bin', 'C:\\Users\\patri\\.dotnet\\tools', 'C:\\Users\\patri\\AppData\\Local\\Muse Hub\\lib', 'C:\\msys64\\ucrt64\\bin', 'C:\\msys64\\mingw64\\bin', 'C:\\msys64\\', 'C:\\Users\\patri\\AppData\\Local\\bin', ''] var='DOXYGEN' -> None
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: Could not find the program ['doxygen']
+doxygen was not found (ignoring)
+----------------------------------------
+Checking for program 'sphinx-build'
+not found
+find program=['sphinx-build'] paths=['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\Wbem', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\', 'C:\\Windows\\System32\\OpenSSH\\', 'C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common', 'C:\\Program Files\\Git\\cmd', 'C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\', 'C:\\Program Files\\dotnet\\', 'C:\\Program Files\\NVIDIA Corporation\\NVIDIA app\\NvDLISR', 'C:\\Program Files\\CMake\\bin', 'C:\\Users\\patri\\scoop\\shims', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Python313\\', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Python\\Launcher\\', 'C:\\Users\\patri\\AppData\\Local\\Microsoft\\WindowsApps', 'C:\\Users\\patri\\AppData\\Local\\Programs\\Microsoft VS Code\\bin', 'C:\\Users\\patri\\.dotnet\\tools', 'C:\\Users\\patri\\AppData\\Local\\Muse Hub\\lib', 'C:\\msys64\\ucrt64\\bin', 'C:\\msys64\\mingw64\\bin', 'C:\\msys64\\', 'C:\\Users\\patri\\AppData\\Local\\bin', ''] var='SPHINX' -> None
+from C:\C++Projekte\29-gl3-pongratz\code\extern\aubio: Could not find the program ['sphinx-build']
+sphinx-build was not found (ignoring)
