@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-set(SOURCE_FILES include/engine/HelloWorld.h src/HelloWorld.cpp)
+
 set(ENGINE_NAME Electrine)
 
 
