@@ -12,7 +12,7 @@ set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Constants.h src/render
 )
 
 # set executable name
-set(EXE_FILE Game)
+set(EXE_FILE ElectroniXPulse)
 
 # add the executable target
 add_executable(${EXE_FILE} ${SOURCE_FILES})
@@ -20,10 +20,8 @@ add_executable(${EXE_FILE} ${SOURCE_FILES})
 # require C++ 20 compiler
 target_compile_features(${EXE_FILE} PRIVATE cxx_std_20)
 
-include_directories(${CMAKE_SOURCE_DIR}/aubio)
-# link with dependencies
-set(AUBIO_LIB_PATH ${CMAKE_SOURCE_DIR}/extern/aubio/build/src/aubio.lib)
-target_link_libraries(${EXE_FILE} PRIVATE glad glfw glm soloud box2d ${AUBIO_LIB_PATH})
+target_link_libraries(${EXE_FILE} PRIVATE Electrine)
+
 
 target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT=./assets/)
 
