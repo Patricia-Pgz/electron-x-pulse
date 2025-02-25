@@ -1,5 +1,4 @@
 #include "Game.h"
-#include <stdexcept>
 #include <random>
 #include <iostream>
 #include "Assets.h"
@@ -10,6 +9,11 @@
 
 namespace gl3
 {
+
+    Game::Game(int width, int height, const std::string &title, glm::vec3 camPos, float camZoom)
+        : engine::Game(width, height, title, camPos, camZoom) {
+    }
+
     std::vector<float> generateBeatTimestamps(const float songLength, const float beatInterval, float& offset)
     {
         std::vector<float> beatTimestamps;
@@ -31,20 +35,6 @@ namespace gl3
         }
 
         return beatTimestamps;
-    }
-
-    void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height)
-    {
-        auto gameInstance = static_cast<Game*>(glfwGetWindowUserPointer(window));
-        glViewport(0, 0, width, height);
-        gameInstance->calculateWindowBounds();
-    }
-
-    void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-    //TODO implement scrolling with Camera (+ limit to 0-width/2 and song/levellength+width/2
-    {
-        auto gameInstance = static_cast<Game*>(glfwGetWindowUserPointer(window));
-        gameInstance->scroll_callback_fun(yoffset);
     }
 
     void Game::scroll_callback_fun(double yOffset)
@@ -80,67 +70,6 @@ namespace gl3
         /*cameraPosition.x = cameraX;
         cameraCenter.x = cameraX;
         calculateWindowBounds();*/
-    }
-
-    Game::Game(int width, int height, const std::string& title, glm::vec3 camPos,
-               float camZoom): cameraPosition(camPos), zoom(camZoom)
-    {
-        if (!glfwInit())
-        {
-            throw std::runtime_error("Failed to initialize glfw");
-        }
-
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-        window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-
-        if (window == nullptr)
-        {
-            throw std::runtime_error("Failed to create window");
-        }
-
-        glfwMakeContextCurrent(window);
-        glfwSetWindowUserPointer(window, this);
-        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-        glfwSetScrollCallback(window, scroll_callback);
-        if (glGetError() != GL_NO_ERROR)
-        {
-            throw std::runtime_error("gl error");
-        }
-        calculateWindowBounds();
-        audio.init();
-        audio.setGlobalVolume(0.1f);
-
-        // Create the physics world
-        b2WorldDef worldDef = b2DefaultWorldDef();
-        // We use worldDef to define our physics world
-        worldDef.gravity = b2Vec2{0.f, -9.81f};
-        physicsWorld = b2CreateWorld(&worldDef);
-    }
-
-    Game::~Game()
-    {
-        glfwTerminate();
-    }
-
-    glm::mat4 Game::calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale)
-    {
-        auto model = glm::mat4(1.0f);
-        model = glm::translate(model, position);
-        model = glm::scale(model, scale);
-        model = glm::rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        glm::mat4 view = glm::lookAt(cameraPosition,
-                                     cameraCenter,
-                                     glm::vec3(0.0f, 1.0f, 0.0f));
-
-        glm::mat4 projection = glm::ortho(windowLeft, windowRight, windowBottom, windowTop, 0.1f, 100.0f);
-
-        return projection * view * model;
     }
 
     void Game::run()
@@ -226,13 +155,6 @@ namespace gl3
         glfwSwapBuffers(window);
     }
 
-    void Game::updateDeltaTime()
-    {
-        float frameTime = glfwGetTime();
-        deltaTime = frameTime - lastFrameTime;
-        lastFrameTime = frameTime;
-    }
-
     void Game::updatePhysics()
     {
         if (currentGameState == GameState::Menu) return;
@@ -281,20 +203,6 @@ namespace gl3
             }
             accumulator -= fixedTimeStep;
         }
-    }
-
-    void Game::calculateWindowBounds()
-    {
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
-
-        float halfWidth = (width / 2.0f) * zoom;
-        float halfHeight = (height / 2.0f) * zoom;
-
-        windowLeft = cameraPosition.x - halfWidth;
-        windowRight = cameraPosition.x + halfWidth;
-        windowBottom = cameraPosition.y - halfHeight;
-        windowTop = cameraPosition.y + halfHeight;
     }
 
     bool Game::isInVisibleWindow(const b2Vec2& position) const
@@ -556,10 +464,7 @@ namespace gl3
         audio.playBackground(*backgroundMusic);
     }
 
-    b2WorldId Game::getPhysicsWorld() const
-    {
-        return physicsWorld;
-    }
+
 
     void Game::setCameraPosition(const glm::vec3& position)
     {
@@ -601,5 +506,10 @@ namespace gl3
         {
             entity->resetToInitialState();
         }
+    }
+
+    Game::~Game()
+    {
+        glfwTerminate();
     }
 }
