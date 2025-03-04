@@ -8,7 +8,8 @@ file(GLOB_RECURSE HEADER_LIST CONFIGURE_DEPENDS "include/**.h")
 file(GLOB_RECURSE PRIVATE_HEADER_LIST CONFIGURE_DEPENDS "src/**.h")
 file(GLOB_RECURSE SOURCE_LIST CONFIGURE_DEPENDS "src/**.cpp")
 
-add_library(${ENGINE_NAME} ${HEADER_LIST} ${PRIVATE_HEADER_LIST} ${SOURCE_LIST})
+add_library(${ENGINE_NAME} ${HEADER_LIST} ${PRIVATE_HEADER_LIST} ${SOURCE_LIST}
+        include/engine/Events.h)
 
 target_include_directories(${ENGINE_NAME} PUBLIC include/)
 include_directories(${CMAKE_SOURCE_DIR}/aubio)

@@ -4,16 +4,16 @@
 #include <soloud.h>
 #include <soloud_wav.h>
 
+#include "engine/Events.h"
+
 namespace gl3 {
     class Player: public Entity {
     public:
+        using event_t = engine::events::Event<Player>;
+        event_t onPlayerDeath;
         explicit Player(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
              float zRotation = 0.0f,
              glm::vec3 scale = glm::vec3(0.25f, 0.25f, 0.25f), b2WorldId physicsWorld = b2_nullWorldId);
-        std::function<void()> onDestroyed;
-        void setOnDestroyedCallback(std::function<void()> callback) {
-            onDestroyed = std::move(callback);
-        }
         void update(Game *game, float deltaTime) override;
         void draw(Game *game) override;
         void updateBasedOnPhysics() override;

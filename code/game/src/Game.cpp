@@ -89,11 +89,9 @@ namespace gl3
                                                    physicsWorld);
         player = tempPlayer.get();
         entities.push_back(std::move(tempPlayer));
-        player->setOnDestroyedCallback([&]()
-        {
-            reset();
-        });
-
+        player->onPlayerDeath.addListener([&] {
+           reset();
+        }); //save this handle if I want to unsubscribe later
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(resolveAssetPath("audio/SensesShort.wav").c_str());
         backgroundMusic->setLooping(false);

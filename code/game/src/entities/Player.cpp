@@ -92,7 +92,7 @@ namespace gl3
                 else if (entityA->getTag() == "obstacle" || entityB->getTag() == "obstacle")
                 {
                     std::cout << "Hit Obstacle, reset to start"; //TODO put logic in start contact?
-                    onDestroyed();
+                    onPlayerDeath.invoke();
                 }
                 else if (sign * contactData[i].manifold.normal.y > 0.9f)
                 {
@@ -104,7 +104,7 @@ namespace gl3
                     // Almost horizontal collision to the left
                     // Player is touching from the left
                     std::cout << "Destroy Player, reset to start"; //TODO put logic in start contact?
-                    onDestroyed();
+                    onPlayerDeath.invoke();
                 }
             }
         }
