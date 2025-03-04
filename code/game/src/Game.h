@@ -41,7 +41,7 @@ namespace gl3 {
         void draw() override;
         void updatePhysics();
         bool isInVisibleWindow(const b2Vec2& position) const;
-        void onGameStateChange();
+        void onGameStateChange(); //TODO event
         void resetEntities();
         void setCameraPosition(const glm::vec3& position);
         void setZoom(float newZoom);

@@ -5,36 +5,13 @@
 #include "entities/Obstacle.h"
 #include "entities/Platform.h"
 #include "physics/ContactListener.h"
-#include "../aubio/src/aubio.h"
+#include "engine/AudioAnalysis.h"
 
 namespace gl3
 {
 
     Game::Game(int width, int height, const std::string &title, glm::vec3 camPos, float camZoom)
         : engine::Game(width, height, title, camPos, camZoom) {
-    }
-
-    std::vector<float> generateBeatTimestamps(const float songLength, const float beatInterval, float& offset)
-    {
-        std::vector<float> beatTimestamps;
-
-        // Ensure valid inputs
-        if (songLength <= 0.0f || beatInterval <= 0.0)
-        {
-            std::cerr << "Invalid song length or beat interval!" << std::endl;
-            return beatTimestamps;
-        }
-
-        // Convert song length to the number of beats
-        const int totalBeats = static_cast<int>(songLength / beatInterval);
-
-        // Generate timestamps
-        for (int i = 0; i <= totalBeats; ++i)
-        {
-            beatTimestamps.push_back(static_cast<float>(i) * beatInterval + offset);
-        }
-
-        return beatTimestamps;
     }
 
     void Game::scroll_callback_fun(double yOffset)
@@ -212,73 +189,8 @@ namespace gl3
             position.y <= (windowTop + margin);
     }
 
-    void Game::onGameStateChange()
+    std::vector<GameObject> generateTestObjects(const float& beatInterval, const float& initialPlayerPositionX)
     {
-        if (currentGameState == GameState::Menu) return; //TODO implement Menu
-
-        std::string audio_file = resolveAssetPath("audio/SensesShort.wav");
-        std::vector<float> beatPositions;
-
-        uint_t hop_size = 512; // Size of each hop
-        uint_t buffer_size = 2048; // Size of the analysis buffer
-        uint_t samplerate = 0; // Will be set by the file
-
-        // Create aubio source object
-        aubio_source_t* source = new_aubio_source(audio_file.c_str(), samplerate, hop_size);
-        if (!source)
-        {
-            std::cerr << "Error: Failed to open audio source!" << std::endl;
-        }
-
-        // Get actual samplerate
-        samplerate = aubio_source_get_samplerate(source);
-
-        // Create aubio tempo object
-        aubio_tempo_t* tempo = new_aubio_tempo("complex", buffer_size, hop_size, samplerate);
-        if (!tempo)
-        {
-            std::cerr << "Error: Failed to create tempo object!" << std::endl;
-            del_aubio_source(source);
-        }
-
-        fvec_t* audio_frame = new_fvec(hop_size); // Audio input frame buffer
-        fvec_t* beat_output = new_fvec(1); // Beat detection output buffer
-
-        uint_t read = 0;
-        while (true)
-        {
-            // Read a frame of audio
-            aubio_source_do(source, audio_frame, &read);
-
-            // Stop if no more frames
-            if (read == 0) break;
-
-            aubio_tempo_set_threshold(tempo, 0.9);
-
-            // Analyze for beats
-            aubio_tempo_do(tempo, audio_frame, beat_output);
-
-            /*// Check if a beat was detected TODO als andere beatdetection anbieten
-            if (fvec_get_sample(beat_output, 0) > 0.0f) {
-                float beatTime = aubio_tempo_get_last_s(tempo);
-                float beatPosition = initialPlayerPositionX + beatTime * -scrollSpeed;
-                beatPositions.push_back(beatPosition);
-                std::cout << "Beat detected at X position: " << beatPosition << std::endl;
-            }*/
-        }
-        bpm = aubio_tempo_get_bpm(tempo);
-        beatPositions = generateBeatTimestamps(static_cast<float>(backgroundMusic->getLength()), 60 / bpm,
-                                               initialPlayerPositionX);
-        levelLength = backgroundMusic->getLength();
-
-
-        del_fvec(beat_output);
-        del_fvec(audio_frame);
-        del_aubio_tempo(tempo);
-        del_aubio_source(source);
-
-        aubio_cleanup();
-
         std::mt19937 randomNumberEngine{
             static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count())
         };
@@ -296,7 +208,6 @@ namespace gl3
 
         size_t index = 0;
 
-        auto beatInterval = 60 / bpm;
         double previousC = 0.0;
 
         for (int i = 0; i <= 5; i++)
@@ -307,8 +218,6 @@ namespace gl3
             purpleColors.push_back(glm::vec4(c, 0.f, 0.2, 1.0f));
             previousC = c;
         }
-
-
         std::vector<GameObject> game_objects = {
             {4 * beatInterval + initialPlayerPositionX, 0.f, true, 1 * beatInterval,1 * beatInterval, blueColors[0]},
             {5 * beatInterval + initialPlayerPositionX, 0.f, false,0.8f * beatInterval,  1 * beatInterval,  redColor},
@@ -371,6 +280,28 @@ namespace gl3
             {112 * beatInterval + initialPlayerPositionX,0.f, true, 4 * beatInterval, 1 * beatInterval, blueColors[2]},
             {114 * beatInterval + initialPlayerPositionX,0.f, true, 5 * beatInterval, 1 * beatInterval, blueColors[1]},
         };
+
+        return game_objects;
+    }
+
+    void Game::onGameStateChange()
+    {
+        if (currentGameState == GameState::Menu) return; //TODO implement Menu
+
+        std::string audio_file = resolveAssetPath("audio/SensesShort.wav");
+        std::vector<float> beatPositions;
+
+        unsigned int hopSize = 512; // Size of each hop
+        unsigned int bufferSize = 2048; // Size of the analysis buffer
+
+        bpm = engine::AudioAnalysis::analyzeAudioTempo(audio_file,hopSize,bufferSize);
+        auto beatInterval = 60 / bpm;
+
+        beatPositions = engine::AudioAnalysis::generateBeatTimestamps(static_cast<float>(backgroundMusic->getLength()), 60 / bpm,
+                                               initialPlayerPositionX);
+        levelLength = backgroundMusic->getLength();
+
+        std::vector<GameObject> game_objects = generateTestObjects(beatInterval, initialPlayerPositionX);
 
         if (currentGameState == GameState::Level || currentGameState == GameState::PreviewWithTesting ||
             currentGameState == GameState::PreviewWithScrolling)
