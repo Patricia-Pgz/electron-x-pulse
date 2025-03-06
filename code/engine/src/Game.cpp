@@ -2,18 +2,27 @@
 #include <stdexcept>
 
 namespace gl3::engine {
-
-    void Game::framebuffer_size_callback(GLFWwindow* window, int width, int height)
-    {
-        auto gameInstance = static_cast<Game*>(glfwGetWindowUserPointer(window));
-        glViewport(0, 0, width, height);
-        gameInstance->calculateWindowBounds();
+    using Context = context::Context;
+    void Game::run() {
+        onStartup.invoke(*this);
+        start();
+        onAfterStartup.invoke(*this);
+        context.run([&](context::Context &ctx){
+            onBeforeUpdate.invoke(*this);
+            update(getWindow());
+            updatePhysics();
+            draw();
+            updateDeltaTime();
+            onAfterUpdate.invoke(*this);
+        });
+        onBeforeShutdown.invoke(*this);
+        onShutdown.invoke(*this);
     }
 
-    void Game::calculateWindowBounds()
+    void Game::calculateWindowBounds() //TODO in context
     {
         int width, height;
-        glfwGetWindowSize(window, &width, &height);
+        glfwGetWindowSize(getWindow(), &width, &height);
 
         float halfWidth = (width / 2.0f) * zoom;
         float halfHeight = (height / 2.0f) * zoom;
@@ -32,35 +41,19 @@ namespace gl3::engine {
     }
 
         Game::Game(int width, int height, const std::string& title, glm::vec3 camPos,
-               float camZoom): cameraPosition(camPos), zoom(camZoom)
+               float camZoom): context(width, height, title),cameraPosition(camPos), zoom(camZoom)
     {
         if (!glfwInit())
         {
             throw std::runtime_error("Failed to initialize glfw");
         }
-
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-        window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-
-        if (window == nullptr)
-        {
-            throw std::runtime_error("Failed to create window");
-        }
-
-        glfwMakeContextCurrent(window);
-        glfwSetWindowUserPointer(window, this);
-        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-        glfwSetScrollCallback(window, scroll_callback);
+        glfwSetWindowUserPointer(getWindow(), this);
+        glfwSetScrollCallback(getWindow(), scroll_callback);
         if (glGetError() != GL_NO_ERROR)
         {
             throw std::runtime_error("gl error");
         }
-        calculateWindowBounds();
+        calculateWindowBounds(); //TODO in context
         audio.init();
         audio.setGlobalVolume(0.1f);
 

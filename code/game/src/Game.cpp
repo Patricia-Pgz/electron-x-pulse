@@ -14,13 +14,13 @@ namespace gl3
         : engine::Game(width, height, title, camPos, camZoom) {
     }
 
-    void Game::scroll_callback_fun(double yOffset)
+    void Game::scroll_callback_fun(double yOffset) //TODO event
     {
         float cameraX = 0.0f; /*cameraPosition.x;*/
         float scrollSpeed = 0.5f;
         float minScrollX = 0.0f; // Minimum scroll limit
         int width, height;
-        glfwGetWindowSize(window, &width, &height);
+        glfwGetWindowSize(getWindow(), &width, &height);
         float maxScrollX = (levelLength + static_cast<float>(width) / 2 * zoom - initialPlayerPositionX);
         // Maximum scroll limit
 
@@ -49,7 +49,7 @@ namespace gl3
         calculateWindowBounds();*/
     }
 
-    void Game::run()
+    void Game::start()
     {
         unsigned int VAO;
         glGenVertexArrays(1, &VAO);
@@ -73,21 +73,10 @@ namespace gl3
         backgroundMusic->load(resolveAssetPath("audio/SensesShort.wav").c_str());
         backgroundMusic->setLooping(false);
 
-        glfwSetTime(1.0 / 60);
-
-        while (!glfwWindowShouldClose(window))
-        {
-            update();
-            updatePhysics();
-            draw();
-            updateDeltaTime();
-            glfwPollEvents();
-        }
-
-        glDeleteVertexArrays(1, &VAO);
+        //glDeleteVertexArrays(1, &VAO);
     }
 
-    void Game::update()
+    void Game::update(GLFWwindow *window)
     {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
@@ -116,9 +105,6 @@ namespace gl3
 
     void Game::draw()
     {
-        glClearColor(0.8f, 0.8f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
         for (const auto& entity : entities)
         {
             if (isInVisibleWindow(b2Vec2(entity->getPosition().x, entity->getPosition().y)))
@@ -126,8 +112,6 @@ namespace gl3
                 entity->draw(this);
             }
         }
-
-        glfwSwapBuffers(window);
     }
 
     void Game::updatePhysics()
