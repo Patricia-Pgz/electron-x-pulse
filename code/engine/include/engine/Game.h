@@ -17,10 +17,9 @@ namespace gl3::engine {
 class Game {
 public:
     void run();
-    glm::mat4 calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale);
-    GLFWwindow *getWindow() { return context.getWindow(); }
-    b2WorldId getPhysicsWorld() const;
-    void calculateWindowBounds();
+    [[nodiscard]] glm::mat4 calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale) const;
+    [[nodiscard]] GLFWwindow *getWindow() const { return context.getWindow(); }
+    [[nodiscard]] b2WorldId getPhysicsWorld() const;
 
     using event_t = events::Event<Game, Game&>;
 
@@ -40,19 +39,14 @@ protected:
     virtual void draw(){};
     void updateDeltaTime();
 
-    float windowLeft, windowRight, windowBottom, windowTop; //TODO context
+    context::Context context;
 
     SoLoud::Soloud audio;
     float deltaTime = 1.0f / 60;
 
-    glm::vec3 cameraPosition;
-    glm::vec3 cameraCenter {0.0f, 0.0f, 0.0f};
-    float zoom;
-
     b2WorldId physicsWorld;
 
 private:
-    context::Context context;
     float lastFrameTime = 1.0f / 60;
 };
 

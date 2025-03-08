@@ -14,20 +14,21 @@ namespace gl3
         : engine::Game(width, height, title, camPos, camZoom) {
     }
 
-    void Game::scroll_callback_fun(double yOffset) //TODO event
+    void Game::scroll_callback_fun(const double yOffset)
     {
+        if(currentGameState != GameState::PreviewWithScrolling) return;
         float cameraX = 0.0f; /*cameraPosition.x;*/
         float scrollSpeed = 0.5f;
         float minScrollX = 0.0f; // Minimum scroll limit
         int width, height;
         glfwGetWindowSize(getWindow(), &width, &height);
-        float maxScrollX = (levelLength + static_cast<float>(width) / 2 * zoom - initialPlayerPositionX);
+        float maxScrollX = (levelLength + static_cast<float>(width) / 2 * context.getCurrentZoom() -
+            initialPlayerPositionX);
         // Maximum scroll limit
 
         cameraX = static_cast<float>(yOffset) * scrollSpeed;
         if (cameraX < minScrollX) cameraX = minScrollX;
         if (cameraX > maxScrollX) cameraX = maxScrollX;
-
 
         for (auto& entity : entities)
         {
@@ -43,10 +44,10 @@ namespace gl3
                 entity->setPosition(glm::vec3(entity->getPosition().x + cameraX, entity->getPosition().y, 0.0f));
             }
         }
-
-        /*cameraPosition.x = cameraX;
-        cameraCenter.x = cameraX;
-        calculateWindowBounds();*/
+        auto newCameraPosition = glm::vec3(cameraX, context.getCameraPos().y, context.getCameraPos().z);
+        auto newCameraCenter = glm::vec3(cameraX, context.getCameraCenter().y, context.getCameraCenter().z);
+        context.setCameraPos(newCameraPosition);
+        context.setCameraCenter(newCameraCenter);
     }
 
     void Game::start()
@@ -55,6 +56,9 @@ namespace gl3
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 
+        context.onScrolling.addListener([&](const float offsetY) {
+           scroll_callback_fun(offsetY);
+        });
         auto groundHeight = 4.0f;
         auto groundPlatform = std::make_unique<Platform>(glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), 40.0f,
                                                          groundHeight, glm::vec4(0.25, 0.27, 1, 1), physicsWorld);
@@ -96,7 +100,7 @@ namespace gl3
 
         for (auto& entity : entities)
         {
-            if (isInVisibleWindow(b2Vec2(entity->getPosition().x, entity->getPosition().y)))
+            if (context.isInVisibleWindow(entity->getPosition()))
             {
                 entity->update(this, deltaTime);
             }
@@ -107,7 +111,7 @@ namespace gl3
     {
         for (const auto& entity : entities)
         {
-            if (isInVisibleWindow(b2Vec2(entity->getPosition().x, entity->getPosition().y)))
+            if (context.isInVisibleWindow(entity->getPosition()))
             {
                 entity->draw(this);
             }
@@ -141,16 +145,19 @@ namespace gl3
                     entity->setPosition(position);
                     continue;
                 }
+                auto physicalPos = b2Body_GetPosition(entity->getBody());
+                auto entityPos = glm::vec2(physicalPos.x, physicalPos.y);
+
                 /*if (entity->getTag() != "player" && entity->getTag() != "ground")
                 {
                     b2Body_SetLinearVelocity(entity->getBody(), {0.5f, 0.0f});
                 }*/
-                if (isInVisibleWindow(b2Body_GetPosition(entity->getBody())))
+                if (context.isInVisibleWindow(entityPos))
                 {
                     entity->updateBasedOnPhysics();
                 }
                 // If entity is far off-screen, sleep it to save performance
-                if (b2Body_GetPosition(entity->getBody()).x < windowLeft - 1.0f)
+                if (b2Body_GetPosition(entity->getBody()).x < context.getWindowBounds()[0] - 1.0f)
                 // Arbitrary value to check if the entity is far off-screen
                 {
                     b2Body_SetAwake(entity->getBody(), false); // Sleep the body
@@ -162,15 +169,6 @@ namespace gl3
             }
             accumulator -= fixedTimeStep;
         }
-    }
-
-    bool Game::isInVisibleWindow(const b2Vec2& position) const
-    {
-        float margin = 1.0f; // Optional margin
-        return position.x >= (windowLeft - margin) &&
-            position.x <= (windowRight + margin) &&
-            position.y >= (windowBottom - margin) &&
-            position.y <= (windowTop + margin);
     }
 
     std::vector<GameObject> generateTestObjects(const float& beatInterval, const float& initialPlayerPositionX)
@@ -311,7 +309,8 @@ namespace gl3
                     entities.push_back(std::move(entity));
                 }
             }
-            /*for (auto beat : beatPositions)
+            /*int index = 0;
+            for (auto beat : beatPositions)
             {
                 if (index < 1)
                 {
@@ -321,11 +320,8 @@ namespace gl3
 
                 if (index % 2 == 0)
                 {
-                    auto randomYScale = static_cast<float>(yScaleDist(randomNumberEngine));
-                    auto randomXScale = static_cast<float>(xScaleDist(randomNumberEngine));
-                    auto c = colorDist(randomNumberEngine);
                     auto height = 0.25f;
-                    auto randomColor = glm::vec4(0.1, c, c, 1.0f);
+                    auto randomColor = glm::vec4(0.1, 0.5, 0.3, 1.0f);
                     auto entity = std::make_unique<Platform>(glm::vec3(beat, groundLevel + height / 2, 0.0f), 0.5f,
                                                              height,
                                                              randomColor, physicsWorld);
@@ -375,18 +371,6 @@ namespace gl3
             b2Body_SetAwake(player->getBody(), false);
         }
         audio.playBackground(*backgroundMusic);
-    }
-
-
-
-    void Game::setCameraPosition(const glm::vec3& position)
-    {
-        cameraPosition = position;
-    }
-
-    void Game::setZoom(float newZoom)
-    {
-        zoom = newZoom;
     }
 
     void Game::reset()

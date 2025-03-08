@@ -28,23 +28,17 @@ namespace gl3 {
         Game(int width, int height, const std::string &title, glm::vec3 camPos, float camZoom);
         ~Game() override;
         [[nodiscard]] Player *getShip() const { return player; }
-        void scroll_callback_fun(double yOffset);
         float bpm = 0.0f; // Default BPM, updated dynamically //TODO not public
         float distancePerBeat = 2.0f; // Example: player travels 1 unit per beat
-
-
-
 
     private:
         void start() override;
         void update(GLFWwindow *window) override;
         void draw() override;
         void updatePhysics() override;
-        bool isInVisibleWindow(const b2Vec2& position) const;
+        void scroll_callback_fun(double yOffset);
         void onGameStateChange(); //TODO event
         void resetEntities();
-        void setCameraPosition(const glm::vec3& position);
-        void setZoom(float newZoom);
         void reset();
 
 

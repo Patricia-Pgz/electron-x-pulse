@@ -1,9 +1,7 @@
 #pragma once
-
 #include "Entity.h"
 #include <soloud.h>
 #include <soloud_wav.h>
-
 #include "engine/Events.h"
 
 namespace gl3 {

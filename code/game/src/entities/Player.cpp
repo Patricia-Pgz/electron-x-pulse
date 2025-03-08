@@ -1,11 +1,7 @@
 #include "Player.h"
-
 #include <iostream>
-
 #include "../Game.h"
 #include "../Assets.h"
-#include <cmath>
-
 #include "Obstacle.h"
 
 

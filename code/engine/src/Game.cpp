@@ -1,13 +1,17 @@
 #include "engine/Game.h"
 #include <stdexcept>
 
-namespace gl3::engine {
+namespace gl3::engine
+{
     using Context = context::Context;
-    void Game::run() {
+
+    void Game::run()
+    {
         onStartup.invoke(*this);
         start();
         onAfterStartup.invoke(*this);
-        context.run([&](context::Context &ctx){
+        context.run([&](Context& ctx)
+        {
             onBeforeUpdate.invoke(*this);
             update(getWindow());
             updatePhysics();
@@ -19,41 +23,15 @@ namespace gl3::engine {
         onShutdown.invoke(*this);
     }
 
-    void Game::calculateWindowBounds() //TODO in context
-    {
-        int width, height;
-        glfwGetWindowSize(getWindow(), &width, &height);
-
-        float halfWidth = (width / 2.0f) * zoom;
-        float halfHeight = (height / 2.0f) * zoom;
-
-        windowLeft = cameraPosition.x - halfWidth;
-        windowRight = cameraPosition.x + halfWidth;
-        windowBottom = cameraPosition.y - halfHeight;
-        windowTop = cameraPosition.y + halfHeight;
-    }
-
-    void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-    //TODO implement scrolling with Camera (+ limit to 0-width/2 and song/levellength+width/2
-    {
-        auto gameInstance = static_cast<Game*>(glfwGetWindowUserPointer(window));
-        //gameInstance->scroll_callback_fun(yoffset); TODO das und framebufersizecallback als events
-    }
-
-        Game::Game(int width, int height, const std::string& title, glm::vec3 camPos,
-               float camZoom): context(width, height, title),cameraPosition(camPos), zoom(camZoom)
+    Game::Game(const int width, const int height, const std::string& title, const glm::vec3 camPos,
+               const float camZoom): context(width, height, title, camPos, camZoom)
     {
         if (!glfwInit())
         {
             throw std::runtime_error("Failed to initialize glfw");
         }
-        glfwSetWindowUserPointer(getWindow(), this);
-        glfwSetScrollCallback(getWindow(), scroll_callback);
-        if (glGetError() != GL_NO_ERROR)
-        {
-            throw std::runtime_error("gl error");
-        }
-        calculateWindowBounds(); //TODO in context
+
+
         audio.init();
         audio.setGlobalVolume(0.1f);
 
@@ -64,23 +42,25 @@ namespace gl3::engine {
         physicsWorld = b2CreateWorld(&worldDef);
     }
 
-    glm::mat4 Game::calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale)
+    glm::mat4 Game::calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale) const
     {
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, position);
         model = glm::scale(model, scale);
         model = glm::rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        glm::mat4 view = glm::lookAt(cameraPosition,
-                                     cameraCenter,
+        glm::mat4 view = glm::lookAt(context.getCameraPos(),
+                                     context.getCameraCenter(),
                                      glm::vec3(0.0f, 1.0f, 0.0f));
-
-        glm::mat4 projection = glm::ortho(windowLeft, windowRight, windowBottom, windowTop, 0.1f, 100.0f);
+        auto windowBounds = context.getWindowBounds();
+        glm::mat4 projection = glm::ortho(windowBounds[0], windowBounds[1], windowBounds[2], windowBounds[3], 0.1f,
+                                          100.0f);
 
         return projection * view * model;
     }
 
-    void Game::updateDeltaTime() {
+    void Game::updateDeltaTime()
+    {
         float frameTime = glfwGetTime();
         deltaTime = frameTime - lastFrameTime;
         lastFrameTime = frameTime;
@@ -95,5 +75,4 @@ namespace gl3::engine {
     {
         glfwTerminate();
     }
-
 } // gl3
