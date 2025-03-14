@@ -10,6 +10,8 @@
 #include "Events.h"
 #include "engine/Context.h"
 #include "box2d/box2d.h"
+#include <entt/entity/registry.hpp>
+
 
 
 namespace gl3::engine {
@@ -47,7 +49,8 @@ protected:
     b2WorldId physicsWorld;
 
 private:
-    float lastFrameTime = 1.0f / 60;
+    float lastFrameTime_ = 1.0f / 60;
+    entt::registry registry_;
 };
 
 } // gl3

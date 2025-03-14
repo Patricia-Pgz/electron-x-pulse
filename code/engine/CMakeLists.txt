@@ -16,7 +16,7 @@ include_directories(${CMAKE_SOURCE_DIR}/aubio)
 
 # link with dependencies
 set(AUBIO_LIB_PATH ${CMAKE_SOURCE_DIR}/extern/aubio/build/src/aubio.lib)
-target_link_libraries(${ENGINE_NAME} PUBLIC glad glfw glm soloud box2d ${AUBIO_LIB_PATH} )
+target_link_libraries(${ENGINE_NAME} PUBLIC glad glfw glm soloud box2d ${AUBIO_LIB_PATH} EnTT::EnTT)
 
 
 

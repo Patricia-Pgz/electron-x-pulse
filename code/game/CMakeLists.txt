@@ -7,8 +7,6 @@ set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Constants.h src/render
         src/entities/Platform.h
         src/entities/Obstacle.cpp
         src/entities/Obstacle.h
-        #[[src/musicanalysis/BeatDetection.cpp
-        src/musicanalysis/BeatDetection.h]]
 )
 
 # set executable name

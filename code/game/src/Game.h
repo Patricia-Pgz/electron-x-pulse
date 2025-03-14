@@ -41,8 +41,6 @@ namespace gl3 {
         void resetEntities();
         void reset();
 
-
-
         GameState previousGameState = GameState::Menu;
         GameState currentGameState = GameState::Menu;
         std::vector<std::unique_ptr<Entity>> entities;

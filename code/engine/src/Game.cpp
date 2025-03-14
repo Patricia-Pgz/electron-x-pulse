@@ -62,8 +62,8 @@ namespace gl3::engine
     void Game::updateDeltaTime()
     {
         float frameTime = glfwGetTime();
-        deltaTime = frameTime - lastFrameTime;
-        lastFrameTime = frameTime;
+        deltaTime = frameTime - lastFrameTime_;
+        lastFrameTime_ = frameTime;
     }
 
     b2WorldId Game::getPhysicsWorld() const

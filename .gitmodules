@@ -16,3 +16,6 @@
 [submodule "extern/aubio"]
 	path = extern/aubio
 	url = https://github.com/aubio/aubio.git
+[submodule "code/extern/entt"]
+	path = code/extern/entt
+	url = https://github.com/skypjack/entt.git

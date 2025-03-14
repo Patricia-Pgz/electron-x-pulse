@@ -7,6 +7,7 @@ add_subdirectory(extern/glad)
 add_subdirectory(extern/glfw)
 add_subdirectory(extern/glm)
 add_subdirectory(extern/soloud)
+add_subdirectory(extern/entt)
 add_subdirectory(engine)
 
 option(BOX2D_BUILD_TESTBED OFF)
