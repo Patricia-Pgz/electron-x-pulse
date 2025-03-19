@@ -36,15 +36,17 @@ namespace gl3 {
         void update(GLFWwindow *window) override;
         void draw() override;
         void updatePhysics() override;
+        void moveEntitiesScrolling();
         void scroll_callback_fun(double yOffset);
         void onGameStateChange(); //TODO event
         void resetEntities();
         void reset();
 
+        entt::registry registry_;
         GameState previousGameState = GameState::Menu;
         GameState currentGameState = GameState::Menu;
-        std::vector<std::unique_ptr<Entity>> entities;
-        Player *player = nullptr;
+        //std::vector<std::unique_ptr<Entity>> entities;
+       std::unique_ptr< entt::entity> player = nullptr; //TODO uniqueptr?
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
         float levelLength = 0;
         float groundLevel = -1;

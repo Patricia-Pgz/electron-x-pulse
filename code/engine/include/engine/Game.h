@@ -19,7 +19,6 @@ namespace gl3::engine {
 class Game {
 public:
     void run();
-    [[nodiscard]] glm::mat4 calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale) const;
     [[nodiscard]] GLFWwindow *getWindow() const { return context.getWindow(); }
     [[nodiscard]] b2WorldId getPhysicsWorld() const;
 

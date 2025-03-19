@@ -6,6 +6,8 @@
 #include "entities/Platform.h"
 #include "physics/ContactListener.h"
 #include "engine/AudioAnalysis.h"
+#include "engine/ecs/EntityFactory.h"
+#include "engine/rendering/RenderingSystem.h"
 
 namespace gl3
 {
@@ -30,24 +32,30 @@ namespace gl3
         if (cameraX < minScrollX) cameraX = minScrollX;
         if (cameraX > maxScrollX) cameraX = maxScrollX;
 
-        for (auto& entity : entities)
-        {
-            if (entity->getTag() != "beat" && entity->getTag() != "timeline")
-            {
-                b2Body_SetTransform(entity->getBody(),
-                                    b2Vec2(b2Body_GetPosition(entity->getBody()).x + cameraX,
-                                           b2Body_GetPosition(entity->getBody()).y),
-                                    b2Body_GetRotation(entity->getBody()));
-            }
-            else
-            {
-                entity->setPosition(glm::vec3(entity->getPosition().x + cameraX, entity->getPosition().y, 0.0f));
-            }
-        }
+        moveEntitiesScrolling();
+
         auto newCameraPosition = glm::vec3(cameraX, context.getCameraPos().y, context.getCameraPos().z);
         auto newCameraCenter = glm::vec3(cameraX, context.getCameraCenter().y, context.getCameraCenter().z);
         context.setCameraPos(newCameraPosition);
         context.setCameraCenter(newCameraCenter);
+    }
+
+
+    void Game::moveEntitiesScrolling()
+    {
+        auto entities = registry_.view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
+
+        for (auto entity : entities) {
+            auto& tag_component = entities.get<engine::ecs::TagComponent>(entity);
+            auto& physics_component = entities.get<engine::ecs::PhysicsComponent>(entity);
+            if(tag_component.tag != "beat" && tag_component.tag != "timeline")
+            {
+                b2Body_SetTransform(physics_component.body,
+                    b2Vec2(b2Body_GetPosition(physics_component.body).x + context.getCameraPos().x,
+                           b2Body_GetPosition(physics_component.body).y),
+                    b2Body_GetRotation(physics_component.body));
+            }
+        }
     }
 
     void Game::start()
@@ -63,16 +71,11 @@ namespace gl3
         auto groundPlatform = std::make_unique<Platform>(glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), 40.0f,
                                                          groundHeight, glm::vec4(0.25, 0.27, 1, 1), physicsWorld);
         groundPlatform->setTag("ground");
-        entities.push_back(std::move(groundPlatform));
 
-        auto tempPlayer = std::make_unique<Player>(glm::vec3(initialPlayerPositionX, groundLevel + 0.25 / 2, 0), 0.0f,
-                                                   glm::vec3(0.25f, 0.25f, 0.25f),
-                                                   physicsWorld);
-        player = tempPlayer.get();
-        entities.push_back(std::move(tempPlayer));
-        player->onPlayerDeath.addListener([&] {
+        player = std::make_unique<entt::entity>(engine::ecs::EntityFactory::createDefaultEntity(registry_,glm::vec3(initialPlayerPositionX, groundLevel + 0.25 / 2, 0), glm::vec3(0.25f, 0.25f, 0.25f), 0.f,glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player")) ;
+        /*player->onPlayerDeath.addListener([&] { //TODO System player events/functionality?
            reset();
-        }); //save this handle if I want to unsubscribe later
+        }); //save this handle if I want to unsubscribe later*/
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(resolveAssetPath("audio/SensesShort.wav").c_str());
         backgroundMusic->setLooping(false);
@@ -97,26 +100,58 @@ namespace gl3
             previousGameState = currentGameState;
             onGameStateChange();
         }
+        auto entities = registry_.view<engine::ecs::TagComponent, engine::ecs::TransformComponent>();
 
         for (auto& entity : entities)
         {
-            if (context.isInVisibleWindow(entity->getPosition()))
+            if (context.isInVisibleWindow(entities.get<engine::ecs::TransformComponent>(entity).position))
             {
-                entity->update(this, deltaTime);
+                //entity->update(this, deltaTime); //TODO hatte noch jemand außer Player wirklich was in update? -> System für playermovement
             }
         }
     }
 
     void Game::draw()
     {
-        for (const auto& entity : entities)
+        engine::rendering::RenderingSystem::draw(registry_,context); //TODO mesh und shader in rendering namespace
+    }
+
+    //TODO:
+    /*Entity::~Entity()
+    {
+        if (b2World_IsValid(physicsWorld))
         {
-            if (context.isInVisibleWindow(entity->getPosition()))
-            {
-                entity->draw(this);
-            }
+            if (b2Body_IsValid(body))
+                b2DestroyBody(body); //TODO does this get called when the physicscomponent gets deleted? -> levelReload/Load/wechsel
         }
     }
+
+    void Entity::updateBasedOnPhysics() //TODO physics system
+    {
+        if (!b2Body_IsValid(body))
+            return;
+
+        auto physicsTransform = b2Body_GetTransform(body);
+
+        position.x = physicsTransform.p.x;
+        position.y = physicsTransform.p.y;
+
+        zRotation = glm::degrees(b2Rot_GetAngle(physicsTransform.q));
+    }
+
+    void Entity::resetToInitialState()
+    {
+        position = initialPosition;
+        zRotation = initialZRotation;
+        scale = initialScale;
+
+        if (const auto body = getBody(); b2Body_IsValid(body))
+        {
+            b2Body_SetTransform(body, {position.x, position.y}, b2MakeRot(glm::radians(initialZRotation)));
+            b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+            b2Body_SetAngularVelocity(body, 0.0f);
+        }
+    }*/
 
     void Game::updatePhysics()
     {

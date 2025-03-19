@@ -42,23 +42,6 @@ namespace gl3::engine
         physicsWorld = b2CreateWorld(&worldDef);
     }
 
-    glm::mat4 Game::calculateMvpMatrix(glm::vec3 position, float zRotationInDegrees, glm::vec3 scale) const
-    {
-        auto model = glm::mat4(1.0f);
-        model = glm::translate(model, position);
-        model = glm::scale(model, scale);
-        model = glm::rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        glm::mat4 view = glm::lookAt(context.getCameraPos(),
-                                     context.getCameraCenter(),
-                                     glm::vec3(0.0f, 1.0f, 0.0f));
-        auto windowBounds = context.getWindowBounds();
-        glm::mat4 projection = glm::ortho(windowBounds[0], windowBounds[1], windowBounds[2], windowBounds[3], 0.1f,
-                                          100.0f);
-
-        return projection * view * model;
-    }
-
     void Game::updateDeltaTime()
     {
         float frameTime = glfwGetTime();
