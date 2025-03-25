@@ -16,11 +16,21 @@
 
 namespace gl3::engine {
 
+    enum class GameState {
+        Menu,
+        Level,
+        PreviewWithScrolling,
+        PreviewWithTesting
+    };
+
 class Game {
 public:
     void run();
     [[nodiscard]] GLFWwindow *getWindow() const { return context.getWindow(); }
-    [[nodiscard]] b2WorldId getPhysicsWorld() const;
+    [[nodiscard]] b2WorldId getPhysicsWorld() const {return physicsWorld;};
+    [[nodiscard]] const context::Context& getContext() const { return context; }
+    float& getLevelSpeed() { return levelSpeed; };
+
 
     using event_t = events::Event<Game, Game&>;
 
@@ -30,6 +40,9 @@ public:
     event_t onAfterUpdate;
     event_t onBeforeShutdown;
     event_t onShutdown;
+
+
+    GameState currentGameState = GameState::Menu;
 
 protected:
     Game(int width, int height, const std::string &title, glm::vec3 camPos, float camZoom);
@@ -46,6 +59,9 @@ protected:
     float deltaTime = 1.0f / 60;
 
     b2WorldId physicsWorld;
+
+    float levelSpeed = -1.f;
+
 
 private:
     float lastFrameTime_ = 1.0f / 60;

@@ -123,34 +123,6 @@ namespace gl3
     }
 
 
-
-    void Player::draw(Game* game)
-    {
-        Entity::draw(game);
-    }
-
-    void Player::createPhysicsBody()
-    {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
-        bodyDef.position = {position.x, position.y};
-        //bodyDef.rotation = b2MakeRot(glm::radians(zRotation));
-        bodyDef.fixedRotation = true;
-        bodyDef.linearDamping = 0.0f;
-
-        bodyDef.userData = static_cast<void*>(this);
-        body = b2CreateBody(physicsWorld, &bodyDef);
-
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.density = 0.1f;
-        shapeDef.friction = 0.0f;
-        shapeDef.restitution = 0.0f;
-        shapeDef.enableContactEvents = true;
-
-        b2Polygon box = b2MakeBox(scale.x * 0.5f, scale.y * 0.5f);
-        shape = b2CreatePolygonShape(body, &shapeDef, &box);
-    }
-
     void Player::updateBasedOnPhysics()
     {   b2Vec2 position = b2Body_GetPosition(body);
         position.x = this->position.x; // Force the X position to remain constant (locked)

@@ -49,11 +49,6 @@ namespace gl3::engine
         lastFrameTime_ = frameTime;
     }
 
-    b2WorldId Game::getPhysicsWorld() const
-    {
-        return physicsWorld;
-    }
-
     Game::~Game()
     {
         glfwTerminate();

@@ -2,16 +2,10 @@
 #include "engine/Game.h"
 #include <soloud_wav.h>
 #include "entities/Player.h"
+#include "physics/PhysicsSystem.h"
 
-namespace gl3 {
-
-    enum class GameState {
-        Menu,
-        Level,
-        PreviewWithScrolling,
-        PreviewWithTesting
-    };
-
+namespace gl3
+{
     struct GameObject
     {
         float positionX;
@@ -22,18 +16,18 @@ namespace gl3 {
         glm::vec4 color;
     };
 
-    class Game: public engine::Game
+    class Game : public engine::Game
     {
     public:
-        Game(int width, int height, const std::string &title, glm::vec3 camPos, float camZoom);
+        Game(int width, int height, const std::string& title, glm::vec3 camPos, float camZoom);
         ~Game() override;
-        [[nodiscard]] Player *getShip() const { return player; }
+        [[nodiscard]] const entt::entity& getPlayer() const { return *player; }
         float bpm = 0.0f; // Default BPM, updated dynamically //TODO not public
         float distancePerBeat = 2.0f; // Example: player travels 1 unit per beat
 
     private:
         void start() override;
-        void update(GLFWwindow *window) override;
+        void update(GLFWwindow* window) override;
         void draw() override;
         void updatePhysics() override;
         void moveEntitiesScrolling();
@@ -43,23 +37,17 @@ namespace gl3 {
         void reset();
 
         entt::registry registry_;
-        GameState previousGameState = GameState::Menu;
-        GameState currentGameState = GameState::Menu;
-        //std::vector<std::unique_ptr<Entity>> entities;
-       std::unique_ptr< entt::entity> player = nullptr; //TODO uniqueptr?
+        PhysicsSystem physics_system_;
+        engine::GameState previousGameState = engine::GameState::Menu;
+        std::unique_ptr<entt::entity> player = nullptr;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
         float levelLength = 0;
         float groundLevel = -1;
-        float accumulator = 0.f;
 
         bool loadLevelFromFile = true;
-        float levelSpeed = -1.f;
 
         float scrollSpeed = -1.f;
         bool isAudioPlaying = false;
         float initialPlayerPositionX = -2;
     };
 }
-
-
-

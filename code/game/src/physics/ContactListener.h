@@ -1,7 +1,3 @@
-//
-// Created by CemOe on 05.11.2024.
-//
-
 #pragma once
 #include "box2d/box2d.h"
 #include "../entities/Entity.h"
