@@ -1,4 +1,4 @@
-#include "Mesh.h"
+#include "engine/rendering/Mesh.h"
 #include "glad/glad.h"
 
 namespace gl3::engine::rendering {

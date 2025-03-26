@@ -68,7 +68,6 @@ namespace gl3
             scroll_callback_fun(offsetY);
         });
 
-        auto groundHeight = 4.0f;
         engine::ecs::EntityFactory::createDefaultEntity(registry_, glm::vec3(0, groundLevel - groundHeight / 2, 0.0f),
                                                         glm::vec3(40.0f, groundHeight, 0.f),
                                                         0.f, glm::vec4(0.25, 0.27, 1, 1), "ground", physicsWorld);
@@ -333,7 +332,6 @@ namespace gl3
         if (currentGameState == engine::GameState::Menu) return; //TODO implement Menu
 
         std::string audio_file = resolveAssetPath("audio/SensesShort.wav");
-        std::vector<float> beatPositions;
 
         unsigned int hopSize = 512; // Size of each hop
         unsigned int bufferSize = 2048; // Size of the analysis buffer
@@ -341,17 +339,19 @@ namespace gl3
         bpm = engine::AudioAnalysis::analyzeAudioTempo(audio_file, hopSize, bufferSize);
         auto beatInterval = 60 / bpm;
 
-        beatPositions = engine::AudioAnalysis::generateBeatTimestamps(static_cast<float>(backgroundMusic->getLength()),
-                                                                      60 / bpm,
-                                                                      initialPlayerPositionX);
+        std::vector<float> beatPositions = engine::AudioAnalysis::generateBeatTimestamps(
+            static_cast<float>(backgroundMusic->getLength()),
+            60 / bpm,
+            initialPlayerPositionX);
+
         levelLength = backgroundMusic->getLength();
 
-        std::vector<GameObject> game_objects = generateTestObjects(beatInterval, initialPlayerPositionX);
+        initial_test_game_objects = generateTestObjects(beatInterval, initialPlayerPositionX);
 
         if (currentGameState == engine::GameState::Level || currentGameState == engine::GameState::PreviewWithTesting ||
             currentGameState == engine::GameState::PreviewWithScrolling)
         {
-            for (auto object : game_objects)
+            for (auto object : initial_test_game_objects)
             {
                 auto posY = object.positionY == 0
                                 ? groundLevel + object.scaleY / 2
@@ -405,13 +405,18 @@ namespace gl3
                 registry_, glm::vec3(0, groundLevel, 0.0f), glm::vec3(40.f, 0.05f, 0.f),
                 0.f, glm::vec4(0.1, 0.1, 1.0, 1.0f), "timeline", physicsWorld);
 
+            std::vector<GameObject> tempObjects;
+            tempObjects.push_back(GameObject(0.f, groundLevel, true , 40.f, 0.05f, glm::vec4(0.1, 0.1, 1.0, 1.0f)));
+
             for (auto beatPosition : beatPositions)
             {
                 auto timeLineColor = glm::vec4(0.1, 0.1, 1.0, 1.0f);
                 engine::ecs::EntityFactory::createDefaultEntity(
                     registry_, glm::vec3(beatPosition, groundLevel, 0.0f), glm::vec3(0.05f, 0.5f, 0.f),
                     0.f, timeLineColor, "beat", physicsWorld);
+                tempObjects.push_back(GameObject(beatPosition, groundLevel,true, 0.05f, 0.5f, timeLineColor));
             }
+            initial_test_game_objects = tempObjects;
         }
 
         if (currentGameState != engine::GameState::Menu && currentGameState != engine::GameState::PreviewWithScrolling)
@@ -443,27 +448,41 @@ namespace gl3
         audio.playBackground(*backgroundMusic);
 
         // Reset all entities to their initial states
-        resetEntities();
+        resetPositions();
         if (currentGameState != engine::GameState::Menu && currentGameState != engine::GameState::PreviewWithScrolling)
         {
-            for (const std::unique_ptr<Entity>& entity : entities)
+            const auto& entities = registry_.view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
+
+            for (auto& entity : entities)
             {
-                if (entity->getTag() == "platform" || entity->getTag() == "obstacle")
+                auto& physics_comp = entities.get<engine::ecs::PhysicsComponent>(entity);
+                auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
+                if(tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
                 {
-                    b2Body_SetLinearVelocity(entity->getBody(), {levelSpeed, 0.0f});
+                    b2Body_SetLinearVelocity(physics_comp.body, {levelSpeed, 0.0f});
                 }
             }
         }
-
-        // Optionally reload the level or reinitialize other states
-        // ...
     }
 
-    void Game::resetEntities()
-    {
-        for (const std::unique_ptr<Entity>& entity : entities)
-        {
-            entity->resetToInitialState();
+    void Game::resetPositions() {
+        auto view = registry_.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>();
+
+        for (auto entity : view) {
+            auto& transform = view.get<engine::ecs::TransformComponent>(entity);
+            auto& tag = view.get<engine::ecs::TagComponent>(entity);
+
+            if (tag.tag == "player") {
+                transform.position = glm::vec3(initialPlayerPositionX, groundLevel + transform.scale.y / 2, 0.f);
+                break;
+            }
+            if (tag.tag == "ground") {
+                transform.position = glm::vec3(0, groundLevel - groundHeight / 2, 0.0f);
+                break;
+            }
+            for (const auto& obj : initial_test_game_objects) {
+                transform.position = {obj.positionX, obj.positionY, 0.f};
+            }
         }
     }
 

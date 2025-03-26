@@ -1,8 +1,7 @@
-#include "Player.h"
+/*
 #include <iostream>
 #include "../Game.h"
 #include "../Assets.h"
-#include "Obstacle.h"
 
 
 namespace gl3
@@ -137,3 +136,4 @@ namespace gl3
         m_jumping = false;
     }
 }
+*/

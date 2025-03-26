@@ -1,6 +1,5 @@
 #pragma once
 #include "box2d/box2d.h"
-#include "../entities/Entity.h"
 
 
 namespace gl3 {
@@ -16,14 +15,14 @@ namespace gl3 {
 
                 if(bodyUserDataA)
                 {
-                    auto entity = static_cast<Entity*>(bodyUserDataA);
-                    entity->startContact();
+                    auto entity = static_cast<entt::entity*>(bodyUserDataA);
+                    //entity->startContact();
                 }
 
                 if(bodyUserDataB)
                 {
-                    auto entity = static_cast<Entity*>(bodyUserDataB);
-                    entity->startContact();
+                    auto entity = static_cast<entt::entity*>(bodyUserDataB);
+                    //entity->startContact(); //TODO hier oder in physics system oder in player controller collision abfangen und reagieren
                 }
             }
         }

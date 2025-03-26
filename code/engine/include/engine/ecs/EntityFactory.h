@@ -43,8 +43,7 @@ namespace gl3::engine::ecs
                                                 const glm::vec3& scale = {1.0f, 1.0f, 1.0f},
                                                 const float& zRotation = 0.0f,
                                                 const glm::vec4& color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                                                const std::string& tag = "undefined", const b2WorldId& physicsWorld,
-                                                const bool& isTriangle = false)
+                                                const std::string& tag = "undefined", const b2WorldId& physicsWorld = b2_nullWorldId, const bool isTriangle = false)
         {
             // Create an entity
             const entt::entity entity = registry.create();
@@ -61,7 +60,7 @@ namespace gl3::engine::ecs
             registry.emplace<RenderComponent>(entity, createRenderComponent(color, isTriangle, scale));
 
             return entity;
-        }
+        };
 
         struct glData
         {
@@ -128,8 +127,8 @@ namespace gl3::engine::ecs
                 indices = boxData.indices;
             }
 
-            return RenderComponent(rendering::Shader{"shaders/vertexShader.vert", "shaders/fragmentShader.frag"},
-                                   rendering::Mesh{vertices, indices}, color);
+            return RenderComponent(rendering::Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
+                                   rendering::Mesh(vertices, indices), color);
         }
 
         static PhysicsComponent createPhysicsBody(const b2WorldId& physicsWorld,

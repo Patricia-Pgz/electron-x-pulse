@@ -1,7 +1,6 @@
 #pragma once
 #include "engine/Game.h"
 #include <soloud_wav.h>
-#include "entities/Player.h"
 #include "physics/PhysicsSystem.h"
 
 namespace gl3
@@ -33,7 +32,7 @@ namespace gl3
         void moveEntitiesScrolling();
         void scroll_callback_fun(double yOffset);
         void onGameStateChange(); //TODO event
-        void resetEntities();
+        void resetPositions();
         void reset();
 
         entt::registry registry_;
@@ -41,13 +40,15 @@ namespace gl3
         engine::GameState previousGameState = engine::GameState::Menu;
         std::unique_ptr<entt::entity> player = nullptr;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
+
         float levelLength = 0;
         float groundLevel = -1;
+        float groundHeight = 4.0f;
+
+        std::vector<GameObject> initial_test_game_objects;
 
         bool loadLevelFromFile = true;
 
-        float scrollSpeed = -1.f;
-        bool isAudioPlaying = false;
         float initialPlayerPositionX = -2;
     };
 }

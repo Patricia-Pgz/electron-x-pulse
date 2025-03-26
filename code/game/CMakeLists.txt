@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 # set variables for source files
-set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Constants.h src/entities/Player.cpp src/entities/Player.h src/Assets.h
+set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Constants.h src/Assets.h
         src/physics/ContactListener.h
         src/physics/PhysicsSystem.h
 )
@@ -18,7 +18,7 @@ target_compile_features(${EXE_FILE} PRIVATE cxx_std_20)
 target_link_libraries(${EXE_FILE} PRIVATE Electrine)
 
 
-target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT=./assets/)
+target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets/")
 
 # copy assets to output directory before build
 add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
