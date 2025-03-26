@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.18)
 
 # set variables for source files
-set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Constants.h src/rendering/Shader.cpp src/rendering/Shader.h src/rendering/Mesh.cpp src/rendering/Mesh.h src/entities/Player.cpp src/entities/Player.h src/Assets.h
+set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Constants.h src/entities/Player.cpp src/entities/Player.h src/Assets.h
         src/physics/ContactListener.h
-        src/entities/Platform.cpp
-        src/entities/Platform.h
-        src/entities/Obstacle.cpp
-        src/entities/Obstacle.h
         src/physics/PhysicsSystem.h
 )
 

@@ -19,7 +19,7 @@ namespace gl3
     class Game : public engine::Game
     {
     public:
-        Game(int width, int height, const std::string& title, glm::vec3 camPos, float camZoom);
+        Game(int width, int height, const std::string& title, const glm::vec3& camPos, float camZoom);
         ~Game() override;
         [[nodiscard]] const entt::entity& getPlayer() const { return *player; }
         float bpm = 0.0f; // Default BPM, updated dynamically //TODO not public

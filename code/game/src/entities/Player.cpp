@@ -54,7 +54,7 @@ namespace gl3
 
     void Player::update(Game* game, float deltaTime)
     {
-        auto window = game->getWindow();
+        auto window = game->getWindow(); //TODO PlayerController
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {

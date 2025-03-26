@@ -2,8 +2,6 @@
 #include <random>
 #include <iostream>
 #include "Assets.h"
-#include "entities/Obstacle.h"
-#include "entities/Platform.h"
 #include "physics/ContactListener.h"
 #include "engine/AudioAnalysis.h"
 #include "engine/ecs/EntityFactory.h"
@@ -11,7 +9,7 @@
 
 namespace gl3
 {
-    Game::Game(int width, int height, const std::string& title, glm::vec3 camPos, float camZoom)
+    Game::Game(const int width, const int height, const std::string& title, const glm::vec3& camPos, const float camZoom)
         : engine::Game(width, height, title, camPos, camZoom), physics_system_(*this)
     {
     }
