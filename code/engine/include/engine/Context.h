@@ -27,7 +27,7 @@ namespace gl3::engine::context {
         [[nodiscard]] std::vector<float> getWindowBounds() const {
             return {windowLeft, windowRight, windowBottom, windowTop};
         };
-        [[nodiscard]] bool isInVisibleWindow(const glm::vec2& position, float margin = 0.f) const;
+        [[nodiscard]] bool isInVisibleWindow(const glm::vec2& position, float margin = 1.f) const;
 
     private:
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);

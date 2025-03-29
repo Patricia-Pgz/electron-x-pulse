@@ -68,12 +68,11 @@ namespace gl3
             scroll_callback_fun(offsetY);
         });
 
-        engine::ecs::EntityFactory::createDefaultEntity(registry_, glm::vec3(0, groundLevel - groundHeight / 2, 0.0f),
-                                                        glm::vec3(40.0f, groundHeight, 0.f),
-                                                        0.f, glm::vec4(0.25, 0.27, 1, 1), "ground", physicsWorld);
+        const auto& ground = engine::ecs::EntityFactory::createDefaultEntity(registry_, glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), glm::vec4(0.25, 0.27, 1, 1), "ground", physicsWorld);
+        engine::ecs::EntityFactory::setScale(registry_,ground,glm::vec3(40.f, groundHeight, 0.f));
         player = std::make_unique<entt::entity>(engine::ecs::EntityFactory::createDefaultEntity(
-            registry_, glm::vec3(initialPlayerPositionX, groundLevel + 0.25 / 2, 0), glm::vec3(0.25f, 0.25f, 0.25f),
-            0.f, glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld));
+            registry_, glm::vec3(initialPlayerPositionX, groundLevel + 0.25 / 2, 0), glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld));
+        engine::ecs::EntityFactory::setScale(registry_, *player, glm::vec3(0.25f,0.25f, 0.f));
         /*player->onPlayerDeath.addListener([&] { //TODO System player events/functionality? Evtl nur referenz/pointer zu entt entity player behalten?Ist aber ja eh nur ID
            reset();
         }); //save this handle if I want to unsubscribe later*/
@@ -93,7 +92,7 @@ namespace gl3
 
         if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
         {
-            currentGameState = engine::GameState::Level;
+            currentGameState = engine::GameState::Level; //TODO Preview funktioniert nicht mehr, prüfen wie ich entities generiere!!
         }
 
         if (currentGameState != previousGameState)
@@ -124,33 +123,6 @@ namespace gl3
         {
             if (b2Body_IsValid(body))
                 b2DestroyBody(body); //TODO does this get called when the physicscomponent gets deleted? -> levelReload/Load/wechsel
-        }
-    }
-
-    void Entity::updateBasedOnPhysics() //TODO physics system
-    {
-        if (!b2Body_IsValid(body))
-            return;
-
-        auto physicsTransform = b2Body_GetTransform(body);
-
-        position.x = physicsTransform.p.x;
-        position.y = physicsTransform.p.y;
-
-        zRotation = glm::degrees(b2Rot_GetAngle(physicsTransform.q));
-    }
-
-    void Entity::resetToInitialState()
-    {
-        position = initialPosition;
-        zRotation = initialZRotation;
-        scale = initialScale;
-
-        if (const auto body = getBody(); b2Body_IsValid(body))
-        {
-            b2Body_SetTransform(body, {position.x, position.y}, b2MakeRot(glm::radians(initialZRotation)));
-            b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
-            b2Body_SetAngularVelocity(body, 0.0f);
         }
     }*/
 
@@ -191,7 +163,7 @@ namespace gl3
         }
         std::vector<GameObject> game_objects = {
             {4 * beatInterval + initialPlayerPositionX, 0.f, true, 1 * beatInterval, 1 * beatInterval, blueColors[0]},
-            {5 * beatInterval + initialPlayerPositionX, 0.f, false, 0.8f * beatInterval, 1 * beatInterval, redColor},
+            {5 * beatInterval + initialPlayerPositionX, 0.f, false, 0.5f * beatInterval, 0.5f * beatInterval, redColor},
 
             {11 * beatInterval + initialPlayerPositionX, 0.f, true, 1 * beatInterval, 2 * beatInterval, blueColors[1]},
 
@@ -215,11 +187,11 @@ namespace gl3
             {28 * beatInterval + initialPlayerPositionX, 0.f, true, 1 * beatInterval, 1 * beatInterval, blueColors[0]},
             {
                 28 * beatInterval + initialPlayerPositionX + 0.75f * beatInterval, 0.f, false, 0.5f * beatInterval,
-                1 * beatInterval, redColor
+                0.5f * beatInterval, redColor
             },
             {
                 28 * beatInterval + initialPlayerPositionX + 1.25f * beatInterval, 0.f, false, 0.5f * beatInterval,
-                1 * beatInterval, redColor
+                0.5f * beatInterval, redColor
             },
             {30 * beatInterval + initialPlayerPositionX, 0.f, true, 1 * beatInterval, 1 * beatInterval, blueColors[0]},
             {32 * beatInterval + initialPlayerPositionX, 0.f, true, 2 * beatInterval, 1 * beatInterval, blueColors[1]},
@@ -228,17 +200,17 @@ namespace gl3
                 38 * beatInterval + initialPlayerPositionX, 0.f, true, 1 * beatInterval, 1 * beatInterval,
                 purpleColors[1]
             },
-            {39 * beatInterval + initialPlayerPositionX, 0.f, false, 0.6f * beatInterval, 1 * beatInterval, redColor},
+            {39 * beatInterval + initialPlayerPositionX, 0.f, false, 0.5f * beatInterval, 0.5f * beatInterval, redColor},
             {
                 40 * beatInterval + initialPlayerPositionX, 0.f, true, 1 * beatInterval, 1 * beatInterval,
                 purpleColors[3]
             },
-            {41 * beatInterval + initialPlayerPositionX, 0.f, false, 0.6f * beatInterval, 1 * beatInterval, redColor},
+            {41 * beatInterval + initialPlayerPositionX, 0.f, false, 0.5f * beatInterval, 0.5f * beatInterval, redColor},
             {
                 42 * beatInterval + initialPlayerPositionX, 0.f, true, 2 * beatInterval, 1 * beatInterval,
                 purpleColors[1]
             },
-            {43 * beatInterval + initialPlayerPositionX, 0.f, false, 0.6f * beatInterval, 1 * beatInterval, redColor},
+            {43 * beatInterval + initialPlayerPositionX, 0.f, false, 0.5f * beatInterval, 0.5f * beatInterval, redColor},
 
             {47 * beatInterval + initialPlayerPositionX, 0.f, true, 1 * beatInterval, 1 * beatInterval, blueColors[0]},
 
@@ -291,7 +263,7 @@ namespace gl3
             {80 * beatInterval + initialPlayerPositionX, 3.0f, true, 1 * beatInterval, 3 * beatInterval, blueColors[0]},
             {
                 80 * beatInterval + initialPlayerPositionX + 0.25f * beatInterval, 3.0f + beatInterval, false,
-                0.5f * beatInterval, 1 * beatInterval, redColor
+                0.5f * beatInterval, 0.5f * beatInterval, redColor
             },
             {
                 84 * beatInterval + initialPlayerPositionX, 4.0f, true, 1 * beatInterval, 2 * beatInterval,
@@ -299,7 +271,7 @@ namespace gl3
             },
             {
                 84.f * beatInterval + initialPlayerPositionX + 0.75f * beatInterval, 4.0f + beatInterval, false,
-                0.5f * beatInterval, 1 * beatInterval, redColor
+                0.5f * beatInterval, 0.5f * beatInterval, redColor
             },
 
             {86 * beatInterval + initialPlayerPositionX, 0.f, true, 1 * beatInterval, 1 * beatInterval, blueColors[0]},
@@ -359,15 +331,15 @@ namespace gl3
 
                 if (object.isPlatform)
                 {
-                    engine::ecs::EntityFactory::createDefaultEntity(registry_, glm::vec3(object.positionX, posY, 0.0f),
-                                                                    glm::vec3(object.scaleX, object.scaleY, 0.f),
-                                                                    0.f, object.color, "platform", physicsWorld);
+                    const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(registry_, glm::vec3(object.positionX, posY, 0.0f),
+                                                                     object.color, "platform", physicsWorld);
+                    engine::ecs::EntityFactory::setScale(registry_,entity,glm::vec3(object.scaleX, object.scaleY, 0.f));
                 }
                 else
                 {
-                    engine::ecs::EntityFactory::createDefaultEntity(registry_, glm::vec3(object.positionX, posY, 0.0f),
-                                                                    glm::vec3(object.scaleX, object.scaleY, 0.f),
-                                                                    0.f, object.color, "obstacle", physicsWorld);
+                    const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(registry_, glm::vec3(object.positionX, posY, 0.0f),
+                                                                     object.color, "obstacle", physicsWorld, true);
+                    engine::ecs::EntityFactory::setScale(registry_,entity,glm::vec3(object.scaleX, object.scaleY, 0.f));
                 }
             }
             /*int index = 0;
@@ -401,9 +373,9 @@ namespace gl3
         if (currentGameState == engine::GameState::PreviewWithScrolling || currentGameState ==
             engine::GameState::PreviewWithTesting)
         {
-            engine::ecs::EntityFactory::createDefaultEntity(
-                registry_, glm::vec3(0, groundLevel, 0.0f), glm::vec3(40.f, 0.05f, 0.f),
-                0.f, glm::vec4(0.1, 0.1, 1.0, 1.0f), "timeline", physicsWorld);
+            const auto& timeLine = engine::ecs::EntityFactory::createDefaultEntity(
+                registry_, glm::vec3(0, groundLevel, 0.0f), glm::vec4(0.1, 0.1, 1.0, 1.0f), "timeline", physicsWorld);
+            engine::ecs::EntityFactory::setScale(registry_, timeLine, glm::vec3(40.f, 0.05f, 0.f));
 
             std::vector<GameObject> tempObjects;
             tempObjects.push_back(GameObject(0.f, groundLevel, true , 40.f, 0.05f, glm::vec4(0.1, 0.1, 1.0, 1.0f)));
@@ -411,9 +383,9 @@ namespace gl3
             for (auto beatPosition : beatPositions)
             {
                 auto timeLineColor = glm::vec4(0.1, 0.1, 1.0, 1.0f);
-                engine::ecs::EntityFactory::createDefaultEntity(
-                    registry_, glm::vec3(beatPosition, groundLevel, 0.0f), glm::vec3(0.05f, 0.5f, 0.f),
-                    0.f, timeLineColor, "beat", physicsWorld);
+                const auto& beat = engine::ecs::EntityFactory::createDefaultEntity(
+                    registry_, glm::vec3(beatPosition, groundLevel, 0.0f), timeLineColor, "beat", physicsWorld);
+                engine::ecs::EntityFactory::setScale(registry_, beat, glm::vec3(0.05f, 0.5f, 0.f));
                 tempObjects.push_back(GameObject(beatPosition, groundLevel,true, 0.05f, 0.5f, timeLineColor));
             }
             initial_test_game_objects = tempObjects;
@@ -432,10 +404,6 @@ namespace gl3
                     b2Body_SetLinearVelocity(physics_comp.body, {levelSpeed, 0.0f});
                 }
             }
-        }else
-        {
-            auto& physics_comp = registry_.get<engine::ecs::PhysicsComponent>(*player);
-            b2Body_SetAwake(physics_comp.body, false);
         }
         audio.playBackground(*backgroundMusic);
     }
@@ -473,15 +441,15 @@ namespace gl3
             auto& tag = view.get<engine::ecs::TagComponent>(entity);
 
             if (tag.tag == "player") {
-                transform.position = glm::vec3(initialPlayerPositionX, groundLevel + transform.scale.y / 2, 0.f);
+                engine::ecs::EntityFactory::setPosition(registry_, entity,glm::vec3(initialPlayerPositionX, groundLevel + transform.scale.y / 2, 0.f));
                 break;
             }
             if (tag.tag == "ground") {
-                transform.position = glm::vec3(0, groundLevel - groundHeight / 2, 0.0f);
+                engine::ecs::EntityFactory::setPosition(registry_, entity,glm::vec3(0, groundLevel - groundHeight / 2, 0.0f));
                 break;
             }
             for (const auto& obj : initial_test_game_objects) {
-                transform.position = {obj.positionX, obj.positionY, 0.f};
+                engine::ecs::EntityFactory::setPosition(registry_, entity, glm::vec3(obj.positionX, obj.positionY, 0.f));
             }
         }
     }

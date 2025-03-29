@@ -18,7 +18,7 @@ target_compile_features(${EXE_FILE} PRIVATE cxx_std_20)
 target_link_libraries(${EXE_FILE} PRIVATE Electrine)
 
 
-target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets/")
+target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT=${CMAKE_SOURCE_DIR}/assets)
 
 # copy assets to output directory before build
 add_custom_command(TARGET ${EXE_FILE} PRE_BUILD

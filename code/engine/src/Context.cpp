@@ -1,8 +1,5 @@
 #include <stdexcept>
 #include "engine/Context.h"
-
-#include <iostream>
-
 #include "engine/Game.h"
 
 
@@ -60,7 +57,7 @@ namespace gl3::engine::context
         glfwSetTime(1.0 / 60);
         while (!glfwWindowShouldClose(window))
         {
-            glClearColor(0.8f, 0.8f, 1.0f, 1.0f);
+            glClearColor(1.f,1.f,1.f, 1.f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             update(*this);
             glfwPollEvents();
