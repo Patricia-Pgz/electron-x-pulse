@@ -161,7 +161,6 @@ namespace gl3::engine::ecs
             //bodyDef.rotation = b2MakeRot(glm::radians(zRotation));
             bodyDef.fixedRotation = true;
             bodyDef.linearDamping = 0.0f;
-
             bodyDef.userData = reinterpret_cast<void*>(static_cast<uintptr_t>(entity));
             const auto body = b2CreateBody(physicsWorld, &bodyDef);
 

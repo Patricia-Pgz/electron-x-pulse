@@ -3,11 +3,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "engine/ecs/EntityFactory.h"
+#include "engine/ecs/System.h"
+
 namespace gl3::engine::rendering
 {
-    class RenderingSystem
+    class RenderingSystem : public ecs::System
     {
     public:
+        explicit RenderingSystem(Game& game) : System(game){};
+
         static glm::mat4 calculateMvpMatrix(const glm::vec3& position, const float& zRotationInDegrees,
                                             const glm::vec3& scale, const context::Context& context)
         {
@@ -27,8 +32,10 @@ namespace gl3::engine::rendering
             return projection * view * model;
         }
 
-        static void draw(entt::registry& registry, const context::Context& context)
-        {
+            void draw() const
+            {
+            auto& registry = game.getRegistry();
+            auto& context = game.getContext();
             for (const auto& entities = registry.view<ecs::TransformComponent, ecs::RenderComponent>(); const auto&
                  entity : entities)
             {

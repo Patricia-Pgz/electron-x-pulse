@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.18)
 set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Constants.h src/Assets.h
         src/physics/ContactListener.h
         src/physics/PhysicsSystem.h
+        src/PlayerInputSystem.cpp
+        src/PlayerInputSystem.h
 )
 
 # set executable name

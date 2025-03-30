@@ -1,6 +1,9 @@
 #pragma once
 #include "engine/Game.h"
 #include <soloud_wav.h>
+
+#include "PlayerInputSystem.h"
+#include "engine/rendering/RenderingSystem.h"
 #include "physics/PhysicsSystem.h"
 
 namespace gl3
@@ -21,8 +24,6 @@ namespace gl3
         Game(int width, int height, const std::string& title, const glm::vec3& camPos, float camZoom);
         ~Game() override;
         [[nodiscard]] const entt::entity& getPlayer() const { return *player; }
-        float bpm = 0.0f; // Default BPM, updated dynamically //TODO not public
-        float distancePerBeat = 2.0f; // Example: player travels 1 unit per beat
 
     private:
         void start() override;
@@ -35,8 +36,9 @@ namespace gl3
         void resetPositions();
         void reset();
 
-        entt::registry registry_;
         PhysicsSystem physics_system_;
+        engine::rendering::RenderingSystem rendering_system_;
+        PlayerInputSystem player_input_system_;
         engine::GameState previousGameState = engine::GameState::Menu;
         std::unique_ptr<entt::entity> player = nullptr;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;

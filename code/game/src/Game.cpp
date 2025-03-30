@@ -2,6 +2,7 @@
 #include <random>
 #include <iostream>
 #include "Assets.h"
+#include "PlayerInputSystem.h"
 #include "physics/ContactListener.h"
 #include "engine/AudioAnalysis.h"
 #include "engine/ecs/EntityFactory.h"
@@ -10,7 +11,7 @@
 namespace gl3
 {
     Game::Game(const int width, const int height, const std::string& title, const glm::vec3& camPos, const float camZoom)
-        : engine::Game(width, height, title, camPos, camZoom), physics_system_(*this)
+        : engine::Game(width, height, title, camPos, camZoom), physics_system_(*this), rendering_system_(*this), player_input_system_(*this)
     {
     }
 
@@ -109,11 +110,12 @@ namespace gl3
                 //entity->update(this, deltaTime); //TODO hatte noch jemand außer Player wirklich was in update? -> System für playermovement
             }
         }
+        player_input_system_.update(*player);
     }
 
     void Game::draw()
     {
-        engine::rendering::RenderingSystem::draw(registry_, context); //TODO mesh und shader in rendering namespace
+        rendering_system_.draw(); //TODO mesh und shader in rendering namespace
     }
 
     //TODO:
@@ -129,7 +131,7 @@ namespace gl3
     void Game::updatePhysics()
     {
         if (currentGameState == engine::GameState::Menu) return;
-        physics_system_.runPhysicsStep(physicsWorld, deltaTime, registry_);
+        physics_system_.runPhysicsStep();
     }
 
     std::vector<GameObject> generateTestObjects(const float& beatInterval, const float& initialPlayerPositionX)

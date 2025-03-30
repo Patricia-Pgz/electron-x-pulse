@@ -8,22 +8,21 @@ namespace gl3
     class PhysicsSystem : public engine::ecs::System
     {
     public:
-        explicit PhysicsSystem(engine::Game& game) : System(game)
-        {
-        };
+        explicit PhysicsSystem(engine::Game& game) : System(game){};
 
-        void runPhysicsStep(b2WorldId physicsWorld, float deltaTime, entt::registry& registry)
+        void runPhysicsStep()
         {
-            accumulator += deltaTime;
+            accumulator += game.getDeltaTime();
             if (accumulator >= fixedTimeStep)
             {
-                b2World_Step(physicsWorld, fixedTimeStep, subStepCount);
-                ContactListener::checkForCollision(physicsWorld);
+                const b2WorldId world = game.getPhysicsWorld();
+                b2World_Step(world, fixedTimeStep, subStepCount);
+                ContactListener::checkForCollision(world);
 
                 if (game.currentGameState == engine::GameState::PreviewWithScrolling) return;
 
                 // Update the entities based on what happened in the physics step
-                const auto& entities = registry.view<engine::ecs::TagComponent, engine::ecs::TransformComponent,
+                const auto& entities = game.getRegistry().view<engine::ecs::TagComponent, engine::ecs::TransformComponent,
                                               engine::ecs::PhysicsComponent>();
 
                 for (auto& entity : entities)
@@ -46,21 +45,19 @@ namespace gl3
 
                     auto [p, q] = b2Body_GetTransform(physics_comp.body);
 
-                    transform_comp.position.x = p.x;
-                    transform_comp.position.y = p.y;
+                    if(tag_comp.tag == "player")
+                    {
+                        b2Vec2 position = b2Body_GetPosition(physics_comp.body);
+                        position.x = transform_comp.position.x; // Force the X position to remain constant (locked)
+                        b2Body_SetTransform(physics_comp.body, position, b2Body_GetRotation(physics_comp.body));
+                    } else
+                    {
+                        transform_comp.position.x = p.x; //TODO evtl solche Dinge nur tun, wenn physics comp awake?
+                        transform_comp.position.y = p.y;
 
+                    }
                     transform_comp.zRotation = glm::degrees(b2Rot_GetAngle(q));
 
-                    // If entity is off-screen, sleep to save performance //TODO das ist unnötig, da die velocity die bodies eh direkt wieder aufweckt!
-                    /*if (b2Body_GetPosition(physics_comp.body).x < game.getContext().getWindowBounds()[0] - 1.0f)
-                    // Arbitrary value to check if the entity is far off-screen
-                    {
-                        b2Body_SetAwake(physics_comp.body, false); // Sleep the body
-                    }
-                    else
-                    {
-                        b2Body_SetAwake(physics_comp.body, true); // Wake the body if it’s back on screen
-                    }*/
                 }
 
                 accumulator -= fixedTimeStep;

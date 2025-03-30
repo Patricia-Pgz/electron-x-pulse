@@ -29,7 +29,10 @@ public:
     [[nodiscard]] GLFWwindow *getWindow() const { return context.getWindow(); }
     [[nodiscard]] b2WorldId getPhysicsWorld() const {return physicsWorld;};
     [[nodiscard]] const context::Context& getContext() const { return context; }
+    [[nodiscard]] float getDeltaTime() const {return deltaTime;};
+    entt::registry& getRegistry(){return registry_;};
     float& getLevelSpeed() { return levelSpeed; };
+    float& getCurrentBPM(){return bpm;};
 
 
     using event_t = events::Event<Game, Game&>;
@@ -60,12 +63,13 @@ protected:
 
     b2WorldId physicsWorld;
 
-    float levelSpeed = -1.f;
+    entt::registry registry_;
 
+    float levelSpeed = -1.f;
+    float bpm = 0.0f; // Default BPM, updated dynamically
 
 private:
     float lastFrameTime_ = 1.0f / 60;
-    entt::registry registry_;
 };
 
 } // gl3
