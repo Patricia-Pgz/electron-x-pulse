@@ -22,6 +22,7 @@ namespace gl3
     {
     public:
         Game(int width, int height, const std::string& title, const glm::vec3& camPos, float camZoom);
+
         ~Game() override;
         [[nodiscard]] const entt::entity& getPlayer() const { return *player; }
 
@@ -33,6 +34,7 @@ namespace gl3
         void moveEntitiesScrolling();
         void scroll_callback_fun(double yOffset);
         void onGameStateChange(); //TODO event
+        void onPlayerDeath(engine::ecs::PlayerDeath& event);
         void resetPositions();
         void reset();
 

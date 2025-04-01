@@ -8,7 +8,9 @@ namespace gl3
     class PhysicsSystem : public engine::ecs::System
     {
     public:
-        explicit PhysicsSystem(engine::Game& game) : System(game){};
+        explicit PhysicsSystem(engine::Game& game) : System(game)
+        {
+        };
 
         void runPhysicsStep()
         {
@@ -17,13 +19,14 @@ namespace gl3
             {
                 const b2WorldId world = game.getPhysicsWorld();
                 b2World_Step(world, fixedTimeStep, subStepCount);
-                ContactListener::checkForCollision(world);
+                ContactListener::checkForPlayerCollision(world, game.getRegistry());
 
                 if (game.currentGameState == engine::GameState::PreviewWithScrolling) return;
 
                 // Update the entities based on what happened in the physics step
-                const auto& entities = game.getRegistry().view<engine::ecs::TagComponent, engine::ecs::TransformComponent,
-                                              engine::ecs::PhysicsComponent>();
+                const auto& entities = game.getRegistry().view<
+                    engine::ecs::TagComponent, engine::ecs::TransformComponent,
+                    engine::ecs::PhysicsComponent>();
 
                 for (auto& entity : entities)
                 {
@@ -45,19 +48,11 @@ namespace gl3
 
                     auto [p, q] = b2Body_GetTransform(physics_comp.body);
 
-                    if(tag_comp.tag == "player")
-                    {
-                        b2Vec2 position = b2Body_GetPosition(physics_comp.body);
-                        position.x = transform_comp.position.x; // Force the X position to remain constant (locked)
-                        b2Body_SetTransform(physics_comp.body, position, b2Body_GetRotation(physics_comp.body));
-                    } else
-                    {
-                        transform_comp.position.x = p.x; //TODO evtl solche Dinge nur tun, wenn physics comp awake?
-                        transform_comp.position.y = p.y;
 
-                    }
+                    transform_comp.position.x = p.x; //TODO evtl solche Dinge nur tun, wenn physics comp awake?
+                    transform_comp.position.y = p.y;
+
                     transform_comp.zRotation = glm::degrees(b2Rot_GetAngle(q));
-
                 }
 
                 accumulator -= fixedTimeStep;
@@ -68,5 +63,10 @@ namespace gl3
         const float fixedTimeStep = 1.0f / 60.0f;
         const int subStepCount = 8; // recommended sub-step count
         float accumulator = 0.f;
+
+        static void onPlayerGrounded()
+        {
+
+        };
     };
 } // gl3
