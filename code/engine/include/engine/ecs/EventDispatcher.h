@@ -3,7 +3,7 @@
 
 namespace gl3::engine::ecs
 {
-    class EventManager {
+    class EventDispatcher {
     public:
         static entt::dispatcher dispatcher;
     };

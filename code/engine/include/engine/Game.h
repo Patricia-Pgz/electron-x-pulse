@@ -31,8 +31,9 @@ public:
     [[nodiscard]] const context::Context& getContext() const { return context; }
     [[nodiscard]] float getDeltaTime() const {return deltaTime;};
     entt::registry& getRegistry(){return registry_;};
-    float& getLevelSpeed() { return levelSpeed; };
-    float& getCurrentBPM(){return bpm;};
+    [[nodiscard]] entt::entity getPlayer() const { return player; }
+    [[nodiscard]] float getLevelSpeed() const { return levelSpeed; };
+    [[nodiscard]] float getCurrentBPM() const{return bpm;};
 
 
     using event_t = events::Event<Game, Game&>;
@@ -64,6 +65,7 @@ protected:
     b2WorldId physicsWorld;
 
     entt::registry registry_;
+    entt::entity player;
 
     float levelSpeed = -1.f;
     float bpm = 0.0f; // Default BPM, updated dynamically

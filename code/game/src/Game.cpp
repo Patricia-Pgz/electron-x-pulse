@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Assets.h"
 #include "PlayerInputSystem.h"
-#include "physics/ContactListener.h"
+#include "physics/PlayerContactListener.h"
 #include "engine/AudioAnalysis.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/rendering/RenderingSystem.h"
@@ -15,7 +15,7 @@ namespace gl3
         : engine::Game(width, height, title, camPos, camZoom), physics_system_(*this), rendering_system_(*this),
           player_input_system_(*this)
     {
-        engine::ecs::EventManager::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
             Game::onPlayerDeath>(this);
     }
 
@@ -77,10 +77,10 @@ namespace gl3
             registry_, glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), glm::vec4(0.25, 0.27, 1, 1), "ground",
             physicsWorld);
         engine::ecs::EntityFactory::setScale(registry_, ground, glm::vec3(40.f, groundHeight, 0.f));
-        player = std::make_unique<entt::entity>(engine::ecs::EntityFactory::createDefaultEntity(
+        player = engine::ecs::EntityFactory::createDefaultEntity(
             registry_, glm::vec3(initialPlayerPositionX, groundLevel + 0.25 / 2, 0),
-            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld));
-        engine::ecs::EntityFactory::setScale(registry_, *player, glm::vec3(0.25f, 0.25f, 0.f));
+            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld);
+        engine::ecs::EntityFactory::setScale(registry_, player, glm::vec3(0.25f, 0.25f, 0.f));
         /*player->onPlayerDeath.addListener([&] { //TODO System player events/functionality? Evtl nur referenz/pointer zu entt entity player behalten?Ist aber ja eh nur ID
            reset();
         }); //save this handle if I want to unsubscribe later*/
@@ -118,7 +118,7 @@ namespace gl3
                 //entity->update(this, deltaTime); //TODO hatte noch jemand außer Player wirklich was in update? -> System für playermovement
             }
         }
-        player_input_system_.update(*player);
+        player_input_system_.update(player);
     }
 
     void Game::draw()
@@ -424,7 +424,7 @@ namespace gl3
                 auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
                 if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
                 {
-                    b2Body_SetLinearVelocity(physics_comp.body, {levelSpeed, 0.0f});
+                    b2Body_SetLinearVelocity(physics_comp.body, { levelSpeed * (60.0f / bpm / (60.0f / bpm)), 0.0f});
                 }
             }
         }
@@ -493,7 +493,7 @@ namespace gl3
 
     Game::~Game()
     {
-        engine::ecs::EventManager::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
             Game::onPlayerDeath>(this);
         glfwTerminate();
     }

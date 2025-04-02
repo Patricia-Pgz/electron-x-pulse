@@ -1,5 +1,5 @@
 #pragma once
-#include "ContactListener.h"
+#include "PlayerContactListener.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/ecs/System.h"
 
@@ -8,9 +8,7 @@ namespace gl3
     class PhysicsSystem : public engine::ecs::System
     {
     public:
-        explicit PhysicsSystem(engine::Game& game) : System(game)
-        {
-        };
+        explicit PhysicsSystem(engine::Game& game) : System(game){};
 
         void runPhysicsStep()
         {
@@ -19,7 +17,7 @@ namespace gl3
             {
                 const b2WorldId world = game.getPhysicsWorld();
                 b2World_Step(world, fixedTimeStep, subStepCount);
-                ContactListener::checkForPlayerCollision(world, game.getRegistry());
+                PlayerContactListener::checkForPlayerCollision(game.getRegistry(), game.getPlayer());
 
                 if (game.currentGameState == engine::GameState::PreviewWithScrolling) return;
 
@@ -64,9 +62,6 @@ namespace gl3
         const int subStepCount = 8; // recommended sub-step count
         float accumulator = 0.f;
 
-        static void onPlayerGrounded()
-        {
-
-        };
+        static void onPlayerGrounded();
     };
 } // gl3

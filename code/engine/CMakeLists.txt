@@ -9,7 +9,7 @@ file(GLOB_RECURSE PRIVATE_HEADER_LIST CONFIGURE_DEPENDS "src/**.h")
 file(GLOB_RECURSE SOURCE_LIST CONFIGURE_DEPENDS "src/**.cpp")
 
 add_library(${ENGINE_NAME} ${HEADER_LIST} ${PRIVATE_HEADER_LIST} ${SOURCE_LIST}
-        include/engine/ecs/EventManager.h
+        include/engine/ecs/EventDispatcher.h
         include/engine/ecs/ExampleEvents.h
 )
 

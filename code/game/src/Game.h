@@ -24,7 +24,6 @@ namespace gl3
         Game(int width, int height, const std::string& title, const glm::vec3& camPos, float camZoom);
 
         ~Game() override;
-        [[nodiscard]] const entt::entity& getPlayer() const { return *player; }
 
     private:
         void start() override;
@@ -42,7 +41,6 @@ namespace gl3
         engine::rendering::RenderingSystem rendering_system_;
         PlayerInputSystem player_input_system_;
         engine::GameState previousGameState = engine::GameState::Menu;
-        std::unique_ptr<entt::entity> player = nullptr;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
 
         float levelLength = 0;
