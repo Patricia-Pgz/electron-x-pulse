@@ -35,7 +35,6 @@ namespace gl3 {
 
         if (velocity.y < 0.01f && velocity.y >= 0.f && canJump && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
-            std::cout << "jump";
             applyJumpImpulse(body);
             canJump = false;
         }

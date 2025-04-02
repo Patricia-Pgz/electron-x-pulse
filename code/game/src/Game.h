@@ -16,6 +16,7 @@ namespace gl3
         float scaleY;
         float scaleX;
         glm::vec4 color;
+        entt::entity entityID;
     };
 
     class Game : public engine::Game
@@ -34,7 +35,7 @@ namespace gl3
         void scroll_callback_fun(double yOffset);
         void onGameStateChange(); //TODO event
         void onPlayerDeath(engine::ecs::PlayerDeath& event);
-        void resetPositions();
+        void resetComponents();
         void reset();
 
         PhysicsSystem physics_system_;
@@ -43,9 +44,14 @@ namespace gl3
         engine::GameState previousGameState = engine::GameState::Menu;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
 
+        unsigned int VAO; //evtl für jedes mesh eigenes machen?
+
+
         float levelLength = 0;
         float groundLevel = -1;
         float groundHeight = 4.0f;
+
+        bool isResetting = false;
 
         std::vector<GameObject> initial_test_game_objects;
 

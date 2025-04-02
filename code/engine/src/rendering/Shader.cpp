@@ -64,7 +64,14 @@ namespace gl3::engine::rendering {
     }
 
     Shader::~Shader() {
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
+        if (shaderProgram != 0) {
+            glDeleteProgram(shaderProgram);
+            glDeleteShader(vertexShader);
+            glDeleteShader(fragmentShader);
+
+            shaderProgram = 0;
+            vertexShader = 0;
+            fragmentShader = 0;
+        }
     }
 }

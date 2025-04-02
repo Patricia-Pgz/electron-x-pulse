@@ -63,6 +63,29 @@ namespace gl3::engine::ecs
             return entity;
         };
 
+        static void destroyPhysicsComponent(entt::registry& registry, entt::entity entity) { //TODO brauchts das?
+            if (registry.all_of<PhysicsComponent>(entity)) {
+                auto& physics = registry.get<PhysicsComponent>(entity);
+
+                if (b2Body_IsValid(physics.body)) {
+                    if (b2Shape_IsValid(physics.shape)) {
+                        b2DestroyShape(physics.shape, false);
+                        physics.shape = b2_nullShapeId;
+                    }
+                    b2DestroyBody(physics.body);
+                    physics.body = b2_nullBodyId;
+                }
+            }
+            registry.remove<PhysicsComponent>(entity);
+        }
+
+
+        ///Deletes an entity and its components, that was created with the createDefaultEntity method.
+        static void deleteDefaultEntity(entt::registry& registry, const entt::entity entity) {
+            destroyPhysicsComponent(registry, entity);
+            registry.destroy(entity);
+        }
+
         static void setScale(entt::registry& registry, const entt::entity& entity, const glm::vec3& newScale)
         {
             const auto& tag_comp = registry.get<TagComponent>(entity);

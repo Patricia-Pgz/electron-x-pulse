@@ -15,8 +15,7 @@ namespace gl3
         : engine::Game(width, height, title, camPos, camZoom), physics_system_(*this), rendering_system_(*this),
           player_input_system_(*this)
     {
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
-            Game::onPlayerDeath>(this);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&Game::onPlayerDeath>(this);
     }
 
     void Game::scroll_callback_fun(const double yOffset)
@@ -64,7 +63,6 @@ namespace gl3
 
     void Game::start()
     {
-        unsigned int VAO;
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 
@@ -81,14 +79,10 @@ namespace gl3
             registry_, glm::vec3(initialPlayerPositionX, groundLevel + 0.25 / 2, 0),
             glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld);
         engine::ecs::EntityFactory::setScale(registry_, player, glm::vec3(0.25f, 0.25f, 0.f));
-        /*player->onPlayerDeath.addListener([&] { //TODO System player events/functionality? Evtl nur referenz/pointer zu entt entity player behalten?Ist aber ja eh nur ID
-           reset();
-        }); //save this handle if I want to unsubscribe later*/
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(resolveAssetPath("audio/SensesShort.wav").c_str());
         backgroundMusic->setLooping(false);
 
-        //glDeleteVertexArrays(1, &VAO);
     }
 
     void Game::update(GLFWwindow* window)
@@ -126,19 +120,11 @@ namespace gl3
         rendering_system_.draw(); //TODO mesh und shader in rendering namespace
     }
 
-    //TODO:
-    /*Entity::~Entity()
-    {
-        if (b2World_IsValid(physicsWorld))
-        {
-            if (b2Body_IsValid(body))
-                b2DestroyBody(body); //TODO does this get called when the physicscomponent gets deleted? -> levelReload/Load/wechsel
-        }
-    }*/
+; //TODO delete entities when levelReload/Load/wechsel
 
     void Game::updatePhysics()
     {
-        if (currentGameState == engine::GameState::Menu) return;
+        if (currentGameState == engine::GameState::Menu || isResetting) return;
         physics_system_.runPhysicsStep();
     }
 
@@ -342,7 +328,7 @@ namespace gl3
         if (currentGameState == engine::GameState::Level || currentGameState == engine::GameState::PreviewWithTesting ||
             currentGameState == engine::GameState::PreviewWithScrolling)
         {
-            for (auto object : initial_test_game_objects)
+            for (auto& object : initial_test_game_objects)
             {
                 auto posY = object.positionY == 0
                                 ? groundLevel + object.scaleY / 2
@@ -355,6 +341,8 @@ namespace gl3
                         object.color, "platform", physicsWorld);
                     engine::ecs::EntityFactory::setScale(registry_, entity,
                                                          glm::vec3(object.scaleX, object.scaleY, 0.f));
+                    object.entityID = entity;
+                    object.positionY = posY;
                 }
                 else
                 {
@@ -363,8 +351,11 @@ namespace gl3
                         object.color, "obstacle", physicsWorld, true);
                     engine::ecs::EntityFactory::setScale(registry_, entity,
                                                          glm::vec3(object.scaleX, object.scaleY, 0.f));
+                    object.entityID = entity;
+                    object.positionY = posY;
                 }
             }
+
             /*int index = 0;
             for (auto beat : beatPositions)
             {
@@ -396,20 +387,21 @@ namespace gl3
         if (currentGameState == engine::GameState::PreviewWithScrolling || currentGameState ==
             engine::GameState::PreviewWithTesting)
         {
-            const auto& timeLine = engine::ecs::EntityFactory::createDefaultEntity(
+            const auto timeLine = engine::ecs::EntityFactory::createDefaultEntity(
                 registry_, glm::vec3(0, groundLevel, 0.0f), glm::vec4(0.1, 0.1, 1.0, 1.0f), "timeline", physicsWorld);
             engine::ecs::EntityFactory::setScale(registry_, timeLine, glm::vec3(40.f, 0.05f, 0.f));
 
             std::vector<GameObject> tempObjects;
-            tempObjects.push_back(GameObject(0.f, groundLevel, true, 40.f, 0.05f, glm::vec4(0.1, 0.1, 1.0, 1.0f)));
+            tempObjects.push_back(GameObject(0.f, groundLevel, true, 40.f, 0.05f, glm::vec4(0.1, 0.1, 1.0, 1.0f),
+                                             timeLine));
 
             for (auto beatPosition : beatPositions)
             {
                 auto timeLineColor = glm::vec4(0.1, 0.1, 1.0, 1.0f);
-                const auto& beat = engine::ecs::EntityFactory::createDefaultEntity(
+                const auto beat = engine::ecs::EntityFactory::createDefaultEntity(
                     registry_, glm::vec3(beatPosition, groundLevel, 0.0f), timeLineColor, "beat", physicsWorld);
                 engine::ecs::EntityFactory::setScale(registry_, beat, glm::vec3(0.05f, 0.5f, 0.f));
-                tempObjects.push_back(GameObject(beatPosition, groundLevel, true, 0.05f, 0.5f, timeLineColor));
+                tempObjects.push_back(GameObject(beatPosition, groundLevel, true, 0.05f, 0.5f, timeLineColor, beat));
             }
             initial_test_game_objects = tempObjects;
         }
@@ -424,16 +416,11 @@ namespace gl3
                 auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
                 if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
                 {
-                    b2Body_SetLinearVelocity(physics_comp.body, { levelSpeed * (60.0f / bpm / (60.0f / bpm)), 0.0f});
+                    b2Body_SetLinearVelocity(physics_comp.body, {levelSpeed * (60.0f / bpm / (60.0f / bpm)), 0.0f});
                 }
             }
         }
         audio.playBackground(*backgroundMusic);
-    }
-
-    void Game::onPlayerDeath(engine::ecs::PlayerDeath& event)
-    {
-        reset();
     }
 
     void Game::reset()
@@ -444,7 +431,7 @@ namespace gl3
         audio.playBackground(*backgroundMusic);
 
         // Reset all entities to their initial states
-        resetPositions();
+        resetComponents();
         if (currentGameState != engine::GameState::Menu && currentGameState != engine::GameState::PreviewWithScrolling)
         {
             const auto& entities = registry_.view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
@@ -455,46 +442,61 @@ namespace gl3
                 auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
                 if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
                 {
-                    b2Body_SetLinearVelocity(physics_comp.body, {levelSpeed, 0.0f});
+                    //b2Body_SetLinearVelocity(physics_comp.body, {levelSpeed, 0.0f});
                 }
             }
         }
+        isResetting = false;
     }
 
-    void Game::resetPositions()
+    void Game::resetComponents()
     {
-        auto view = registry_.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>();
-
+        auto view = registry_.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
+                                   engine::ecs::PhysicsComponent>();
         for (auto entity : view)
+
         {
             auto& transform = view.get<engine::ecs::TransformComponent>(entity);
-            auto& tag = view.get<engine::ecs::TagComponent>(entity);
+            auto& tag = view.get<engine::ecs::TagComponent>(entity).tag;
+            auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
+            b2Body_SetLinearVelocity(physics_comp.body, {0.f, 0.0f});
 
-            if (tag.tag == "player")
+            if (tag == "player")
             {
                 engine::ecs::EntityFactory::setPosition(registry_, entity,
                                                         glm::vec3(initialPlayerPositionX,
                                                                   groundLevel + transform.scale.y / 2, 0.f));
-                break;
+                continue;
             }
-            if (tag.tag == "ground")
+            if (tag == "ground")
             {
                 engine::ecs::EntityFactory::setPosition(registry_, entity,
                                                         glm::vec3(0, groundLevel - groundHeight / 2, 0.0f));
-                break;
+                continue;
             }
-            for (const auto& obj : initial_test_game_objects)
-            {
-                engine::ecs::EntityFactory::setPosition(registry_, entity,
-                                                        glm::vec3(obj.positionX, obj.positionY, 0.f));
-            }
+            b2Body_SetLinearVelocity(physics_comp.body, {levelSpeed, 0.f});
+            auto obj = std::ranges::find_if(initial_test_game_objects,
+                                            [entity](const GameObject& o)
+                                            {
+                                                return o.entityID == entity;
+                                            });
+            engine::ecs::EntityFactory::setPosition(registry_, entity,
+                                                    glm::vec3(obj->positionX, obj->positionY, 0.f));
         }
+    }
+
+    void Game::onPlayerDeath(engine::ecs::PlayerDeath& event)
+    {
+        std::cout << "Player died! Calling reset..." << std::endl;
+        isResetting = true;
+        reset();
     }
 
     Game::~Game()
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
             Game::onPlayerDeath>(this);
+        glDeleteVertexArrays(1, &VAO);
         glfwTerminate();
     }
 }
