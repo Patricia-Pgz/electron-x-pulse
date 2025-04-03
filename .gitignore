@@ -6,6 +6,8 @@ cmake-build-release
 
 .idea/
 
+**/docs/out
+
 # Ignore CMake-related files and directories
 CMakeLists.txt.user
 CMakeCache.txt

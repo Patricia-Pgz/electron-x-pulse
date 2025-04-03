@@ -82,7 +82,6 @@ namespace gl3
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(resolveAssetPath("audio/SensesShort.wav").c_str());
         backgroundMusic->setLooping(false);
-
     }
 
     void Game::update(GLFWwindow* window)
@@ -103,24 +102,15 @@ namespace gl3
             previousGameState = currentGameState;
             onGameStateChange();
         }
-        auto entities = registry_.view<engine::ecs::TagComponent, engine::ecs::TransformComponent>();
-
-        for (auto& entity : entities)
-        {
-            if (context.isInVisibleWindow(entities.get<engine::ecs::TransformComponent>(entity).position))
-            {
-                //entity->update(this, deltaTime); //TODO hatte noch jemand außer Player wirklich was in update? -> System für playermovement
-            }
-        }
         player_input_system_.update(player);
     }
 
     void Game::draw()
     {
-        rendering_system_.draw(); //TODO mesh und shader in rendering namespace
+        rendering_system_.draw();
     }
 
-; //TODO delete entities when levelReload/Load/wechsel
+    //TODO delete entities when levelReload/Load/wechsel
 
     void Game::updatePhysics()
     {
@@ -425,8 +415,6 @@ namespace gl3
 
     void Game::reset()
     {
-        std::cout << "Game reset!" << std::endl;
-
         audio.stopAudioSource(*backgroundMusic);
         audio.playBackground(*backgroundMusic);
 

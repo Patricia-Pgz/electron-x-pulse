@@ -37,7 +37,6 @@ namespace gl3::engine::ecs
     class EntityFactory
     {
     public:
-        //TODO: color, scale, rotation nicht im constructor sondern über setter setzen lassen. Color wird wahrscheinlich später zu einem Sprite oder so
         static entt::entity createDefaultEntity(entt::registry& registry,
                                                 const glm::vec3& position = {0.0f, 0.0f, 0.0f},
                                                 const glm::vec4& color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),

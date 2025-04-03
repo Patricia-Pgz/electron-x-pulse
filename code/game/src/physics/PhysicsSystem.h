@@ -28,28 +28,24 @@ namespace gl3
 
                 for (auto& entity : entities)
                 {
-                    auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
+                    const auto& tag = entities.get<engine::ecs::TagComponent>(entity).tag;
+                    if (tag == "timeline") continue;
+
                     auto& transform_comp = entities.get<engine::ecs::TransformComponent>(entity);
-                    auto& physics_comp = entities.get<engine::ecs::PhysicsComponent>(entity);
-
-                    if (tag_comp.tag == "timeline") continue;
-
-                    if (tag_comp.tag == "beat")
+                    if (tag == "beat")
                     {
                         // Update position based on scroll speed and deltaTime
                         transform_comp.position.x += game.getLevelSpeed() * fixedTimeStep;
                         continue;
                     }
 
+                    auto& physics_comp = entities.get<engine::ecs::PhysicsComponent>(entity);
                     if (!b2Body_IsValid(physics_comp.body))
                         return;
 
                     auto [p, q] = b2Body_GetTransform(physics_comp.body);
-
-
-                    transform_comp.position.x = p.x; //TODO evtl solche Dinge nur tun, wenn physics comp awake?
+                    transform_comp.position.x = p.x; //TODO evtl solche Dinge nur tun, wenn physics comp enabled?
                     transform_comp.position.y = p.y;
-
                     transform_comp.zRotation = glm::degrees(b2Rot_GetAngle(q));
                 }
 
