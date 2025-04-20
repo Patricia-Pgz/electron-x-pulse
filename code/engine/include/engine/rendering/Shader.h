@@ -25,6 +25,7 @@ namespace gl3::engine::rendering {
 
         void setMatrix(const std::string &uniformName, glm::mat4 matrix) const;
         void setVector(const std::string &uniformName, glm::vec4 vector) const;
+        void setInt(const std::string& name, int value) const;
         void use() const;
 
     private:

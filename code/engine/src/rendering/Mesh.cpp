@@ -20,8 +20,14 @@ namespace gl3::engine::rendering {
     void Mesh::draw() const {
         // Bind VBO
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+        // Position attribute (3 floats)
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
         glEnableVertexAttribArray(0);
+
+        // TexCoord attribute (2 floats)
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
 
         // Bind EBO
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

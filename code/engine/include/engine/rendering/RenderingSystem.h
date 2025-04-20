@@ -49,6 +49,11 @@ namespace gl3::engine::rendering
                     render_component.shader.use();
                     render_component.shader.setMatrix("mvp", mvpMatrix);
                     render_component.shader.setVector("color", render_component.color);
+                    if (render_component.texture.has_value())
+                    {
+                        render_component.texture->bind(0); // Bind texture to slot 0
+                        render_component.shader.setInt("texture1", 0);
+                    }
                     render_component.mesh.draw();
                 }
             }

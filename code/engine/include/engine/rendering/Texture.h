@@ -1,20 +1,19 @@
-//
-// Created by patri on 17.04.2025.
-//
+#pragma once
 
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#include <string>
+#include <glad/glad.h>
 
-namespace gl3 {
-namespace engine {
-namespace rendering {
 
-class Texture {
+namespace gl3::engine::rendering {
 
-};
+    class Texture {
+    public:
+        [[nodiscard]] GLuint getId() const { return ID; }
+        explicit Texture(const std::string& path);
+        void bind(GLuint slot) const;
 
-} // rendering
-} // engine
-} // gl3
+    private:
+        GLuint ID;
+    };
 
-#endif //TEXTURE_H
+}

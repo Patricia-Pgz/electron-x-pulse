@@ -58,6 +58,15 @@ namespace gl3::engine::rendering {
         auto uniformLocation = glGetUniformLocation(shaderProgram, uniformName.c_str());
         glUniform4fv(uniformLocation, 1, glm::value_ptr(vector));
     }
+    void Shader::setInt(const std::string& name, const int value) const
+    {
+        GLint location = glGetUniformLocation(shaderProgram, name.c_str());
+        if (location == -1)
+        {
+            std::cerr << "Warning: uniform '" << name << "' not found or not used in shader." << std::endl;
+        }
+        glUniform1i(location, value);
+    }
 
     void Shader::use() const {
         glUseProgram(shaderProgram);

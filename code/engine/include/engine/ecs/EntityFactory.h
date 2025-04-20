@@ -4,6 +4,7 @@
 #include "../rendering/Mesh.h"
 #include "../rendering/Shader.h"
 #include "box2d/id.h"
+#include "engine/rendering/Texture.h"
 
 namespace gl3::engine::ecs
 {
@@ -19,6 +20,7 @@ namespace gl3::engine::ecs
         rendering::Shader shader;
         rendering::Mesh mesh;
         glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Default red
+        std::optional<rendering::Texture> texture = std::nullopt; // Optional texture
     };
 
     struct PhysicsComponent
@@ -57,12 +59,12 @@ namespace gl3::engine::ecs
                     entity, createPhysicsBody(physicsWorld, transform, entity, tag, isTriangle)
                 );
             }
-            registry.emplace<RenderComponent>(entity, createRenderComponent(color, isTriangle));
+            registry.emplace<RenderComponent>(entity, createRenderComponent(color, isTriangle, "textures/geometry-dash.png")); // TODO texturen entsprechend laden über texture loader -> selbe tex wiederverwenden
 
             return entity;
         };
 
-        static void destroyPhysicsComponent(entt::registry& registry, entt::entity entity) { //TODO brauchts das?
+        static void destroyPhysicsComponent(entt::registry& registry, const entt::entity entity) { //TODO brauchts das?
             if (registry.all_of<PhysicsComponent>(entity)) {
                 auto& physics = registry.get<PhysicsComponent>(entity);
 
@@ -115,9 +117,9 @@ namespace gl3::engine::ecs
 
             // Triangle vertices (x, y, z)
             triangleData.vertices = {
-                -width / 2, -height / 2, 0.0f, // Bottom-left
-                width / 2, -height / 2, 0.0f, // Bottom-right
-                0.0f, height / 2, 0.0f // Top-center
+                -width / 2, -height / 2, 0.0f, 0.0f, 0.0f, // Bottom-left
+                 width / 2, -height / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
+                 0.0f,      height / 2, 0.0f, 0.5f, 1.0f  // Top-center
             };
 
             // Indices for one triangle
@@ -134,10 +136,10 @@ namespace gl3::engine::ecs
 
             // Rectangle vertices (x, y, z)
             boxData.vertices = {
-                -width / 2, height / 2, 0.0f, // Top-left
-                -width / 2, -height / 2, 0.0f, // Bottom-left
-                width / 2, -height / 2, 0.0f, // Bottom-right
-                width / 2, height / 2, 0.0f // Top-right
+                -width/2,  height/2, 0.0f, 0.0f, 1.0f,
+                -width/2, -height/2, 0.0f, 0.0f, 0.0f,
+                 width/2, -height/2, 0.0f, 1.0f, 0.0f,
+                 width/2,  height/2, 0.0f, 1.0f, 1.0f
             };
 
             // Indices for two triangles
@@ -149,26 +151,22 @@ namespace gl3::engine::ecs
             return boxData;
         }
 
-        static RenderComponent createRenderComponent(const glm::vec4& color, const bool& isTriangle)
+        static RenderComponent createRenderComponent(const glm::vec4& color, const bool& isTriangle, const std::string& texturePath = "")
         {
-            std::vector<float> vertices;
-            std::vector<unsigned int> indices;
+            // Choose geometry
+            auto data = isTriangle ? getTriangleVertices(1.f, 1.f) : getBoxVertices(1.f, 1.f);
+            const std::vector<float> vertices = data.vertices;
+            const std::vector<unsigned int> indices = data.indices;
 
-            if (isTriangle)
-            {
-                const glData triangleData = getTriangleVertices(1.f, 1.f);
-                vertices = triangleData.vertices;
-                indices = triangleData.indices;
-            }
-            else
-            {
-                const glData boxData = getBoxVertices(1.f, 1.f);
-                vertices = boxData.vertices;
-                indices = boxData.indices;
-            }
+            RenderComponent rc(
+                rendering::Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
+                rendering::Mesh(vertices, indices),
+                color
+            );
 
-            return RenderComponent(rendering::Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
-                                   rendering::Mesh(vertices, indices), color);
+            if (!texturePath.empty())
+                rc.texture.emplace(texturePath);
+            return rc;
         }
 
         static PhysicsComponent createPhysicsBody(const b2WorldId& physicsWorld,

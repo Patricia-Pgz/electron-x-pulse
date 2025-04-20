@@ -31,7 +31,6 @@ namespace gl3::engine
             throw std::runtime_error("Failed to initialize glfw");
         }
 
-
         audio.init();
         audio.setGlobalVolume(0.1f);
 
