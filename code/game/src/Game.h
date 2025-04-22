@@ -44,9 +44,6 @@ namespace gl3
         engine::GameState previousGameState = engine::GameState::Menu;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
 
-        unsigned int VAO; //evtl für jedes mesh eigenes machen?
-
-
         float levelLength = 0;
         float groundLevel = -1;
         float groundHeight = 4.0f;

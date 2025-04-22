@@ -5,6 +5,7 @@
 #include "../rendering/Shader.h"
 #include "box2d/id.h"
 #include "engine/rendering/Texture.h"
+#include "engine/rendering/TextureManager.h"
 
 namespace gl3::engine::ecs
 {
@@ -20,7 +21,7 @@ namespace gl3::engine::ecs
         rendering::Shader shader;
         rendering::Mesh mesh;
         glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Default red
-        std::optional<rendering::Texture> texture = std::nullopt; // Optional texture
+        const rendering::Texture* texture = nullptr;
     };
 
     struct PhysicsComponent
@@ -153,20 +154,19 @@ namespace gl3::engine::ecs
 
         static RenderComponent createRenderComponent(const glm::vec4& color, const bool& isTriangle, const std::string& texturePath = "")
         {
-            // Choose geometry
             auto data = isTriangle ? getTriangleVertices(1.f, 1.f) : getBoxVertices(1.f, 1.f);
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
 
-            RenderComponent rc(
+            RenderComponent render_component(
                 rendering::Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
                 rendering::Mesh(vertices, indices),
                 color
             );
 
             if (!texturePath.empty())
-                rc.texture.emplace(texturePath);
-            return rc;
+                render_component.texture = &rendering::TextureManager::get("textures/geometry-dash.png");
+            return render_component;
         }
 
         static PhysicsComponent createPhysicsBody(const b2WorldId& physicsWorld,

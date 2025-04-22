@@ -63,9 +63,6 @@ namespace gl3
 
     void Game::start()
     {
-        glGenVertexArrays(1, &VAO);
-        glBindVertexArray(VAO);
-
         context.onScrolling.addListener([&](const float offsetY)
         {
             scroll_callback_fun(offsetY);
@@ -484,7 +481,6 @@ namespace gl3
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
             Game::onPlayerDeath>(this);
-        glDeleteVertexArrays(1, &VAO);
         glfwTerminate();
     }
 }

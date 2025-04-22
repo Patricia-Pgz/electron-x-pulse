@@ -1,9 +1,11 @@
 #include "engine/rendering/Mesh.h"
 #include "glad/glad.h"
 
-namespace gl3::engine::rendering {
-    template<typename T>
-    GLuint createBuffer(GLuint bufferType, const std::vector<T> &bufferData) {
+namespace gl3::engine::rendering
+{
+    template <typename T>
+    GLuint createBuffer(GLuint bufferType, const std::vector<T>& bufferData)
+    {
         unsigned int buffer = 0;
         glGenBuffers(1, &buffer);
         glBindBuffer(bufferType, buffer);
@@ -11,15 +13,17 @@ namespace gl3::engine::rendering {
         return buffer;
     }
 
-    Mesh::Mesh(const std::vector<float> &vertices, const std::vector<unsigned int> &indices):
-            numberOfIndices(indices.size()),
-            VBO(createBuffer(GL_ARRAY_BUFFER, vertices)),
-            EBO(createBuffer(GL_ELEMENT_ARRAY_BUFFER, indices)) {
-    }
+    Mesh::Mesh(const std::vector<float>& vertices, const std::vector<unsigned int>& indices):
+        numberOfIndices(indices.size()),
+        VBO(createBuffer(GL_ARRAY_BUFFER, vertices)),
+        EBO(createBuffer(GL_ELEMENT_ARRAY_BUFFER, indices))
+    {
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
 
-    void Mesh::draw() const {
-        // Bind VBO
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
         // Position attribute (3 floats)
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
         glEnableVertexAttribArray(0);
@@ -28,15 +32,19 @@ namespace gl3::engine::rendering {
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
-
-        // Bind EBO
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-        // Draw
-        glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, nullptr);
+        glBindVertexArray(0);
     }
 
-    Mesh::~Mesh() {
+    void Mesh::draw() const
+    {
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, nullptr);
+        glBindVertexArray(0);
+    }
+
+    Mesh::~Mesh()
+    {
+        glDeleteVertexArrays(1, &VAO);
         glDeleteBuffers(1, &VBO);
         glDeleteBuffers(1, &EBO);
     }

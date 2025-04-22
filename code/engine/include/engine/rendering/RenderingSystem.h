@@ -18,8 +18,8 @@ namespace gl3::engine::rendering
         {
             auto model = glm::mat4(1.0f);
             model = translate(model, position);
-            model = glm::scale(model, scale);
             model = rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::scale(model, scale);
 
             const glm::mat4 view = lookAt(context.getCameraPos(),
                                           context.getCameraCenter(),
@@ -49,7 +49,7 @@ namespace gl3::engine::rendering
                     render_component.shader.use();
                     render_component.shader.setMatrix("mvp", mvpMatrix);
                     render_component.shader.setVector("color", render_component.color);
-                    if (render_component.texture.has_value())
+                    if (render_component.texture)
                     {
                         render_component.texture->bind(0); // Bind texture to slot 0
                         render_component.shader.setInt("texture1", 0);

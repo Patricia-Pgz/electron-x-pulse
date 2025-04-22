@@ -1,4 +1,5 @@
 #pragma once
+#include <filesystem>
 #include <vector>
 
 namespace gl3::engine::rendering {
@@ -13,14 +14,16 @@ namespace gl3::engine::rendering {
 
         // Explicit move constructor
         Mesh(Mesh &&other) noexcept {
+            std::swap(this->VAO, other.VAO);
             std::swap(this->VBO, other.VBO);
             std::swap(this->EBO, other.EBO);
             std::swap(this->numberOfIndices, other.numberOfIndices);
         }
 
     private:
-        unsigned int VBO = 0;
-        unsigned int EBO = 0;
+        unsigned int VAO;
+        unsigned int VBO;
+        unsigned int EBO;
         unsigned int numberOfIndices = 0;
     };
 }
