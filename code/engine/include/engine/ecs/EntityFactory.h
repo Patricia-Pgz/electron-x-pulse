@@ -45,7 +45,8 @@ namespace gl3::engine::ecs
                                                 const glm::vec4& color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
                                                 const std::string& tag = "undefined",
                                                 const b2WorldId& physicsWorld = b2_nullWorldId,
-                                                const bool isTriangle = false)
+                                                const bool isTriangle = false,
+                                                const rendering::Texture* texture = nullptr)
         {
             // Create an entity
             const entt::entity entity = registry.create();
@@ -60,17 +61,22 @@ namespace gl3::engine::ecs
                     entity, createPhysicsBody(physicsWorld, transform, entity, tag, isTriangle)
                 );
             }
-            registry.emplace<RenderComponent>(entity, createRenderComponent(color, isTriangle, "textures/geometry-dash.png")); // TODO texturen entsprechend laden über texture loader -> selbe tex wiederverwenden
+            registry.emplace<RenderComponent>(entity, createRenderComponent(color, isTriangle, texture));
 
             return entity;
         };
 
-        static void destroyPhysicsComponent(entt::registry& registry, const entt::entity entity) { //TODO brauchts das?
-            if (registry.all_of<PhysicsComponent>(entity)) {
+        static void destroyPhysicsComponent(entt::registry& registry, const entt::entity entity)
+        {
+            //TODO brauchts das?
+            if (registry.all_of<PhysicsComponent>(entity))
+            {
                 auto& physics = registry.get<PhysicsComponent>(entity);
 
-                if (b2Body_IsValid(physics.body)) {
-                    if (b2Shape_IsValid(physics.shape)) {
+                if (b2Body_IsValid(physics.body))
+                {
+                    if (b2Shape_IsValid(physics.shape))
+                    {
                         b2DestroyShape(physics.shape, false);
                         physics.shape = b2_nullShapeId;
                     }
@@ -83,7 +89,8 @@ namespace gl3::engine::ecs
 
 
         ///Deletes an entity and its components, that was created with the createDefaultEntity method.
-        static void deleteDefaultEntity(entt::registry& registry, const entt::entity entity) {
+        static void deleteDefaultEntity(entt::registry& registry, const entt::entity entity)
+        {
             destroyPhysicsComponent(registry, entity);
             registry.destroy(entity);
         }
@@ -103,7 +110,9 @@ namespace gl3::engine::ecs
             auto& transform = registry.get<TransformComponent>(entity);
             auto& physics_comp = registry.get<PhysicsComponent>(entity);
             transform.position = newPos;
-            b2Body_SetTransform(physics_comp.body,b2Vec2(transform.position.x, transform.position.y),b2Body_GetRotation(physics_comp.body)); //TODO für sowas(siehe auch setScale) evtl entt events benutzen?
+            b2Body_SetTransform(physics_comp.body, b2Vec2(transform.position.x, transform.position.y),
+                                b2Body_GetRotation(physics_comp.body));
+            //TODO für sowas(siehe auch setScale) evtl entt events benutzen?
         }
 
         struct glData
@@ -119,8 +128,8 @@ namespace gl3::engine::ecs
             // Triangle vertices (x, y, z)
             triangleData.vertices = {
                 -width / 2, -height / 2, 0.0f, 0.0f, 0.0f, // Bottom-left
-                 width / 2, -height / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
-                 0.0f,      height / 2, 0.0f, 0.5f, 1.0f  // Top-center
+                width / 2, -height / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
+                0.0f, height / 2, 0.0f, 0.5f, 1.0f // Top-center
             };
 
             // Indices for one triangle
@@ -137,10 +146,10 @@ namespace gl3::engine::ecs
 
             // Rectangle vertices (x, y, z)
             boxData.vertices = {
-                -width/2,  height/2, 0.0f, 0.0f, 1.0f,
-                -width/2, -height/2, 0.0f, 0.0f, 0.0f,
-                 width/2, -height/2, 0.0f, 1.0f, 0.0f,
-                 width/2,  height/2, 0.0f, 1.0f, 1.0f
+                -width / 2, height / 2, 0.0f, 0.0f, 1.0f,
+                -width / 2, -height / 2, 0.0f, 0.0f, 0.0f,
+                width / 2, -height / 2, 0.0f, 1.0f, 0.0f,
+                width / 2, height / 2, 0.0f, 1.0f, 1.0f
             };
 
             // Indices for two triangles
@@ -152,21 +161,19 @@ namespace gl3::engine::ecs
             return boxData;
         }
 
-        static RenderComponent createRenderComponent(const glm::vec4& color, const bool& isTriangle, const std::string& texturePath = "")
+        static RenderComponent createRenderComponent(const glm::vec4& color, const bool& isTriangle,
+                                                     const rendering::Texture* texture)
         {
             auto data = isTriangle ? getTriangleVertices(1.f, 1.f) : getBoxVertices(1.f, 1.f);
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
 
-            RenderComponent render_component(
+            return RenderComponent(
                 rendering::Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
                 rendering::Mesh(vertices, indices),
-                color
+                color,
+                texture
             );
-
-            if (!texturePath.empty())
-                render_component.texture = &rendering::TextureManager::get("textures/geometry-dash.png");
-            return render_component;
         }
 
         static PhysicsComponent createPhysicsBody(const b2WorldId& physicsWorld,
@@ -194,7 +201,7 @@ namespace gl3::engine::ecs
             }
 
             const b2Polygon polygon = createPolygon(isTriangle, transform_component.scale.x,
-                                                                 transform_component.scale.y);
+                                                    transform_component.scale.y);
             const b2ShapeId shape = b2CreatePolygonShape(body, &shapeDef, &polygon);
 
             return PhysicsComponent(physicsWorld, body, shape);
@@ -207,8 +214,8 @@ namespace gl3::engine::ecs
             {
                 const b2Vec2 vertices[] = {
                     b2Vec2(-scaleX * 0.5f, -scaleY * 0.5f), // Bottom-left
-                    b2Vec2(scaleX * 0.5f, -scaleY * 0.5f),  // Bottom-right
-                    b2Vec2(0.0f, scaleY * 0.5f)             // Top-center
+                    b2Vec2(scaleX * 0.5f, -scaleY * 0.5f), // Bottom-right
+                    b2Vec2(0.0f, scaleY * 0.5f) // Top-center
                 };
 
                 const b2Hull hull = b2ComputeHull(vertices, 3);
@@ -221,6 +228,5 @@ namespace gl3::engine::ecs
 
             return polygon;
         }
-
     };
 } // engine

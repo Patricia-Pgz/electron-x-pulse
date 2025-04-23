@@ -1,17 +1,17 @@
 #pragma once
-#include <unordered_map>
 #include <string>
-#include "Texture.h"
+#include <unordered_map>
+#include "engine/rendering/Texture.h"
 
 namespace gl3::engine::rendering
 {
     class TextureManager
     {
     public:
-        // Get or load texture
-        static const Texture& get(const std::string& path);
-
-        static void preload(const std::string& path);
+        static void add(const std::string& key, const std::string& path);
+        static void loadTextures();
+        static const Texture& get(const std::string& key);
+        static void load(const std::string& key, const std::string& path);
         static void clear();
 
     private:

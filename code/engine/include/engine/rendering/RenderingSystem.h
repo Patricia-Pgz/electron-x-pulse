@@ -27,7 +27,7 @@ namespace gl3::engine::rendering
             const auto windowBounds = context.getWindowBounds();
             const glm::mat4 projection = glm::ortho(windowBounds[0], windowBounds[1], windowBounds[2], windowBounds[3],
                                                     0.1f,
-                                                    100.0f);
+                                                    10.f); //TODO:Dann: Textur UVs für tiling anpassen? -> Texturen für obstacles, platformes, ... einfürhen, DANN: Parallax effekt
 
             return projection * view * model;
         }
@@ -51,6 +51,7 @@ namespace gl3::engine::rendering
                     render_component.shader.setVector("color", render_component.color);
                     if (render_component.texture)
                     {
+                        render_component.shader.setInt("useTexture", 1);
                         render_component.texture->bind(0); // Bind texture to slot 0
                         render_component.shader.setInt("texture1", 0);
                     }

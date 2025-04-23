@@ -67,14 +67,15 @@ namespace gl3
         {
             scroll_callback_fun(offsetY);
         });
+        engine::rendering::TextureManager::loadTextures();
 
         const auto& ground = engine::ecs::EntityFactory::createDefaultEntity(
             registry_, glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), glm::vec4(0.25, 0.27, 1, 1), "ground",
-            physicsWorld);
+            physicsWorld, false, &engine::rendering::TextureManager::get("platform"));
         engine::ecs::EntityFactory::setScale(registry_, ground, glm::vec3(40.f, groundHeight, 0.f));
         player = engine::ecs::EntityFactory::createDefaultEntity(
             registry_, glm::vec3(initialPlayerPositionX, groundLevel + 0.25 / 2, 0),
-            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld);
+            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld, false, &engine::rendering::TextureManager::get("player"));
         engine::ecs::EntityFactory::setScale(registry_, player, glm::vec3(0.25f, 0.25f, 0.f));
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(resolveAssetPath("audio/SensesShort.wav").c_str());
