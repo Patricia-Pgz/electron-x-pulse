@@ -1,6 +1,7 @@
 #include "engine/Game.h"
 #include <stdexcept>
 
+
 namespace gl3::engine
 {
     using Context = context::Context;
@@ -16,6 +17,7 @@ namespace gl3::engine
             update(getWindow());
             updatePhysics();
             draw();
+            renderUI();
             updateDeltaTime();
             onAfterUpdate.invoke(*this);
         });
@@ -24,7 +26,7 @@ namespace gl3::engine
     }
 
     Game::Game(const int width, const int height, const std::string& title, const glm::vec3 camPos,
-               const float camZoom): context(width, height, title, camPos, camZoom)
+               const float camZoom): context(width, height, title, camPos, camZoom), physicsWorld(b2_nullWorldId), player(entt::null)
     {
         if (!glfwInit())
         {
@@ -39,6 +41,34 @@ namespace gl3::engine
         // We use worldDef to define our physics world
         worldDef.gravity = b2Vec2{0.f, -9.81f};
         physicsWorld = b2CreateWorld(&worldDef);
+
+        initUI();
+    }
+
+    void Game::initUI()
+    {
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        imgui_io = &ImGui::GetIO();
+        (void)imgui_io;
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplGlfw_InitForOpenGL(context.getWindow(), true);
+        ImGui_ImplOpenGL3_Init("#version 460");
+    }
+
+    void Game::renderUI()
+    {
+        // Start the frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        setUpUI(); //set up custom UI layouts in derived game class
+
+        // Render ImGui
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
     void Game::updateDeltaTime()
@@ -50,6 +80,9 @@ namespace gl3::engine
 
     Game::~Game()
     {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
         glfwTerminate();
     }
 } // gl3

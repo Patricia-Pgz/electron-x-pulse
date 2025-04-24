@@ -6,6 +6,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <soloud.h>
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 
 #include "Events.h"
 #include "engine/Context.h"
@@ -50,14 +53,18 @@ public:
 
 protected:
     Game(int width, int height, const std::string &title, glm::vec3 camPos, float camZoom);
+    void initUI();
+    void renderUI();
+    void updateDeltaTime();
     virtual ~Game();
     virtual void start() {};
     virtual void update(GLFWwindow *window) {};
     virtual void updatePhysics(){};
     virtual void draw(){};
-    void updateDeltaTime();
+    virtual void setUpUI(){};
 
     context::Context context;
+    ImGuiIO* imgui_io = nullptr;
 
     SoLoud::Soloud audio;
     float deltaTime = 1.0f / 60;

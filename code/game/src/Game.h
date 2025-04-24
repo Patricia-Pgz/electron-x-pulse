@@ -30,6 +30,7 @@ namespace gl3
         void start() override;
         void update(GLFWwindow* window) override;
         void draw() override;
+        void setUpUI() override;
         void updatePhysics() override;
         void moveEntitiesScrolling();
         void scroll_callback_fun(double yOffset);
@@ -48,12 +49,14 @@ namespace gl3
         float groundLevel = -1;
         float groundHeight = 4.0f;
 
+        float unit = 1.f;
+
         bool isResetting = false;
 
         std::vector<GameObject> initial_test_game_objects;
 
         bool loadLevelFromFile = true;
 
-        float initialPlayerPositionX = -2;
+        float initialPlayerPositionX = 0.f;
     };
 }

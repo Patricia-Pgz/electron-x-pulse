@@ -22,3 +22,6 @@
 [submodule "code/extern/stb"]
 	path = code/extern/stb
 	url = https://github.com/nothings/stb
+[submodule "code/extern/imgui"]
+	path = code/extern/imgui
+	url = https://github.com/ocornut/imgui.git

@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "../../../../game/src/Constants.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/ecs/System.h"
 
@@ -17,9 +18,9 @@ namespace gl3::engine::rendering
                                             const glm::vec3& scale, const context::Context& context)
         {
             auto model = glm::mat4(1.0f);
-            model = translate(model, position);
+            model = translate(model, glm::vec3(position.x*pixelsPerMeter, position.y*pixelsPerMeter, 0.f));
             model = rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
-            model = glm::scale(model, scale);
+            model = glm::scale(model, glm::vec3(scale.x*pixelsPerMeter, scale.y*pixelsPerMeter, 0.f));
 
             const glm::mat4 view = lookAt(context.getCameraPos(),
                                           context.getCameraCenter(),

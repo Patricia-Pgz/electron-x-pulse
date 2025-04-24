@@ -2,11 +2,13 @@
 #include <random>
 #include <iostream>
 #include "Assets.h"
+#include "Constants.h"
 #include "PlayerInputSystem.h"
 #include "physics/PlayerContactListener.h"
 #include "engine/AudioAnalysis.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/rendering/RenderingSystem.h"
+
 
 namespace gl3
 {
@@ -74,9 +76,10 @@ namespace gl3
             physicsWorld, false, &engine::rendering::TextureManager::get("platform"));
         engine::ecs::EntityFactory::setScale(registry_, ground, glm::vec3(40.f, groundHeight, 0.f));
         player = engine::ecs::EntityFactory::createDefaultEntity(
-            registry_, glm::vec3(initialPlayerPositionX, groundLevel + 0.25 / 2, 0),
-            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld, false, &engine::rendering::TextureManager::get("player"));
-        engine::ecs::EntityFactory::setScale(registry_, player, glm::vec3(0.25f, 0.25f, 0.f));
+            registry_, glm::vec3(initialPlayerPositionX, 0.f, 0),
+            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld, false,
+            &engine::rendering::TextureManager::get("player"));
+        engine::ecs::EntityFactory::setScale(registry_, player, glm::vec3(1.f, 1.f, 1.f));
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(resolveAssetPath("audio/SensesShort.wav").c_str());
         backgroundMusic->setLooping(false);
@@ -107,6 +110,49 @@ namespace gl3
     {
         rendering_system_.draw();
     }
+
+    void DrawGrid(float gridSpacing)
+    {
+        //TODO grid spacing evtl an beats anpassen? oder einfach beats nur markieren?
+
+        ImDrawList* drawList = ImGui::GetBackgroundDrawList();
+
+        ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+        ImVec2 center = ImVec2(screenSize.x * 0.5f,screenSize.y * 0.5f);
+
+        int verticalLines = static_cast<int>(screenSize.x / gridSpacing);
+        int horizontalLines = static_cast<int>(screenSize.y / gridSpacing);
+
+        // vertical lines
+        for (int i = -verticalLines; i <= verticalLines; ++i) {
+            float xPos = i * gridSpacing;
+            drawList->AddLine(ImVec2(center.x + xPos, screenSize.y), ImVec2(center.x + xPos, -screenSize.y), IM_COL32(100, 100, 100, 255));
+        }
+
+        // horizontal lines
+        for (int j = -horizontalLines; j <= horizontalLines; ++j) {
+            float yPos = j * gridSpacing;
+            drawList->AddLine(ImVec2(screenSize.x, center.y + yPos), ImVec2(-screenSize.x, center.y + yPos), IM_COL32(100, 100, 100, 255));
+        }
+    }
+
+    void Game::setUpUI()
+    {
+        float screenWidth = imgui_io->DisplaySize.x;
+        float screenHeight = imgui_io->DisplaySize.y;
+        ImGui::SetNextWindowPos(ImVec2(screenWidth * 0.75f, 0.f));
+        ImGui::SetNextWindowSize(ImVec2(screenWidth * 0.25f, screenHeight));
+        // Your ImGui UI logic here
+        ImGui::Begin("Entity Panel");
+        ImGui::Text("Select an object or tile:");
+        if (ImGui::Button("Add Block"))
+        {
+            // Call your ECS or EntityFactory method
+        }
+        ImGui::End();
+        DrawGrid(1.f * pixelsPerMeter);
+    }
+
 
     //TODO delete entities when levelReload/Load/wechsel
 
@@ -303,6 +349,7 @@ namespace gl3
 
         bpm = engine::AudioAnalysis::analyzeAudioTempo(audio_file, hopSize, bufferSize);
         auto beatInterval = 60 / bpm;
+        unit = beatInterval * pixelsPerMeter; //TODO testen ob es besser ist als units beats zu nehmen
 
         std::vector<float> beatPositions = engine::AudioAnalysis::generateBeatTimestamps(
             static_cast<float>(backgroundMusic->getLength()),
@@ -482,6 +529,5 @@ namespace gl3
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
             Game::onPlayerDeath>(this);
-        glfwTerminate();
     }
 }
