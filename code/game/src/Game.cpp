@@ -4,7 +4,6 @@
 #include "Assets.h"
 #include "Constants.h"
 #include "PlayerInputSystem.h"
-#include "physics/PlayerContactListener.h"
 #include "engine/AudioAnalysis.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/rendering/RenderingSystem.h"
@@ -15,6 +14,7 @@ namespace gl3
     Game::Game(const int width, const int height, const std::string& title, const glm::vec3& camPos,
                const float camZoom)
         : engine::Game(width, height, title, camPos, camZoom), physics_system_(*this), rendering_system_(*this),
+          ui_system_(*this),
           player_input_system_(*this)
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&Game::onPlayerDeath>(this);
@@ -111,48 +111,10 @@ namespace gl3
         rendering_system_.draw();
     }
 
-    void DrawGrid(float gridSpacing)
+    void Game::updateUI()
     {
-        //TODO grid spacing evtl an beats anpassen? oder einfach beats nur markieren?
-
-        ImDrawList* drawList = ImGui::GetBackgroundDrawList();
-
-        ImVec2 screenSize = ImGui::GetIO().DisplaySize;
-        ImVec2 center = ImVec2(screenSize.x * 0.5f,screenSize.y * 0.5f);
-
-        int verticalLines = static_cast<int>(screenSize.x / gridSpacing);
-        int horizontalLines = static_cast<int>(screenSize.y / gridSpacing);
-
-        // vertical lines
-        for (int i = -verticalLines; i <= verticalLines; ++i) {
-            float xPos = i * gridSpacing;
-            drawList->AddLine(ImVec2(center.x + xPos, screenSize.y), ImVec2(center.x + xPos, -screenSize.y), IM_COL32(100, 100, 100, 255));
-        }
-
-        // horizontal lines
-        for (int j = -horizontalLines; j <= horizontalLines; ++j) {
-            float yPos = j * gridSpacing;
-            drawList->AddLine(ImVec2(screenSize.x, center.y + yPos), ImVec2(-screenSize.x, center.y + yPos), IM_COL32(100, 100, 100, 255));
-        }
+        ui_system_.renderUI();
     }
-
-    void Game::setUpUI()
-    {
-        float screenWidth = imgui_io->DisplaySize.x;
-        float screenHeight = imgui_io->DisplaySize.y;
-        ImGui::SetNextWindowPos(ImVec2(screenWidth * 0.75f, 0.f));
-        ImGui::SetNextWindowSize(ImVec2(screenWidth * 0.25f, screenHeight));
-        // Your ImGui UI logic here
-        ImGui::Begin("Entity Panel");
-        ImGui::Text("Select an object or tile:");
-        if (ImGui::Button("Add Block"))
-        {
-            // Call your ECS or EntityFactory method
-        }
-        ImGui::End();
-        DrawGrid(1.f * pixelsPerMeter);
-    }
-
 
     //TODO delete entities when levelReload/Load/wechsel
 

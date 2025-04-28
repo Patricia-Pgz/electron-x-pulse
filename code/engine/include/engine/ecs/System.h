@@ -10,6 +10,6 @@ namespace gl3::engine::ecs {
         virtual ~System() = default;
 
     protected:
-        engine::Game &game;
+        Game &game;
     };
 }

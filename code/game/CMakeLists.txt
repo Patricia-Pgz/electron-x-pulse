@@ -6,6 +6,8 @@ set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Constants.h src/Assets
         src/physics/PhysicsSystem.h
         src/PlayerInputSystem.cpp
         src/PlayerInputSystem.h
+        src/GameUISystem.h
+        src/GameUISystem.cpp
 )
 
 # set executable name

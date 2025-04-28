@@ -14,9 +14,10 @@ namespace gl3::engine::rendering
         }
     }
 
-    void TextureManager::loadTextures() {
+    void TextureManager::loadTextures() { //TODO das ist Spiel spezifisch -> auslagern?
         add("player", "textures/geometry-dash.png");
         add("platform", "textures/Tile_03.png");
+        add("tileset", "textures/Tileset.png");
         //add("ground","..."); TODO
         //add("background","...");
         //add("obstacle", "textures/obstacle.png");

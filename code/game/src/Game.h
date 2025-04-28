@@ -2,6 +2,7 @@
 #include "engine/Game.h"
 #include <soloud_wav.h>
 
+#include "GameUISystem.h"
 #include "PlayerInputSystem.h"
 #include "engine/rendering/RenderingSystem.h"
 #include "physics/PhysicsSystem.h"
@@ -30,7 +31,7 @@ namespace gl3
         void start() override;
         void update(GLFWwindow* window) override;
         void draw() override;
-        void setUpUI() override;
+        void updateUI() override;
         void updatePhysics() override;
         void moveEntitiesScrolling();
         void scroll_callback_fun(double yOffset);
@@ -41,6 +42,7 @@ namespace gl3
 
         PhysicsSystem physics_system_;
         engine::rendering::RenderingSystem rendering_system_;
+        GameUISystem ui_system_;
         PlayerInputSystem player_input_system_;
         engine::GameState previousGameState = engine::GameState::Menu;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
