@@ -1,23 +1,46 @@
 #include "engine/rendering/TextureManager.h"
 
+#include <filesystem>
 #include <stdexcept>
 
 namespace gl3::engine::rendering
 {
-    std::unordered_map<std::string, Texture> TextureManager::textureCache;
+    std::unordered_map<std::string, Texture> TextureManager::texture_cache_;
+    std::unordered_map<std::string, Texture> TextureManager::tile_set_cache_;
 
-    void TextureManager::add(const std::string& key, const std::string& path)
+    void TextureManager::add(const std::string& key, const std::string& path, const int tilesX, const int tilesY)
     {
-        if (!textureCache.contains(key))
+        if (!texture_cache_.contains(key))
         {
-            textureCache.emplace(key, Texture(path));
+            std::string filename = std::filesystem::path(path).filename().string();
+            std::ranges::transform(filename, filename.begin(), ::tolower);
+            if (filename.find("tileset") != std::string::npos)
+            {
+                tile_set_cache_.emplace(
+                    std::piecewise_construct,
+                    std::forward_as_tuple(key),
+                    std::forward_as_tuple(path,tilesX,tilesY)
+                );
+            }
+            else
+            {
+                texture_cache_.emplace(
+                    std::piecewise_construct,
+                    std::forward_as_tuple(key),
+                    std::forward_as_tuple(path)
+                );
+            }
         }
     }
 
-    void TextureManager::loadTextures() { //TODO das ist Spiel spezifisch -> auslagern?
-        add("player", "textures/geometry-dash.png");
-        add("platform", "textures/Tile_03.png");
-        add("tileset", "textures/Tileset.png");
+    void TextureManager::loadTextures()
+    {
+        //TODO das ist Spiel spezifisch -> auslagern?
+        add("Player", "textures/geometry-dash.png");
+        add("Platform", "textures/Tile_03.png");
+        add("TileSet", "textures/Tileset.png", 9, 9);
+        add("worldTileSet", "textures/world_tileset.png", 16, 16);
+        add("xmasTileSet", "textures/xmas_game_tileset.png", 64, 64);
         //add("ground","..."); TODO
         //add("background","...");
         //add("obstacle", "textures/obstacle.png");
@@ -25,10 +48,14 @@ namespace gl3::engine::rendering
 
     const Texture& TextureManager::get(const std::string& key)
     {
-        const auto it = textureCache.find(key);
-        if (it == textureCache.end())
+        auto it = texture_cache_.find(key);
+        if (it == texture_cache_.end())
         {
-            throw std::runtime_error("TextureManager: Texture key not found: " + key);
+            it = tile_set_cache_.find((key));
+            if(it == tile_set_cache_.end())
+            {
+                throw std::runtime_error("TextureManager: Texture key not found: " + key);
+            }
         }
         return it->second;
     }
@@ -40,6 +67,6 @@ namespace gl3::engine::rendering
 
     void TextureManager::clear()
     {
-        textureCache.clear();
+        texture_cache_.clear();
     }
 }

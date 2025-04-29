@@ -7,7 +7,7 @@
 
 namespace gl3::engine::rendering
 {
-    Texture::Texture(const std::string& path)
+    Texture::Texture(const std::string& path, const int tilesX, const int tilesY)
     {
         glGenTextures(1, &ID);
         glBindTexture(GL_TEXTURE_2D, ID);
@@ -29,7 +29,10 @@ namespace gl3::engine::rendering
         GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-
+        std::string filename = std::filesystem::path(path).filename().string();
+        std::ranges::transform(filename, filename.begin(), ::tolower);
+        is_tileset_ = filename.find("tileset") != std::string::npos;
+        tile_uvs_ = isTileSet()? generateTileUVs(tilesX,tilesY) : tile_uvs_;
         stbi_image_free(data);
     }
 
@@ -74,7 +77,7 @@ namespace gl3::engine::rendering
         glBindTexture(GL_TEXTURE_2D, ID);
     }
 
-    glm::vec4 Texture::getTileUV(int tileX, int tileY, int tilesX, int tilesY) const
+    glm::vec4 Texture::getTileUV(int tileX, int tileY, int tilesX, int tilesY)
     {
         const float tileWidth = 1.0f / static_cast<float>(tilesX);
         const float tileHeight = 1.0f / static_cast<float>(tilesY);
@@ -87,7 +90,7 @@ namespace gl3::engine::rendering
         return glm::vec4(u0, v0, u1, v1);
     }
 
-    std::vector<glm::vec4> Texture::generateTileUVs(int tilesX, int tilesY) const
+    std::vector<glm::vec4> Texture::generateTileUVs(const int tilesX, const int tilesY)
     {
         std::vector<glm::vec4> uvs;
         uvs.reserve(tilesX * tilesY);

@@ -15,7 +15,7 @@ namespace gl3
                const float camZoom)
         : engine::Game(width, height, title, camPos, camZoom), physics_system_(*this), rendering_system_(*this),
           ui_system_(*this),
-          player_input_system_(*this)
+          player_input_system_(*this), level_editor_system_(*this)
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&Game::onPlayerDeath>(this);
     }
@@ -73,12 +73,12 @@ namespace gl3
 
         const auto& ground = engine::ecs::EntityFactory::createDefaultEntity(
             registry_, glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), glm::vec4(0.25, 0.27, 1, 1), "ground",
-            physicsWorld, false, &engine::rendering::TextureManager::get("platform"));
+            physicsWorld, false);
         engine::ecs::EntityFactory::setScale(registry_, ground, glm::vec3(40.f, groundHeight, 0.f));
         player = engine::ecs::EntityFactory::createDefaultEntity(
             registry_, glm::vec3(initialPlayerPositionX, 0.f, 0),
             glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld, false,
-            &engine::rendering::TextureManager::get("player"));
+            &engine::rendering::TextureManager::get("Player"));
         engine::ecs::EntityFactory::setScale(registry_, player, glm::vec3(1.f, 1.f, 1.f));
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(resolveAssetPath("audio/SensesShort.wav").c_str());

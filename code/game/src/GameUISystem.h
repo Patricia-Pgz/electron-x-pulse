@@ -1,8 +1,15 @@
 #pragma once
+#include "engine/rendering/Texture.h"
 #include "engine/userInterface/UISystem.h"
 
 namespace gl3
 {
+    struct TileSelectedEvent {
+        const engine::rendering::Texture* texture;
+        glm::vec4 uv;
+
+    };
+
     class GameUISystem : public engine::ui::UISystem {
     public:
         explicit GameUISystem(engine::Game& game) : UISystem(game)
@@ -10,9 +17,10 @@ namespace gl3
         };
         void updateUI() override;
     private:
-        void DrawGrid(float gridSpacing);
+        static void DrawGrid(float gridSpacing);
         void DrawTileSelectionPanel() const;
-        void createCustomUI();
+        void createCustomUI() const;
+
     };
 }
 

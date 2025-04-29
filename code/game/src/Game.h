@@ -3,6 +3,7 @@
 #include <soloud_wav.h>
 
 #include "GameUISystem.h"
+#include "LevelEditorSystem.h"
 #include "PlayerInputSystem.h"
 #include "engine/rendering/RenderingSystem.h"
 #include "physics/PhysicsSystem.h"
@@ -44,6 +45,7 @@ namespace gl3
         engine::rendering::RenderingSystem rendering_system_;
         GameUISystem ui_system_;
         PlayerInputSystem player_input_system_;
+        LevelEditorSystem level_editor_system_;
         engine::GameState previousGameState = engine::GameState::Menu;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
 
