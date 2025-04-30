@@ -61,6 +61,6 @@ namespace gl3
 
         bool loadLevelFromFile = true;
 
-        float initialPlayerPositionX = 0.f;
+        float initialPlayerPositionX = -2.0f;
     };
 }

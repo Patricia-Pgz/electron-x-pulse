@@ -1,0 +1,75 @@
+#pragma once
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include "../../../../game/src/Constants.h"
+#include "engine/Context.h"
+
+namespace gl3::engine::rendering
+{
+    class MVPMatrixHelper {
+      public:
+        static glm::mat4 calculateViewMatrix(const context::Context& context)
+        {
+            return lookAt(context.getCameraPos(),
+                              context.getCameraCenter(),
+                              glm::vec3(0.0f, 1.0f, 0.0f));
+        }
+
+        static glm::mat4 calculateProjectionMatrix(const std::vector<float>& windowBounds)
+        {
+            return glm::ortho(windowBounds[0], windowBounds[1], windowBounds[2], windowBounds[3],
+                                                    0.1f,
+                                                    10.f);
+        }
+
+        static glm::mat4 calculateModelMatrix(const glm::vec3& position, const float& zRotationInDegrees,
+                                            const glm::vec3& scale)
+        {
+            auto model = glm::mat4(1.0f);
+            model = translate(model, glm::vec3(position.x*pixelsPerMeter, position.y*pixelsPerMeter, 0.f));
+            model = rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
+            return glm::scale(model, glm::vec3(scale.x*pixelsPerMeter, scale.y*pixelsPerMeter, 0.f));
+        }
+
+        static glm::vec2 screenToWorld(const Game& game, const float screenPosX, const float screenPosY)
+        {
+            const auto screenSize = ImGui::GetIO().DisplaySize;
+
+            const float ndcX = (screenPosX / screenSize.x) * 2.0f - 1.0f;
+            const float ndcY = 1.0f - (screenPosY / screenSize.y) * 2.0f; // invert y
+
+            const glm::vec4 clipPos = glm::vec4(ndcX, ndcY, 0.f, 1.f);
+
+            const glm::mat4 projection =calculateProjectionMatrix(game.getContext().getWindowBounds());
+            const glm::mat4 view = calculateViewMatrix(game.getContext());
+
+            const glm::mat4 inv = inverse(projection * view);
+            const glm::vec4 world = inv * clipPos;
+
+            return {world.x, world.y};
+        }
+
+        static glm::vec2 toScreen(const Game& game, const float x, const float y)
+        {
+            // Convert to world-space with scaling
+            const glm::vec4 worldPos(x * pixelsPerMeter, y * pixelsPerMeter, 0.f, 1.f);
+
+            const glm::mat4 projection = calculateProjectionMatrix(game.getContext().getWindowBounds());
+            const glm::mat4 view = calculateViewMatrix(game.getContext());
+
+            // Transform to clip space
+            const glm::vec4 clip = projection * view * worldPos;
+
+            // Normalize screen coordinates
+            const ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+            const float ndcX = clip.x / clip.w;
+            const float ndcY = clip.y / clip.w;
+
+            float screenX = (ndcX * 0.5f + 0.5f) * screenSize.x;
+            float screenY = (1.0f - (ndcY * 0.5f + 0.5f)) * screenSize.y;
+
+            return {screenX, screenY};
+        }
+
+      };
+}
