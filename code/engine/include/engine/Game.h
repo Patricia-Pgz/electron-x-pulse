@@ -29,8 +29,8 @@ public:
     [[nodiscard]] float getDeltaTime() const {return deltaTime;};
     entt::registry& getRegistry(){return registry_;};
     [[nodiscard]] entt::entity getPlayer() const { return player; }
-    [[nodiscard]] float getLevelSpeed() const { return levelSpeed; };
     [[nodiscard]] float getCurrentBPM() const{return bpm;};
+    [[nodiscard]] float getLevelSpeed() const { return currentLevelSpeed; };
 
 
     using event_t = events::Event<Game, Game&>;
@@ -65,8 +65,13 @@ protected:
     entt::registry registry_;
     entt::entity player;
 
-    float levelSpeed = -1.f;
+    float initialPlayerPositionX = -2.0f;
+
+    float velocityMultiplier = -2.f;
     float bpm = 0.0f; // Default BPM, updated dynamically
+    float secondsPerBeat = 1.f; //Default, updated according to level music
+    float currentLevelSpeed = velocityMultiplier/ secondsPerBeat;
+    float levelLength = 0; //Default, gets updated according to level music
 
 private:
     float lastFrameTime_ = 1.0f / 60;

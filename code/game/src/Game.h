@@ -25,7 +25,6 @@ namespace gl3
     {
     public:
         Game(int width, int height, const std::string& title, const glm::vec3& camPos, float camZoom);
-
         ~Game() override;
 
     private:
@@ -49,7 +48,6 @@ namespace gl3
         engine::GameState previousGameState = engine::GameState::Menu;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
 
-        float levelLength = 0;
         float groundLevel = -1;
         float groundHeight = 4.0f;
 
@@ -60,7 +58,5 @@ namespace gl3
         std::vector<GameObject> initial_test_game_objects;
 
         bool loadLevelFromFile = true;
-
-        float initialPlayerPositionX = -2.0f;
     };
 }
