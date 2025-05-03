@@ -10,26 +10,10 @@
 
 namespace gl3
 {
-    void GameUISystem::handleGridSelection() //TODO evtl direkt in drawgrid
+    void GameUISystem::DrawGrid(const float gridSpacing)
     {
-        if (ImGui::IsMouseClicked(0) && !ImGui::GetIO().WantCaptureMouse)
-        {
-
-            const ImVec2 mousePos = ImGui::GetMousePos();
-            glm::vec2 worldPos = engine::rendering::MVPMatrixHelper::screenToWorld(game, mousePos.x, mousePos.y);
-            int gridX = static_cast<int>(std::floor(worldPos.x / pixelsPerMeter));
-            int gridY = static_cast<int>(std::floor(worldPos.y / pixelsPerMeter));
-
-            selected_grid_cell_ = {gridX, gridY};
-            std::cout << "Grid selected: " << selected_grid_cell_.x << ", " << selected_grid_cell_.y <<
-                std::endl;
-        }
-    }
-
-    void GameUISystem::DrawGrid(const ImVec2& screenSize, const float gridSpacing) const
-    {
-        //TODO grid spacing evtl an beats anpassen? oder einfach beats nur markieren?
-
+        const ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+        grid_center_ = ImVec2(screenSize.x * 0.5f + grid_offset, screenSize.y * 0.5f + grid_offset);
         ImDrawList* drawList = ImGui::GetBackgroundDrawList();
 
         int verticalLines = static_cast<int>(screenSize.x / gridSpacing);
@@ -38,7 +22,7 @@ namespace gl3
         // vertical lines
         for (int i = -verticalLines; i <= verticalLines; ++i)
         {
-            float xPos = (i + grid_offset) * gridSpacing;
+            float xPos = (i) * gridSpacing;
             drawList->AddLine(ImVec2(grid_center_.x + xPos, screenSize.y), ImVec2(grid_center_.x + xPos, -screenSize.y),
                               IM_COL32(100, 100, 100, 255));
         }
@@ -46,20 +30,44 @@ namespace gl3
         // horizontal lines
         for (int j = -horizontalLines; j <= horizontalLines; ++j)
         {
-            float yPos = (j + grid_offset) * gridSpacing;
+            float yPos = (j) * gridSpacing;
             drawList->AddLine(ImVec2(screenSize.x, grid_center_.y + yPos), ImVec2(-screenSize.x, grid_center_.y + yPos),
                               IM_COL32(100, 100, 100, 255));
         }
 
-        /*glm::vec2 topLeft = engine::rendering::MVPMatrixHelper::toScreen(game, selectedGridCell.x, selectedGridCell.y);
-        glm::vec2 bottomRight = engine::rendering::MVPMatrixHelper::toScreen(
-            game, selectedGridCell.x + 1, selectedGridCell.y + 1);*/
-        glm::vec2 selectedGridCellScreen = engine::rendering::MVPMatrixHelper::toScreen(
-            game, selected_grid_cell_.x, selected_grid_cell_.y);
-        drawList->AddRect({selectedGridCellScreen.x, selectedGridCellScreen.y}, {
-                              selectedGridCellScreen.x + 1 * gridSpacing,
-                              selectedGridCellScreen.y - 1 * gridSpacing
-                          }, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+        if (ImGui::IsMouseClicked(0) && !ImGui::GetIO().WantCaptureMouse)
+        {
+            ImVec2 mousePos = ImGui::GetMousePos();
+
+            // Snap click to grid cell
+            ImVec2 relativePos(mousePos.x - grid_center_.x, mousePos.y - grid_center_.y);
+            float snappedX = grid_center_.x + std::floor(relativePos.x / gridSpacing) * gridSpacing;
+            float snappedY = grid_center_.y + std::floor(relativePos.y / gridSpacing) * gridSpacing;
+
+            if (selected_screen_pixel &&
+                selected_screen_pixel->x == snappedX &&
+                selected_screen_pixel->y == snappedY)
+            {
+                // Deselect if clicking same cell
+                selected_screen_pixel = nullptr;
+                std::cout << "Deselected grid cell." << std::endl;
+            }
+            else
+            {
+                // Select new cell
+                selected_screen_pixel = std::make_unique<ImVec2>(snappedX, snappedY);
+                std::cout << "Selected grid cell: " << snappedX << ", " << snappedY << std::endl;
+            }
+        }
+
+        // when drawing:
+        if (selected_screen_pixel)
+        {
+            ImVec2 cellMin = *selected_screen_pixel;
+            ImVec2 cellMax = ImVec2(selected_screen_pixel->x + gridSpacing,
+                                    selected_screen_pixel->y + gridSpacing);
+            drawList->AddRect(cellMin, cellMax, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+        }
     }
 
     void GameUISystem::visualizeTileSetUI(const engine::rendering::Texture& texture, const std::string& name,
@@ -81,7 +89,7 @@ namespace gl3
                                    ImVec2(tileSize, tileSize), uv0, uv1))
             {
                 engine::ecs::EventDispatcher::dispatcher.trigger(TileSelectedEvent{
-                    &texture, uv, selected_grid_cell_
+                    &texture, uv, *selected_screen_pixel
                 });
                 //TODO Button highlighten
             }
@@ -100,11 +108,11 @@ namespace gl3
                                ImVec2(tileSize, tileSize), ImVec2(0, 0), ImVec2(1, -1)))
         {
             engine::ecs::EventDispatcher::dispatcher.trigger(
-                TileSelectedEvent{&texture, {0, 0, 1, 1}, selected_grid_cell_});
+                TileSelectedEvent{&texture, {0, 0, 1, 1}, *selected_screen_pixel});
         }
     }
 
-    void GameUISystem::DrawTileSelectionPanel() const
+    void GameUISystem::DrawTileSelectionPanel()
     {
         int width, height;
         glfwGetWindowSize(game.getWindow(), &width, &height);
@@ -138,17 +146,15 @@ namespace gl3
         ImGui::End();
     }
 
-    void GameUISystem::createCustomUI(const ImVec2& screenSize) const
+    void GameUISystem::createCustomUI()
     {
         DrawTileSelectionPanel();
-        DrawGrid(screenSize, 1.f * pixelsPerMeter);
+        DrawGrid( 1.f * pixelsPerMeter);
     }
 
     void GameUISystem::updateUI()
     {
-        const ImVec2 screenSize = ImGui::GetIO().DisplaySize;
-        grid_center_ = ImVec2(screenSize.x * 0.5f, screenSize.y * 0.5f);
-        handleGridSelection();
-        createCustomUI(screenSize);
+
+        createCustomUI();
     }
 }
