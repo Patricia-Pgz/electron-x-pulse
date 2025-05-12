@@ -13,26 +13,26 @@ namespace gl3
 {
     void GameUISystem::DrawGrid(const float gridSpacing)
     {
-        const ImVec2 screenSize = ImGui::GetIO().DisplaySize;
-        grid_center_ = ImVec2(screenSize.x * 0.5f + grid_offset, screenSize.y * 0.5f + grid_offset);
+        const ImVec2 screenSize = imgui_io->DisplaySize;
+        grid_center = ImVec2(screenSize.x * 0.5f, screenSize.y * 0.5f);
         ImDrawList* drawList = ImGui::GetBackgroundDrawList();
 
-        int verticalLines = static_cast<int>(screenSize.x / gridSpacing);
-        int horizontalLines = static_cast<int>(screenSize.y / gridSpacing);
+        const int verticalLines = static_cast<int>(screenSize.x / gridSpacing);
+        const int horizontalLines = static_cast<int>(screenSize.y / gridSpacing);
 
         // vertical lines
         for (int i = -verticalLines; i <= verticalLines; ++i)
         {
-            float xPos = (i) * gridSpacing;
-            drawList->AddLine(ImVec2(grid_center_.x + xPos, screenSize.y), ImVec2(grid_center_.x + xPos, -screenSize.y),
+            const float xPos = (static_cast<float>(i) + grid_offset) * gridSpacing;
+            drawList->AddLine(ImVec2(grid_center.x + xPos, screenSize.y), ImVec2(grid_center.x + xPos, -screenSize.y),
                               IM_COL32(100, 100, 100, 255));
         }
 
         // horizontal lines
         for (int j = -horizontalLines; j <= horizontalLines; ++j)
         {
-            float yPos = (j) * gridSpacing;
-            drawList->AddLine(ImVec2(screenSize.x, grid_center_.y + yPos), ImVec2(-screenSize.x, grid_center_.y + yPos),
+            const float yPos = (static_cast<float>(j) + grid_offset) * gridSpacing;
+            drawList->AddLine(ImVec2(screenSize.x, grid_center.y + yPos), ImVec2(-screenSize.x, grid_center.y + yPos),
                               IM_COL32(100, 100, 100, 255));
         }
 
@@ -41,28 +41,35 @@ namespace gl3
             ImVec2 mousePos = ImGui::GetMousePos();
 
             // Snap click to grid cell
-            ImVec2 relativePos(mousePos.x - grid_center_.x, mousePos.y - grid_center_.y);
-            float snappedX = grid_center_.x + std::floor(relativePos.x / gridSpacing) * gridSpacing;
-            float snappedY = grid_center_.y + std::floor(relativePos.y / gridSpacing) * gridSpacing;
+            ImVec2 relativePos(mousePos.x - grid_center.x, mousePos.y - grid_center.y);
 
-            if (selected_screen_pixel &&
-                selected_screen_pixel->x == snappedX &&
-                selected_screen_pixel->y == snappedY)
+            int cellX = static_cast<int>(std::round(relativePos.x / gridSpacing));;
+            int cellY = static_cast<int>(std::round(relativePos.y / gridSpacing));
+
+            std::cout << "cellX: " + std::to_string(cellX) + "cellY: " + std::to_string(cellY);
+
+            if (ImVec2 clickedCell(static_cast<float>(cellX), static_cast<float>(cellY)); selected_grid_cell &&
+                selected_grid_cell->x == clickedCell.x && selected_grid_cell->y == clickedCell.y)
             {
-                selected_screen_pixel = nullptr;
+                selected_grid_cell.reset();
             }
             else
             {
-                selected_screen_pixel = std::make_unique<ImVec2>(snappedX, snappedY);
+                selected_grid_cell = std::make_unique<ImVec2>(clickedCell);
             }
         }
 
-        if (selected_screen_pixel) //TODO bei window resize falsch
+        if (selected_grid_cell)
         {
-            ImVec2 cellMin = *selected_screen_pixel;
-            ImVec2 cellMax = ImVec2(selected_screen_pixel->x + gridSpacing,
-                                    selected_screen_pixel->y + gridSpacing);
-            drawList->AddRect(cellMin, cellMax, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+            const int cellX = static_cast<int>(selected_grid_cell->x);
+            const int cellY = static_cast<int>(selected_grid_cell->y);
+
+            const auto cellCenter = ImVec2(grid_center.x + static_cast<float>(cellX) * gridSpacing,
+                                           grid_center.y + static_cast<float>(cellY) * gridSpacing);
+            const auto topLeft = ImVec2(cellCenter.x - gridSpacing * 0.5f, cellCenter.y - gridSpacing * 0.5f);
+            const auto cellBottomRight = ImVec2(cellCenter.x + gridSpacing * 0.5f, cellCenter.y + gridSpacing * 0.5f);
+
+            drawList->AddRect(topLeft, cellBottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
         }
     }
 
@@ -79,19 +86,20 @@ namespace gl3
             const auto& uv = uvs[i];
 
             std::string buttonId = name + "_Tile_" + std::to_string(i);
-            ImVec2 uv0(uv.x, -uv.y);
-            ImVec2 uv1(uv.z, -uv.w);
+            ImVec2 uv0(uv.x, uv.w);
+            ImVec2 uv1(uv.z, uv.y);
 
             ImGui::GetStyle().FrameRounding = 1.0;
             ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive,UINeonColors::Cyan);
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
 
             if (ImGui::ImageButton(buttonId.c_str(), texture.getID(),
-                                   ImVec2(tileSize, tileSize), uv0, uv1) && selected_screen_pixel)
+                                   ImVec2(tileSize, tileSize), uv0, uv1) && selected_grid_cell)
             {
                 engine::ecs::EventDispatcher::dispatcher.trigger(TileSelectedEvent{
-                    &texture, uv, *selected_screen_pixel, selected_tag_
+                    &texture, uv, {selected_grid_cell->x, -selected_grid_cell->y}, is_triangle, selected_scale,
+                    selected_tag
                 });
             }
             if (ImGui::IsItemHovered())
@@ -109,14 +117,17 @@ namespace gl3
     {
         std::string btnID = name + "_full";
         ImGui::GetStyle().FrameRounding = 1.0;
-        ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);           // normal
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);    // hovered
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive,UINeonColors::Cyan);
+        ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet); // normal
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2); // hovered
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
         if (ImGui::ImageButton(btnID.c_str(), texture.getID(),
-                               ImVec2(tileSize, tileSize), ImVec2(0, 0), ImVec2(1, -1)) && selected_screen_pixel)
+                               ImVec2(tileSize, tileSize), ImVec2(0, 0), ImVec2(1, -1)) && selected_grid_cell)
         {
             engine::ecs::EventDispatcher::dispatcher.trigger(
-                TileSelectedEvent{&texture, {0, 0, 1, 1}, *selected_screen_pixel, selected_tag_});
+                TileSelectedEvent{
+                    &texture, {0, 0, 1, 1},
+                    {selected_grid_cell->x, -selected_grid_cell->y}, is_triangle, selected_scale, selected_tag
+                });
         }
         if (ImGui::IsItemHovered())
         {
@@ -130,19 +141,17 @@ namespace gl3
         int counter = 0;
         for (const auto& id : buttonIDs)
         {
-            const bool isSelected = (selected_tag_ == id);
+            const bool isSelected = (selected_tag == id);
             ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive,UINeonColors::Cyan);
-            ImGui::GetStyle().FrameRounding = 1.0;
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
 
             if (isSelected)
             {
                 ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet2);
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
-                ImGui::PushStyleColor(ImGuiCol_ButtonActive,UINeonColors::Cyan);
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
             }
-
             const bool pressed = ImGui::Button(id.c_str());
 
             if (isSelected)
@@ -155,9 +164,12 @@ namespace gl3
             if (pressed)
             {
                 if (isSelected)
-                    selected_tag_ = "undefined";
+                    selected_tag = "undefined";
                 else
-                    selected_tag_ = id;
+                {
+                    selected_tag = id;
+                    tag_input_buffer[0] = '\0';
+                }
             }
 
             if (counter != buttonIDs.size() - 1)
@@ -168,18 +180,20 @@ namespace gl3
         }
     }
 
-    void styleWindow() {
+    void styleWindow()
+    {
         ImGuiStyle& style = ImGui::GetStyle();
 
         style.WindowBorderSize = 2.f;
         style.WindowPadding = ImVec2(10, 10);
-        style.WindowRounding = 1.0f;
+        style.WindowRounding = 3.0f;
+        ImGui::GetStyle().FrameRounding = 5.0;
 
         ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_TitleBg, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_TitleBgActive, UINeonColors::pastelNeonViolet);
 
-        style.ItemSpacing = ImVec2(10,10);
+        style.ItemSpacing = ImVec2(10, 10);
     }
 
     void GameUISystem::DrawTileSelectionPanel()
@@ -197,22 +211,53 @@ namespace gl3
         ImGui::PushFont(loadedFonts["PixeloidSans.ttf"]);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 1.0f, 1.0f));
         ImGui::Text("1.) Click on grid to select position");
-        ImGui::Text("2.) Select tag:");
+
+        ImGui::Text("2.) Select shape:");
+        ImGui::PushStyleColor(ImGuiCol_CheckMark, UINeonColors::pastelNeonViolet2);
+        if (ImGui::RadioButton("Rectangle", !is_triangle))
+            is_triangle = false;
+        ImGui::SameLine();
+        ImGui::PushStyleColor(ImGuiCol_CheckMark, UINeonColors::pastelNeonViolet2);
+        if (ImGui::RadioButton("Triangle", is_triangle))
+            is_triangle = true;
+        ImGui::PopStyleColor(2);
+
+        ImGui::Text("3.) Scale:");
+        auto itemWidth = ImGui::GetContentRegionAvail().x * 0.4f;
+        ImGui::SetNextItemWidth(itemWidth);
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet2);
+        if (ImGui::InputFloat("X", &selected_scale.x, 0.1f, 1.0f, "%.2f")) {
+            if (selected_scale.x < 0.0f)
+                selected_scale.x = 0.1f;
+        }
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(itemWidth);
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet2);
+        if (ImGui::InputFloat("Y", &selected_scale.y, 0.1f, 10.f, "%.2f")) {
+            if (selected_scale.x < 0.0f)
+                selected_scale.x = 0.1f;
+        }
+        ImGui::PopStyleColor(4);
+
+        ImGui::Text("4.) Select tag:");
         std::vector<std::string> tagButtonIDs{"platform", "obstacle"};
         highlightSelectedButton(tagButtonIDs);
-        char tagInputBuffer[128] = "";
         ImGui::Text("Custom tag:");
         ImGui::SameLine();
         ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.5f);
-        ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet); //TODO change zu violet2 wenn selected?
-        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UINeonColors::pastelNeonViolet2);
-        ImGui::PushStyleColor(ImGuiCol_FrameBgActive,  UINeonColors::pastelNeonViolet2);
-        ImGui::InputText("##tag_input", tagInputBuffer, IM_ARRAYSIZE(tagInputBuffer));
-        ImGui::PopStyleColor(3);
-        if (tagInputBuffer != selected_tag_ && tagInputBuffer[0] != '\0') {
-            selected_tag_ = tagInputBuffer;
+        ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                              tag_input_buffer[0] == '\0'
+                                  ? UINeonColors::pastelNeonViolet
+                                  : UINeonColors::pastelNeonViolet2);
+        ImGui::InputText("##tag_input", tag_input_buffer, IM_ARRAYSIZE(tag_input_buffer));
+        ImGui::PopStyleColor();
+        if (tag_input_buffer != selected_tag && tag_input_buffer[0] != '\0')
+        {
+            selected_tag = tag_input_buffer;
         }
-        ImGui::Text("3.) Select Tile to place:");
+        ImGui::Text("5.) Select Tile to place:");
         const float availableWidth = ImGui::GetContentRegionAvail().x;
         const float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
         const float totalSpacing = itemSpacing * (tilesPerRow + 2);
@@ -242,7 +287,6 @@ namespace gl3
 
     void GameUISystem::createCustomUI()
     {
-
         DrawTileSelectionPanel();
         DrawGrid(1.f * pixelsPerMeter);
     }

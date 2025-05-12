@@ -34,7 +34,7 @@ namespace gl3
         void updateUI() override;
         void updatePhysics() override;
         void moveEntitiesScrolling();
-        void scroll_callback_fun(double yOffset);
+        void on_mouse_scroll(engine::context::onMouseScrollEvent& event);
         void onGameStateChange(); //TODO event
         void onPlayerDeath(engine::ecs::PlayerDeath& event);
         void resetComponents();

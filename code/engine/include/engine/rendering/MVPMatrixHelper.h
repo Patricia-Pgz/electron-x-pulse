@@ -46,7 +46,7 @@ namespace gl3::engine::rendering
             const glm::mat4 inv = inverse(projection * view);
             const glm::vec4 world = inv * clipPos;
 
-            return {world.x, world.y};
+            return {world.x / pixelsPerMeter, world.y / pixelsPerMeter};
         }
 
         static glm::vec2 toScreen(const Game& game, const float x, const float y)

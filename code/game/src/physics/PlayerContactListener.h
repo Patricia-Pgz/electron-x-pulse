@@ -2,7 +2,7 @@
 #include <iostream>
 #include "box2d/box2d.h"
 #include "engine/ecs/EventDispatcher.h"
-#include "engine/ecs/ExampleEvents.h"
+#include "engine/ecs/PlayerEvents.h"
 
 
 namespace gl3 {

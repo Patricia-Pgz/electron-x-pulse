@@ -2,7 +2,7 @@
 #include "engine/Context.h"
 #include "../../game/src/Constants.h"
 #include "engine/Game.h"
-
+#include "engine/ecs/EventDispatcher.h"
 
 
 namespace gl3::engine::context
@@ -12,13 +12,13 @@ namespace gl3::engine::context
         auto contextInstance = static_cast<Context*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
         contextInstance->calculateWindowBounds();
-        contextInstance->onFrameBufferSizeChange.invoke();
+        ecs::EventDispatcher::dispatcher.trigger(onWindowResizeEvent{ width, height });
     }
 
     void Context::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     {
         auto contextInstance = static_cast<Context*>(glfwGetWindowUserPointer(window));
-        contextInstance->onScrolling.invoke(yoffset);
+        ecs::EventDispatcher::dispatcher.trigger(onMouseScrollEvent{ xoffset, yoffset });
         contextInstance->calculateWindowBounds(); //recalculate window bounds if user scrolled in the scene
     }
 
@@ -47,6 +47,8 @@ namespace gl3::engine::context
         glfwSetScrollCallback(window, scroll_callback);
         gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         if (glGetError() != GL_NO_ERROR)
         {
             throw std::runtime_error("gl error");
@@ -59,7 +61,7 @@ namespace gl3::engine::context
         glfwSetTime(1.0 / 60);
         while (!glfwWindowShouldClose(window))
         {
-            glClearColor(1.f,1.f,1.f, 1.f);
+            glClearColor(1.f,0.47f,0.f, 1.f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             update(*this);
             glfwPollEvents();

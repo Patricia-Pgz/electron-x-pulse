@@ -19,9 +19,10 @@ namespace gl3
     {
         velocityMultiplier = -2;
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&Game::onPlayerDeath>(this);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().connect<&Game::on_mouse_scroll>(this);
     }
 
-    void Game::scroll_callback_fun(const double yOffset)
+    void Game::on_mouse_scroll(engine::context::onMouseScrollEvent& event)
     {
         if (currentGameState != engine::GameState::PreviewWithScrolling) return;
         float cameraX = 0.0f; /*cameraPosition.x;*/
@@ -33,7 +34,7 @@ namespace gl3
             initialPlayerPositionX);
         // Maximum scroll limit
 
-        cameraX = static_cast<float>(yOffset) * scrollSpeed;
+        cameraX = static_cast<float>(event.yOffset) * scrollSpeed;
         if (cameraX < minScrollX) cameraX = minScrollX;
         if (cameraX > maxScrollX) cameraX = maxScrollX;
 
@@ -66,10 +67,6 @@ namespace gl3
 
     void Game::start()
     {
-        context.onScrolling.addListener([&](const float offsetY)
-        {
-            scroll_callback_fun(offsetY);
-        });
         engine::rendering::TextureManager::loadTextures();
 
         const auto& ground = engine::ecs::EntityFactory::createDefaultEntity(
@@ -491,5 +488,7 @@ namespace gl3
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
             Game::onPlayerDeath>(this);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().disconnect<&
+    Game::on_mouse_scroll>(this);
     }
 }
