@@ -22,6 +22,7 @@ namespace gl3::engine::ecs
         rendering::Mesh mesh;
         glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Default red
         const rendering::Texture* texture = nullptr;
+        glm::vec4 uv;
     };
 
     struct PhysicsComponent
@@ -46,7 +47,8 @@ namespace gl3::engine::ecs
                                                 const std::string& tag = "undefined",
                                                 const b2WorldId& physicsWorld = b2_nullWorldId,
                                                 const bool isTriangle = false,
-                                                const rendering::Texture* texture = nullptr)
+                                                const rendering::Texture* texture = nullptr,
+                                                const glm::vec4& uv = {0, 0, 1, 1})
         {
             // Create an entity
             const entt::entity entity = registry.create();
@@ -61,7 +63,7 @@ namespace gl3::engine::ecs
                     entity, createPhysicsBody(physicsWorld, transform, entity, tag, isTriangle)
                 );
             }
-            registry.emplace<RenderComponent>(entity, createRenderComponent(color, isTriangle, texture));
+            registry.emplace<RenderComponent>(entity, createRenderComponent(color, isTriangle, texture, uv));
 
             return entity;
         };
@@ -121,15 +123,20 @@ namespace gl3::engine::ecs
             std::vector<unsigned int> indices;
         };
 
-        static glData getTriangleVertices(const float& width, const float& height)
+        static glData getTriangleVertices(const float& width, const float& height, const glm::vec4& uv)
         {
             glData triangleData;
 
+            float uMid = (uv.x + uv.z) * 0.5f;
+            float vTop = uv.w;
+            float vBottom = uv.y;
+
             // Triangle vertices (x, y, z)
             triangleData.vertices = {
-                -width / 2, -height / 2, 0.0f, 0.0f, 0.0f, // Bottom-left
-                width / 2, -height / 2, 0.0f, 1.0f, 0.0f, // Bottom-right
-                0.0f, height / 2, 0.0f, 0.5f, 1.0f // Top-center
+                -width / 2, -height / 2, 0.0f,uv.x, vBottom, // Bottom-left
+                width / 2, -height / 2, 0.0f,uv.z, vBottom,  // Bottom-right
+
+                0.0f, height / 2, 0.0f,  uMid, vTop  // Top-center
             };
 
             // Indices for one triangle
@@ -140,16 +147,16 @@ namespace gl3::engine::ecs
             return triangleData;
         }
 
-        static glData getBoxVertices(const float& width, const float& height)
+        static glData getBoxVertices(const float& width, const float& height, const glm::vec4& uv)
         {
             glData boxData;
 
             // Rectangle vertices (x, y, z)
             boxData.vertices = {
-                -width / 2, height / 2, 0.0f, 0.0f, 1.0f,
-                -width / 2, -height / 2, 0.0f, 0.0f, 0.0f,
-                width / 2, -height / 2, 0.0f, 1.0f, 0.0f,
-                width / 2, height / 2, 0.0f, 1.0f, 1.0f
+                -width / 2, height / 2, 0.0f, uv.x, uv.w, // Top-left
+                -width / 2, -height / 2, 0.0f, uv.x, uv.y, // Bottom-left
+                width / 2, -height / 2, 0.0f, uv.z, uv.y, // Bottom-right
+                width / 2, height / 2, 0.0f, uv.z, uv.w  // Top-right
             };
 
             // Indices for two triangles
@@ -162,9 +169,9 @@ namespace gl3::engine::ecs
         }
 
         static RenderComponent createRenderComponent(const glm::vec4& color, const bool& isTriangle,
-                                                     const rendering::Texture* texture)
+                                                     const rendering::Texture* texture, const glm::vec4& uv)
         {
-            auto data = isTriangle ? getTriangleVertices(1.f, 1.f) : getBoxVertices(1.f, 1.f);
+            auto data = isTriangle ? getTriangleVertices(1.f, 1.f, uv) : getBoxVertices(1.f, 1.f, uv);
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
 

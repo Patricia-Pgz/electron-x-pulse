@@ -39,8 +39,8 @@ namespace gl3::engine::rendering
         add("Player", "textures/geometry-dash.png");
         add("Platform", "textures/Tile_03.png");
         add("TileSet", "textures/Tileset.png", 9, 9);
-        add("worldTileSet", "textures/world_tileset.png", 16, 16);
-        add("xmasTileSet", "textures/xmas_game_tileset.png", 64, 64);
+        //add("worldTileSet", "textures/world_tileset.png", 16, 16);
+        //add("xmasTileSet", "textures/xmas_game_tileset.png", 64, 64);
         //add("ground","..."); TODO
         //add("background","...");
         //add("obstacle", "textures/obstacle.png");

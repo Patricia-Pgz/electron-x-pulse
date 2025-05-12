@@ -20,14 +20,14 @@ namespace gl3::engine::rendering
 
         int nrChannels;
         stbi_set_flip_vertically_on_load(true);
-        unsigned char* data = stbi_load(resolveAssetPath(path).c_str(), &width, &height, &nrChannels, 0);
+        unsigned char* data = stbi_load(resolveAssetPath(path).c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
         if (!data)
         {
             throw std::runtime_error("Failed to load texture: " + path);
         }
 
         GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         std::string filename = std::filesystem::path(path).filename().string();
         std::ranges::transform(filename, filename.begin(), ::tolower);
@@ -99,7 +99,7 @@ namespace gl3::engine::rendering
         {
             for (int x = 0; x < tilesX; ++x)
             {
-                uvs.push_back(getTileUV(x, y, tilesX, tilesY));
+                uvs.push_back(getTileUV(x, tilesY - 1 - y, tilesX, tilesY));
             }
         }
 

@@ -19,7 +19,6 @@ namespace gl3::engine::rendering
             const auto model = MVPMatrixHelper::calculateModelMatrix(position, zRotationInDegrees, scale);
             const glm::mat4 view = MVPMatrixHelper::calculateViewMatrix(context);
             const glm::mat4 projection = MVPMatrixHelper::calculateProjectionMatrix(context.getWindowBounds());
-            //TODO:Dann: Textur UVs für tiling anpassen? -> Texturen für obstacles, platformes, ... einfürhen, DANN: Parallax effekt
 
             return projection * view * model;
         }

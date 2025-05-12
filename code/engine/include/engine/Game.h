@@ -12,6 +12,10 @@
 #include <entt/entity/registry.hpp>
 
 namespace gl3::engine {
+    namespace physics
+    {
+        class PhysicsSystem;
+    }
 
     enum class GameState {
         Menu,
@@ -51,7 +55,7 @@ protected:
     virtual ~Game();
     virtual void start() {};
     virtual void update(GLFWwindow *window) {};
-    virtual void updatePhysics(){};
+    virtual void updatePhysics();
     virtual void draw(){};
     virtual void updateUI(){};
 
@@ -61,6 +65,7 @@ protected:
     float deltaTime = 1.0f / 60;
 
     b2WorldId physicsWorld;
+    physics::PhysicsSystem* physics_system_;
 
     entt::registry registry_;
     entt::entity player;

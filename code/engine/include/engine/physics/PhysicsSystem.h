@@ -2,10 +2,11 @@
 #include "PlayerContactListener.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/ecs/System.h"
+#include "engine/Game.h"
 
-namespace gl3
+namespace gl3::engine::physics
 {
-    class PhysicsSystem : public engine::ecs::System
+    class PhysicsSystem : public ecs::System
     {
     public:
         explicit PhysicsSystem(engine::Game& game) : System(game){};
@@ -23,28 +24,18 @@ namespace gl3
 
                 // Update the entities based on what happened in the physics step
                 const auto& entities = game.getRegistry().view<
-                    engine::ecs::TagComponent, engine::ecs::TransformComponent,
+                    engine::ecs::TagComponent, ecs::TransformComponent,
                     engine::ecs::PhysicsComponent>();
 
                 for (auto& entity : entities)
                 {
-                    const auto& tag = entities.get<engine::ecs::TagComponent>(entity).tag;
-                    if (tag == "timeline") continue;
-
-                    auto& transform_comp = entities.get<engine::ecs::TransformComponent>(entity);
-                    if (tag == "beat")
-                    {
-                        // Update position based on scroll speed and deltaTime
-                        transform_comp.position.x += game.getLevelSpeed() * fixedTimeStep;
-                        continue;
-                    }
-
-                    auto& physics_comp = entities.get<engine::ecs::PhysicsComponent>(entity);
+                    auto& transform_comp = entities.get<ecs::TransformComponent>(entity);
+                    auto& physics_comp = entities.get<ecs::PhysicsComponent>(entity);
                     if (!b2Body_IsValid(physics_comp.body))
                         return;
 
                     auto [p, q] = b2Body_GetTransform(physics_comp.body);
-                    transform_comp.position.x = p.x; //TODO evtl solche Dinge nur tun, wenn physics comp enabled?
+                    transform_comp.position.x = p.x; //TODO physics comp enabled?
                     transform_comp.position.y = p.y;
                     transform_comp.zRotation = glm::degrees(b2Rot_GetAngle(q));
                 }

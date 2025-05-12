@@ -1,5 +1,6 @@
 #include "engine/Game.h"
 #include <stdexcept>
+#include <engine/physics/PhysicsSystem.h>
 
 
 namespace gl3::engine
@@ -26,7 +27,7 @@ namespace gl3::engine
     }
 
     Game::Game(const int width, const int height, const std::string& title, const glm::vec3 camPos,
-               const float camZoom): context(width, height, title, camPos, camZoom), physicsWorld(b2_nullWorldId), player(entt::null)
+               const float camZoom): context(width, height, title, camPos, camZoom), physicsWorld(b2_nullWorldId), physics_system_(new physics::PhysicsSystem(*this)), player(entt::null)
     {
         if (!glfwInit())
         {
@@ -53,5 +54,10 @@ namespace gl3::engine
     Game::~Game()
     {
         glfwTerminate();
+    }
+
+    void Game::updatePhysics()
+    {
+        physics_system_->runPhysicsStep(); //TODO implement way to deactivate physics / stop game / only update active physics comps
     }
 } // gl3

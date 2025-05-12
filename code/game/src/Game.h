@@ -6,7 +6,6 @@
 #include "LevelEditorSystem.h"
 #include "PlayerInputSystem.h"
 #include "engine/rendering/RenderingSystem.h"
-#include "physics/PhysicsSystem.h"
 
 namespace gl3
 {
@@ -32,15 +31,13 @@ namespace gl3
         void update(GLFWwindow* window) override;
         void draw() override;
         void updateUI() override;
-        void updatePhysics() override;
         void moveEntitiesScrolling();
-        void scroll_callback_fun(double yOffset);
+        void on_mouse_scroll(engine::context::onMouseScrollEvent& event);
         void onGameStateChange(); //TODO event
         void onPlayerDeath(engine::ecs::PlayerDeath& event);
         void resetComponents();
         void reset();
 
-        PhysicsSystem physics_system_;
         engine::rendering::RenderingSystem rendering_system_;
         GameUISystem ui_system_;
         PlayerInputSystem player_input_system_;
