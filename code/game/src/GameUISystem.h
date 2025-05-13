@@ -1,4 +1,6 @@
 #pragma once
+#include "Constants.h"
+#include "engine/ecs/EventDispatcher.h"
 #include "engine/rendering/Texture.h"
 #include "engine/userInterface/UISystem.h"
 
@@ -50,8 +52,6 @@ namespace gl3
         ImVec2 grid_center = {0.f, 0.f};
         float grid_offset = 0.5f;
         std::unique_ptr<ImVec2> selected_grid_cell = nullptr;
-        bool is_textured = false;
-        float selected_color[4] = {1.0f, 0.0f, 0.0f, 1.0f};
         glm::vec2 selected_scale = {1.f,1.f};
         char tag_input_buffer[128] = "";
         std::string selected_tag = "undefined";

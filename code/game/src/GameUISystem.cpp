@@ -257,43 +257,27 @@ namespace gl3
         {
             selected_tag = tag_input_buffer;
         }
+        ImGui::Text("5.) Select Tile to place:");
+        const float availableWidth = ImGui::GetContentRegionAvail().x;
+        const float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
+        const float totalSpacing = itemSpacing * (tilesPerRow + 2);
+        const float tileSize = (availableWidth - totalSpacing) / tilesPerRow;
 
-        ImGui::Text("5.) Select a Color or Texture:");
-        ImGui::PushStyleColor(ImGuiCol_CheckMark, UINeonColors::pastelNeonViolet2);
-        if (ImGui::RadioButton("Color", !is_textured))
-            is_textured = false;
-        ImGui::SameLine();
-        ImGui::PushStyleColor(ImGuiCol_CheckMark, UINeonColors::pastelNeonViolet2);
-        if (ImGui::RadioButton("Texture", is_textured))
-            is_textured = true;
-        ImGui::PopStyleColor(2);
-
-        if (!is_textured)
+        ImGui::Separator();
+        ImGui::Text("Textures:");
+        int tileIndex = 0;
+        for (const auto& [name, texture] : engine::rendering::TextureManager::getAllTextures())
         {
-            ImGui::ColorPicker4("##Color", selected_color);
-        }else
+            if (tileIndex % tilesPerRow != 0)
+                ImGui::SameLine();
+            visualizeSingleTextureUI(texture, name, tileSize);
+            tileIndex++;
+        }
+        ImGui::Separator();
+
+        for (const auto& [name, texture] : engine::rendering::TextureManager::getAllTileSets())
         {
-            const float availableWidth = ImGui::GetContentRegionAvail().x;
-            const float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
-            const float totalSpacing = itemSpacing * (tilesPerRow + 2);
-            const float tileSize = (availableWidth - totalSpacing) / tilesPerRow;
-
-            ImGui::Separator();
-            ImGui::Text("Textures:");
-            int tileIndex = 0;
-            for (const auto& [name, texture] : engine::rendering::TextureManager::getAllTextures())
-            {
-                if (tileIndex % tilesPerRow != 0)
-                    ImGui::SameLine();
-                visualizeSingleTextureUI(texture, name, tileSize);
-                tileIndex++;
-            }
-            ImGui::Separator();
-
-            for (const auto& [name, texture] : engine::rendering::TextureManager::getAllTileSets())
-            {
-                visualizeTileSetUI(texture, name, tileSize);
-            }
+            visualizeTileSetUI(texture, name, tileSize);
         }
 
         ImGui::PopStyleColor(4);
