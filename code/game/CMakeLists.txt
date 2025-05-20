@@ -1,26 +1,25 @@
 cmake_minimum_required(VERSION 3.18)
 
-# set variables for source files
-set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h
+# Set up source files
+set(GAME_SRC
+        src/Game.cpp
+        src/Game.h
         src/PlayerInputSystem.cpp
         src/PlayerInputSystem.h
 )
 
-# set executable name
+# Create a static library for the game logic
+add_library(game-lib STATIC ${GAME_SRC})
+target_include_directories(game-lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_compile_features(game-lib PUBLIC cxx_std_20)
+target_link_libraries(game-lib PUBLIC Electrine)
+
+# Now create the standalone game executable
 set(EXE_FILE ElectronXPulse)
+add_executable(${EXE_FILE} src/main.cpp)
+target_link_libraries(${EXE_FILE} PRIVATE game-lib)
 
-# add the executable target
-add_executable(${EXE_FILE} ${SOURCE_FILES})
-
-# require C++ 20 compiler
-target_compile_features(${EXE_FILE} PRIVATE cxx_std_20)
-
-target_link_libraries(${EXE_FILE} PRIVATE Electrine)
-
-
-target_compile_definitions(${EXE_FILE} PRIVATE ASSET_ROOT=${CMAKE_SOURCE_DIR}/assets)
-
-# copy assets to output directory before build
+# Copy assets to the output directory
 add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${EXE_FILE}>/assets)

@@ -15,4 +15,8 @@ option(BOX2D_BUILD_UNIT_TESTS OFF)
 add_subdirectory(extern/box2d)
 add_definitions(-DNOMINMAX)
 
+file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}/assets" ASSET_PATH)
+add_compile_definitions(ASSET_ROOT=${ASSET_PATH})
+
 add_subdirectory(game)
+add_subdirectory(levelEditor)
