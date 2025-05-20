@@ -1,16 +1,15 @@
 #pragma once
-#include "Constants.h"
-#include "engine/ecs/EventDispatcher.h"
 #include "engine/rendering/Texture.h"
 #include "engine/userInterface/UISystem.h"
+#include "engine/Game.h"
 
-namespace gl3
+namespace gl3::engine::editor
 {
     constexpr int tilesPerRow = 4;
 
     struct TileSelectedEvent
     {
-        const engine::rendering::Texture* texture;
+        const rendering::Texture* texture;
         glm::vec4 uv = {0, 0, 1, 1};
         ImVec2 selectedPixelPositionScreen;
         bool isTriangle = false;
@@ -32,10 +31,10 @@ namespace gl3
         static constexpr auto Green = ImVec4(0.2f, 1.0f, 0.2f, 1.0f);
     };
 
-    class GameUISystem : public engine::ui::UISystem
+    class EditorUISystem : public ui::UISystem
     {
     public:
-        explicit GameUISystem(engine::Game& game) : UISystem(game)
+        explicit EditorUISystem(Game& game) : UISystem(game)
         {
         };
         void updateUI() override;
@@ -44,7 +43,7 @@ namespace gl3
         void DrawGrid(float gridSpacing);
         void DrawTileSelectionPanel();
         void createCustomUI();
-        void visualizeTileSetUI(const engine::rendering::Texture& texture, const std::string& name,
+        void visualizeTileSetUI(const rendering::Texture& texture, const std::string& name,
                                 float tileSize) const;
         void visualizeSingleTextureUI(const engine::rendering::Texture& texture, const std::string& name,
                                       float tileSize) const;

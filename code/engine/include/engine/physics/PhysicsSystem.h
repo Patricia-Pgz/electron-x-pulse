@@ -9,7 +9,9 @@ namespace gl3::engine::physics
     class PhysicsSystem : public ecs::System
     {
     public:
-        explicit PhysicsSystem(engine::Game& game) : System(game){};
+        explicit PhysicsSystem(Game& game) : System(game)
+        {
+        };
 
         void runPhysicsStep()
         {

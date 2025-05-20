@@ -1,34 +1,39 @@
 #pragma once
+#include <imgui.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "../../../../game/src/Constants.h"
+#include "engine/Constants.h"
 #include "engine/Context.h"
+#include "engine/Game.h"
+
+using gl3::engine::Game;
 
 namespace gl3::engine::rendering
 {
-    class MVPMatrixHelper {
-      public:
+    class MVPMatrixHelper
+    {
+    public:
         static glm::mat4 calculateViewMatrix(const context::Context& context)
         {
             return lookAt(context.getCameraPos(),
-                              context.getCameraCenter(),
-                              glm::vec3(0.0f, 1.0f, 0.0f));
+                          context.getCameraCenter(),
+                          glm::vec3(0.0f, 1.0f, 0.0f));
         }
 
         static glm::mat4 calculateProjectionMatrix(const std::vector<float>& windowBounds)
         {
             return glm::ortho(windowBounds[0], windowBounds[1], windowBounds[2], windowBounds[3],
-                                                    0.1f,
-                                                    10.f);
+                              0.1f,
+                              10.f);
         }
 
         static glm::mat4 calculateModelMatrix(const glm::vec3& position, const float& zRotationInDegrees,
-                                            const glm::vec3& scale)
+                                              const glm::vec3& scale)
         {
             auto model = glm::mat4(1.0f);
-            model = translate(model, glm::vec3(position.x*pixelsPerMeter, position.y*pixelsPerMeter, 0.f));
+            model = translate(model, glm::vec3(position.x * pixelsPerMeter, position.y * pixelsPerMeter, 0.f));
             model = rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
-            return glm::scale(model, glm::vec3(scale.x*pixelsPerMeter, scale.y*pixelsPerMeter, 0.f));
+            return glm::scale(model, glm::vec3(scale.x * pixelsPerMeter, scale.y * pixelsPerMeter, 0.f));
         }
 
         static glm::vec2 screenToWorld(const Game& game, const float screenPosX, const float screenPosY)
@@ -40,10 +45,10 @@ namespace gl3::engine::rendering
 
             const glm::vec4 clipPos = glm::vec4(ndcX, ndcY, 0.f, 1.f);
 
-            const glm::mat4 projection =calculateProjectionMatrix(game.getContext().getWindowBounds());
+            const glm::mat4 projection = calculateProjectionMatrix(game.getContext().getWindowBounds());
             const glm::mat4 view = calculateViewMatrix(game.getContext());
 
-            const glm::mat4 inv = inverse(projection * view);
+            const glm::mat4 inv = glm::inverse(projection * view);
             const glm::vec4 world = inv * clipPos;
 
             return {world.x / pixelsPerMeter, world.y / pixelsPerMeter};
@@ -70,6 +75,5 @@ namespace gl3::engine::rendering
 
             return {screenX, screenY};
         }
-
-      };
+    };
 }

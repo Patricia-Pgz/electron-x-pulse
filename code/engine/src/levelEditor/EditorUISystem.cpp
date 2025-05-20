@@ -1,17 +1,14 @@
-#include "GameUISystem.h"
-
+#include "engine/levelEditor/EditorUISystem.h"
 #include <iostream>
-#include <engine/rendering/MVPMatrixHelper.h>
-
-#include "Assets.h"
-#include "Constants.h"
+#include "engine/Assets.h"
+#include "engine/Constants.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/rendering/Texture.h"
 #include "engine/rendering/TextureManager.h"
 
-namespace gl3
+namespace gl3::engine::editor
 {
-    void GameUISystem::DrawGrid(const float gridSpacing)
+    void EditorUISystem::DrawGrid(const float gridSpacing)
     {
         const ImVec2 screenSize = imgui_io->DisplaySize;
         grid_center = ImVec2(screenSize.x * 0.5f, screenSize.y * 0.5f);
@@ -73,7 +70,7 @@ namespace gl3
         }
     }
 
-    void GameUISystem::visualizeTileSetUI(const engine::rendering::Texture& texture, const std::string& name,
+    void EditorUISystem::visualizeTileSetUI(const engine::rendering::Texture& texture, const std::string& name,
                                           const float tileSize) const
     {
         ImGui::Text(name.c_str());
@@ -112,7 +109,7 @@ namespace gl3
         ImGui::Separator();
     }
 
-    void GameUISystem::visualizeSingleTextureUI(const engine::rendering::Texture& texture, const std::string& name,
+    void EditorUISystem::visualizeSingleTextureUI(const engine::rendering::Texture& texture, const std::string& name,
                                                 const float tileSize) const
     {
         std::string btnID = name + "_full";
@@ -136,7 +133,7 @@ namespace gl3
         ImGui::PopStyleColor(3);
     }
 
-    void GameUISystem::highlightSelectedButton(const std::vector<std::string>& buttonIDs)
+    void EditorUISystem::highlightSelectedButton(const std::vector<std::string>& buttonIDs)
     {
         int counter = 0;
         for (const auto& id : buttonIDs)
@@ -196,7 +193,7 @@ namespace gl3
         style.ItemSpacing = ImVec2(10, 10);
     }
 
-    void GameUISystem::DrawTileSelectionPanel()
+    void EditorUISystem::DrawTileSelectionPanel()
     {
         const ImVec2 screenSize = imgui_io->DisplaySize;
         ImGui::SetNextWindowPos(ImVec2(screenSize.x * 0.7f, 0.f));
@@ -285,13 +282,13 @@ namespace gl3
         ImGui::End();
     }
 
-    void GameUISystem::createCustomUI()
+    void EditorUISystem::createCustomUI()
     {
         DrawTileSelectionPanel();
         DrawGrid(1.f * pixelsPerMeter);
     }
 
-    void GameUISystem::updateUI()
+    void EditorUISystem::updateUI()
     {
         createCustomUI();
     }

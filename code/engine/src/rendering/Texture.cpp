@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../../../game/src/Assets.h"
+#include "engine/Assets.h"
 #include "../stb/stb_image.h"
 
 namespace gl3::engine::rendering
@@ -32,7 +32,7 @@ namespace gl3::engine::rendering
         std::string filename = std::filesystem::path(path).filename().string();
         std::ranges::transform(filename, filename.begin(), ::tolower);
         is_tileset_ = filename.find("tileset") != std::string::npos;
-        tile_uvs_ = isTileSet()? generateTileUVs(tilesX,tilesY) : tile_uvs_;
+        tile_uvs_ = isTileSet() ? generateTileUVs(tilesX, tilesY) : tile_uvs_;
         stbi_image_free(data);
     }
 

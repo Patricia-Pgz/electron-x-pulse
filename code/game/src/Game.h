@@ -2,8 +2,6 @@
 #include "engine/Game.h"
 #include <soloud_wav.h>
 
-#include "GameUISystem.h"
-#include "LevelEditorSystem.h"
 #include "PlayerInputSystem.h"
 #include "engine/rendering/RenderingSystem.h"
 
@@ -29,8 +27,6 @@ namespace gl3
     private:
         void start() override;
         void update(GLFWwindow* window) override;
-        void draw() override;
-        void updateUI() override;
         void moveEntitiesScrolling();
         void on_mouse_scroll(engine::context::onMouseScrollEvent& event);
         void onGameStateChange(); //TODO event
@@ -38,10 +34,7 @@ namespace gl3
         void resetComponents();
         void reset();
 
-        engine::rendering::RenderingSystem rendering_system_;
-        GameUISystem ui_system_;
         PlayerInputSystem player_input_system_;
-        LevelEditorSystem level_editor_system_;
         engine::GameState previousGameState = engine::GameState::Menu;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
 

@@ -1,13 +1,9 @@
 cmake_minimum_required(VERSION 3.18)
 
 # set variables for source files
-set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h src/Constants.h src/Assets.h
+set(SOURCE_FILES src/main.cpp src/Game.cpp src/Game.h
         src/PlayerInputSystem.cpp
         src/PlayerInputSystem.h
-        src/GameUISystem.h
-        src/GameUISystem.cpp
-        src/LevelEditorSystem.cpp
-        src/LevelEditorSystem.h
 )
 
 # set executable name

@@ -1,6 +1,9 @@
-#include "engine/Game.h"
 #include <stdexcept>
-#include <engine/physics/PhysicsSystem.h>
+#include "engine/Game.h"
+#include "engine/physics/PhysicsSystem.h"
+#include "engine/levelEditor/EditorSystem.h"
+#include "engine/levelEditor/EditorUISystem.h"
+#include "engine/rendering/RenderingSystem.h"
 
 
 namespace gl3::engine
@@ -27,7 +30,11 @@ namespace gl3::engine
     }
 
     Game::Game(const int width, const int height, const std::string& title, const glm::vec3 camPos,
-               const float camZoom): context(width, height, title, camPos, camZoom), physicsWorld(b2_nullWorldId), physics_system_(new physics::PhysicsSystem(*this)), player(entt::null)
+               const float camZoom): context(width, height, title, camPos, camZoom), physics_world(b2_nullWorldId),
+                                     physics_system(new physics::PhysicsSystem(*this)),
+                                     rendering_system((new rendering::RenderingSystem(*this))),
+                                     editor_ui_system(new editor::EditorUISystem(*this)),
+                                     editor_system(new editor::EditorSystem(*this)), player(entt::null)
     {
         if (!glfwInit())
         {
@@ -41,7 +48,7 @@ namespace gl3::engine
         b2WorldDef worldDef = b2DefaultWorldDef();
         // We use worldDef to define our physics world
         worldDef.gravity = b2Vec2{0.f, -9.81f};
-        physicsWorld = b2CreateWorld(&worldDef);
+        physics_world = b2CreateWorld(&worldDef);
     }
 
     void Game::updateDeltaTime()
@@ -58,6 +65,17 @@ namespace gl3::engine
 
     void Game::updatePhysics()
     {
-        physics_system_->runPhysicsStep(); //TODO implement way to deactivate physics / stop game / only update active physics comps
+        physics_system->runPhysicsStep();
+        //TODO implement way to deactivate physics / stop game / only update active physics comps
+    }
+
+    void Game::draw()
+    {
+        rendering_system->draw();
+    }
+
+    void Game::updateUI()
+    {
+        editor_ui_system->renderUI(); //TODO von game trennen
     }
 } // gl3

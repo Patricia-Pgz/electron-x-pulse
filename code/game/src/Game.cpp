@@ -1,8 +1,7 @@
 #include "Game.h"
 #include <random>
 #include <iostream>
-#include "Assets.h"
-#include "Constants.h"
+#include "engine/Assets.h"
 #include "PlayerInputSystem.h"
 #include "engine/AudioAnalysis.h"
 #include "engine/ecs/EntityFactory.h"
@@ -13,9 +12,8 @@ namespace gl3
 {
     Game::Game(const int width, const int height, const std::string& title, const glm::vec3& camPos,
                const float camZoom)
-        : engine::Game(width, height, title, camPos, camZoom), rendering_system_(*this),
-          ui_system_(*this),
-          player_input_system_(*this), level_editor_system_(*this)
+        : engine::Game(width, height, title, camPos, camZoom),
+          player_input_system_(*this)
     {
         velocityMultiplier = -2;
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&Game::onPlayerDeath>(this);
@@ -71,15 +69,15 @@ namespace gl3
 
         const auto& ground = engine::ecs::EntityFactory::createDefaultEntity(
             registry_, glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), glm::vec4(0.25, 0.27, 1, 1), "ground",
-            physicsWorld, false);
+            physics_world, false);
         engine::ecs::EntityFactory::setScale(registry_, ground, glm::vec3(40.f, groundHeight, 0.f));
         player = engine::ecs::EntityFactory::createDefaultEntity(
             registry_, glm::vec3(initialPlayerPositionX, 0.f, 0),
-            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physicsWorld, false,
+            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physics_world, false,
             &engine::rendering::TextureManager::get("Player"));
         engine::ecs::EntityFactory::setScale(registry_, player, glm::vec3(1.f, 1.f, 1.f));
         backgroundMusic = std::make_unique<SoLoud::Wav>();
-        backgroundMusic->load(resolveAssetPath("audio/SensesShort.wav").c_str());
+        backgroundMusic->load(engine::resolveAssetPath("audio/SensesShort.wav").c_str());
         backgroundMusic->setLooping(false);
     }
 
@@ -102,16 +100,6 @@ namespace gl3
             onGameStateChange();
         }
         player_input_system_.update(player);
-    }
-
-    void Game::draw()
-    {
-        rendering_system_.draw();
-    }
-
-    void Game::updateUI()
-    {
-        ui_system_.renderUI();
     }
 
     //TODO delete entities when levelReload/Load/wechsel
@@ -320,7 +308,7 @@ namespace gl3
     {
         if (currentGameState == engine::GameState::Menu) return; //TODO implement Menu
 
-        std::string audio_file = resolveAssetPath("audio/SensesShort.wav");
+        std::string audio_file = engine::resolveAssetPath("audio/SensesShort.wav");
 
         unsigned int hopSize = 512; // Size of each hop
         unsigned int bufferSize = 2048; // Size of the analysis buffer
@@ -350,7 +338,7 @@ namespace gl3
                 {
                     const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(
                         registry_, glm::vec3(object.positionX, posY, 0.0f),
-                        object.color, "platform", physicsWorld);
+                        object.color, "platform", physics_world);
                     engine::ecs::EntityFactory::setScale(registry_, entity,
                                                          glm::vec3(object.scaleX, object.scaleY, 0.f));
                     object.entityID = entity;
@@ -360,7 +348,7 @@ namespace gl3
                 {
                     const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(
                         registry_, glm::vec3(object.positionX, posY, 0.0f),
-                        object.color, "obstacle", physicsWorld, true);
+                        object.color, "obstacle", physics_world, true);
                     engine::ecs::EntityFactory::setScale(registry_, entity,
                                                          glm::vec3(object.scaleX, object.scaleY, 0.f));
                     object.entityID = entity;
@@ -400,7 +388,7 @@ namespace gl3
             engine::GameState::PreviewWithTesting)
         {
             const auto timeLine = engine::ecs::EntityFactory::createDefaultEntity(
-                registry_, glm::vec3(0, groundLevel, 0.0f), glm::vec4(0.1, 0.1, 1.0, 1.0f), "timeline", physicsWorld);
+                registry_, glm::vec3(0, groundLevel, 0.0f), glm::vec4(0.1, 0.1, 1.0, 1.0f), "timeline", physics_world);
             engine::ecs::EntityFactory::setScale(registry_, timeLine, glm::vec3(40.f, 0.05f, 0.f));
 
             std::vector<GameObject> tempObjects;
@@ -411,7 +399,7 @@ namespace gl3
             {
                 auto timeLineColor = glm::vec4(0.1, 0.1, 1.0, 1.0f);
                 const auto beat = engine::ecs::EntityFactory::createDefaultEntity(
-                    registry_, glm::vec3(beatPosition, groundLevel, 0.0f), timeLineColor, "beat", physicsWorld);
+                    registry_, glm::vec3(beatPosition, groundLevel, 0.0f), timeLineColor, "beat", physics_world);
                 engine::ecs::EntityFactory::setScale(registry_, beat, glm::vec3(0.05f, 0.5f, 0.f));
                 tempObjects.push_back(GameObject(beatPosition, groundLevel, true, 0.05f, 0.5f, timeLineColor, beat));
             }

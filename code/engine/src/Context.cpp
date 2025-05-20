@@ -1,6 +1,5 @@
 #include <stdexcept>
 #include "engine/Context.h"
-#include "../../game/src/Constants.h"
 #include "engine/Game.h"
 #include "engine/ecs/EventDispatcher.h"
 
@@ -12,13 +11,13 @@ namespace gl3::engine::context
         auto contextInstance = static_cast<Context*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
         contextInstance->calculateWindowBounds();
-        ecs::EventDispatcher::dispatcher.trigger(onWindowResizeEvent{ width, height });
+        ecs::EventDispatcher::dispatcher.trigger(onWindowResizeEvent{width, height});
     }
 
     void Context::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     {
         auto contextInstance = static_cast<Context*>(glfwGetWindowUserPointer(window));
-        ecs::EventDispatcher::dispatcher.trigger(onMouseScrollEvent{ xoffset, yoffset });
+        ecs::EventDispatcher::dispatcher.trigger(onMouseScrollEvent{xoffset, yoffset});
         contextInstance->calculateWindowBounds(); //recalculate window bounds if user scrolled in the scene
     }
 
@@ -61,7 +60,7 @@ namespace gl3::engine::context
         glfwSetTime(1.0 / 60);
         while (!glfwWindowShouldClose(window))
         {
-            glClearColor(1.f,0.47f,0.f, 1.f);
+            glClearColor(1.f, 0.47f, 0.f, 1.f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             update(*this);
             glfwPollEvents();
