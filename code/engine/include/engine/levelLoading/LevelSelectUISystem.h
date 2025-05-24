@@ -3,15 +3,15 @@
 
 namespace gl3::engine::levelLoading
 {
-    class LevelUISystem : public ui::UISystem
-    {    public:
-        explicit LevelUISystem(Game& game) : UISystem(game)
+    class LevelSelectUISystem : public ui::UISystem
+    {
+    public:
+        explicit LevelSelectUISystem(Game& game) : UISystem(game)
         {
         };
         void updateUI() override;
 
-        private:
+    private:
         void createLevelSelection();
-
     };
 }

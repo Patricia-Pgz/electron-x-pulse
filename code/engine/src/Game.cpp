@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include "engine/Game.h"
 #include "engine/physics/PhysicsSystem.h"
-#include "engine/levelLoading/LevelUISystem.h"
+#include "engine/levelLoading/LevelSelectUISystem.h"
 #include "engine/rendering/RenderingSystem.h"
 
 
@@ -32,7 +32,7 @@ namespace gl3::engine
                const float camZoom): context(width, height, title, camPos, camZoom), physics_world(b2_nullWorldId),
                                      physics_system(new physics::PhysicsSystem(*this)),
                                      rendering_system((new rendering::RenderingSystem(*this))),
-                                     lvl_ui_system(new levelLoading::LevelUISystem(*this)),
+                                     lvl_ui_system(new levelLoading::LevelSelectUISystem(*this)),
                                      player(entt::null)
     {
         if (!glfwInit())

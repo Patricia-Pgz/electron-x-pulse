@@ -25,7 +25,7 @@ namespace gl3::engine
 
     namespace levelLoading
     {
-        class LevelUISystem;
+        class LevelSelectUISystem;
     }
 
     namespace editor
@@ -94,7 +94,7 @@ namespace gl3::engine
         b2WorldId physics_world;
         physics::PhysicsSystem* physics_system;
         rendering::RenderingSystem* rendering_system;
-        levelLoading::LevelUISystem* lvl_ui_system;
+        levelLoading::LevelSelectUISystem* lvl_ui_system;
 
         entt::registry registry_;
         entt::entity player;

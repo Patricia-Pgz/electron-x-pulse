@@ -19,7 +19,7 @@ namespace gl3::engine::rendering
                 tile_set_cache_.emplace(
                     std::piecewise_construct,
                     std::forward_as_tuple(key),
-                    std::forward_as_tuple(path,tilesX,tilesY)
+                    std::forward_as_tuple(path, tilesX, tilesY)
                 );
             }
             else
@@ -39,6 +39,9 @@ namespace gl3::engine::rendering
         add("Player", "textures/geometry-dash.png");
         add("Platform", "textures/Tile_03.png");
         add("TileSet", "textures/Tileset.png", 9, 9);
+        add("LevelSelect", "textures/LevelBG.jpg");
+        add("LvlSelectBG1", "textures/LvlSelectBG1.jpg");
+        add("LvlSelectBGTop1", "textures/LvlSelectBGTop1.png");
         //add("worldTileSet", "textures/world_tileset.png", 16, 16);
         //add("xmasTileSet", "textures/xmas_game_tileset.png", 64, 64);
         //add("ground","..."); TODO
@@ -52,7 +55,7 @@ namespace gl3::engine::rendering
         if (it == texture_cache_.end())
         {
             it = tile_set_cache_.find((key));
-            if(it == tile_set_cache_.end())
+            if (it == tile_set_cache_.end())
             {
                 throw std::runtime_error("TextureManager: Texture key not found: " + key);
             }
