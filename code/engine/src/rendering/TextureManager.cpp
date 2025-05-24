@@ -39,7 +39,7 @@ namespace gl3::engine::rendering
         add("Player", "textures/geometry-dash.png");
         add("Platform", "textures/Tile_03.png");
         add("TileSet", "textures/Tileset.png", 9, 9);
-        add("LevelSelect", "textures/LevelBG.jpg");
+        add("LevelButton1", "textures/LevelBG1.jpg");
         add("LvlSelectBG1", "textures/LvlSelectBG1.jpg");
         add("LvlSelectBGTop1", "textures/LvlSelectBGTop1.png");
         //add("worldTileSet", "textures/world_tileset.png", 16, 16);

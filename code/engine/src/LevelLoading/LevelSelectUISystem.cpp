@@ -75,21 +75,40 @@ namespace gl3::engine::levelLoading
         float buttonsOnRow = 0.f;
         for (size_t i = 0; i < levelNames.size(); ++i)
         {
-            if (ImGui::ImageButton(levelNames[i].c_str(), rendering::TextureManager::get("LevelSelect").getID(),
+            if (ImGui::ImageButton(levelNames[i].c_str(), rendering::TextureManager::get("LevelButton1").getID(),
                                    ImVec2(buttonWidth, buttonWidth))) //TODO (www.freepik.com)
             {
                 //onLevelSelected(levelNames[i]);
             }
 
-            // Get the rect of the last item (button)
             ImVec2 buttonMin = ImGui::GetItemRectMin();
             ImVec2 buttonSize = ImGui::GetItemRectSize();
-            ImVec2 textSize = ImGui::CalcTextSize(levelNames[i].c_str());
 
+            ImVec2 buttonCenter = ImVec2(
+                buttonMin.x + buttonSize.x * 0.5f,
+                buttonMin.y + buttonSize.y * 0.5f
+            );
+
+            ImVec2 overlaySize(buttonWidth * 0.7f, buttonWidth * 0.7f);
+
+            ImVec2 overlayMin = ImVec2(
+                buttonCenter.x - overlaySize.x * 0.5f,
+                buttonCenter.y - overlaySize.y * 0.5f
+            );
+            ImVec2 overlayMax = ImVec2(
+                overlayMin.x + overlaySize.x,
+                overlayMin.y + overlaySize.y
+            );
+
+            // Draw the overlay image (centered)
+            ImTextureID overlayTex = rendering::TextureManager::get("Player").getID();
+            ImGui::GetWindowDrawList()->AddImage(overlayTex, overlayMin, overlayMax, {0.f, 1.f}, {1.f, 0.f});
+
+            ImVec2 textSize = ImGui::CalcTextSize(levelNames[i].c_str());
             // Compute centered text position
             ImVec2 textPos = ImVec2(
                 buttonMin.x + (buttonSize.x - textSize.x) * 0.5f,
-                buttonMin.y + (buttonSize.y - textSize.y) * 0.5f
+                buttonMin.y + (buttonSize.y - textSize.y) * 0.95f
             );
 
             // Draw overlay text without modifying cursor
