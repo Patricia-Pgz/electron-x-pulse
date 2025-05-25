@@ -1,22 +1,29 @@
 #pragma once
+#include <filesystem>
 #include <string>
 #include <unordered_map>
 #include "engine/rendering/Texture.h"
+
 
 namespace gl3::engine::rendering
 {
     class TextureManager
     {
     public:
-        static void add(const std::string& key, const std::string& path, int tilesX = 8, int tilesY = 8);
+        static void add(const std::string& key, const std::filesystem::path& path, int tilesX = 8, int tilesY = 8);
         static void loadTextures();
         static const Texture& get(const std::string& key);
-        static const std::unordered_map<std::string, Texture>& getAllTextures() {
+
+        static const std::unordered_map<std::string, Texture>& getAllTextures()
+        {
             return texture_cache_;
         }
-        static const std::unordered_map<std::string, Texture>& getAllTileSets() {
+
+        static const std::unordered_map<std::string, Texture>& getAllTileSets()
+        {
             return tile_set_cache_;
         }
+
         static void load(const std::string& key, const std::string& path);
         static void clear();
 

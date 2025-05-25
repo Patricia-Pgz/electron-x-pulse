@@ -101,7 +101,7 @@ namespace gl3::engine::levelLoading
             );
 
             // Draw the overlay image (centered)
-            ImTextureID overlayTex = rendering::TextureManager::get("Player").getID();
+            ImTextureID overlayTex = rendering::TextureManager::get("geometry-dash").getID();
             ImGui::GetWindowDrawList()->AddImage(overlayTex, overlayMin, overlayMax, {0.f, 1.f}, {1.f, 0.f});
 
             ImVec2 textSize = ImGui::CalcTextSize(levelNames[i].c_str());
@@ -171,8 +171,8 @@ namespace gl3::engine::levelLoading
     {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-        DrawFixedHeadingWindow(viewport, loadedFonts["PixeloidSans-Bold.ttf"]);
-        DrawLevelSelect(viewport, loadedFonts["PixeloidSans.ttf"]);
+        DrawFixedHeadingWindow(viewport, loadedFonts["PixeloidSans-Bold_26"]);
+        DrawLevelSelect(viewport, loadedFonts["PixeloidSans"]);
     }
 
     void LevelSelectUISystem::updateUI()

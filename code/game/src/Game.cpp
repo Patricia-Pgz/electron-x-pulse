@@ -74,7 +74,7 @@ namespace gl3
         player = engine::ecs::EntityFactory::createDefaultEntity(
             registry_, glm::vec3(initialPlayerPositionX, 0.f, 0),
             glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physics_world, false,
-            &engine::rendering::TextureManager::get("Player"));
+            &engine::rendering::TextureManager::get("geometry-dash"));
         engine::ecs::EntityFactory::setScale(registry_, player, glm::vec3(1.f, 1.f, 1.f));
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(engine::resolveAssetPath("audio/SensesShort.wav").c_str());

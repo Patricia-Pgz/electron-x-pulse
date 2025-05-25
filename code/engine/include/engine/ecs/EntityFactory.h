@@ -5,6 +5,7 @@
 #include "../rendering/Shader.h"
 #include "box2d/id.h"
 #include "engine/rendering/Texture.h"
+#include <iostream>
 #include "engine/rendering/TextureManager.h"
 
 namespace gl3::engine::ecs
@@ -52,7 +53,7 @@ namespace gl3::engine::ecs
         {
             // Create an entity
             const entt::entity entity = registry.create();
-
+            std::cout << "JA";
             // Add initial components
             const auto transform = registry.emplace<TransformComponent>(
                 entity, position, 0.f, glm::vec3{1.0f, 1.0f, 1.0f});
@@ -133,10 +134,10 @@ namespace gl3::engine::ecs
 
             // Triangle vertices (x, y, z)
             triangleData.vertices = {
-                -width / 2, -height / 2, 0.0f,uv.x, vBottom, // Bottom-left
-                width / 2, -height / 2, 0.0f,uv.z, vBottom,  // Bottom-right
+                -width / 2, -height / 2, 0.0f, uv.x, vBottom, // Bottom-left
+                width / 2, -height / 2, 0.0f, uv.z, vBottom, // Bottom-right
 
-                0.0f, height / 2, 0.0f,  uMid, vTop  // Top-center
+                0.0f, height / 2, 0.0f, uMid, vTop // Top-center
             };
 
             // Indices for one triangle
@@ -156,7 +157,7 @@ namespace gl3::engine::ecs
                 -width / 2, height / 2, 0.0f, uv.x, uv.w, // Top-left
                 -width / 2, -height / 2, 0.0f, uv.x, uv.y, // Bottom-left
                 width / 2, -height / 2, 0.0f, uv.z, uv.y, // Bottom-right
-                width / 2, height / 2, 0.0f, uv.z, uv.w  // Top-right
+                width / 2, height / 2, 0.0f, uv.z, uv.w // Top-right
             };
 
             // Indices for two triangles
@@ -174,6 +175,9 @@ namespace gl3::engine::ecs
             auto data = isTriangle ? getTriangleVertices(1.f, 1.f, uv) : getBoxVertices(1.f, 1.f, uv);
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
+
+            bool isTex = texture != nullptr;
+            std::cout << std::boolalpha << isTex << std::endl;
 
             return RenderComponent(
                 rendering::Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),

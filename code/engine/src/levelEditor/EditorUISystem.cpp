@@ -70,8 +70,8 @@ namespace gl3::engine::editor
         }
     }
 
-    void EditorUISystem::visualizeTileSetUI(const engine::rendering::Texture& texture, const std::string& name,
-                                          const float tileSize) const
+    void EditorUISystem::visualizeTileSetUI(const rendering::Texture& texture, const std::string& name,
+                                            const float tileSize) const
     {
         ImGui::Text(name.c_str());
         const auto& uvs = texture.getTileUVs();
@@ -94,7 +94,7 @@ namespace gl3::engine::editor
             if (ImGui::ImageButton(buttonId.c_str(), texture.getID(),
                                    ImVec2(tileSize, tileSize), uv0, uv1) && selected_grid_cell)
             {
-                engine::ecs::EventDispatcher::dispatcher.trigger(TileSelectedEvent{
+                ecs::EventDispatcher::dispatcher.trigger(TileSelectedEvent{
                     &texture, uv, {selected_grid_cell->x, -selected_grid_cell->y}, is_triangle, selected_scale,
                     selected_tag
                 });
@@ -109,8 +109,8 @@ namespace gl3::engine::editor
         ImGui::Separator();
     }
 
-    void EditorUISystem::visualizeSingleTextureUI(const engine::rendering::Texture& texture, const std::string& name,
-                                                const float tileSize) const
+    void EditorUISystem::visualizeSingleTextureUI(const rendering::Texture& texture, const std::string& name,
+                                                  const float tileSize) const
     {
         std::string btnID = name + "_full";
         ImGui::GetStyle().FrameRounding = 1.0;
@@ -120,7 +120,7 @@ namespace gl3::engine::editor
         if (ImGui::ImageButton(btnID.c_str(), texture.getID(),
                                ImVec2(tileSize, tileSize), ImVec2(0, 0), ImVec2(1, -1)) && selected_grid_cell)
         {
-            engine::ecs::EventDispatcher::dispatcher.trigger(
+            ecs::EventDispatcher::dispatcher.trigger(
                 TileSelectedEvent{
                     &texture, {0, 0, 1, 1},
                     {selected_grid_cell->x, -selected_grid_cell->y}, is_triangle, selected_scale, selected_tag
@@ -224,7 +224,8 @@ namespace gl3::engine::editor
         ImGui::SetNextItemWidth(itemWidth);
         ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet2);
-        if (ImGui::InputFloat("X", &selected_scale.x, 0.1f, 1.0f, "%.2f")) {
+        if (ImGui::InputFloat("X", &selected_scale.x, 0.1f, 1.0f, "%.2f"))
+        {
             if (selected_scale.x < 0.0f)
                 selected_scale.x = 0.1f;
         }
@@ -232,7 +233,8 @@ namespace gl3::engine::editor
         ImGui::SetNextItemWidth(itemWidth);
         ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet2);
-        if (ImGui::InputFloat("Y", &selected_scale.y, 0.1f, 10.f, "%.2f")) {
+        if (ImGui::InputFloat("Y", &selected_scale.y, 0.1f, 10.f, "%.2f"))
+        {
             if (selected_scale.x < 0.0f)
                 selected_scale.x = 0.1f;
         }
@@ -263,7 +265,7 @@ namespace gl3::engine::editor
         ImGui::Separator();
         ImGui::Text("Textures:");
         int tileIndex = 0;
-        for (const auto& [name, texture] : engine::rendering::TextureManager::getAllTextures())
+        for (const auto& [name, texture] : rendering::TextureManager::getAllTextures())
         {
             if (tileIndex % tilesPerRow != 0)
                 ImGui::SameLine();

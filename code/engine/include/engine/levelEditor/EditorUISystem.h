@@ -31,7 +31,7 @@ namespace gl3::engine::editor
         void createCustomUI();
         void visualizeTileSetUI(const rendering::Texture& texture, const std::string& name,
                                 float tileSize) const;
-        void visualizeSingleTextureUI(const engine::rendering::Texture& texture, const std::string& name,
+        void visualizeSingleTextureUI(const rendering::Texture& texture, const std::string& name,
                                       float tileSize) const;
         void highlightSelectedButton(const std::vector<std::string>& buttonIDs);
         ImVec2 grid_center = {0.f, 0.f};

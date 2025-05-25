@@ -32,7 +32,7 @@ namespace gl3::engine::ui
             imgui_io = &ImGui::GetIO();
             (void)imgui_io;
             ImGui::StyleColorsDark();
-            loadAllFonts(resolveAssetPath("fonts"), 22);
+            loadAllFonts(resolveAssetPath("fonts"));
             imgui_io->Fonts->Build();
 
             ImGui_ImplGlfw_InitForOpenGL(game.getWindow(), true);
@@ -43,7 +43,31 @@ namespace gl3::engine::ui
         {
         };
 
-        void loadAllFonts(const std::string& fontFolder, const float fontSize)
+        void loadFontWithSize(const std::filesystem::path& fontPath, const float fontSize = 22)
+        {
+            if (!exists(fontPath) || !is_regular_file(fontPath) || fontPath.extension().string() != ".ttf")
+            {
+                std::cerr << "Font path is invalid: " << fontPath << std::endl;
+                return;
+            }
+
+            const std::string filename = fontPath.stem().string();
+            const std::string key = fontSize == 22
+                                        ? filename
+                                        : filename + "_" + std::to_string(static_cast<int>(fontSize));
+
+            ImFont* font = imgui_io->Fonts->AddFontFromFileTTF(fontPath.string().c_str(), fontSize);
+            if (font != nullptr)
+            {
+                loadedFonts[key] = font;
+            }
+            else
+            {
+                std::cerr << "Failed to load font: " << filename << std::endl;
+            }
+        }
+
+        void loadAllFonts(const std::string& fontFolder)
         {
             imgui_io->Fonts->AddFontDefault();
 
@@ -51,20 +75,11 @@ namespace gl3::engine::ui
             {
                 if (entry.is_regular_file())
                 {
-                    std::string path = entry.path().string();
-                    std::string filename = entry.path().filename().string();
-
-                    ImFont* font = imgui_io->Fonts->AddFontFromFileTTF(path.c_str(), fontSize);
-                    if (font != nullptr)
-                    {
-                        loadedFonts[filename] = font;
-                    }
-                    else
-                    {
-                        std::cerr << "Failed to load font: " << filename << std::endl;
-                    }
+                    loadFontWithSize(entry.path());
                 }
             }
+
+            loadFontWithSize(fontFolder + "/PixeloidSans-Bold.ttf", 26);
         };
 
         void renderUI()
