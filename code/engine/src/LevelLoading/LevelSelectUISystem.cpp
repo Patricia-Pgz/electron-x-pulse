@@ -75,7 +75,8 @@ namespace gl3::engine::levelLoading
         float buttonsOnRow = 0.f;
         for (size_t i = 0; i < levelNames.size(); ++i)
         {
-            if (ImGui::ImageButton(levelNames[i].c_str(), rendering::TextureManager::get("LevelButton1").getID(),
+            if (ImGui::ImageButton(levelNames[i].c_str(),
+                                   rendering::TextureManager::getUITexture("LevelButton1").getID(),
                                    ImVec2(buttonWidth, buttonWidth))) //TODO (www.freepik.com)
             {
                 //onLevelSelected(levelNames[i]);
@@ -141,7 +142,7 @@ namespace gl3::engine::levelLoading
         ImGui::PopStyleColor();
 
         ImGui::GetWindowDrawList()->AddImage(
-            rendering::TextureManager::get("LvlSelectBG1").getID(),
+            rendering::TextureManager::getUITexture("LvlSelectBG1").getID(),
             ImGui::GetWindowPos(),
             ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x,
                    ImGui::GetWindowPos().y + ImGui::GetWindowSize().y)
@@ -155,7 +156,7 @@ namespace gl3::engine::levelLoading
         }*/
 
         ImGui::GetWindowDrawList()->AddImage(
-            rendering::TextureManager::get("LvlSelectBGTop1").getID(),
+            rendering::TextureManager::getUITexture("LvlSelectBGTop1").getID(),
             ImGui::GetWindowPos(),
             ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x,
                    ImGui::GetWindowPos().y + ImGui::GetWindowSize().y),

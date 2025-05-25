@@ -3,7 +3,8 @@
 #include "engine/physics/PhysicsSystem.h"
 #include "engine/levelLoading/LevelSelectUISystem.h"
 #include "engine/rendering/RenderingSystem.h"
-#include "engine/levelEditor/EditorUISystem.h"
+//#include "engine/levelEditor/EditorUISystem.h"
+//#include "engine/levelEditor/EditorSystem.h"
 
 
 namespace gl3::engine
@@ -33,7 +34,9 @@ namespace gl3::engine
                const float camZoom): context(width, height, title, camPos, camZoom), physics_world(b2_nullWorldId),
                                      physics_system(new physics::PhysicsSystem(*this)),
                                      rendering_system((new rendering::RenderingSystem(*this))),
-                                     editor_ui_system(new editor::EditorUISystem(*this)),
+                                     lvl_ui_system(new levelLoading::LevelSelectUISystem(*this)),
+                                     //editor_ui_system(new editor::EditorUISystem(*this)),
+                                     //editor_system(new editor::EditorSystem(*this)),
                                      player(entt::null)
     {
         if (!glfwInit())
@@ -76,7 +79,7 @@ namespace gl3::engine
 
     void Game::updateUI()
     {
-        //lvl_ui_system->renderUI();
-        editor_ui_system->renderUI(); //TODO von game trennen
+        lvl_ui_system->renderUI();
+        //editor_ui_system->renderUI(); //TODO von game trennen
     }
 } // gl3

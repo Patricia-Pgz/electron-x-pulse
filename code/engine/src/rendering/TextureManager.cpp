@@ -10,6 +10,7 @@ namespace gl3::engine::rendering
 {
     std::unordered_map<std::string, Texture> TextureManager::texture_cache_;
     std::unordered_map<std::string, Texture> TextureManager::tile_set_cache_;
+    std::unordered_map<std::string, Texture> TextureManager::ui_texture_cache_;
     static const std::unordered_set<std::string> validExtensions = {".png", ".jpg", ".jpeg"};
 
     void TextureManager::add(const std::string& key, const std::filesystem::path& path, int tilesX,
@@ -25,6 +26,15 @@ namespace gl3::engine::rendering
         {
             std::string filename = path.filename().string();
             std::ranges::transform(filename, filename.begin(), ::tolower);
+            if (path.parent_path().filename().string().find("ui") != std::string::npos)
+            {
+                ui_texture_cache_.emplace(
+                    std::piecewise_construct,
+                    std::forward_as_tuple(key),
+                    std::forward_as_tuple(path.string())
+                );
+                return;
+            }
             if (filename.find("tileset") != std::string::npos)
             {
                 std::smatch match;
@@ -56,8 +66,14 @@ namespace gl3::engine::rendering
     void TextureManager::loadTextures()
     {
         const std::filesystem::path textureFolder = resolveAssetPath("textures");
+        addAllTexturesFromFolder(textureFolder);
+        const std::filesystem::path uiTextureFolder = resolveAssetPath("uiTextures");
+        addAllTexturesFromFolder(uiTextureFolder);
+    }
 
-        for (const auto& entry : std::filesystem::directory_iterator(textureFolder))
+    void TextureManager::addAllTexturesFromFolder(const std::filesystem::path& textureFolderPath)
+    {
+        for (const auto& entry : std::filesystem::directory_iterator(textureFolderPath))
         {
             if (entry.is_regular_file())
             {
@@ -75,17 +91,28 @@ namespace gl3::engine::rendering
 
     const Texture& TextureManager::get(const std::string& key)
     {
-        auto it = texture_cache_.find(key);
-        if (it == texture_cache_.end())
+        auto tex = texture_cache_.find(key);
+        if (tex == texture_cache_.end())
         {
-            it = tile_set_cache_.find((key));
-            if (it == tile_set_cache_.end())
+            tex = tile_set_cache_.find((key));
+            if (tex == tile_set_cache_.end())
             {
                 throw std::runtime_error("TextureManager: Texture key not found: " + key);
             }
         }
-        return it->second;
+        return tex->second;
     }
+
+    const Texture& TextureManager::getUITexture(const std::string& key)
+    {
+        const auto tex = ui_texture_cache_.find(key);
+        if (tex == ui_texture_cache_.end())
+        {
+            throw std::runtime_error("TextureManager: UI-Texture key not found: " + key);
+        }
+        return tex->second;
+    }
+
 
     void TextureManager::load(const std::string& key, const std::string& path)
     {
