@@ -176,9 +176,6 @@ namespace gl3::engine::ecs
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
 
-            bool isTex = texture != nullptr;
-            std::cout << std::boolalpha << isTex << std::endl;
-
             return RenderComponent(
                 rendering::Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
                 rendering::Mesh(vertices, indices),

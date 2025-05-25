@@ -269,14 +269,14 @@ namespace gl3::engine::editor
         {
             if (tileIndex % tilesPerRow != 0)
                 ImGui::SameLine();
-            visualizeSingleTextureUI(texture, name, tileSize);
+            visualizeSingleTextureUI(*texture, name, tileSize);
             tileIndex++;
         }
         ImGui::Separator();
 
         for (const auto& [name, texture] : engine::rendering::TextureManager::getAllTileSets())
         {
-            visualizeTileSetUI(texture, name, tileSize);
+            visualizeTileSetUI(*texture, name, tileSize);
         }
 
         ImGui::PopStyleColor(4);

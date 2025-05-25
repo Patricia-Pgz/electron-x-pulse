@@ -8,9 +8,9 @@
 
 namespace gl3::engine::rendering
 {
-    std::unordered_map<std::string, Texture> TextureManager::texture_cache_;
-    std::unordered_map<std::string, Texture> TextureManager::tile_set_cache_;
-    std::unordered_map<std::string, Texture> TextureManager::ui_texture_cache_;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::texture_cache_;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::tile_set_cache_;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::ui_texture_cache_;
     static const std::unordered_set<std::string> validExtensions = {".png", ".jpg", ".jpeg"};
 
     void TextureManager::add(const std::string& key, const std::filesystem::path& path, int tilesX,
@@ -29,9 +29,8 @@ namespace gl3::engine::rendering
             if (path.parent_path().filename().string().find("ui") != std::string::npos)
             {
                 ui_texture_cache_.emplace(
-                    std::piecewise_construct,
-                    std::forward_as_tuple(key),
-                    std::forward_as_tuple(path.string())
+                    key,
+                    std::make_unique<Texture>(path.string())
                 );
                 return;
             }
@@ -47,22 +46,21 @@ namespace gl3::engine::rendering
                 }
 
                 tile_set_cache_.emplace(
-                    std::piecewise_construct,
-                    std::forward_as_tuple(key),
-                    std::forward_as_tuple(path.string(), tilesX, tilesY)
+                    key,
+                    std::make_unique<Texture>(path.string(), tilesX, tilesY)
                 );
             }
             else
             {
                 texture_cache_.emplace(
-                    std::piecewise_construct,
-                    std::forward_as_tuple(key),
-                    std::forward_as_tuple(path.string())
+                    key,
+                    std::make_unique<Texture>(path.string())
                 );
             }
         }
     }
 
+    //TODO load texture level folders when level selected oder so
     void TextureManager::loadTextures()
     {
         const std::filesystem::path textureFolder = resolveAssetPath("textures");
@@ -100,7 +98,7 @@ namespace gl3::engine::rendering
                 throw std::runtime_error("TextureManager: Texture key not found: " + key);
             }
         }
-        return tex->second;
+        return *tex->second;
     }
 
     const Texture& TextureManager::getUITexture(const std::string& key)
@@ -110,7 +108,7 @@ namespace gl3::engine::rendering
         {
             throw std::runtime_error("TextureManager: UI-Texture key not found: " + key);
         }
-        return tex->second;
+        return *tex->second;
     }
 
 
