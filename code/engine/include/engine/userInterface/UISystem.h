@@ -31,9 +31,9 @@ namespace gl3::engine::ui
         }
 
         /**
-* @brief Init ImGui and ImGui Frame. Load all fonts from font asset folder.
+        * @brief Init ImGui and ImGui Frame. Load all fonts from font asset folder.
         * @note Only call this once per game (see constructor @ref gl3::engine::Game::Game).
-*/
+        */
         void initUI()
         {
             IMGUI_CHECKVERSION();
@@ -46,11 +46,12 @@ namespace gl3::engine::ui
 
             ImGui_ImplGlfw_InitForOpenGL(game.getWindow(), true);
             ImGui_ImplOpenGL3_Init("#version 460");
+            initSubsystems();
         }
 
-        virtual void updateUI()
-        {
-        };
+        virtual void initSubsystems(){}
+
+        virtual void updateUI(){};
 
         void renderUI()
         {

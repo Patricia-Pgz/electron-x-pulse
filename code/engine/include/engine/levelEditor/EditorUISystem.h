@@ -8,7 +8,7 @@ namespace gl3::engine::editor
 {
     constexpr int tilesPerRow = 4;
 
-    struct TileSelectedEvent
+    struct TileSelectedEvent //TODO evtl in UIEvent header
     {
         const rendering::Texture* texture;
         glm::vec4 uv = {0, 0, 1, 1};
@@ -21,7 +21,9 @@ namespace gl3::engine::editor
     class EditorUISystem : public ui::IUISubsystem
     {
     public:
-        explicit EditorUISystem(ImGuiIO* imguiIO, Game& game);
+        explicit EditorUISystem(ImGuiIO* imguiIO, Game& game) : IUISubsystem(imguiIO, game), editor_system(new EditorSystem(game))
+        {
+        };
         void update() override;
 
     private:

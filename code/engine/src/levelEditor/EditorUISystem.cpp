@@ -1,6 +1,5 @@
 #include "engine/levelEditor/EditorUISystem.h"
 #include <iostream>
-#include "engine/Assets.h"
 #include "engine/Constants.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/rendering/Texture.h"
@@ -8,11 +7,6 @@
 
 namespace gl3::engine::editor
 {
-    EditorUISystem::EditorUISystem(ImGuiIO* imguiIO, Game& game): IUISubsystem(imguiIO, game),
-                                                                  editor_system(new EditorSystem(game))
-    {
-    }
-
     void EditorUISystem::DrawGrid(const float gridSpacing)
     {
         const ImVec2 screenSize = imgui_io_->DisplaySize;
@@ -297,6 +291,11 @@ namespace gl3::engine::editor
 
     void EditorUISystem::update()
     {
-        //createCustomUI(); TODO kaputt
+        if (imgui_io_ == nullptr){
+            std::cout << "null";
+            return;
+        }
+        IUISubsystem::update();
+        createCustomUI();
     }
 }

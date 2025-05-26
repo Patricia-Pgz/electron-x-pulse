@@ -77,7 +77,5 @@ namespace gl3::engine
     void Game::updateUI()
     {
         top_lvl_ui_system_->renderUI();
-        //in_game_menu_system_->updateInGameUI();
-        //editor_ui_system->renderUI(); //TODO von game trennen
     }
 } // gl3
