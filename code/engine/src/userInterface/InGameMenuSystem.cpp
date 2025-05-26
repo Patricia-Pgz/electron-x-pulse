@@ -1,7 +1,4 @@
 #include "engine/userInterface/InGameMenuSystem.h"
-
-#include <imgui_internal.h>
-#include <iostream>
 #include <engine/userInterface/FontManager.h>
 
 #include "engine/Constants.h"
@@ -9,37 +6,50 @@
 
 namespace gl3::engine::inGameUI
 {
+    //TODO schöner
     void styleWindow(const ImVec2 windowSize)
     {
         ImGuiStyle& style = ImGui::GetStyle();
         style.WindowBorderSize = 0.f;
         style.WindowPadding = ImVec2(windowSize.x * 0.08, windowSize.y * 0.14);
         ImGui::GetStyle().FrameRounding = 5.0;
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UINeonColors::pastelNeonViolet2);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive,  UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
+        ImGui::PushStyleColor(ImGuiCol_SliderGrab, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
 
-        style.ItemSpacing = ImVec2(20, 20);
+        style.ItemSpacing = ImVec2(40, 40);
     }
 
     void InGameMenuSystem::DrawInGameUI(const ImGuiViewport* viewport, ImFont* font)
     {
         const auto viewportSize = viewport->Size;
         const auto viewportPos = viewport->Pos;
-        ImGui::SetNextWindowPos({viewportPos.x * 0.5f, viewportPos.y});
-        ImGui::SetNextWindowSize({viewportSize.x * 0.5f, viewportSize.y});
+        ImGui::SetNextWindowPos({viewportPos.x , viewportPos.y});
+        ImGui::SetNextWindowSize({viewportSize.x, viewportSize.y});
         ImGui::PushFont(font);
+
+        ImGui::Begin("Menu", nullptr, flags_);
         const auto windowSize = ImGui::GetWindowSize();
         const auto windowPos = ImGui::GetWindowPos();
-
         styleWindow(windowSize);
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, UINeonColors::softPastelPink);
-        ImGui::Begin("Menu", nullptr, flags_);
-        ImGui::PopStyleColor();
 
-        ImGui::GetWindowDrawList()->AddImage(
-            rendering::TextureManager::getUITexture("LvlSelectBG1").getID(),
-            windowPos,
-            ImVec2(windowPos.x + windowSize.x,
-                   windowPos.y + windowSize.y)
-        );
+        ImGui::SetCursorPosY(windowSize.y * 0.3f);
+
+        ImGui::SetCursorPosX((windowSize.x - ImGui::CalcTextSize("Volume").x)   * 0.5f );
+        ImGui::Text("Volume");
+        const auto sliderWidth = windowSize.x * 0.3f;
+        ImGui::PushItemWidth(sliderWidth);
+        ImGui::SetCursorPosX((windowSize.x - sliderWidth) * 0.5f );
+        ImGui::SliderFloat("##Volume", &volume_, 0.0f, 1.0f, "%.2f");
+
+        ImGui::SetCursorPosX((windowSize.x - ImGui::CalcTextSize("Level Selection").x) * 0.5f);
+        ImGui::Button("Level Selection");
+
 
         ImGui::GetWindowDrawList()->AddImage(
             rendering::TextureManager::getUITexture("LvlSelectBGTop1").getID(),
@@ -50,6 +60,7 @@ namespace gl3::engine::inGameUI
             {1.f, 0.f}
         );
 
+        ImGui::PopStyleColor(8);
         ImGui::PopFont();
         ImGui::End();
     }
@@ -62,16 +73,28 @@ namespace gl3::engine::inGameUI
  */
     void InGameMenuSystem::update()
     {
-        std::cout << "update!";
+        /*std::cout << "update!";
         if (!(ImGui::GetCurrentContext() && ImGui::GetCurrentContext()->WithinFrameScope))
         {
             std::cerr << "Not inside an ImGui Frame or Context" << std::endl;
             return;
-        }
-        if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS && is_collapsed_)
+        }*/
+        if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
-            const ImGuiViewport* viewport = ImGui::GetMainViewport();
-            DrawInGameUI(viewport, ui::FontManager::getFont("PixeloidSans-Bold_26"));
+            if (!escape_pressed_)
+            {
+                escape_pressed_ = true;
+                show_menu_ = !show_menu_;
+            }
         }
+        else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
+        {
+            escape_pressed_ = false;
+        }
+
+        if (!show_menu_) return;
+
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        DrawInGameUI(viewport, ui::FontManager::getFont("pixeloid-bold-26"));
     }
 }

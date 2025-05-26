@@ -11,7 +11,7 @@ namespace gl3::engine::ui{
         for (const auto& entry : std::filesystem::directory_iterator(folder)) {
             if (entry.is_regular_file()) {
                 std::string name = entry.path().stem().string();
-                fonts_[name] = io.Fonts->AddFontFromFileTTF(entry.path().string().c_str(), 16);
+                fonts_[name] = io.Fonts->AddFontFromFileTTF(entry.path().string().c_str(), 22);
             }
         }
 
