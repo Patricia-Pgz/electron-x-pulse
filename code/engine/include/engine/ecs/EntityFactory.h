@@ -53,7 +53,6 @@ namespace gl3::engine::ecs
         {
             // Create an entity
             const entt::entity entity = registry.create();
-            std::cout << "JA";
             // Add initial components
             const auto transform = registry.emplace<TransformComponent>(
                 entity, position, 0.f, glm::vec3{1.0f, 1.0f, 1.0f});

@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 #include "engine/ecs/System.h"
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
@@ -7,15 +6,21 @@
 #include "engine/Assets.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/Game.h"
+#include "engine/userInterface/FontManager.h"
+#include "engine/userInterface/IUISubSystem.h"
 
 namespace gl3::engine::ui
 {
+    ///summary
+    ///Parent class for high level UI system.
+    ///Initializes ImGui and updates itself as well as UI subsystems each UI frame.
+    ///@note Only add one high level UI per game.
+    ///summary
     class UISystem : public ecs::System
     {
     public:
         explicit UISystem(Game& game) : System(game)
         {
-            initUI();
         };
 
         ~UISystem() override
@@ -25,6 +30,10 @@ namespace gl3::engine::ui
             ImGui::DestroyContext();
         }
 
+        /**
+* @brief Init ImGui and ImGui Frame. Load all fonts from font asset folder.
+        * @note Only call this once per game (see constructor @ref gl3::engine::Game::Game).
+*/
         void initUI()
         {
             IMGUI_CHECKVERSION();
@@ -32,7 +41,7 @@ namespace gl3::engine::ui
             imgui_io = &ImGui::GetIO();
             (void)imgui_io;
             ImGui::StyleColorsDark();
-            loadAllFonts(resolveAssetPath("fonts"));
+            FontManager::loadFonts(resolveAssetPath("fonts"));
             imgui_io->Fonts->Build();
 
             ImGui_ImplGlfw_InitForOpenGL(game.getWindow(), true);
@@ -43,45 +52,6 @@ namespace gl3::engine::ui
         {
         };
 
-        void loadFontWithSize(const std::filesystem::path& fontPath, const float fontSize = 22)
-        {
-            if (!exists(fontPath) || !is_regular_file(fontPath) || fontPath.extension().string() != ".ttf")
-            {
-                std::cerr << "Font path is invalid: " << fontPath << std::endl;
-                return;
-            }
-
-            const std::string filename = fontPath.stem().string();
-            const std::string key = fontSize == 22
-                                        ? filename
-                                        : filename + "_" + std::to_string(static_cast<int>(fontSize));
-
-            ImFont* font = imgui_io->Fonts->AddFontFromFileTTF(fontPath.string().c_str(), fontSize);
-            if (font != nullptr)
-            {
-                loadedFonts[key] = font;
-            }
-            else
-            {
-                std::cerr << "Failed to load font: " << filename << std::endl;
-            }
-        }
-
-        void loadAllFonts(const std::string& fontFolder)
-        {
-            imgui_io->Fonts->AddFontDefault();
-
-            for (const auto& entry : std::filesystem::directory_iterator(fontFolder))
-            {
-                if (entry.is_regular_file())
-                {
-                    loadFontWithSize(entry.path());
-                }
-            }
-
-            loadFontWithSize(fontFolder + "/PixeloidSans-Bold.ttf", 26);
-        };
-
         void renderUI()
         {
             // Start the frame
@@ -90,14 +60,27 @@ namespace gl3::engine::ui
             ImGui::NewFrame();
 
             updateUI(); //setup custom imgui UI layouts in subclass
+            updateSubSystems();
 
-            // Render ImGui
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }
 
     protected:
         ImGuiIO* imgui_io = nullptr;
-        std::unordered_map<std::string, ImFont*> loadedFonts;
+        std::vector<std::unique_ptr<IUISubsystem>> subsystems;
+
+        void addSubsystem(std::unique_ptr<IUISubsystem> subsystem)
+        {
+            subsystems.emplace_back(std::move(subsystem));
+        }
+
+        void updateSubSystems() const
+        {
+            for (auto& system : subsystems)
+            {
+                system->update();
+            }
+        }
     };
 } // gl3

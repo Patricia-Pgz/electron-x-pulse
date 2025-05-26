@@ -8,9 +8,14 @@
 
 namespace gl3::engine::editor
 {
+    EditorUISystem::EditorUISystem(ImGuiIO* imguiIO, Game& game): IUISubsystem(imguiIO, game),
+                                                                  editor_system(new EditorSystem(game))
+    {
+    }
+
     void EditorUISystem::DrawGrid(const float gridSpacing)
     {
-        const ImVec2 screenSize = imgui_io->DisplaySize;
+        const ImVec2 screenSize = imgui_io_->DisplaySize;
         grid_center = ImVec2(screenSize.x * 0.5f, screenSize.y * 0.5f);
         ImDrawList* drawList = ImGui::GetBackgroundDrawList();
 
@@ -195,17 +200,17 @@ namespace gl3::engine::editor
 
     void EditorUISystem::DrawTileSelectionPanel()
     {
-        const ImVec2 screenSize = imgui_io->DisplaySize;
+        const ImVec2 screenSize = imgui_io_->DisplaySize;
         ImGui::SetNextWindowPos(ImVec2(screenSize.x * 0.7f, 0.f));
         ImGui::SetNextWindowSize(ImVec2(screenSize.x * 0.3f, screenSize.y));
         styleWindow();
         ImGui::PushStyleColor(ImGuiCol_Text, UINeonColors::windowBgColor);
-        ImGui::PushFont(loadedFonts["PixeloidSans-Bold.ttf"]);
+        ImGui::PushFont(ui::FontManager::getFont("PixeloidSans-Bold"));
         ImGui::Begin("Tile Panel");
         ImGui::PopStyleColor();
         ImGui::PopFont();
 
-        ImGui::PushFont(loadedFonts["PixeloidSans.ttf"]);
+        ImGui::PushFont(ui::FontManager::getFont("PixeloidSans"));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 1.0f, 1.0f));
         ImGui::Text("1.) Click on grid to select position");
 
@@ -274,7 +279,7 @@ namespace gl3::engine::editor
         }
         ImGui::Separator();
 
-        for (const auto& [name, texture] : engine::rendering::TextureManager::getAllTileSets())
+        for (const auto& [name, texture] : rendering::TextureManager::getAllTileSets())
         {
             visualizeTileSetUI(*texture, name, tileSize);
         }
@@ -290,8 +295,8 @@ namespace gl3::engine::editor
         DrawGrid(1.f * pixelsPerMeter);
     }
 
-    void EditorUISystem::updateUI()
+    void EditorUISystem::update()
     {
-        createCustomUI();
+        //createCustomUI(); TODO kaputt
     }
 }

@@ -15,9 +15,10 @@ namespace gl3
         : engine::Game(width, height, title, camPos, camZoom),
           player_input_system_(*this)
     {
-        velocityMultiplier = -2;
+        velocity_multiplier_ = -2;
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&Game::onPlayerDeath>(this);
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().connect<&Game::on_mouse_scroll>(this);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().connect<&
+            Game::on_mouse_scroll>(this);
     }
 
     void Game::on_mouse_scroll(engine::context::onMouseScrollEvent& event)
@@ -28,8 +29,8 @@ namespace gl3
         float minScrollX = 0.0f; // Minimum scroll limit
         int width, height;
         glfwGetWindowSize(getWindow(), &width, &height);
-        float maxScrollX = (levelLength + static_cast<float>(width) / 2 * context.getCurrentZoom() -
-            initialPlayerPositionX);
+        float maxScrollX = (level_length_ + static_cast<float>(width) / 2 * context_.getCurrentZoom() -
+            initial_player_position_x_);
         // Maximum scroll limit
 
         cameraX = static_cast<float>(event.yOffset) * scrollSpeed;
@@ -38,10 +39,10 @@ namespace gl3
 
         moveEntitiesScrolling();
 
-        auto newCameraPosition = glm::vec3(cameraX, context.getCameraPos().y, context.getCameraPos().z);
-        auto newCameraCenter = glm::vec3(cameraX, context.getCameraCenter().y, context.getCameraCenter().z);
-        context.setCameraPos(newCameraPosition);
-        context.setCameraCenter(newCameraCenter);
+        auto newCameraPosition = glm::vec3(cameraX, context_.getCameraPos().y, context_.getCameraPos().z);
+        auto newCameraCenter = glm::vec3(cameraX, context_.getCameraCenter().y, context_.getCameraCenter().z);
+        context_.setCameraPos(newCameraPosition);
+        context_.setCameraCenter(newCameraCenter);
     }
 
 
@@ -56,7 +57,7 @@ namespace gl3
             if (tag_component.tag != "beat" && tag_component.tag != "timeline")
             {
                 b2Body_SetTransform(physics_component.body,
-                                    b2Vec2(b2Body_GetPosition(physics_component.body).x + context.getCameraPos().x,
+                                    b2Vec2(b2Body_GetPosition(physics_component.body).x + context_.getCameraPos().x,
                                            b2Body_GetPosition(physics_component.body).y),
                                     b2Body_GetRotation(physics_component.body));
             }
@@ -69,13 +70,13 @@ namespace gl3
 
         const auto& ground = engine::ecs::EntityFactory::createDefaultEntity(
             registry_, glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), glm::vec4(0.25, 0.27, 1, 1), "ground",
-            physics_world, false);
+            physics_world_, false);
         engine::ecs::EntityFactory::setScale(registry_, ground, glm::vec3(40.f, groundHeight, 0.f));
-        player = engine::ecs::EntityFactory::createDefaultEntity(
-            registry_, glm::vec3(initialPlayerPositionX, 0.f, 0),
-            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physics_world, false,
+        player_ = engine::ecs::EntityFactory::createDefaultEntity(
+            registry_, glm::vec3(initial_player_position_x_, 0.f, 0),
+            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physics_world_, false,
             &engine::rendering::TextureManager::get("geometry-dash"));
-        engine::ecs::EntityFactory::setScale(registry_, player, glm::vec3(1.f, 1.f, 1.f));
+        engine::ecs::EntityFactory::setScale(registry_, player_, glm::vec3(1.f, 1.f, 1.f));
         backgroundMusic = std::make_unique<SoLoud::Wav>();
         backgroundMusic->load(engine::resolveAssetPath("audio/SensesShort.wav").c_str());
         backgroundMusic->setLooping(false);
@@ -83,11 +84,6 @@ namespace gl3
 
     void Game::update(GLFWwindow* window)
     {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        {
-            glfwSetWindowShouldClose(window, true);
-        }
-
         if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
         {
             currentGameState = engine::GameState::Level;
@@ -99,12 +95,12 @@ namespace gl3
             previousGameState = currentGameState;
             onGameStateChange();
         }
-        player_input_system_.update(player);
+        player_input_system_.update(player_);
     }
 
     //TODO delete entities when levelReload/Load/wechsel
 
-      std::vector<GameObject> generateTestObjects(const float& initialPlayerPositionX)
+    std::vector<GameObject> generateTestObjects(const float& initialPlayerPositionX)
     {
         std::mt19937 randomNumberEngine{
             static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count())
@@ -134,147 +130,147 @@ namespace gl3
             previousC = c;
         }
         std::vector<GameObject> game_objects = {
-            {4 + initialPlayerPositionX, 0.f, true, 1 , 1 , blueColors[0]},
-            {5 + initialPlayerPositionX, 0.f, false, 0.5f , 0.5f , redColor},
+            {4 + initialPlayerPositionX, 0.f, true, 1, 1, blueColors[0]},
+            {5 + initialPlayerPositionX, 0.f, false, 0.5f, 0.5f, redColor},
 
-            {11 + initialPlayerPositionX, 0.f, true, 1 , 2 , blueColors[1]},
+            {11 + initialPlayerPositionX, 0.f, true, 1, 2, blueColors[1]},
 
             {
-                16 + initialPlayerPositionX, 0.f, true, 1 , 1 ,
+                16 + initialPlayerPositionX, 0.f, true, 1, 1,
                 purpleColors[0]
             },
             {
-                18 + initialPlayerPositionX, 0.f, true, 2 , 1 ,
+                18 + initialPlayerPositionX, 0.f, true, 2, 1,
                 purpleColors[1]
             },
             {
-                20 + initialPlayerPositionX, 0.f, true, 3 , 1 ,
+                20 + initialPlayerPositionX, 0.f, true, 3, 1,
                 purpleColors[0]
             },
             {
-                22 + initialPlayerPositionX, 0.f, true, 4 , 1 ,
+                22 + initialPlayerPositionX, 0.f, true, 4, 1,
                 purpleColors[1]
             },
 
-            {28 + initialPlayerPositionX, 0.f, true, 1 , 1 , blueColors[0]},
+            {28 + initialPlayerPositionX, 0.f, true, 1, 1, blueColors[0]},
             {
-                28 + initialPlayerPositionX + 0.75f , 0.f, false, 0.5f ,
-                0.5f , redColor
+                28 + initialPlayerPositionX + 0.75f, 0.f, false, 0.5f,
+                0.5f, redColor
             },
             {
-                28 + initialPlayerPositionX + 1.25f , 0.f, false, 0.5f ,
-                0.5f , redColor
+                28 + initialPlayerPositionX + 1.25f, 0.f, false, 0.5f,
+                0.5f, redColor
             },
-            {30 + initialPlayerPositionX, 0.f, true, 1 , 1 , blueColors[0]},
-            {32 + initialPlayerPositionX, 0.f, true, 2 , 1 , blueColors[1]},
+            {30 + initialPlayerPositionX, 0.f, true, 1, 1, blueColors[0]},
+            {32 + initialPlayerPositionX, 0.f, true, 2, 1, blueColors[1]},
 
             {
-                38 + initialPlayerPositionX, 0.f, true, 1 , 1 ,
+                38 + initialPlayerPositionX, 0.f, true, 1, 1,
                 purpleColors[1]
             },
             {
-                39 + initialPlayerPositionX, 0.f, false, 0.5f , 0.5f ,
+                39 + initialPlayerPositionX, 0.f, false, 0.5f, 0.5f,
                 redColor
             },
             {
-                40 + initialPlayerPositionX, 0.f, true, 1 , 1 ,
+                40 + initialPlayerPositionX, 0.f, true, 1, 1,
                 purpleColors[3]
             },
             {
-                41 + initialPlayerPositionX, 0.f, false, 0.5f , 0.5f ,
+                41 + initialPlayerPositionX, 0.f, false, 0.5f, 0.5f,
                 redColor
             },
             {
-                42 + initialPlayerPositionX, 0.f, true, 2 , 1 ,
+                42 + initialPlayerPositionX, 0.f, true, 2, 1,
                 purpleColors[1]
             },
             {
-                43 + initialPlayerPositionX, 0.f, false, 0.5f , 0.5f ,
+                43 + initialPlayerPositionX, 0.f, false, 0.5f, 0.5f,
                 redColor
             },
 
-            {47 + initialPlayerPositionX, 0.f, true, 1 , 1 , blueColors[0]},
+            {47 + initialPlayerPositionX, 0.f, true, 1, 1, blueColors[0]},
 
-            {50 + initialPlayerPositionX, 0.f, true, 2 , 1 , blueColors[1]},
-            {52 + initialPlayerPositionX, 0.f, true, 2 , 1 , blueColors[1]},
+            {50 + initialPlayerPositionX, 0.f, true, 2, 1, blueColors[1]},
+            {52 + initialPlayerPositionX, 0.f, true, 2, 1, blueColors[1]},
             {
-                54 + initialPlayerPositionX, 0.f, true, 1 , 2 ,
+                54 + initialPlayerPositionX, 0.f, true, 1, 2,
                 purpleColors[2]
             },
-            {56 + initialPlayerPositionX, 0.f, true, 2 , 1 , blueColors[4]},
+            {56 + initialPlayerPositionX, 0.f, true, 2, 1, blueColors[4]},
             {
-                58 + initialPlayerPositionX, 0.f, true, 1 , 1 ,
+                58 + initialPlayerPositionX, 0.f, true, 1, 1,
                 purpleColors[1]
             },
-            {60 + initialPlayerPositionX, 0.f, true, 2 , 1 , blueColors[4]},
+            {60 + initialPlayerPositionX, 0.f, true, 2, 1, blueColors[4]},
             {
-                62 + initialPlayerPositionX, 0.f, true, 3 , 1 ,
+                62 + initialPlayerPositionX, 0.f, true, 3, 1,
                 purpleColors[3]
             },
-            {64 + initialPlayerPositionX, 0.f, true, 1 , 1 , blueColors[1]},
+            {64 + initialPlayerPositionX, 0.f, true, 1, 1, blueColors[1]},
             {
-                66 + initialPlayerPositionX, 0.f, true, 1 , 1 ,
+                66 + initialPlayerPositionX, 0.f, true, 1, 1,
                 purpleColors[3]
             },
             {
-                68 + initialPlayerPositionX, 0.f, true, 2 , 1 ,
+                68 + initialPlayerPositionX, 0.f, true, 2, 1,
                 purpleColors[4]
             },
             {
-                70 + initialPlayerPositionX, 0.f, true, 1 , 1 ,
+                70 + initialPlayerPositionX, 0.f, true, 1, 1,
                 purpleColors[3]
             },
             {
-                72 + initialPlayerPositionX, 0.f, true, 1 , 1 ,
+                72 + initialPlayerPositionX, 0.f, true, 1, 1,
                 purpleColors[4]
             },
             {
-                74 + initialPlayerPositionX, 0.f, true, 2 , 1 ,
+                74 + initialPlayerPositionX, 0.f, true, 2, 1,
                 purpleColors[1]
             },
             {
-                76 + initialPlayerPositionX, 0.f, true, 3 , 1 ,
+                76 + initialPlayerPositionX, 0.f, true, 3, 1,
                 purpleColors[0]
             },
             {
-                78 + initialPlayerPositionX, 0.f, true, 4 , 1 ,
+                78 + initialPlayerPositionX, 0.f, true, 4, 1,
                 purpleColors[1]
             },
 
-            {80 + initialPlayerPositionX, 3.0f, true, 1 , 3 , blueColors[0]},
+            {80 + initialPlayerPositionX, 3.0f, true, 1, 3, blueColors[0]},
             {
-                80 + initialPlayerPositionX + 0.25f , 3.0f , false,
-                0.5f , 0.5f , redColor
+                80 + initialPlayerPositionX + 0.25f, 3.0f, false,
+                0.5f, 0.5f, redColor
             },
             {
-                84 + initialPlayerPositionX, 4.0f, true, 1 , 2 ,
+                84 + initialPlayerPositionX, 4.0f, true, 1, 2,
                 purpleColors[3]
             },
             {
-                84.f + initialPlayerPositionX + 0.75f , 4.0f , false,
-                0.5f , 0.5f , redColor
+                84.f + initialPlayerPositionX + 0.75f, 4.0f, false,
+                0.5f, 0.5f, redColor
             },
 
-            {86 + initialPlayerPositionX, 0.f, true, 1 , 1 , blueColors[0]},
+            {86 + initialPlayerPositionX, 0.f, true, 1, 1, blueColors[0]},
 
-            {91 + initialPlayerPositionX, 0.f, true, 1 , 1 , blueColors[1]},
-            {93 + initialPlayerPositionX, 0.f, true, 2 , 1 , blueColors[1]},
+            {91 + initialPlayerPositionX, 0.f, true, 1, 1, blueColors[1]},
+            {93 + initialPlayerPositionX, 0.f, true, 2, 1, blueColors[1]},
 
-            {98 + initialPlayerPositionX, 0.f, true, 1 , 1 , blueColors[0]},
+            {98 + initialPlayerPositionX, 0.f, true, 1, 1, blueColors[0]},
             {
-                100 + initialPlayerPositionX, 0.f, true, 2 , 1 ,
+                100 + initialPlayerPositionX, 0.f, true, 2, 1,
                 purpleColors[0]
             },
-            {102 + initialPlayerPositionX, 0.f, true, 3 , 1 , blueColors[3]},
-            {104 + initialPlayerPositionX, 0.f, true, 4 , 1 , blueColors[3]},
-            {106 + initialPlayerPositionX, 0.f, true, 5 , 1 , blueColors[1]},
+            {102 + initialPlayerPositionX, 0.f, true, 3, 1, blueColors[3]},
+            {104 + initialPlayerPositionX, 0.f, true, 4, 1, blueColors[3]},
+            {106 + initialPlayerPositionX, 0.f, true, 5, 1, blueColors[1]},
             {
-                108 + initialPlayerPositionX, 0.f, true, 2 , 1 ,
+                108 + initialPlayerPositionX, 0.f, true, 2, 1,
                 purpleColors[0]
             },
-            {110 + initialPlayerPositionX, 0.f, true, 3 , 1 , blueColors[1]},
-            {112 + initialPlayerPositionX, 0.f, true, 4 , 1 , blueColors[2]},
-            {114 + initialPlayerPositionX, 0.f, true, 5 , 1 , blueColors[1]},
+            {110 + initialPlayerPositionX, 0.f, true, 3, 1, blueColors[1]},
+            {112 + initialPlayerPositionX, 0.f, true, 4, 1, blueColors[2]},
+            {114 + initialPlayerPositionX, 0.f, true, 5, 1, blueColors[1]},
         };
 
         return game_objects;
@@ -313,17 +309,17 @@ namespace gl3
         unsigned int hopSize = 512; // Size of each hop
         unsigned int bufferSize = 2048; // Size of the analysis buffer
 
-        bpm = engine::AudioAnalysis::analyzeAudioTempo(audio_file, hopSize, bufferSize);
-        secondsPerBeat = 60 / bpm;
+        bpm_ = engine::AudioAnalysis::analyzeAudioTempo(audio_file, hopSize, bufferSize);
+        seconds_per_beat_ = 60 / bpm_;
 
         std::vector<float> beatPositions = engine::AudioAnalysis::generateBeatTimestamps(
             static_cast<float>(backgroundMusic->getLength()),
-            secondsPerBeat,
-            initialPlayerPositionX);
+            seconds_per_beat_,
+            initial_player_position_x_);
 
-        levelLength = backgroundMusic->getLength();
+        level_length_ = backgroundMusic->getLength();
 
-        initial_test_game_objects = generateTestObjects(initialPlayerPositionX);
+        initial_test_game_objects = generateTestObjects(initial_player_position_x_);
 
         if (currentGameState == engine::GameState::Level || currentGameState == engine::GameState::PreviewWithTesting ||
             currentGameState == engine::GameState::PreviewWithScrolling)
@@ -338,7 +334,7 @@ namespace gl3
                 {
                     const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(
                         registry_, glm::vec3(object.positionX, posY, 0.0f),
-                        object.color, "platform", physics_world);
+                        object.color, "platform", physics_world_);
                     engine::ecs::EntityFactory::setScale(registry_, entity,
                                                          glm::vec3(object.scaleX, object.scaleY, 0.f));
                     object.entityID = entity;
@@ -348,7 +344,7 @@ namespace gl3
                 {
                     const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(
                         registry_, glm::vec3(object.positionX, posY, 0.0f),
-                        object.color, "obstacle", physics_world, true);
+                        object.color, "obstacle", physics_world_, true);
                     engine::ecs::EntityFactory::setScale(registry_, entity,
                                                          glm::vec3(object.scaleX, object.scaleY, 0.f));
                     object.entityID = entity;
@@ -388,7 +384,7 @@ namespace gl3
             engine::GameState::PreviewWithTesting)
         {
             const auto timeLine = engine::ecs::EntityFactory::createDefaultEntity(
-                registry_, glm::vec3(0, groundLevel, 0.0f), glm::vec4(0.1, 0.1, 1.0, 1.0f), "timeline", physics_world);
+                registry_, glm::vec3(0, groundLevel, 0.0f), glm::vec4(0.1, 0.1, 1.0, 1.0f), "timeline", physics_world_);
             engine::ecs::EntityFactory::setScale(registry_, timeLine, glm::vec3(40.f, 0.05f, 0.f));
 
             std::vector<GameObject> tempObjects;
@@ -399,7 +395,7 @@ namespace gl3
             {
                 auto timeLineColor = glm::vec4(0.1, 0.1, 1.0, 1.0f);
                 const auto beat = engine::ecs::EntityFactory::createDefaultEntity(
-                    registry_, glm::vec3(beatPosition, groundLevel, 0.0f), timeLineColor, "beat", physics_world);
+                    registry_, glm::vec3(beatPosition, groundLevel, 0.0f), timeLineColor, "beat", physics_world_);
                 engine::ecs::EntityFactory::setScale(registry_, beat, glm::vec3(0.05f, 0.5f, 0.f));
                 tempObjects.push_back(GameObject(beatPosition, groundLevel, true, 0.05f, 0.5f, timeLineColor, beat));
             }
@@ -416,7 +412,7 @@ namespace gl3
                 auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
                 if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
                 {
-                    b2Body_SetLinearVelocity(physics_comp.body, {currentLevelSpeed, 0.0f});
+                    b2Body_SetLinearVelocity(physics_comp.body, {current_level_speed_, 0.0f});
                 }
             }
         }
@@ -438,7 +434,7 @@ namespace gl3
             if (tag == "player")
             {
                 engine::ecs::EntityFactory::setPosition(registry_, entity,
-                                                        glm::vec3(initialPlayerPositionX,
+                                                        glm::vec3(initial_player_position_x_,
                                                                   groundLevel + transform.scale.y / 2, 0.f));
                 continue;
             }
@@ -448,7 +444,7 @@ namespace gl3
                                                         glm::vec3(0, groundLevel - groundHeight / 2, 0.0f));
                 continue;
             }
-            b2Body_SetLinearVelocity(physics_comp.body, {currentLevelSpeed, 0.f});
+            b2Body_SetLinearVelocity(physics_comp.body, {current_level_speed_, 0.f});
             auto obj = std::ranges::find_if(initial_test_game_objects,
                                             [entity](const GameObject& o)
                                             {
@@ -471,6 +467,6 @@ namespace gl3
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
             Game::onPlayerDeath>(this);
         engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().disconnect<&
-    Game::on_mouse_scroll>(this);
+            Game::on_mouse_scroll>(this);
     }
 }

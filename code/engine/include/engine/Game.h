@@ -11,6 +11,7 @@
 #include "box2d/box2d.h"
 #include <entt/entity/registry.hpp>
 
+
 namespace gl3::engine
 {
     namespace physics
@@ -23,15 +24,9 @@ namespace gl3::engine
         class RenderingSystem;
     }
 
-    namespace levelLoading
+    namespace ui
     {
-        class LevelSelectUISystem;
-    }
-
-    namespace editor
-    {
-        class EditorSystem;
-        class EditorUISystem;
+        class TopLvlUISystem;
     }
 
     enum class GameState
@@ -46,15 +41,14 @@ namespace gl3::engine
     {
     public:
         void run();
-        [[nodiscard]] GLFWwindow* getWindow() const { return context.getWindow(); }
-        [[nodiscard]] b2WorldId getPhysicsWorld() const { return physics_world; };
-        [[nodiscard]] const context::Context& getContext() const { return context; }
+        [[nodiscard]] GLFWwindow* getWindow() const { return context_.getWindow(); }
+        [[nodiscard]] b2WorldId getPhysicsWorld() const { return physics_world_; };
+        [[nodiscard]] const context::Context& getContext() const { return context_; }
         [[nodiscard]] float getDeltaTime() const { return deltaTime; };
         entt::registry& getRegistry() { return registry_; };
-        [[nodiscard]] entt::entity getPlayer() const { return player; }
-        [[nodiscard]] float getCurrentBPM() const { return bpm; };
-        [[nodiscard]] float getLevelSpeed() const { return currentLevelSpeed; };
-
+        [[nodiscard]] entt::entity getPlayer() const { return player_; }
+        [[nodiscard]] float getCurrentBPM() const { return bpm_; };
+        [[nodiscard]] float getLevelSpeed() const { return current_level_speed_; };
 
         using event_t = events::Event<Game, Game&>;
 
@@ -64,7 +58,6 @@ namespace gl3::engine
         event_t onAfterUpdate;
         event_t onBeforeShutdown;
         event_t onShutdown;
-
 
         GameState currentGameState = GameState::Menu;
 
@@ -86,29 +79,26 @@ namespace gl3::engine
 
         virtual void updateUI();
 
-        context::Context context;
+        context::Context context_;
 
         SoLoud::Soloud audio;
         float deltaTime = 1.0f / 60;
 
-        b2WorldId physics_world;
-        physics::PhysicsSystem* physics_system;
-        rendering::RenderingSystem* rendering_system;
-        levelLoading::LevelSelectUISystem* lvl_ui_system;
-        /*editor::EditorUISystem* editor_ui_system;
-        editor::EditorSystem* editor_system;*/
+        b2WorldId physics_world_;
 
+        physics::PhysicsSystem* physics_system_;
+        rendering::RenderingSystem* rendering_system_;
+        ui::TopLvlUISystem* top_lvl_ui_system_;
 
         entt::registry registry_;
-        entt::entity player;
+        entt::entity player_;
+        float initial_player_position_x_ = -2.0f;
 
-        float initialPlayerPositionX = -2.0f;
-
-        float velocityMultiplier = -2.f;
-        float bpm = 0.0f; // Default BPM, updated dynamically
-        float secondsPerBeat = 1.f; //Default, updated according to level music
-        float currentLevelSpeed = velocityMultiplier / secondsPerBeat;
-        float levelLength = 0; //Default, gets updated according to level music
+        float velocity_multiplier_ = -2.f;
+        float bpm_ = 0.0f; // Default BPM, updated dynamically
+        float seconds_per_beat_ = 1.f; //Default, updated according to level music
+        float current_level_speed_ = velocity_multiplier_ / seconds_per_beat_;
+        float level_length_ = 0; //Default, gets updated according to level music
 
     private:
         float lastFrameTime_ = 1.0f / 60;

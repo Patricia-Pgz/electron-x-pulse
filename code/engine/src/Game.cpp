@@ -1,10 +1,8 @@
 #include <stdexcept>
 #include "engine/Game.h"
 #include "engine/physics/PhysicsSystem.h"
-#include "engine/levelLoading/LevelSelectUISystem.h"
 #include "engine/rendering/RenderingSystem.h"
-//#include "engine/levelEditor/EditorUISystem.h"
-//#include "engine/levelEditor/EditorSystem.h"
+#include "engine/userInterface/TopLvlUISystem.h"
 
 
 namespace gl3::engine
@@ -16,7 +14,7 @@ namespace gl3::engine
         onStartup.invoke(*this);
         start();
         onAfterStartup.invoke(*this);
-        context.run([&](Context& ctx)
+        context_.run([&](Context& ctx)
         {
             onBeforeUpdate.invoke(*this);
             update(getWindow());
@@ -31,13 +29,11 @@ namespace gl3::engine
     }
 
     Game::Game(const int width, const int height, const std::string& title, const glm::vec3 camPos,
-               const float camZoom): context(width, height, title, camPos, camZoom), physics_world(b2_nullWorldId),
-                                     physics_system(new physics::PhysicsSystem(*this)),
-                                     rendering_system((new rendering::RenderingSystem(*this))),
-                                     lvl_ui_system(new levelLoading::LevelSelectUISystem(*this)),
-                                     //editor_ui_system(new editor::EditorUISystem(*this)),
-                                     //editor_system(new editor::EditorSystem(*this)),
-                                     player(entt::null)
+               const float camZoom): context_(width, height, title, camPos, camZoom), physics_world_(b2_nullWorldId),
+                                     physics_system_(new physics::PhysicsSystem(*this)),
+                                     rendering_system_((new rendering::RenderingSystem(*this))),
+                                     top_lvl_ui_system_(new ui::TopLvlUISystem(*this)), //TODO Lieber in game?
+                                     player_(entt::null)
     {
         if (!glfwInit())
         {
@@ -51,7 +47,8 @@ namespace gl3::engine
         b2WorldDef worldDef = b2DefaultWorldDef();
         // We use worldDef to define our physics world
         worldDef.gravity = b2Vec2{0.f, -9.81f};
-        physics_world = b2CreateWorld(&worldDef);
+        physics_world_ = b2CreateWorld(&worldDef);
+        top_lvl_ui_system_->initUI();
     }
 
     void Game::updateDeltaTime()
@@ -68,18 +65,19 @@ namespace gl3::engine
 
     void Game::updatePhysics()
     {
-        physics_system->runPhysicsStep();
+        physics_system_->runPhysicsStep();
         //TODO implement way to deactivate physics / stop game / only update active physics comps
     }
 
     void Game::draw()
     {
-        rendering_system->draw();
+        rendering_system_->draw();
     }
 
     void Game::updateUI()
     {
-        lvl_ui_system->renderUI();
+        top_lvl_ui_system_->renderUI();
+        //in_game_menu_system_->updateInGameUI();
         //editor_ui_system->renderUI(); //TODO von game trennen
     }
 } // gl3

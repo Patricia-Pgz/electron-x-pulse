@@ -1,17 +1,20 @@
 #pragma once
-#include "engine/userInterface/UISystem.h"
+#include <engine/userInterface/IUISubSystem.h>
 
 namespace gl3::engine::levelLoading
 {
-    class LevelSelectUISystem : public ui::UISystem
+    ///summary
+    ///Level selection UI.
+    ///summary
+    class LevelSelectUISystem : public ui::IUISubsystem
     {
     public:
-        explicit LevelSelectUISystem(Game& game) : UISystem(game)
+        explicit LevelSelectUISystem(ImGuiIO* imguiIO, Game& game) : IUISubsystem(imguiIO, game)
         {
         };
-        void updateUI() override;
+        void update() override;
 
     private:
-        void createLevelSelection();
+        static void createLevelSelection();
     };
 }

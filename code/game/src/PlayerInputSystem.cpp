@@ -8,11 +8,8 @@ namespace gl3 {
 
     b2Vec2 PlayerInputSystem::calculateJumpImpulse(const b2BodyId body, const JumpConfig& config) {
         const float distancePerBeat = 60.0f / config.bpm;
-
         const float jumpDuration = config.beatsPerJump * distancePerBeat;
-
         const float initialVelocity = (config.gravity * jumpDuration) / 2.0f;
-
         const float bodyMass = b2Body_GetMass(body);
         const b2Vec2 jumpImpulse(0.0f, initialVelocity * bodyMass);
 
@@ -22,16 +19,8 @@ namespace gl3 {
     void PlayerInputSystem::update(const entt::entity& player)
     {
         const auto window = game.getWindow();
-
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        {
-            glfwSetWindowShouldClose(window, true);
-        }
-
-
         const auto body = game.getRegistry().get<engine::ecs::PhysicsComponent>(player).body;
         b2Vec2 velocity = b2Body_GetLinearVelocity(body);
-
 
         if (velocity.y < 0.01f && velocity.y >= 0.f && canJump && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {

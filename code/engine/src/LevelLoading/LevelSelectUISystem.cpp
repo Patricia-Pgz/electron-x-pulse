@@ -1,7 +1,9 @@
 #include "engine/levelLoading/LevelSelectUISystem.h"
-
 #include <imgui_internal.h>
-
+#include <string>
+#include <vector>
+#include "engine/rendering/TextureManager.h"
+#include <engine/userInterface/FontManager.h>
 #include "engine/Constants.h"
 
 namespace gl3::engine::levelLoading
@@ -42,6 +44,10 @@ namespace gl3::engine::levelLoading
         ImGui::SetCursorPosY(viewport->Size.y * 0.03f);
         ImGui::PushFont(headingFont); //TODO UISystem load this font bigger
         CenteredText("Select a Level", viewport->Size);
+        /*if (ImGui::Button("Exit", ImVec2(200, 40))) TODO
+        {
+            //onLevelSelected(""); // Signal to exit
+        }*/
         ImGui::PopFont();
         ImGui::End();
         ImGui::BringWindowToDisplayFront(ImGui::FindWindowByName("FixedHeaderOverlay"));
@@ -150,11 +156,6 @@ namespace gl3::engine::levelLoading
 
         DrawLevelButtons();
 
-        /*if (ImGui::Button("Back", ImVec2(200, 40)))
-        {
-            //onLevelSelected(""); // Signal to exit
-        }*/
-
         ImGui::GetWindowDrawList()->AddImage(
             rendering::TextureManager::getUITexture("LvlSelectBGTop1").getID(),
             ImGui::GetWindowPos(),
@@ -172,11 +173,11 @@ namespace gl3::engine::levelLoading
     {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-        DrawFixedHeadingWindow(viewport, loadedFonts["PixeloidSans-Bold_26"]);
-        DrawLevelSelect(viewport, loadedFonts["PixeloidSans"]);
+        DrawFixedHeadingWindow(viewport, ui::FontManager::getFont("pixeloid-bold-26"));
+        DrawLevelSelect(viewport, ui::FontManager::getFont("PixeloidSans"));
     }
 
-    void LevelSelectUISystem::updateUI()
+    void LevelSelectUISystem::update()
     {
         createLevelSelection();
     }

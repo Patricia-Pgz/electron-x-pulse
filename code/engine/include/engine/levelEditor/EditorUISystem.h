@@ -1,7 +1,8 @@
 #pragma once
+#include "EditorSystem.h"
 #include "engine/rendering/Texture.h"
-#include "engine/userInterface/UISystem.h"
 #include "engine/Game.h"
+#include "engine/userInterface/IUISubSystem.h"
 
 namespace gl3::engine::editor
 {
@@ -17,13 +18,11 @@ namespace gl3::engine::editor
         std::string selectedTag = "undefined";
     };
 
-    class EditorUISystem : public ui::UISystem
+    class EditorUISystem : public ui::IUISubsystem
     {
     public:
-        explicit EditorUISystem(Game& game) : UISystem(game)
-        {
-        };
-        void updateUI() override;
+        explicit EditorUISystem(ImGuiIO* imguiIO, Game& game);
+        void update() override;
 
     private:
         void DrawGrid(float gridSpacing);
@@ -41,5 +40,6 @@ namespace gl3::engine::editor
         char tag_input_buffer[128] = "";
         std::string selected_tag = "undefined";
         bool is_triangle = false;
+        EditorSystem* editor_system;
     };
 }
