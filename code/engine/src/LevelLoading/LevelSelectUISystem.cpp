@@ -10,51 +10,31 @@ namespace gl3::engine::levelLoading
 {
     void styleWindow(const ImVec2 windowSize)
     {
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UINeonColors::pastelNeonViolet2);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
+        ImGui::PushStyleColor(ImGuiCol_SliderGrab, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
         ImGuiStyle& style = ImGui::GetStyle();
+        style.FrameRounding = 5.0;
         style.WindowBorderSize = 0.f;
-        style.WindowPadding = ImVec2(windowSize.x * 0.08, windowSize.y * 0.14);
-        ImGui::GetStyle().FrameRounding = 5.0;
-
+        style.WindowPadding = {windowSize.x * 0.075f, windowSize.y * 0.145f};
         style.ItemSpacing = ImVec2(20, 20);
     }
 
-    void CenteredText(const char* text, const ImVec2 windowSize)
+    void popStyle()
     {
-        const ImVec2 textSize = ImGui::CalcTextSize(text);
-        const float offsetX = (windowSize.x - textSize.x) * 0.5f;
-
-        ImGui::SetCursorPosX(offsetX);
-        ImGui::Text("%s", text);
-    }
-
-    void DrawFixedHeadingWindow(const ImGuiViewport* viewport, ImFont* headingFont)
-    {
-        // Fixed overlay window (no scroll, no interaction)
-        ImGui::SetNextWindowPos(viewport->Pos);
-        ImGui::SetNextWindowSize({viewport->Size.x, (viewport->Size.y * 0.1f)});
-        ImGui::Begin("FixedHeaderOverlay", nullptr,
-                     ImGuiWindowFlags_NoTitleBar |
-                     ImGuiWindowFlags_NoResize |
-                     ImGuiWindowFlags_NoMove |
-                     ImGuiWindowFlags_NoScrollbar |
-                     ImGuiWindowFlags_NoScrollWithMouse |
-                     ImGuiWindowFlags_NoInputs |
-                     ImGuiWindowFlags_NoBackground
-        );
-        ImGui::SetCursorPosY(viewport->Size.y * 0.03f);
-        ImGui::PushFont(headingFont); //TODO UISystem load this font bigger
-        CenteredText("Select a Level", viewport->Size);
-        /*if (ImGui::Button("Exit", ImVec2(200, 40))) TODO
-        {
-            //onLevelSelected(""); // Signal to exit
-        }*/
-        ImGui::PopFont();
-        ImGui::End();
-        ImGui::BringWindowToDisplayFront(ImGui::FindWindowByName("FixedHeaderOverlay"));
+        ImGui::PopStyleColor(8);
     }
 
     void DrawLevelButtons()
     {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
+        ImGui::BeginChild("Lvl Select Buttons");
+
         std::vector<std::string> levelNames = {
             //TODO laden von level files
             "Tutorial",
@@ -73,10 +53,6 @@ namespace gl3::engine::levelLoading
         const float spacing = ImGui::GetStyle().ItemSpacing.x;
         const float contentWidth = ImGui::GetContentRegionAvail().x;
         const float buttonWidth = (contentWidth - spacing * (columns)) / columns;
-
-        ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
 
         float buttonsOnRow = 0.f;
         for (size_t i = 0; i < levelNames.size(); ++i)
@@ -118,7 +94,6 @@ namespace gl3::engine::levelLoading
                 buttonMin.y + (buttonSize.y - textSize.y) * 0.95f
             );
 
-            // Draw overlay text without modifying cursor
             ImGui::GetWindowDrawList()->AddText(textPos, IM_COL32(255, 255, 255, 255), levelNames[i].c_str());
 
             buttonsOnRow++;
@@ -127,44 +102,65 @@ namespace gl3::engine::levelLoading
             else
                 buttonsOnRow = 0;
         }
-        ImGui::PopStyleColor(3);
+        ImGui::EndChild();
     }
 
     void DrawLevelSelect(const ImGuiViewport* viewport, ImFont* font)
     {
-        ImGui::SetNextWindowPos(viewport->Pos);
-        ImGui::SetNextWindowSize(viewport->Size);
         ImGui::PushFont(font);
+        ImGui::SetNextWindowPos(viewport->Pos);
+        const auto viewportSize = viewport->Size;
+        ImGui::SetNextWindowSize(viewportSize);
+        styleWindow(viewportSize);
+        ImGui::Begin("FixedHeaderOverlay", nullptr,
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoResize|
+        ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoScrollWithMouse
+        );
 
-        const ImGuiWindowFlags flags =
-            ImGuiWindowFlags_NoMove |
-            ImGuiWindowFlags_NoCollapse |
-            ImGuiWindowFlags_NoTitleBar |
-            ImGuiWindowFlags_NoBringToFrontOnFocus;
-
-        styleWindow(viewport->Size);
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, UINeonColors::softPastelPink);
-        ImGui::Begin("Level Select", nullptr, flags);
-        ImGui::PopStyleColor();
+        const auto windowSize = ImGui::GetWindowSize();
+        const auto windowPos = ImGui::GetWindowPos();
 
         ImGui::GetWindowDrawList()->AddImage(
             rendering::TextureManager::getUITexture("LvlSelectBG1").getID(),
-            ImGui::GetWindowPos(),
-            ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x,
-                   ImGui::GetWindowPos().y + ImGui::GetWindowSize().y)
+            windowPos,
+            ImVec2(windowPos.x + windowSize.x,
+                   windowPos.y + windowSize.y),
+            {0.f, 1.f},
+            {1.f, 0.f}
         );
 
         DrawLevelButtons();
 
         ImGui::GetWindowDrawList()->AddImage(
             rendering::TextureManager::getUITexture("LvlSelectBGTop1").getID(),
-            ImGui::GetWindowPos(),
-            ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x,
-                   ImGui::GetWindowPos().y + ImGui::GetWindowSize().y),
+            windowPos,
+            ImVec2(windowPos.x + windowSize.x,
+                   windowPos.y + windowSize.y),
             {0.f, 1.f},
             {1.f, 0.f}
         );
 
+        const auto padding = ImGui::GetStyle().ItemSpacing;
+
+        ImGui::PushFont(ui::FontManager::getFont("pixeloid-bold-26"));
+        const ImVec2 textSize = ImGui::CalcTextSize("Select a Level");
+        ImGui::SetCursorPos({(windowSize.x - textSize.x) * 0.5f, windowPos.y + padding.y});
+        ImGui::Text("Select a Level");
+
+        const auto buttonTextSize = ImGui::CalcTextSize("Exit");
+        const ImVec2 buttonSize = {buttonTextSize.x + padding.x * 2, buttonTextSize.y + padding.y * 2};
+        ImGui::SetCursorPos({(windowSize.x - buttonSize.x) * 0.5f, windowSize.y - buttonSize.y - padding.y * 0.5f});
+        if (ImGui::Button("Exit", buttonSize))
+        {
+            //onExitGame(""); // Signal to exit
+        }
+        ImGui::PopFont();
+
+        popStyle();
         ImGui::PopFont();
         ImGui::End();
     }
@@ -173,7 +169,6 @@ namespace gl3::engine::levelLoading
     {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-        DrawFixedHeadingWindow(viewport, ui::FontManager::getFont("pixeloid-bold-26"));
         DrawLevelSelect(viewport, ui::FontManager::getFont("PixeloidSans"));
     }
 
