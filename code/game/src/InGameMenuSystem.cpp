@@ -1,10 +1,9 @@
-#include "engine/userInterface/InGameMenuSystem.h"
-#include <engine/userInterface/FontManager.h>
-
+#include "InGameMenuSystem.h"
+#include "engine/userInterface/FontManager.h"
 #include "engine/Constants.h"
 #include "engine/rendering/TextureManager.h"
 
-namespace gl3::engine::inGameUI
+namespace gl3::game::ui
 {
     //TODO schöner
     void styleWindow(const ImVec2 windowSize)
@@ -52,7 +51,7 @@ namespace gl3::engine::inGameUI
 
 
         ImGui::GetWindowDrawList()->AddImage(
-            rendering::TextureManager::getUITexture("LvlSelectBGTop1").getID(),
+            engine::rendering::TextureManager::getUITexture("LvlSelectBGTop1").getID(),
             windowPos,
             ImVec2(windowPos.x + windowSize.x,
                    windowPos.y + windowSize.y),
@@ -67,18 +66,12 @@ namespace gl3::engine::inGameUI
 
 
     /**
- * @brief Shows or hides the in-game menu.
- * @pre ImGui needs to be set up already. E.g. by calling @ref gl3::engine::ui::UISystem::renderUI on a UISystem instance (or inherited ones) each game UI-Update frame @ref gl3::engine::Game::updateUI.
- * @pre ImGui Frame needs to be running already.
+     * @brief Shows or hides the in-game menu.
+     * @pre ImGui needs to be set up already. E.g. by calling @ref gl3::engine::ui::UISystem::renderUI on a UISystem instance (or inherited ones) each game UI-Update frame @ref gl3::engine::Game::updateUI.
+    * @pre ImGui Frame needs to be running already.
  */
     void InGameMenuSystem::update()
     {
-        /*std::cout << "update!";
-        if (!(ImGui::GetCurrentContext() && ImGui::GetCurrentContext()->WithinFrameScope))
-        {
-            std::cerr << "Not inside an ImGui Frame or Context" << std::endl;
-            return;
-        }*/
         if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
             if (!escape_pressed_)
@@ -95,6 +88,6 @@ namespace gl3::engine::inGameUI
         if (!show_menu_) return;
 
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        DrawInGameUI(viewport, ui::FontManager::getFont("pixeloid-bold-26"));
+        DrawInGameUI(viewport, engine::ui::FontManager::getFont("pixeloid-bold-26"));
     }
 }

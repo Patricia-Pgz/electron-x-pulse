@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.18)
 
-# Set up source files
-set(GAME_SRC
-        src/Game.cpp
-        src/Game.h
-        src/PlayerInputSystem.cpp
-        src/PlayerInputSystem.h
+# Set source directory
+set(GAME_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+# Glob all .cpp and .h files
+file(GLOB_RECURSE GAME_SRC CONFIGURE_DEPENDS
+        "${GAME_SRC_DIR}/*.cpp"
+        "${GAME_SRC_DIR}/*.h"
 )
 
 # Create a static library for the game logic

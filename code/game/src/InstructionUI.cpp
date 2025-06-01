@@ -1,12 +1,13 @@
-#include "engine/userInterface/TutorialUI.h"
+#include "InstructionUI.h"
 
-namespace gl3::engine::ui {
-    void TutorialUI::DrawHints(const ImGuiViewport* viewport, ImFont* font)
+namespace gl3::game::ui
+{
+    void InstructionUI::DrawHints(const ImGuiViewport* viewport, ImFont* font) const
     {
         if (!show_hints_)return; //TODO GameState? lvl? timer
         const auto viewportSize = viewport->Size;
         const auto viewportPos = viewport->Pos;
-        ImGui::SetNextWindowPos({viewportPos.x , viewportPos.y});
+        ImGui::SetNextWindowPos({viewportPos.x, viewportPos.y});
         ImGui::SetNextWindowSize({viewportSize.x, viewportSize.y});
         ImGui::PushFont(font);
         ImGui::PushStyleColor(ImGuiCol_WindowBg, {0.f, 0.f, 0.f, 0.f});
@@ -21,9 +22,8 @@ namespace gl3::engine::ui {
         ImGui::End();
     }
 
-    void TutorialUI::update()
+    void InstructionUI::update()
     {
-        DrawHints(ImGui::GetMainViewport(), FontManager::getFont("PixeloidSans"));
+        DrawHints(ImGui::GetMainViewport(), engine::ui::FontManager::getFont("PixeloidSans"));
     }
-
 } // gl3

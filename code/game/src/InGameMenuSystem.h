@@ -1,13 +1,13 @@
 #pragma once
-#include "IUISubSystem.h"
 #include "engine/Game.h"
+#include "engine/userInterface/IUISubSystem.h"
 
-namespace gl3::engine::inGameUI
+namespace gl3::game::ui
 {
-    class InGameMenuSystem : public ui::IUISubsystem
+    class InGameMenuSystem : public engine::ui::IUISubsystem
     {
     public:
-        explicit InGameMenuSystem(ImGuiIO* imguiIO, Game& game) : IUISubsystem(imguiIO, game)
+        explicit InGameMenuSystem(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game)
         {
         };
 

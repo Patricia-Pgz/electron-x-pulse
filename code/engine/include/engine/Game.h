@@ -26,7 +26,7 @@ namespace gl3::engine
 
     namespace ui
     {
-        class TopLvlUISystem;
+        class UISystem;
     }
 
     enum class GameState
@@ -73,10 +73,15 @@ namespace gl3::engine
         virtual void update(GLFWwindow* window)
         {
         };
+
         virtual void updatePhysics();
 
         virtual void draw();
 
+
+        virtual void registerUiSystems()
+        {
+        };
         virtual void updateUI();
 
         context::Context context_;
@@ -88,7 +93,7 @@ namespace gl3::engine
 
         physics::PhysicsSystem* physics_system_;
         rendering::RenderingSystem* rendering_system_;
-        ui::TopLvlUISystem* top_lvl_ui_system_;
+        ui::UISystem* ui_system_;
 
         entt::registry registry_;
         entt::entity player_;

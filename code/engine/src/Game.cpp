@@ -2,7 +2,7 @@
 #include "engine/Game.h"
 #include "engine/physics/PhysicsSystem.h"
 #include "engine/rendering/RenderingSystem.h"
-#include "engine/userInterface/TopLvlUISystem.h"
+#include "engine/userInterface/UISystem.h"
 
 
 namespace gl3::engine
@@ -13,6 +13,7 @@ namespace gl3::engine
     {
         onStartup.invoke(*this);
         start();
+        registerUiSystems();
         onAfterStartup.invoke(*this);
         context_.run([&](Context& ctx)
         {
@@ -32,7 +33,7 @@ namespace gl3::engine
                const float camZoom): context_(width, height, title, camPos, camZoom), physics_world_(b2_nullWorldId),
                                      physics_system_(new physics::PhysicsSystem(*this)),
                                      rendering_system_((new rendering::RenderingSystem(*this))),
-                                     top_lvl_ui_system_(new ui::TopLvlUISystem(*this)), //TODO Lieber in game?
+                                     ui_system_(new ui::UISystem(*this)),
                                      player_(entt::null)
     {
         if (!glfwInit())
@@ -48,12 +49,12 @@ namespace gl3::engine
         // We use worldDef to define our physics world
         worldDef.gravity = b2Vec2{0.f, -9.81f};
         physics_world_ = b2CreateWorld(&worldDef);
-        top_lvl_ui_system_->initUI();
+        ui_system_->initUI();
     }
 
     void Game::updateDeltaTime()
     {
-        float frameTime = glfwGetTime();
+        const auto frameTime = static_cast<float>(glfwGetTime());
         deltaTime = frameTime - lastFrameTime_;
         lastFrameTime_ = frameTime;
     }
@@ -76,6 +77,6 @@ namespace gl3::engine
 
     void Game::updateUI()
     {
-        top_lvl_ui_system_->renderUI();
+        ui_system_->renderUI();
     }
 } // gl3

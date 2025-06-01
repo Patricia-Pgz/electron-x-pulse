@@ -5,7 +5,7 @@
 #include "engine/ecs/PlayerEvents.h"
 #include "engine/ecs/System.h"
 
-namespace gl3
+namespace gl3::game::input
 {
     struct JumpConfig
     {

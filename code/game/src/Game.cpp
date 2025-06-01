@@ -1,14 +1,18 @@
 #include "Game.h"
 #include <random>
 #include <iostream>
+
+#include "InGameMenuSystem.h"
 #include "engine/Assets.h"
 #include "PlayerInputSystem.h"
 #include "engine/AudioAnalysis.h"
 #include "engine/ecs/EntityFactory.h"
-#include "engine/rendering/RenderingSystem.h"
+#include "engine/userInterface/UISystem.h"
+#include "engine/levelLoading/LevelSelectUISystem.h"
+#include "InstructionUI.h"
+#include "engine/levelEditor/EditorUISystem.h"
 
-
-namespace gl3
+namespace gl3::game
 {
     Game::Game(const int width, const int height, const std::string& title, const glm::vec3& camPos,
                const float camZoom)
@@ -67,7 +71,6 @@ namespace gl3
     void Game::start()
     {
         engine::rendering::TextureManager::loadTextures();
-
         const auto& ground = engine::ecs::EntityFactory::createDefaultEntity(
             registry_, glm::vec3(0, groundLevel - groundHeight / 2, 0.0f), glm::vec4(0.25, 0.27, 1, 1), "ground",
             physics_world_, false);
@@ -454,6 +457,15 @@ namespace gl3
                                                     glm::vec3(obj->positionX, obj->positionY, 0.f));
         }
     }
+
+    void Game::registerUiSystems()
+    {
+        //ui_system_->registerSubsystem<engine::levelLoading::LevelSelectUISystem>();
+        //ui_system_->registerSubsystem<ui::InGameMenuSystem>();
+        ui_system_->registerSubsystem<ui::InstructionUI>();
+        //ui_system_->registerSubsystem<engine::editor::EditorUISystem>();
+    }
+
 
     void Game::onPlayerDeath(engine::ecs::PlayerDeath& event)
     {

@@ -1,11 +1,9 @@
 #include "PlayerInputSystem.h"
-
-#include <iostream>
-
 #include "engine/ecs/EntityFactory.h"
 
-namespace gl3 {
+namespace gl3::game::input {
 
+    //TODO Wie will ich Jumpimpuls jetzt wirklich berechnen?
     b2Vec2 PlayerInputSystem::calculateJumpImpulse(const b2BodyId body, const JumpConfig& config) {
         const float distancePerBeat = 60.0f / config.bpm;
         const float jumpDuration = config.beatsPerJump * distancePerBeat;
