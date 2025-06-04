@@ -14,8 +14,10 @@ namespace gl3::game::ui
         void update() override;
 
     private:
-        void DrawHints(const ImGuiViewport* viewport, ImFont* font) const;
-        bool show_hints_ = true;
+        void activateHints();
+        void DrawHints(const ImGuiViewport* viewport, ImFont* font);
+        bool show_hints_ = true; //TODO false bis gamemode wechsel
+        float timer = 15;
         static constexpr ImGuiWindowFlags flags_ =
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |

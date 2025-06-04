@@ -1,6 +1,7 @@
 #include "InGameMenuSystem.h"
 #include "engine/userInterface/FontManager.h"
 #include "engine/Constants.h"
+#include "engine/ecs/EventDispatcher.h"
 #include "engine/rendering/TextureManager.h"
 
 namespace gl3::game::ui
@@ -14,7 +15,7 @@ namespace gl3::game::ui
         ImGui::GetStyle().FrameRounding = 5.0;
         ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UINeonColors::pastelNeonViolet2);
-        ImGui::PushStyleColor(ImGuiCol_FrameBgActive,  UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
@@ -28,7 +29,7 @@ namespace gl3::game::ui
     {
         const auto viewportSize = viewport->Size;
         const auto viewportPos = viewport->Pos;
-        ImGui::SetNextWindowPos({viewportPos.x , viewportPos.y});
+        ImGui::SetNextWindowPos({viewportPos.x, viewportPos.y});
         ImGui::SetNextWindowSize({viewportSize.x, viewportSize.y});
         ImGui::PushFont(font);
 
@@ -39,12 +40,15 @@ namespace gl3::game::ui
 
         ImGui::SetCursorPosY(windowSize.y * 0.3f);
 
-        ImGui::SetCursorPosX((windowSize.x - ImGui::CalcTextSize("Volume").x)   * 0.5f );
+        ImGui::SetCursorPosX((windowSize.x - ImGui::CalcTextSize("Volume").x) * 0.5f);
         ImGui::Text("Volume");
         const auto sliderWidth = windowSize.x * 0.3f;
         ImGui::PushItemWidth(sliderWidth);
-        ImGui::SetCursorPosX((windowSize.x - sliderWidth) * 0.5f );
-        ImGui::SliderFloat("##Volume", &volume_, 0.0f, 1.0f, "%.2f");
+        ImGui::SetCursorPosX((windowSize.x - sliderWidth) * 0.5f);
+        if (ImGui::SliderFloat("##Volume", &volume_, 0.0f, 1.0f, "%.2f"))
+        {
+            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::VolumeChange(volume_));
+        }
 
         ImGui::SetCursorPosX((windowSize.x - ImGui::CalcTextSize("Level Selection").x) * 0.5f);
         ImGui::Button("Level Selection");

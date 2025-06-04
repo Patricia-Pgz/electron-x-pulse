@@ -2,9 +2,16 @@
 
 namespace gl3::game::ui
 {
-    void InstructionUI::DrawHints(const ImGuiViewport* viewport, ImFont* font) const
+    void InstructionUI::activateHints()
     {
-        if (!show_hints_)return; //TODO GameState? lvl? timer
+        timer = 0;
+        show_hints_ = true;
+    }
+
+    void InstructionUI::DrawHints(const ImGuiViewport* viewport, ImFont* font)
+    {
+        if (!show_hints_)return; //TODO GameState? lvl? timer iwo resetten
+        timer -= game_.getDeltaTime();
         const auto viewportSize = viewport->Size;
         const auto viewportPos = viewport->Pos;
         ImGui::SetNextWindowPos({viewportPos.x, viewportPos.y});
@@ -24,6 +31,7 @@ namespace gl3::game::ui
 
     void InstructionUI::update()
     {
+        if (timer <= 0.f) return;
         DrawHints(ImGui::GetMainViewport(), engine::ui::FontManager::getFont("PixeloidSans"));
     }
 } // gl3

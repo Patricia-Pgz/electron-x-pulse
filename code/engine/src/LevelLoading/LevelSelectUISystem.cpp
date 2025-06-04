@@ -1,10 +1,11 @@
 #include "engine/levelLoading/LevelSelectUISystem.h"
-#include <imgui_internal.h>
 #include <string>
 #include <vector>
 #include "engine/rendering/TextureManager.h"
 #include <engine/userInterface/FontManager.h>
 #include "engine/Constants.h"
+#include "engine/ecs/EventDispatcher.h"
+#include "engine/ecs/GameEvents.h"
 
 namespace gl3::engine::levelLoading
 {
@@ -35,7 +36,7 @@ namespace gl3::engine::levelLoading
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
         ImGui::BeginChild("Lvl Select Buttons");
 
-        std::vector<std::string> levelNames = {
+        const std::vector<std::string> levelNames = {
             //TODO laden von level files
             "Tutorial",
             "Forest Frenzy",
@@ -156,7 +157,7 @@ namespace gl3::engine::levelLoading
         ImGui::SetCursorPos({(windowSize.x - buttonSize.x) * 0.5f, windowSize.y - buttonSize.y - padding.y * 0.5f});
         if (ImGui::Button("Exit", buttonSize))
         {
-            //onExitGame(""); // Signal to exit
+            ecs::EventDispatcher::dispatcher.trigger(ecs::GameExit(true));
         }
         ImGui::PopFont();
 

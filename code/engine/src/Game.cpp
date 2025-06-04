@@ -9,6 +9,30 @@ namespace gl3::engine
 {
     using Context = context::Context;
 
+    Game::Game(const int width, const int height, const std::string& title, const glm::vec3 camPos,
+               const float camZoom): context_(width, height, title, camPos, camZoom), physics_world_(b2_nullWorldId),
+                                     physics_system_(new physics::PhysicsSystem(*this)),
+                                     rendering_system_((new rendering::RenderingSystem(*this))),
+                                     ui_system_(new ui::UISystem(*this)),
+                                     player_(entt::null)
+    {
+        if (!glfwInit())
+        {
+            throw std::runtime_error("Failed to initialize glfw");
+        }
+
+        audio_.init();
+        audio_.setGlobalVolume(global_volume_);
+        ecs::EventDispatcher::dispatcher.sink<ui::VolumeChange>().connect<&
+            Game::onGlobalVolumeChanged>(this);
+        // Create the physics world
+        b2WorldDef worldDef = b2DefaultWorldDef();
+        // We use worldDef to define our physics world
+        worldDef.gravity = b2Vec2{0.f, -9.81f};
+        physics_world_ = b2CreateWorld(&worldDef);
+        ui_system_->initUI();
+    }
+
     void Game::run()
     {
         onStartup.invoke(*this);
@@ -29,38 +53,23 @@ namespace gl3::engine
         onShutdown.invoke(*this);
     }
 
-    Game::Game(const int width, const int height, const std::string& title, const glm::vec3 camPos,
-               const float camZoom): context_(width, height, title, camPos, camZoom), physics_world_(b2_nullWorldId),
-                                     physics_system_(new physics::PhysicsSystem(*this)),
-                                     rendering_system_((new rendering::RenderingSystem(*this))),
-                                     ui_system_(new ui::UISystem(*this)),
-                                     player_(entt::null)
+    void Game::onGlobalVolumeChanged(const ui::VolumeChange& event)
     {
-        if (!glfwInit())
-        {
-            throw std::runtime_error("Failed to initialize glfw");
-        }
-
-        audio.init();
-        audio.setGlobalVolume(0.1f);
-
-        // Create the physics world
-        b2WorldDef worldDef = b2DefaultWorldDef();
-        // We use worldDef to define our physics world
-        worldDef.gravity = b2Vec2{0.f, -9.81f};
-        physics_world_ = b2CreateWorld(&worldDef);
-        ui_system_->initUI();
+        global_volume_ = event.newVolume;
+        audio_.setGlobalVolume(global_volume_);
     }
 
     void Game::updateDeltaTime()
     {
         const auto frameTime = static_cast<float>(glfwGetTime());
-        deltaTime = frameTime - lastFrameTime_;
+        delta_time_ = frameTime - lastFrameTime_;
         lastFrameTime_ = frameTime;
     }
 
     Game::~Game()
     {
+        ecs::EventDispatcher::dispatcher.sink<ui::VolumeChange>().disconnect<&
+            Game::onGlobalVolumeChanged>(this);
         glfwTerminate();
     }
 

@@ -4,7 +4,7 @@
 
 namespace gl3::game::ui
 {
-    class InGameMenuSystem : public engine::ui::IUISubsystem
+    class InGameMenuSystem final : public engine::ui::IUISubsystem
     {
     public:
         explicit InGameMenuSystem(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game)
@@ -21,7 +21,6 @@ namespace gl3::game::ui
         static constexpr ImGuiWindowFlags flags_ =
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |
-            ImGuiWindowFlags_NoTitleBar |
-            ImGuiWindowFlags_NoBringToFrontOnFocus;
+            ImGuiWindowFlags_NoTitleBar;
     };
 }

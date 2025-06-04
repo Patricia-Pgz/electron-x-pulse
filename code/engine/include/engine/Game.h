@@ -1,15 +1,13 @@
 #pragma once
 #include <string>
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <soloud.h>
 #include "Events.h"
 #include "engine/Context.h"
 #include "box2d/box2d.h"
 #include <entt/entity/registry.hpp>
+
+#include "userInterface/UIEvents.h"
 
 
 namespace gl3::engine
@@ -31,6 +29,7 @@ namespace gl3::engine
 
     enum class GameState
     {
+        LevelSelect,
         Menu,
         Level,
         PreviewWithScrolling,
@@ -44,7 +43,7 @@ namespace gl3::engine
         [[nodiscard]] GLFWwindow* getWindow() const { return context_.getWindow(); }
         [[nodiscard]] b2WorldId getPhysicsWorld() const { return physics_world_; };
         [[nodiscard]] const context::Context& getContext() const { return context_; }
-        [[nodiscard]] float getDeltaTime() const { return deltaTime; };
+        [[nodiscard]] float getDeltaTime() const { return delta_time_; };
         entt::registry& getRegistry() { return registry_; };
         [[nodiscard]] entt::entity getPlayer() const { return player_; }
         [[nodiscard]] float getCurrentBPM() const { return bpm_; };
@@ -63,6 +62,7 @@ namespace gl3::engine
 
     protected:
         Game(int width, int height, const std::string& title, glm::vec3 camPos, float camZoom);
+        void onGlobalVolumeChanged(const ui::VolumeChange& event);
         void updateDeltaTime();
         virtual ~Game();
 
@@ -86,8 +86,10 @@ namespace gl3::engine
 
         context::Context context_;
 
-        SoLoud::Soloud audio;
-        float deltaTime = 1.0f / 60;
+        SoLoud::Soloud audio_;
+        float global_volume_ = 1.0f;
+
+        float delta_time_ = 1.0f / 60;
 
         b2WorldId physics_world_;
 

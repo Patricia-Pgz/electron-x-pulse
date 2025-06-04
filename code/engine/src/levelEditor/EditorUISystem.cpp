@@ -291,11 +291,6 @@ namespace gl3::engine::editor
 
     void EditorUISystem::update()
     {
-        if (imgui_io_ == nullptr){
-            std::cout << "null";
-            return;
-        }
-        IUISubsystem::update();
         createCustomUI();
     }
 }

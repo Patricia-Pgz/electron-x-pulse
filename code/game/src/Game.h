@@ -2,6 +2,7 @@
 #include "engine/Game.h"
 #include <soloud_wav.h>
 #include "PlayerInputSystem.h"
+#include "engine/ecs/GameEvents.h"
 
 namespace gl3::game
 {

@@ -2,6 +2,7 @@
 #include "engine/Context.h"
 #include "engine/Game.h"
 #include "engine/ecs/EventDispatcher.h"
+#include "engine/ecs/GameEvents.h"
 
 
 namespace gl3::engine::context
@@ -53,6 +54,8 @@ namespace gl3::engine::context
             throw std::runtime_error("gl error");
         }
         calculateWindowBounds();
+        ecs::EventDispatcher::dispatcher.sink<ecs::GameExit>().connect<&
+            Context::onExitApplication>(this);
     }
 
     void Context::run(const Callback& update)
@@ -90,8 +93,15 @@ namespace gl3::engine::context
             position.y <= (windowTop + margin);
     }
 
+    void Context::onExitApplication() const
+    {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
     Context::~Context()
     {
+        ecs::EventDispatcher::dispatcher.sink<ecs::GameExit>().disconnect<&
+            Context::onExitApplication>(this);
         glfwTerminate();
     }
 }

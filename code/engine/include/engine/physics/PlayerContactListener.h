@@ -3,7 +3,7 @@
 #include "box2d/box2d.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/ecs/EventDispatcher.h"
-#include "engine/ecs/PlayerEvents.h"
+#include "engine/ecs/GameEvents.h"
 
 
 namespace gl3::engine::physics {

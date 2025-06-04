@@ -281,8 +281,8 @@ namespace gl3::game
 
     void Game::reset()
     {
-        audio.stopAudioSource(*backgroundMusic);
-        audio.playBackground(*backgroundMusic);
+        audio_.stopAudioSource(*backgroundMusic);
+        audio_.playBackground(*backgroundMusic);
 
         // Reset all entities to their initial states
         resetComponents();
@@ -419,7 +419,7 @@ namespace gl3::game
                 }
             }
         }
-        audio.playBackground(*backgroundMusic);
+        audio_.playBackground(*backgroundMusic);
     }
 
     void Game::resetComponents()
@@ -461,7 +461,7 @@ namespace gl3::game
     void Game::registerUiSystems()
     {
         //ui_system_->registerSubsystem<engine::levelLoading::LevelSelectUISystem>();
-        //ui_system_->registerSubsystem<ui::InGameMenuSystem>();
+        ui_system_->registerSubsystem<ui::InGameMenuSystem>();
         ui_system_->registerSubsystem<ui::InstructionUI>();
         //ui_system_->registerSubsystem<engine::editor::EditorUISystem>();
     }

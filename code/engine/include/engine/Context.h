@@ -44,6 +44,7 @@ namespace gl3::engine::context
         [[nodiscard]] bool isInVisibleWindow(const glm::vec2& position, float margin = 1.f) const;
 
     private:
+        void onExitApplication() const;
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
         static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
         GLFWwindow* window = nullptr;
