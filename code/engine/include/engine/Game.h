@@ -29,12 +29,34 @@ namespace gl3::engine
 
     enum class GameState
     {
+        None,
         LevelSelect,
         Menu,
         Level,
         PreviewWithScrolling,
         PreviewWithTesting
     };
+
+    struct GameConfig
+    {
+        float initial_player_position_x = -2.0f;
+
+        float velocity_multiplier = -2.f;
+        float bpm = 0.0f;
+        float seconds_per_beat = 1.f;
+
+        float level_length = 0.0f;
+        float current_audio_length = 0.f; //TODO wird neu berechnet, wenn anderes lvl = song ausgewählt
+
+        float ground_level = 0.f;
+        float ground_height = 4.0f;
+
+        [[nodiscard]] float level_speed() const
+        {
+            return velocity_multiplier / seconds_per_beat;
+        }
+    };
+
 
     class Game
     {
@@ -46,8 +68,8 @@ namespace gl3::engine
         [[nodiscard]] float getDeltaTime() const { return delta_time_; };
         entt::registry& getRegistry() { return registry_; };
         [[nodiscard]] entt::entity getPlayer() const { return player_; }
-        [[nodiscard]] float getCurrentBPM() const { return bpm_; };
-        [[nodiscard]] float getLevelSpeed() const { return current_level_speed_; };
+        [[nodiscard]] GameConfig& getCurrentConfig() { return game_config_; }
+
 
         using event_t = events::Event<Game, Game&>;
 
@@ -99,13 +121,8 @@ namespace gl3::engine
 
         entt::registry registry_;
         entt::entity player_;
-        float initial_player_position_x_ = -2.0f;
 
-        float velocity_multiplier_ = -2.f;
-        float bpm_ = 0.0f; // Default BPM, updated dynamically
-        float seconds_per_beat_ = 1.f; //Default, updated according to level music
-        float current_level_speed_ = velocity_multiplier_ / seconds_per_beat_;
-        float level_length_ = 0; //Default, gets updated according to level music
+        GameConfig game_config_;
 
     private:
         float lastFrameTime_ = 1.0f / 60;

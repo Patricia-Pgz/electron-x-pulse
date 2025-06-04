@@ -1,10 +1,11 @@
 #include "PlayerInputSystem.h"
 #include "engine/ecs/EntityFactory.h"
 
-namespace gl3::game::input {
-
+namespace gl3::game::input
+{
     //TODO Wie will ich Jumpimpuls jetzt wirklich berechnen?
-    b2Vec2 PlayerInputSystem::calculateJumpImpulse(const b2BodyId body, const JumpConfig& config) {
+    b2Vec2 PlayerInputSystem::calculateJumpImpulse(const b2BodyId body, const JumpConfig& config)
+    {
         const float distancePerBeat = 60.0f / config.bpm;
         const float jumpDuration = config.beatsPerJump * distancePerBeat;
         const float initialVelocity = (config.gravity * jumpDuration) / 2.0f;
@@ -30,13 +31,13 @@ namespace gl3::game::input {
 
     void PlayerInputSystem::applyJumpImpulse(const b2BodyId body) const
     {
-        const b2Vec2 jumpImpulse = calculateJumpImpulse(body, JumpConfig(9.81, game.getCurrentBPM(), distancePerBeat));
-        b2Body_ApplyLinearImpulseToCenter(body,jumpImpulse, true );
+        const b2Vec2 jumpImpulse = calculateJumpImpulse(
+            body, JumpConfig(9.81, game.getCurrentConfig().bpm, distancePerBeat));
+        b2Body_ApplyLinearImpulseToCenter(body, jumpImpulse, true);
     }
 
     void PlayerInputSystem::onPlayerGrounded(engine::ecs::PlayerGrounded& event)
     {
         canJump = true;
     }
-
 } // gl3

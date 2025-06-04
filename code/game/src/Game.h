@@ -2,10 +2,11 @@
 #include "engine/Game.h"
 #include <soloud_wav.h>
 #include "PlayerInputSystem.h"
-#include "engine/ecs/GameEvents.h"
 
 namespace gl3::game
 {
+    class GameStateManager;
+
     struct GameObject
     {
         float positionX;
@@ -17,11 +18,18 @@ namespace gl3::game
         entt::entity entityID;
     };
 
+    struct AudioBundle
+    {
+        SoLoud::Soloud& audio;
+        SoLoud::Wav& backgroundMusic;
+    };
+
     class Game final : public engine::Game
     {
     public:
         Game(int width, int height, const std::string& title, const glm::vec3& camPos, float camZoom);
         ~Game() override;
+        AudioBundle getAudioAndHandle() { return {audio_, *backgroundMusic}; }
 
     private:
         void start() override;
@@ -29,23 +37,13 @@ namespace gl3::game
         void registerUiSystems() override;
         void moveEntitiesScrolling();
         void on_mouse_scroll(engine::context::onMouseScrollEvent& event);
-        void onGameStateChange(); //TODO event
-        void onPlayerDeath(engine::ecs::PlayerDeath& event);
-        void resetComponents();
-        void reset();
 
+        GameStateManager* game_state_manager_;
         input::PlayerInputSystem player_input_system_;
-        engine::GameState previousGameState = engine::GameState::Menu;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
 
-        float groundLevel = -1;
-        float groundHeight = 4.0f;
 
         float unit = 1.f;
-
-        bool isResetting = false;
-
-        std::vector<GameObject> initial_test_game_objects;
 
         bool loadLevelFromFile = true;
     };
