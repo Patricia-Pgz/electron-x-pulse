@@ -9,7 +9,6 @@
 
 #include "userInterface/UIEvents.h"
 
-
 namespace gl3::engine
 {
     namespace physics
@@ -27,6 +26,11 @@ namespace gl3::engine
         class UISystem;
     }
 
+    namespace audio
+    {
+        class AudioSystem;
+    }
+
     enum class GameState
     {
         None,
@@ -40,18 +44,12 @@ namespace gl3::engine
     struct GameConfig
     {
         float initial_player_position_x = -2.0f;
-
         float velocity_multiplier = -2.f;
-        float bpm = 0.0f;
-        float seconds_per_beat = 1.f;
-
         float level_length = 0.0f;
-        float current_audio_length = 0.f; //TODO wird neu berechnet, wenn anderes lvl = song ausgewählt
-
         float ground_level = 0.f;
         float ground_height = 4.0f;
 
-        [[nodiscard]] float level_speed() const
+        [[nodiscard]] float level_speed(const float seconds_per_beat = 1.f) const
         {
             return velocity_multiplier / seconds_per_beat;
         }
@@ -84,9 +82,8 @@ namespace gl3::engine
 
     protected:
         Game(int width, int height, const std::string& title, glm::vec3 camPos, float camZoom);
-        void onGlobalVolumeChanged(const ui::VolumeChange& event);
-        void updateDeltaTime();
         virtual ~Game();
+        void updateDeltaTime();
 
         virtual void start()
         {
@@ -95,11 +92,8 @@ namespace gl3::engine
         virtual void update(GLFWwindow* window)
         {
         };
-
         virtual void updatePhysics();
-
         virtual void draw();
-
 
         virtual void registerUiSystems()
         {
@@ -108,9 +102,6 @@ namespace gl3::engine
 
         context::Context context_;
 
-        SoLoud::Soloud audio_;
-        float global_volume_ = 1.0f;
-
         float delta_time_ = 1.0f / 60;
 
         b2WorldId physics_world_;
@@ -118,6 +109,8 @@ namespace gl3::engine
         physics::PhysicsSystem* physics_system_;
         rendering::RenderingSystem* rendering_system_;
         ui::UISystem* ui_system_;
+        audio::AudioSystem* audio_system_{};
+
 
         entt::registry registry_;
         entt::entity player_;

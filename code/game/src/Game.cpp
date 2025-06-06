@@ -5,7 +5,6 @@
 #include "InGameMenuSystem.h"
 #include "engine/Assets.h"
 #include "PlayerInputSystem.h"
-#include "engine/AudioAnalysis.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/userInterface/UISystem.h"
 #include "engine/levelLoading/LevelSelectUISystem.h"
@@ -83,26 +82,14 @@ namespace gl3::game
             glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physics_world_, false,
             &engine::rendering::TextureManager::get("geometry-dash"));
         engine::ecs::EntityFactory::setScale(registry_, player_, glm::vec3(1.f, 1.f, 1.f));
-
-        backgroundMusic = std::make_unique<SoLoud::Wav>();
-        backgroundMusic->load(engine::resolveAssetPath("audio/SensesShort.wav").c_str());
-        backgroundMusic->setLooping(false);
-        game_config_.current_audio_length = static_cast<float>(backgroundMusic->getLength());
     }
 
     void Game::update(GLFWwindow* window)
     {
-        /*if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+        if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
         {
-            currentGameState = engine::GameState::Level;
-            //TODO Preview funktioniert nicht mehr, prüfen wie ich entities generiere!!
+            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::GameStateChange(engine::GameState::Level));
         }
-
-        if (currentGameState != previousGameState)
-        {
-            previousGameState = currentGameState;
-            onGameStateChange();
-        }*/
         player_input_system_.update(player_);
     }
 

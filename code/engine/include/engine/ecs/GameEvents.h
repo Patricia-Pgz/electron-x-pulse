@@ -40,4 +40,5 @@ namespace gl3::engine::ecs
     {
         entt::entity player;
     };
+
 }

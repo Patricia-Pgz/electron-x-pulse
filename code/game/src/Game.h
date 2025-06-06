@@ -18,19 +18,11 @@ namespace gl3::game
         entt::entity entityID;
     };
 
-    struct AudioBundle
-    {
-        SoLoud::Soloud& audio;
-        SoLoud::Wav& backgroundMusic;
-    };
-
     class Game final : public engine::Game
     {
     public:
         Game(int width, int height, const std::string& title, const glm::vec3& camPos, float camZoom);
         ~Game() override;
-        AudioBundle getAudioAndHandle() { return {audio_, *backgroundMusic}; }
-
     private:
         void start() override;
         void update(GLFWwindow* window) override;
@@ -40,11 +32,8 @@ namespace gl3::game
 
         GameStateManager* game_state_manager_;
         input::PlayerInputSystem player_input_system_;
-        std::unique_ptr<SoLoud::Wav> backgroundMusic;
-
 
         float unit = 1.f;
-
         bool loadLevelFromFile = true;
     };
 }

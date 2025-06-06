@@ -3,6 +3,7 @@
 #include "engine/physics/PhysicsSystem.h"
 #include "engine/rendering/RenderingSystem.h"
 #include "engine/userInterface/UISystem.h"
+#include "engine/audio/AudioSystem.h"
 
 
 namespace gl3::engine
@@ -14,6 +15,7 @@ namespace gl3::engine
                                      physics_system_(new physics::PhysicsSystem(*this)),
                                      rendering_system_((new rendering::RenderingSystem(*this))),
                                      ui_system_(new ui::UISystem(*this)),
+                                     audio_system_(new audio::AudioSystem(*this)),
                                      player_(entt::null)
     {
         if (!glfwInit())
@@ -21,10 +23,6 @@ namespace gl3::engine
             throw std::runtime_error("Failed to initialize glfw");
         }
 
-        audio_.init();
-        audio_.setGlobalVolume(global_volume_);
-        ecs::EventDispatcher::dispatcher.sink<ui::VolumeChange>().connect<&
-            Game::onGlobalVolumeChanged>(this);
         // Create the physics world
         b2WorldDef worldDef = b2DefaultWorldDef();
         // We use worldDef to define our physics world
@@ -53,12 +51,6 @@ namespace gl3::engine
         onShutdown.invoke(*this);
     }
 
-    void Game::onGlobalVolumeChanged(const ui::VolumeChange& event)
-    {
-        global_volume_ = event.newVolume;
-        audio_.setGlobalVolume(global_volume_);
-    }
-
     void Game::updateDeltaTime()
     {
         const auto frameTime = static_cast<float>(glfwGetTime());
@@ -68,8 +60,6 @@ namespace gl3::engine
 
     Game::~Game()
     {
-        ecs::EventDispatcher::dispatcher.sink<ui::VolumeChange>().disconnect<&
-            Game::onGlobalVolumeChanged>(this);
         glfwTerminate();
     }
 

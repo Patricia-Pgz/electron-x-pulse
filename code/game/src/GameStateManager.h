@@ -10,7 +10,7 @@ namespace gl3::game
         ~GameStateManager();
 
     private:
-        void onGameStateChange(engine::ecs::GameStateChange newState);
+        void onGameStateChange(const engine::ecs::GameStateChange& newState);
         void resetComponents();
         void reset();
         void onPlayerDeath(engine::ecs::PlayerDeath& event);

@@ -31,9 +31,10 @@ namespace gl3::game::input
 
     void PlayerInputSystem::applyJumpImpulse(const b2BodyId body) const
     {
-        const b2Vec2 jumpImpulse = calculateJumpImpulse(
-            body, JumpConfig(9.81, game.getCurrentConfig().bpm, distancePerBeat));
-        b2Body_ApplyLinearImpulseToCenter(body, jumpImpulse, true);
+        /*const b2Vec2 jumpImpulse = calculateJumpImpulse(
+            body, JumpConfig(9.81, game.getCurrentConfig().bpm, distancePerBeat));*/
+        b2Body_ApplyLinearImpulseToCenter(body, {0.f, 0.5f}, true);
+        //TODO so berechnen, dass player am höchsten  punkt distanceperbeat hoch hüpft?
     }
 
     void PlayerInputSystem::onPlayerGrounded(engine::ecs::PlayerGrounded& event)

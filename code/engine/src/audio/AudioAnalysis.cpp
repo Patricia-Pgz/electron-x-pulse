@@ -1,13 +1,13 @@
-#include "engine/AudioAnalysis.h"
+#include "engine/audio/AudioAnalysis.h"
 #include "../aubio/src/aubio.h"
 #include <iostream>
 
 namespace gl3::engine
 {
-        float AudioAnalysis::analyzeAudioTempo(const std::string& audioFile, const unsigned int hopSize,
-                        const unsigned int bufferSize)
+    float AudioAnalysis::analyzeAudioTempo(const std::string& audioFile, const unsigned int hopSize,
+                                           const unsigned int bufferSize)
     {
-            unsigned int sampleRate = 0;
+        unsigned int sampleRate = 0;
         // Create aubio source object
         aubio_source_t* source = new_aubio_source(audioFile.c_str(), sampleRate, hopSize);
         if (!source)
@@ -62,7 +62,8 @@ namespace gl3::engine
         return bpm;
     }
 
-    std::vector<float> AudioAnalysis::generateBeatTimestamps(const float songLength, const float beatInterval, const float& xOffset)
+    std::vector<float> AudioAnalysis::generateBeatTimestamps(const float songLength, const float beatInterval,
+                                                             const float& xOffset)
     {
         std::vector<float> beatTimestamps;
 

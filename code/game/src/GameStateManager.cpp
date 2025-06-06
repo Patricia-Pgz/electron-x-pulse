@@ -1,9 +1,5 @@
 #include "GameStateManager.h"
-
 #include <random>
-
-#include "engine/Assets.h"
-#include "engine/AudioAnalysis.h"
 #include "engine/ecs/EntityFactory.h"
 
 namespace gl3::game
@@ -26,6 +22,7 @@ namespace gl3::game
 
     std::vector<GameObject> generateTestObjects(const float& initialPlayerPositionX)
     {
+        std::cout << "generate objects";
         std::mt19937 randomNumberEngine{
             static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count())
         };
@@ -200,25 +197,13 @@ namespace gl3::game
         return game_objects;
     }
 
-    void GameStateManager::onGameStateChange(engine::ecs::GameStateChange newState)
+    void GameStateManager::onGameStateChange(const engine::ecs::GameStateChange& event)
     {
-        if (newState.newGameState == engine::GameState::LevelSelect) return; //TODO LevelSelect aufrufen
+        std::cout << "state change";
+        current_game_state_ = event.newGameState;
+        if (event.newGameState == engine::GameState::LevelSelect) return; //TODO LevelSelect aufrufen
 
-        std::string audio_file = engine::resolveAssetPath("audio/SensesShort.wav");
-
-        unsigned int hopSize = 512; // Size of each hop
-        unsigned int bufferSize = 2048; // Size of the analysis buffer
-
-        auto config = game_.getCurrentConfig();
-        config.bpm = engine::AudioAnalysis::analyzeAudioTempo(audio_file, hopSize, bufferSize);
-        config.seconds_per_beat = 60 / config.bpm;
-
-        std::vector<float> beatPositions = engine::AudioAnalysis::generateBeatTimestamps(
-            config.current_audio_length,
-            config.seconds_per_beat,
-            config.initial_player_position_x);
-
-        config.level_length = config.current_audio_length;
+        auto& config = game_.getCurrentConfig();
 
         initial_test_game_objects = generateTestObjects(config.initial_player_position_x);
 
@@ -282,7 +267,7 @@ namespace gl3::game
             }*/
         }
 
-        if (current_game_state_ == engine::GameState::PreviewWithScrolling || current_game_state_ ==
+        /*if (current_game_state_ == engine::GameState::PreviewWithScrolling || current_game_state_ ==
             engine::GameState::PreviewWithTesting)
         {
             const auto timeLine = engine::ecs::EntityFactory::createDefaultEntity(
@@ -307,7 +292,7 @@ namespace gl3::game
                                                  beat));
             }
             initial_test_game_objects = tempObjects;
-        }
+        }*/
 
         if (current_game_state_ != engine::GameState::Menu && current_game_state_ !=
             engine::GameState::PreviewWithScrolling)
@@ -324,12 +309,13 @@ namespace gl3::game
                 }
             }
         }
-        const auto audioBundle = game_.getAudioAndHandle();
-        audioBundle.audio.playBackground(audioBundle.backgroundMusic);
+
+        //TODO audio starten
     }
 
     void GameStateManager::resetComponents()
     {
+        std::cout << "reset comps";
         const auto view = game_.getRegistry().view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
                                                    engine::ecs::PhysicsComponent>();
         for (auto entity : view)
@@ -369,10 +355,10 @@ namespace gl3::game
 
     void GameStateManager::reset()
     {
-        //TODO AudioManager
-        const auto audioBundle = game_.getAudioAndHandle();
-        audioBundle.audio.stopAudioSource(audioBundle.backgroundMusic);
-        audioBundle.audio.playBackground(audioBundle.backgroundMusic);
+        std::cout << "reset";
+
+        //TODO resetCurrentAudio + timing verbessern
+
 
         // Reset all entities to their initial states
         resetComponents();
@@ -387,7 +373,7 @@ namespace gl3::game
                 auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
                 if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
                 {
-                    //b2Body_SetLinearVelocity(physics_comp.body, {levelSpeed, 0.0f});
+                    //b2Body_SetLinearVelocity(physics_comp.body, {game_.getCurrentConfig().level_speed(), 0.0f});
                 }
             }
         }
