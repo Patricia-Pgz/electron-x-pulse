@@ -2,7 +2,6 @@
 #include <fstream>
 #include <filesystem>
 #include <iostream>
-#include <nlohmann/json.hpp>
 
 namespace gl3::engine::levelLoading
 {
@@ -47,9 +46,9 @@ namespace gl3::engine::levelLoading
         for (const auto& obj : j["objects"])
         {
             GameObject go;
-            go.type = obj["type"];
-            go.x = obj["x"];
-            go.y = obj["y"];
+            go.position = obj["position"];
+            go.color = obj["color"];
+            go.tag = obj["tag"];
             if (obj.contains("width")) go.width = obj["width"];
             if (obj.contains("height")) go.height = obj["height"];
             if (obj.contains("color")) go.color = obj["color"];

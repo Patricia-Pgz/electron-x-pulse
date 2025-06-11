@@ -28,3 +28,6 @@
 [submodule "code/extern/json"]
 	path = code/extern/json
 	url = https://github.com/nlohmann/json.git
+[submodule "code/extern/glaze"]
+	path = code/extern/glaze
+	url = https://github.com/stephenberry/glaze

@@ -36,7 +36,7 @@ target_include_directories(${ENGINE_NAME} PUBLIC include/
 include_directories(${CMAKE_SOURCE_DIR}/aubio)
 
 # link with dependencies
-target_link_libraries(${ENGINE_NAME} PUBLIC glad glfw glm soloud box2d ${AUBIO_LIB_PATH} EnTT::EnTT nlohmann_json::nlohmann_json)
+target_link_libraries(${ENGINE_NAME} PUBLIC glad glfw glm soloud box2d ${AUBIO_LIB_PATH} EnTT::EnTT nlohmann_json::nlohmann_json glaze::glaze)
 
 target_compile_definitions(${ENGINE_NAME} PRIVATE ASSET_ROOT=${CMAKE_SOURCE_DIR}/assets)
 

@@ -9,6 +9,7 @@ add_subdirectory(extern/glm)
 add_subdirectory(extern/soloud)
 add_subdirectory(extern/entt)
 add_subdirectory(extern/json)
+add_subdirectory(extern/glaze)
 add_subdirectory(engine)
 
 option(BOX2D_BUILD_TESTBED OFF)

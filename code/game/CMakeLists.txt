@@ -18,7 +18,7 @@ target_link_libraries(game-lib PUBLIC Electrine)
 # Now create the standalone game executable
 set(EXE_FILE ElectronXPulse)
 add_executable(${EXE_FILE} src/main.cpp)
-target_link_libraries(${EXE_FILE} PRIVATE game-lib nlohmann_json::nlohmann_json)
+target_link_libraries(${EXE_FILE} PRIVATE game-lib nlohmann_json::nlohmann_json glaze::glaze)
 
 # Copy assets to the output directory
 add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
