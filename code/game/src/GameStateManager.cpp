@@ -199,9 +199,18 @@ namespace gl3::game
 
     void GameStateManager::onGameStateChange(const engine::ecs::GameStateChange& event)
     {
+        //TODO make every UI that calls this, disable itself
         std::cout << "state change";
         current_game_state_ = event.newGameState;
         if (event.newGameState == engine::GameState::LevelSelect) return; //TODO LevelSelect aufrufen
+
+        if (event.newGameState == engine::GameState::Level)
+        {
+            if (previous_game_state_ != engine::GameState::Level)
+            {
+                //TODO Load selected Level
+            }
+        }
 
         auto& config = game_.getCurrentConfig();
 

@@ -6,9 +6,15 @@
 #include "engine/Constants.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
+#include "engine/levelloading/LevelLoader.h"
 
 namespace gl3::engine::levelLoading
 {
+    void LevelSelectUISystem::setActive(const bool isActive)
+    {
+        is_active = isActive;
+    }
+
     void styleWindow(const ImVec2 windowSize)
     {
         ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
@@ -31,7 +37,7 @@ namespace gl3::engine::levelLoading
         ImGui::PopStyleColor(8);
     }
 
-    void DrawLevelButtons()
+    void LevelSelectUISystem::DrawLevelButtons()
     {
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
         ImGui::BeginChild("Lvl Select Buttons");
@@ -62,7 +68,9 @@ namespace gl3::engine::levelLoading
                                    rendering::TextureManager::getUITexture("LevelButton1").getID(),
                                    ImVec2(buttonWidth, buttonWidth))) //TODO (www.freepik.com)
             {
-                ecs::EventDispatcher::dispatcher.trigger(ui::LevelSelect(i));
+                selectedLevel = i;
+                //TODO
+                //::EventDispatcher::dispatcher.trigger(ecs::GameStateChange(GameState::Level, i));
             }
 
             const ImVec2 buttonMin = ImGui::GetItemRectMin();
@@ -104,7 +112,7 @@ namespace gl3::engine::levelLoading
         ImGui::EndChild();
     }
 
-    void DrawLevelSelect(const ImGuiViewport* viewport, ImFont* font)
+    void LevelSelectUISystem::DrawLevelSelect(const ImGuiViewport* viewport, ImFont* font)
     {
         ImGui::PushFont(font);
         ImGui::SetNextWindowPos(viewport->Pos);
@@ -173,6 +181,7 @@ namespace gl3::engine::levelLoading
 
     void LevelSelectUISystem::update()
     {
+        if (!is_active) return;
         createLevelSelection();
     }
 }

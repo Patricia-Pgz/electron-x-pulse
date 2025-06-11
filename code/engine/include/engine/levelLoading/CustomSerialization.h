@@ -1,0 +1,55 @@
+#pragma once
+#include <glaze/glaze.hpp>
+#include <glm/glm.hpp>
+#include "Objects.h"
+
+
+template <>
+struct glz::meta<glm::vec3>
+{
+    using T = glm::vec3;
+    static constexpr auto value = glz::array(&T::x, &T::y, &T::z);
+};
+
+template <>
+struct glz::meta<glm::vec4>
+{
+    using T = glm::vec4;
+    static constexpr auto value = glz::array(&T::x, &T::y, &T::z, &T::w);
+};
+
+template <>
+struct glz::meta<GameObject>
+{
+    using T = GameObject;
+    static constexpr auto value = glz::object(
+        "position", &T::position,
+        "color", &T::color,
+        "tag", &T::tag,
+        "isTriangle", &T::isTriangle,
+        "texture", &T::textureName,
+        "uv", &T::uv
+    );
+};
+
+template <>
+struct glz::meta<LevelMeta> {
+    using T = LevelMeta;
+    static constexpr auto value = object(
+        "fileName", &T::fileName,
+        "name", &T::name,
+        "velocityMultiplier", &T::velocityMultiplier
+    );
+};
+
+template <>
+struct glz::meta<Level>
+{
+    using T = Level;
+    static constexpr auto value = glz::object(
+        "fileName", &T::fileName,
+        "name", &T::name,
+        "velocityMultiplier", &T::velocityMultiplier,
+        "objects", &T::objects
+    );
+};

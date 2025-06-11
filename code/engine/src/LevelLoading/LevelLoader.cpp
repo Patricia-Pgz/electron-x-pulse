@@ -1,60 +1,62 @@
 #include "engine/levelloading/LevelLoader.h"
-#include <fstream>
 #include <filesystem>
-#include <iostream>
+#include <glaze/json/read.hpp>
 
 namespace gl3::engine::levelLoading
 {
     namespace fs = std::filesystem;
-    using json = nlohmann::json;
 
-    void LevelLoader::loadAllLevels()
+    Level LevelLoader::loadLevel(const std::filesystem::path& path)
     {
-        levels.clear();
-        for (const auto& entry : fs::directory_iterator(resolveAssetPath("levels")))
+        std::ifstream file(path);
+        if (!file)
         {
-            if (entry.path().extension() == ".json")
-            {
-                try
-                {
-                    Level level = loadLevelFromFile(entry.path().string());
-                    levels.push_back(level);
-                }
-                catch (const std::exception& e)
-                {
-                    std::cerr << "Skipping " << entry.path() << ": " << e.what() << '\n';
-                }
-            }
+            throw std::runtime_error("Failed to open level file: " + path.string());
         }
-    }
 
-    Level LevelLoader::loadLevelFromFile(const std::string& filename)
-    {
-        std::ifstream file(filename);
-        if (!file) throw std::runtime_error("Failed to open: " + filename);
-
-        json j;
-        file >> j;
+        std::string json((std::istreambuf_iterator(file)),
+                         std::istreambuf_iterator<char>());
 
         Level level;
-        level.name = j["level_name"];
-        level.scrollSpeed = j["scroll_speed"];
-        level.playerX = j["player_start"]["x"];
-        level.playerY = j["player_start"]["y"];
-        level.filename = filename;
+        glz::read_json(level, json);
+        return level;
+    }
 
-        for (const auto& obj : j["objects"])
+    std::vector<LevelMeta> LevelLoader::loadAllMetaData(
+        const std::filesystem::path& levelDir)
+    {
+        std::vector<LevelMeta> metaData;
+
+        for (const auto& entry : std::filesystem::directory_iterator(levelDir))
         {
-            GameObject go;
-            go.position = obj["position"];
-            go.color = obj["color"];
-            go.tag = obj["tag"];
-            if (obj.contains("width")) go.width = obj["width"];
-            if (obj.contains("height")) go.height = obj["height"];
-            if (obj.contains("color")) go.color = obj["color"];
-            level.objects.push_back(go);
+            if (!entry.is_regular_file()) continue;
+
+            const auto& path = entry.path();
+            if (path.extension() != ".json" || path.filename().string().find(".meta") == std::string::npos)
+                continue;
+
+            try
+            {
+                std::ifstream file(path);
+                if (!file) throw std::runtime_error("Cannot open file");
+
+                std::string json((std::istreambuf_iterator(file)), std::istreambuf_iterator<char>());
+
+                LevelMeta meta;
+                if (const auto err = glz::read_json(meta, json); err)
+                {
+                    throw std::cerr << err.custom_error_message;
+                }
+
+                meta.fileName = path.filename().string();
+                metaData.emplace_back(std::move(meta));
+            }
+            catch (const std::exception& e)
+            {
+                std::cerr << "Error reading " << path << ": " << e.what() << '\n';
+            }
         }
 
-        return level;
+        return metaData;
     }
 }

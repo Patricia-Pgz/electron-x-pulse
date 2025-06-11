@@ -13,8 +13,11 @@ namespace gl3::engine::levelLoading
         {
         };
         void update() override;
-
     private:
-        static void createLevelSelection();
+        bool is_active = false;
+        int selectedLevel = -1;
+        void DrawLevelButtons();
+        void DrawLevelSelect(const ImGuiViewport* viewport, ImFont* font);
+        void createLevelSelection();
     };
 }
