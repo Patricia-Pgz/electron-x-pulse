@@ -4,7 +4,6 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "engine/Assets.h"
-#include "engine/ecs/EntityFactory.h"
 #include "engine/Game.h"
 #include "engine/userInterface/FontManager.h"
 #include "engine/userInterface/IUISubSystem.h"
@@ -19,6 +18,9 @@ namespace gl3::engine::ui
     class UISystem : public ecs::System
     {
     public:
+        using event_t = events::Event<UISystem>;
+        event_t onInitialized;
+
         explicit UISystem(Game& game) : System(game)
         {
         };
@@ -63,6 +65,7 @@ namespace gl3::engine::ui
             if (!pendingSubsystems.empty() && !isInitializingSystems)
             {
                 initializeSubsystems();
+                onInitialized.invoke();
             }
 
             updateUI();
@@ -75,6 +78,11 @@ namespace gl3::engine::ui
         virtual void updateUI()
         {
         };
+
+        [[nodiscard]] IUISubsystem& getSubsystems(const int index) const
+        {
+            return *subsystems[index];
+        }
 
         /**
         * @brief Register UI Systems (IUISubsystem) that should be updated each UI Frame.

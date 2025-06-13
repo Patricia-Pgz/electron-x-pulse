@@ -4,6 +4,8 @@
 #include "engine/rendering/RenderingSystem.h"
 #include "engine/userInterface/UISystem.h"
 #include "engine/audio/AudioSystem.h"
+#include "engine/levelloading/LevelLoader.h"
+#include "engine/stateManagement/StateManagerSystem.h"
 
 
 namespace gl3::engine
@@ -16,6 +18,7 @@ namespace gl3::engine
                                      rendering_system_((new rendering::RenderingSystem(*this))),
                                      ui_system_(new ui::UISystem(*this)),
                                      audio_system_(new audio::AudioSystem(*this)),
+                                     state_management_system_(new state::StateManagementSystem(*this)),
                                      player_(entt::null)
     {
         if (!glfwInit())
@@ -36,6 +39,7 @@ namespace gl3::engine
         onStartup.invoke(*this);
         start();
         registerUiSystems();
+        levelLoading::LevelLoader::loadAllMetaData();
         onAfterStartup.invoke(*this);
         context_.run([&](Context& ctx)
         {
@@ -77,5 +81,10 @@ namespace gl3::engine
     void Game::updateUI()
     {
         ui_system_->renderUI();
+    }
+
+    void Game::updateState()
+    {
+        state_management_system_->update();
     }
 } // gl3

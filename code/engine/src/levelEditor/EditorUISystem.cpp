@@ -4,6 +4,7 @@
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/rendering/Texture.h"
 #include "engine/rendering/TextureManager.h"
+#include "engine/userInterface/FontManager.h"
 
 namespace gl3::engine::editor
 {
@@ -94,9 +95,16 @@ namespace gl3::engine::editor
                                    ImVec2(tileSize, tileSize), uv0, uv1) && selected_grid_cell)
             {
                 ecs::EventDispatcher::dispatcher.trigger(TileSelectedEvent{
-                    &texture, uv, {selected_grid_cell->x, -selected_grid_cell->y}, is_triangle, selected_scale,
-                    selected_tag
-                });
+                    {
+                        {
+                            selected_grid_cell->x, -selected_grid_cell->y, 0.f
+                        },
+                        glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                        selected_tag, is_triangle,
+                        name, uv
+                    }
+                }); //TODO                     selected_scale wieder mitschicken!!
+
             }
             if (ImGui::IsItemHovered())
             {
@@ -121,8 +129,14 @@ namespace gl3::engine::editor
         {
             ecs::EventDispatcher::dispatcher.trigger(
                 TileSelectedEvent{
-                    &texture, {0, 0, 1, 1},
-                    {selected_grid_cell->x, -selected_grid_cell->y}, is_triangle, selected_scale, selected_tag
+                                            {
+                            {
+                                selected_grid_cell->x, -selected_grid_cell->y, 0.f
+                            },
+                            glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                            selected_tag, is_triangle,
+                            name, {0, 0, 1, 1}
+                        }
                 });
         }
         if (ImGui::IsItemHovered())
@@ -291,6 +305,7 @@ namespace gl3::engine::editor
 
     void EditorUISystem::update()
     {
+        if (!is_active) return;
         createCustomUI();
     }
 }

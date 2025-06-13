@@ -2,6 +2,7 @@
 #include "EditorSystem.h"
 #include "engine/rendering/Texture.h"
 #include "engine/Game.h"
+#include "engine/levelloading/Objects.h"
 #include "engine/userInterface/IUISubSystem.h"
 
 namespace gl3::engine::editor
@@ -10,12 +11,7 @@ namespace gl3::engine::editor
 
     struct TileSelectedEvent //TODO evtl in UIEvent header
     {
-        const rendering::Texture* texture;
-        glm::vec4 uv = {0, 0, 1, 1};
-        ImVec2 selectedPixelPositionScreen;
-        bool isTriangle = false;
-        glm::vec2 selectedScale = {1.f, 1.f};
-        std::string selectedTag = "undefined";
+        GameObject object;
     };
 
     class EditorUISystem : public ui::IUISubsystem

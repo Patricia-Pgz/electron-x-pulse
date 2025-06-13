@@ -7,17 +7,6 @@ namespace gl3::game
 {
     class GameStateManager;
 
-    struct GameObject
-    {
-        float positionX;
-        float positionY;
-        bool isPlatform;
-        float scaleY;
-        float scaleX;
-        glm::vec4 color;
-        entt::entity entityID;
-    };
-
     class Game final : public engine::Game
     {
     public:

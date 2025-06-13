@@ -1,9 +1,7 @@
 #include "Game.h"
 #include <random>
-#include <iostream>
 
 #include "InGameMenuSystem.h"
-#include "engine/Assets.h"
 #include "PlayerInputSystem.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/userInterface/UISystem.h"
@@ -68,19 +66,23 @@ namespace gl3::game
 
     void Game::start()
     {
-        engine::rendering::TextureManager::loadTextures();
+        engine::rendering::TextureManager::loadTextures(); //TODO in engine?
         game_config_.ground_level = -1;
-        const auto& ground = engine::ecs::EntityFactory::createDefaultEntity(
-            registry_, glm::vec3(0, game_config_.ground_level - game_config_.ground_height / 2, 0.0f),
-            glm::vec4(0.25, 0.27, 1, 1),
+        GameObject groundObj = {
+            glm::vec3(0, game_config_.ground_level - game_config_.ground_height / 2, 0.0f), glm::vec4(0.25, 0.27, 1, 1),
             "ground",
-            physics_world_, false);
+            false
+        };
+        const auto& ground = engine::ecs::EntityFactory::createDefaultEntity(groundObj,
+                                                                             registry_, physics_world_);
         engine::ecs::EntityFactory::setScale(registry_, ground, glm::vec3(40.f, game_config_.ground_height, 0.f));
 
-        player_ = engine::ecs::EntityFactory::createDefaultEntity(
-            registry_, glm::vec3(game_config_.initial_player_position_x, 0.f, 0),
-            glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player", physics_world_, false,
-            &engine::rendering::TextureManager::get("geometry-dash"));
+        GameObject playerObj = {
+            glm::vec3(game_config_.initial_player_position_x, 0.f, 0), glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player",
+            false, "geometry-dash"
+        };
+        player_ = engine::ecs::EntityFactory::createDefaultEntity(playerObj,
+                                                                  registry_, physics_world_);
         engine::ecs::EntityFactory::setScale(registry_, player_, glm::vec3(1.f, 1.f, 1.f));
     }
 
@@ -97,7 +99,7 @@ namespace gl3::game
 
     void Game::registerUiSystems()
     {
-        //ui_system_->registerSubsystem<engine::levelLoading::LevelSelectUISystem>();
+        ui_system_->registerSubsystem<engine::levelLoading::LevelSelectUISystem>();
         ui_system_->registerSubsystem<ui::InGameMenuSystem>();
         ui_system_->registerSubsystem<ui::InstructionUI>();
         //ui_system_->registerSubsystem<engine::editor::EditorUISystem>();

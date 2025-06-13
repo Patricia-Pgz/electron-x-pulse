@@ -5,6 +5,7 @@
 
 #include "engine/Game.h"
 #include "engine/ecs/GameEvents.h"
+#include "engine/userInterface/UIEvents.h"
 
 namespace gl3::engine::audio
 {

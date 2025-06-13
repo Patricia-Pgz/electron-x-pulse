@@ -10,11 +10,6 @@
 
 namespace gl3::engine::levelLoading
 {
-    void LevelSelectUISystem::setActive(const bool isActive)
-    {
-        is_active = isActive;
-    }
-
     void styleWindow(const ImVec2 windowSize)
     {
         ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
@@ -42,19 +37,17 @@ namespace gl3::engine::levelLoading
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
         ImGui::BeginChild("Lvl Select Buttons");
 
-        const std::vector<std::string> levelNames = {
-            //TODO laden von level files
-            "Tutorial",
-            "Forest Frenzy",
-            "Desert Dash",
-            "Cave Chaos",
-            "Icebound Isles",
-            "Sky Fortress",
-            "Lava Lake",
-            "Dark Dungeon",
-            "Boss Battle",
-            "Final Showdown"
-        };
+        auto metaData = LevelLoader::getMetaData();
+        std::ranges::sort(metaData, [](const LevelMeta& a, const LevelMeta& b)
+        {
+            return a.id < b.id;
+        });
+        std::vector<std::string> levelNames;
+        levelNames.reserve(metaData.size());
+        for (const auto& meta : metaData)
+        {
+            levelNames.push_back(meta.fileName);
+        }
 
         constexpr float columns = 4.f;
         const float spacing = ImGui::GetStyle().ItemSpacing.x;
@@ -68,9 +61,7 @@ namespace gl3::engine::levelLoading
                                    rendering::TextureManager::getUITexture("LevelButton1").getID(),
                                    ImVec2(buttonWidth, buttonWidth))) //TODO (www.freepik.com)
             {
-                selectedLevel = i;
-                //TODO
-                //::EventDispatcher::dispatcher.trigger(ecs::GameStateChange(GameState::Level, i));
+                ecs::EventDispatcher::dispatcher.trigger(ecs::GameStateChange(GameState::Level, i));
             }
 
             const ImVec2 buttonMin = ImGui::GetItemRectMin();
@@ -92,11 +83,11 @@ namespace gl3::engine::levelLoading
                 overlayMin.y + overlaySize.y
             );
 
-            const auto overlayTex = rendering::TextureManager::get("geometry-dash").getID();
+            const auto overlayTex = rendering::TextureManager::get("geometry-dash")->getID();
             ImGui::GetWindowDrawList()->AddImage(overlayTex, overlayMin, overlayMax, {0.f, 1.f}, {1.f, 0.f});
 
             const auto textSize = ImGui::CalcTextSize(levelNames[i].c_str());
-           const auto textPos = ImVec2(
+            const auto textPos = ImVec2(
                 buttonMin.x + (buttonSize.x - textSize.x) * 0.5f,
                 buttonMin.y + (buttonSize.y - textSize.y) * 0.95f
             );
@@ -120,12 +111,12 @@ namespace gl3::engine::levelLoading
         ImGui::SetNextWindowSize(viewportSize);
         styleWindow(viewportSize);
         ImGui::Begin("FixedHeaderOverlay", nullptr,
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoResize|
-        ImGuiWindowFlags_NoScrollbar |
-        ImGuiWindowFlags_NoScrollWithMouse
+                     ImGuiWindowFlags_NoMove |
+                     ImGuiWindowFlags_NoCollapse |
+                     ImGuiWindowFlags_NoTitleBar |
+                     ImGuiWindowFlags_NoResize |
+                     ImGuiWindowFlags_NoScrollbar |
+                     ImGuiWindowFlags_NoScrollWithMouse
         );
 
         const auto windowSize = ImGui::GetWindowSize();
@@ -178,6 +169,7 @@ namespace gl3::engine::levelLoading
 
         DrawLevelSelect(viewport, ui::FontManager::getFont("PixeloidSans"));
     }
+
 
     void LevelSelectUISystem::update()
     {

@@ -15,7 +15,7 @@ namespace gl3::engine::ecs
     struct GameStateChange
     {
         GameState newGameState = GameState::LevelSelect;
-        std::optional<int> levelIndex = 0;
+        int newLevelIndex = -1;
     };
 
     /**

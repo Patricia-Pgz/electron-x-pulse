@@ -1,6 +1,8 @@
 #pragma once
 #include <engine/userInterface/IUISubSystem.h>
 
+#include "Objects.h"
+
 namespace gl3::engine::levelLoading
 {
     ///summary
@@ -14,8 +16,6 @@ namespace gl3::engine::levelLoading
         };
         void update() override;
     private:
-        bool is_active = false;
-        int selectedLevel = -1;
         void DrawLevelButtons();
         void DrawLevelSelect(const ImGuiViewport* viewport, ImFont* font);
         void createLevelSelection();

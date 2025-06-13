@@ -1,4 +1,5 @@
 #include "InstructionUI.h"
+#include "engine/userInterface/FontManager.h"
 
 namespace gl3::game::ui
 {
@@ -31,7 +32,7 @@ namespace gl3::game::ui
 
     void InstructionUI::update()
     {
-        if (timer <= 0.f) return;
+        if (!is_active || timer <= 0.f) return;
         DrawHints(ImGui::GetMainViewport(), engine::ui::FontManager::getFont("PixeloidSans"));
     }
 } // gl3

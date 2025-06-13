@@ -1,13 +1,11 @@
 #pragma once
 #include <string>
 #include <glm/glm.hpp>
-#include <soloud.h>
 #include "Events.h"
 #include "engine/Context.h"
 #include "box2d/box2d.h"
 #include <entt/entity/registry.hpp>
 
-#include "userInterface/UIEvents.h"
 
 namespace gl3::engine
 {
@@ -29,6 +27,11 @@ namespace gl3::engine
     namespace audio
     {
         class AudioSystem;
+    }
+
+    namespace state
+    {
+        class StateManagementSystem;
     }
 
     enum class GameState
@@ -65,6 +68,8 @@ namespace gl3::engine
         [[nodiscard]] const context::Context& getContext() const { return context_; }
         [[nodiscard]] float getDeltaTime() const { return delta_time_; };
         entt::registry& getRegistry() { return registry_; };
+        [[nodiscard]] ui::UISystem& getUISystem() const {return *ui_system_;};
+        [[nodiscard]] state::StateManagementSystem& getStateManagement() const {return *state_management_system_;};
         [[nodiscard]] entt::entity getPlayer() const { return player_; }
         [[nodiscard]] GameConfig& getCurrentConfig() { return game_config_; }
 
@@ -100,6 +105,8 @@ namespace gl3::engine
         };
         virtual void updateUI();
 
+        virtual void updateState();
+
         context::Context context_;
 
         float delta_time_ = 1.0f / 60;
@@ -109,7 +116,8 @@ namespace gl3::engine
         physics::PhysicsSystem* physics_system_;
         rendering::RenderingSystem* rendering_system_;
         ui::UISystem* ui_system_;
-        audio::AudioSystem* audio_system_{};
+        audio::AudioSystem* audio_system_;
+        state::StateManagementSystem* state_management_system_;
 
 
         entt::registry registry_;

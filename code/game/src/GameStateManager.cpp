@@ -1,6 +1,13 @@
 #include "GameStateManager.h"
 #include <random>
+
+#include "InGameMenuSystem.h"
 #include "engine/ecs/EntityFactory.h"
+#include "engine/levelloading/LevelLoader.h"
+#include "state/LevelSelectState.h"
+#include "engine/stateManagement/StateManagerSystem.h"
+#include "engine/userInterface/UISystem.h"
+#include "State/LevelPlayState.h"
 
 namespace gl3::game
 {
@@ -10,6 +17,10 @@ namespace gl3::game
             GameStateManager::onGameStateChange>(this);
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
             GameStateManager::onPlayerDeath>(this);
+        onUIInitHandle = game_.getUISystem().onInitialized.addListener([this]()
+        {
+            onUiInitialized();
+        });
     }
 
     GameStateManager::~GameStateManager()
@@ -18,9 +29,17 @@ namespace gl3::game
             GameStateManager::onGameStateChange>(this);
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
             GameStateManager::onPlayerDeath>(this);
+        game_.getUISystem().onInitialized.removeListener(onUIInitHandle);
     }
 
-    std::vector<GameObject> generateTestObjects(const float& initialPlayerPositionX)
+    void GameStateManager::onUiInitialized() const
+    {
+        auto& levelUI = dynamic_cast<engine::levelLoading::LevelSelectUISystem&>(game_.getUISystem().getSubsystems(0));
+        game_.getStateManagement().pushState<engine::state::LevelSelectState>(levelUI);
+    }
+
+
+    /*std::vector<GameObject> generateTestObjects(const float& initialPlayerPositionX)
     {
         std::cout << "generate objects";
         std::mt19937 randomNumberEngine{
@@ -35,7 +54,7 @@ namespace gl3::game
 
         /*auto c = blueColorDist(randomNumberEngine);
         auto randomBlueColor = glm::vec4(0.1, c, c, 1.0f);
-        glm::vec4 purpleColor{1.f,0.f,1.f,1.f};*/
+        glm::vec4 purpleColor{1.f,0.f,1.f,1.f};#1#
         glm::vec4 redColor{1.f, 0.f, 0.f, 1.f};
 
         size_t index = 0;
@@ -195,32 +214,39 @@ namespace gl3::game
         };
 
         return game_objects;
-    }
+    }*/
 
     void GameStateManager::onGameStateChange(const engine::ecs::GameStateChange& event)
     {
-        //TODO make every UI that calls this, disable itself
-        std::cout << "state change";
-        current_game_state_ = event.newGameState;
-        if (event.newGameState == engine::GameState::LevelSelect) return; //TODO LevelSelect aufrufen
+        auto& stateSystem = game_.getStateManagement();
+        auto& gameConfig = game_.getCurrentConfig();
 
-        if (event.newGameState == engine::GameState::Level)
+        if (event.newGameState == engine::GameState::LevelSelect)
         {
-            if (previous_game_state_ != engine::GameState::Level)
-            {
-                //TODO Load selected Level
-            }
+            auto& levelUI = dynamic_cast<engine::levelLoading::LevelSelectUISystem&>(game_.getUISystem().
+                getSubsystems(0));
+            stateSystem.changeState<engine::state::LevelSelectState>(levelUI);
+            return;
         }
 
-        auto& config = game_.getCurrentConfig();
+        if (event.newGameState == engine::GameState::Level && previous_game_state_ != engine::GameState::Level)
+        {
+            auto& menuUI = dynamic_cast<ui::InGameMenuSystem&>(game_.getUISystem().
+                                                                     getSubsystems(1));
+            stateSystem.changeState<state::LevelPlayState>(menuUI, event.newLevelIndex, game_);
+            return;
+        }
 
-        initial_test_game_objects = generateTestObjects(config.initial_player_position_x);
+        return;
+        const auto& config = game_.getCurrentConfig();
+
+        // initial_test_game_objects = generateTestObjects(config.initial_player_position_x);
 
         if (current_game_state_ == engine::GameState::Level || current_game_state_ ==
             engine::GameState::PreviewWithTesting ||
             current_game_state_ == engine::GameState::PreviewWithScrolling)
         {
-            for (auto& object : initial_test_game_objects)
+            /*for (auto& object : initial_test_game_objects)
             {
                 auto posY = object.positionY == 0
                                 ? config.ground_level + object.scaleY / 2
@@ -246,7 +272,7 @@ namespace gl3::game
                     object.entityID = entity;
                     object.positionY = posY;
                 }
-            }
+            }*/
 
             /*int index = 0;
             for (auto beat : beatPositions)
@@ -319,12 +345,15 @@ namespace gl3::game
             }
         }
 
+        previous_game_state_ = current_game_state_;
+        current_game_state_ = event.newGameState;
+
         //TODO audio starten
     }
 
     void GameStateManager::resetComponents()
     {
-        std::cout << "reset comps";
+        /*std::cout << "reset comps";
         const auto view = game_.getRegistry().view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
                                                    engine::ecs::PhysicsComponent>();
         for (auto entity : view)
@@ -359,7 +388,7 @@ namespace gl3::game
                                             });
             engine::ecs::EntityFactory::setPosition(game_.getRegistry(), entity,
                                                     glm::vec3(obj->positionX, obj->positionY, 0.f));
-        }
+        }*/
     }
 
     void GameStateManager::reset()

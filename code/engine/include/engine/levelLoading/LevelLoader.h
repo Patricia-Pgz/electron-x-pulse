@@ -1,21 +1,29 @@
 #pragma once
 #include <vector>
 #include "CustomSerialization.h"
-
-
 #include "engine/Assets.h"
+#include "Objects.h"
 
 namespace gl3::engine::levelLoading
 {
     class LevelLoader
     {
     public:
-        static std::vector<LevelMeta> loadAllMetaData(const std::filesystem::path& levelDir = resolveAssetPath("levels"));
-        static const std::vector<Level>& getLevels() { return levels; }
+        static void loadAllMetaData(
+            const std::filesystem::path& levelDir = resolveAssetPath("levels"));
+        static const std::vector<LevelMeta>& getMetaData() { return meta_data_; }
+        static Level* loadLevelByID(int ID);
+
+        static const std::unordered_map<int, Level>& getLevels()
+        {
+            return loaded_levels_;
+        }
 
     private:
-        static std::vector<Level> levels;
-        static Level loadLevel(const std::filesystem::path& filePath);
+        static std::vector<LevelMeta> meta_data_;
+        static std::unordered_map<int, Level> loaded_levels_; //Levels with IDs
+        static std::unordered_map<int, std::string> idToFilename_;
+        static Level* loadLevel(int ID, const std::string& filename);
     };
 }
 

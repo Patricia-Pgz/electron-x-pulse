@@ -16,7 +16,7 @@ namespace gl3::engine::rendering
         static void add(const std::string& key, const std::filesystem::path& path, int tilesX = 8, int tilesY = 8);
         static void loadTextures();
         static void addAllTexturesFromFolder(const std::filesystem::path& textureFolderPath);
-        static const Texture& get(const std::string& key);
+        static const Texture* get(const std::string& key);
         static const Texture& getUITexture(const std::string& key);
 
         static const std::unordered_map<std::string, std::unique_ptr<Texture>>& getAllTextures()

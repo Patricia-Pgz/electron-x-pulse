@@ -87,7 +87,7 @@ namespace gl3::engine::rendering
         }
     }
 
-    const Texture& TextureManager::get(const std::string& key)
+    const Texture* TextureManager::get(const std::string& key)
     {
         auto tex = texture_cache_.find(key);
         if (tex == texture_cache_.end())
@@ -98,7 +98,7 @@ namespace gl3::engine::rendering
                 throw std::runtime_error("TextureManager: Texture key not found: " + key);
             }
         }
-        return *tex->second;
+        return tex->second.get();
     }
 
     const Texture& TextureManager::getUITexture(const std::string& key)

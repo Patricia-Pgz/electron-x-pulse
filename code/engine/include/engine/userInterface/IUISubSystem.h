@@ -1,7 +1,6 @@
 #pragma once
 #include <imgui.h>
 #include <imgui_internal.h>
-#include "FontManager.h"
 #include "engine/Game.h"
 
 namespace gl3::engine::ui
@@ -14,11 +13,16 @@ namespace gl3::engine::ui
         };
         virtual void update()
         {
-            if (!ImGui::GetCurrentContext()) return;
+
         };
         virtual ~IUISubsystem() = default;
+        void setActive(const bool setActive)
+        {
+            is_active = setActive;
+        }
 
     protected:
+        bool is_active = false;
         ImGuiIO* imgui_io_ = nullptr;
         Game& game_;
     };

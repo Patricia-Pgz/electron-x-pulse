@@ -27,18 +27,19 @@ struct glz::meta<GameObject>
         "color", &T::color,
         "tag", &T::tag,
         "isTriangle", &T::isTriangle,
-        "texture", &T::textureName,
+        "textureName", &T::textureName,
         "uv", &T::uv
     );
 };
 
 template <>
-struct glz::meta<LevelMeta> {
+struct glz::meta<LevelMeta>
+{
     using T = LevelMeta;
     static constexpr auto value = object(
-        "fileName", &T::fileName,
+        "id", &T::id,
         "name", &T::name,
-        "velocityMultiplier", &T::velocityMultiplier
+        "levelFile", &T::fileName
     );
 };
 
@@ -47,8 +48,6 @@ struct glz::meta<Level>
 {
     using T = Level;
     static constexpr auto value = glz::object(
-        "fileName", &T::fileName,
-        "name", &T::name,
         "velocityMultiplier", &T::velocityMultiplier,
         "objects", &T::objects
     );

@@ -6,6 +6,7 @@
 #include "box2d/id.h"
 #include "engine/rendering/Texture.h"
 #include <iostream>
+#include "engine/levelLoading/Objects.h"
 #include "engine/rendering/TextureManager.h"
 
 namespace gl3::engine::ecs
@@ -42,28 +43,26 @@ namespace gl3::engine::ecs
     class EntityFactory
     {
     public:
-        static entt::entity createDefaultEntity(entt::registry& registry,
-                                                const glm::vec3& position = {0.0f, 0.0f, 0.0f},
-                                                const glm::vec4& color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                                                const std::string& tag = "undefined",
-                                                const b2WorldId& physicsWorld = b2_nullWorldId,
-                                                const bool isTriangle = false,
-                                                const rendering::Texture* texture = nullptr,
-                                                const glm::vec4& uv = {0, 0, 1, 1})
+        static entt::entity createDefaultEntity(GameObject& object, entt::registry& registry,
+                                                const b2WorldId& physicsWorld = b2_nullWorldId)
         {
             // Create an entity
             const entt::entity entity = registry.create();
             // Add initial components
             const auto transform = registry.emplace<TransformComponent>(
-                entity, position, 0.f, glm::vec3{1.0f, 1.0f, 1.0f});
-            registry.emplace<TagComponent>(entity, tag);
-            if (tag != "beat")
+                entity, object.position, 0.f, glm::vec3{1.0f, 1.0f, 1.0f});
+            registry.emplace<TagComponent>(entity, object.tag);
+            if (object.tag != "beat")
             {
                 registry.emplace<PhysicsComponent>(
-                    entity, createPhysicsBody(physicsWorld, transform, entity, tag, isTriangle)
+                    entity, createPhysicsBody(physicsWorld, transform, entity, object.tag, object.isTriangle)
                 );
             }
-            registry.emplace<RenderComponent>(entity, createRenderComponent(color, isTriangle, texture, uv));
+            const rendering::Texture* tex = object.textureName.empty()
+                                                ? nullptr
+                                                : rendering::TextureManager::get(object.textureName);
+            registry.emplace<RenderComponent>(
+                entity, createRenderComponent(object.color, object.isTriangle, tex, object.uv));
 
             return entity;
         };

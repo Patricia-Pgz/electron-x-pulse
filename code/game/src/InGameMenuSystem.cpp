@@ -3,6 +3,7 @@
 #include "engine/Constants.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/rendering/TextureManager.h"
+#include "engine/userInterface/UIEvents.h"
 
 namespace gl3::game::ui
 {
@@ -76,6 +77,7 @@ namespace gl3::game::ui
  */
     void InGameMenuSystem::update()
     {
+        if(!is_active) return;
         if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
             if (!escape_pressed_)
