@@ -12,7 +12,7 @@ namespace gl3::engine::context
         auto contextInstance = static_cast<Context*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
         contextInstance->calculateWindowBounds();
-        ecs::EventDispatcher::dispatcher.trigger(onWindowResizeEvent{width, height});
+        ecs::EventDispatcher::dispatcher.trigger(WindowResizeEvent{width, height});
     }
 
     void Context::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)

@@ -1,19 +1,40 @@
 #pragma once
+#include "./InGameMenuSystem.h"
 #include "engine/Game.h"
-#include "InGameMenuSystem.h"
 #include "InstructionUI.h"
+#include "engine/ecs/EventDispatcher.h"
 #include "engine/levelloading/Objects.h"
 #include "engine/stateManagement/GameState.h"
 #include "engine/userInterface/UISystem.h"
 
 namespace gl3::game::state
 {
+    struct LevelBackgroundConfig
+    {
+        float center_x;
+        float windowWidth;
+
+        float ground_center_y;
+        float ground_height;
+
+        float sky_center_y;
+        float sky_height;
+    };
+
     class LevelPlayState final : public engine::state::GameState
     {
     public:
         explicit LevelPlayState(ui::InGameMenuSystem& menuUI, const int levelIndex, engine::Game& game)
-            : menu_ui_(menuUI), level_index_(levelIndex), game_(game)
+            : game_(game), menu_ui_(menuUI), level_index_(levelIndex)
         {
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowResizeEvent>().connect<&
+                LevelPlayState::onWindowResize>(this);
+        }
+
+        ~LevelPlayState() override
+        {
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowResizeEvent>().disconnect<&
+                LevelPlayState::onWindowResize>(this);
         }
 
         void onEnter() override
@@ -37,12 +58,16 @@ namespace gl3::game::state
 
     private:
         void loadLevel();
-        void startLevel(); //TODO alles nach links bewegen + Musik erst hier starten!!!
+        [[nodiscard]] LevelBackgroundConfig calculateBackgrounds() const;
+        void onWindowResize(engine::context::WindowResizeEvent& evt) const;
+        void startLevel();
         void reloadLevel(); //TODO on Death
+        void unloadLevel();
+        engine::Game& game_;
         ui::InGameMenuSystem& menu_ui_;
-        std::vector<GameObject> initial_test_game_objects_;
+        bool isLevelInstantiated = false;
         int level_index_ = -1;
         Level* current_level_ = nullptr;
-        engine::Game& game_;
+        entt::entity current_player_ = entt::null;
     };
 }

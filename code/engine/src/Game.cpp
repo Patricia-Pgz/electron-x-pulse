@@ -39,6 +39,7 @@ namespace gl3::engine
         onStartup.invoke(*this);
         start();
         registerUiSystems();
+        rendering::TextureManager::loadTextures();
         levelLoading::LevelLoader::loadAllMetaData();
         onAfterStartup.invoke(*this);
         context_.run([&](Context& ctx)

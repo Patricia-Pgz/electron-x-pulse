@@ -19,6 +19,15 @@ namespace gl3::engine::ecs
     };
 
     /**
+*Call this event, when the level is loaded and ready to play.
+*
+ */
+    struct LevelStartEvent
+    {
+        entt::entity player;
+    };
+
+    /**
     *Call GameExit event, when you want to close the game. E.g. on clicking an exit button, etc.
     */
     struct GameExit
@@ -41,5 +50,4 @@ namespace gl3::engine::ecs
     {
         entt::entity player;
     };
-
 }

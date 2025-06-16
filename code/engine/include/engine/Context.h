@@ -9,7 +9,7 @@
 
 namespace gl3::engine::context
 {
-    struct onWindowResizeEvent
+    struct WindowResizeEvent
     {
         int newWidth;
         int newHeight;

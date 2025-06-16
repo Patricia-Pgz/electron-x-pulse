@@ -24,11 +24,13 @@ struct glz::meta<GameObject>
     using T = GameObject;
     static constexpr auto value = glz::object(
         "position", &T::position,
+        "scale", &T::scale,
         "color", &T::color,
         "tag", &T::tag,
         "isTriangle", &T::isTriangle,
         "textureName", &T::textureName,
-        "uv", &T::uv
+        "uv", &T::uv,
+        "enableCol", &T::enableCollision
     );
 };
 
@@ -48,7 +50,10 @@ struct glz::meta<Level>
 {
     using T = Level;
     static constexpr auto value = glz::object(
+        "audioFile", &T::audioFile,
         "velocityMultiplier", &T::velocityMultiplier,
+        "groundLevel", &T::groundLevel,
+        "backgrounds", &T::backgrounds,
         "objects", &T::objects
     );
 };

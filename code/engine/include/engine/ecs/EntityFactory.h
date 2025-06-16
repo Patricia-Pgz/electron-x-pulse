@@ -5,7 +5,6 @@
 #include "../rendering/Shader.h"
 #include "box2d/id.h"
 #include "engine/rendering/Texture.h"
-#include <iostream>
 #include "engine/levelLoading/Objects.h"
 #include "engine/rendering/TextureManager.h"
 
@@ -50,9 +49,9 @@ namespace gl3::engine::ecs
             const entt::entity entity = registry.create();
             // Add initial components
             const auto transform = registry.emplace<TransformComponent>(
-                entity, object.position, 0.f, glm::vec3{1.0f, 1.0f, 1.0f});
+                entity, object.position, 0.f, object.scale);
             registry.emplace<TagComponent>(entity, object.tag);
-            if (object.tag != "beat")
+            if (object.enableCollision)
             {
                 registry.emplace<PhysicsComponent>(
                     entity, createPhysicsBody(physicsWorld, transform, entity, object.tag, object.isTriangle)

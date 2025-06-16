@@ -329,26 +329,9 @@ namespace gl3::game
             initial_test_game_objects = tempObjects;
         }*/
 
-        if (current_game_state_ != engine::GameState::Menu && current_game_state_ !=
-            engine::GameState::PreviewWithScrolling)
-        {
-            const auto& entities = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
-
-            for (auto& entity : entities)
-            {
-                auto& physics_comp = entities.get<engine::ecs::PhysicsComponent>(entity);
-                auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
-                if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
-                {
-                    b2Body_SetLinearVelocity(physics_comp.body, {config.level_speed(), 0.0f});
-                }
-            }
-        }
 
         previous_game_state_ = current_game_state_;
         current_game_state_ = event.newGameState;
-
-        //TODO audio starten
     }
 
     void GameStateManager::resetComponents()

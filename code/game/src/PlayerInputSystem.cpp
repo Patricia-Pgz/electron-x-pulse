@@ -17,6 +17,7 @@ namespace gl3::game::input
 
     void PlayerInputSystem::update(const entt::entity& player)
     {
+        if (player == entt::null || !is_active) return;
         const auto window = game.getWindow();
         const auto body = game.getRegistry().get<engine::ecs::PhysicsComponent>(player).body;
         b2Vec2 velocity = b2Body_GetLinearVelocity(body);

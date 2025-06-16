@@ -104,7 +104,6 @@ namespace gl3::engine::editor
                         name, uv
                     }
                 }); //TODO                     selected_scale wieder mitschicken!!
-
             }
             if (ImGui::IsItemHovered())
             {
@@ -129,14 +128,14 @@ namespace gl3::engine::editor
         {
             ecs::EventDispatcher::dispatcher.trigger(
                 TileSelectedEvent{
-                                            {
-                            {
-                                selected_grid_cell->x, -selected_grid_cell->y, 0.f
-                            },
-                            glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                            selected_tag, is_triangle,
-                            name, {0, 0, 1, 1}
-                        }
+                    {
+                        {
+                            selected_grid_cell->x, -selected_grid_cell->y, 0.f
+                        },
+                        glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                        selected_tag, is_triangle,
+                        name, {1, 1, 1}, {0, 0, 1, 1}
+                    }
                 });
         }
         if (ImGui::IsItemHovered())

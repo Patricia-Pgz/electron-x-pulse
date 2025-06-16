@@ -15,6 +15,7 @@ namespace gl3::engine::physics
 
         void runPhysicsStep()
         {
+            if (game.getPlayer() == entt::null || !is_active) return;
             accumulator += game.getDeltaTime();
             if (accumulator >= fixedTimeStep)
             {

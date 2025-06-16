@@ -1,7 +1,6 @@
 #pragma once
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
-#include <box2d/id.h>
 
 
 struct GameObject
@@ -11,7 +10,9 @@ struct GameObject
     std::string tag = "undefined";
     bool isTriangle = false;
     std::string textureName;
+    glm::vec3 scale = {1.f,1.f,1.f};
     glm::vec4 uv = {0, 0, 1, 1};
+    bool enableCollision = true;
 };
 
 struct LevelMeta
@@ -23,7 +24,10 @@ struct LevelMeta
 
 struct Level
 {
+    std::string audioFile;
     float velocityMultiplier = 1.f;
+    float groundLevel = 0.f;
+    std::vector<GameObject> backgrounds;
     std::vector<GameObject> objects;
 };
 

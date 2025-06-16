@@ -9,6 +9,8 @@
 #include "InstructionUI.h"
 #include "engine/levelEditor/EditorUISystem.h"
 #include "GameStateManager.h"
+#include "engine/audio/AudioSystem.h"
+#include "State/LevelPlayState.h"
 
 namespace gl3::game
 {
@@ -19,6 +21,8 @@ namespace gl3::game
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().connect<&
             Game::on_mouse_scroll>(this);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::LevelStartEvent>().connect<&
+            Game::on_lvl_start>(this);
     }
 
     void Game::on_mouse_scroll(engine::context::onMouseScrollEvent& event)
@@ -64,29 +68,31 @@ namespace gl3::game
         }
     }
 
+    void Game::on_lvl_start(const engine::ecs::LevelStartEvent& event)
+    {
+        player_ = event.player;
+        audio_system_->playCurrentAudio();
+        //TODO evtl folgendes als methode auslagern
+        const auto& entities = registry_.view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
+
+        for (auto& entity : entities)
+        {
+            auto& physics_comp = entities.get<engine::ecs::PhysicsComponent>(entity);
+            auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
+            if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
+            {
+                b2Body_SetLinearVelocity(physics_comp.body, {game_config_.level_speed(), 0.0f});
+            }
+        }
+    }
+
     void Game::start()
     {
-        engine::rendering::TextureManager::loadTextures(); //TODO in engine?
-        game_config_.ground_level = -1;
-        GameObject groundObj = {
-            glm::vec3(0, game_config_.ground_level - game_config_.ground_height / 2, 0.0f), glm::vec4(0.25, 0.27, 1, 1),
-            "ground",
-            false
-        };
-        const auto& ground = engine::ecs::EntityFactory::createDefaultEntity(groundObj,
-                                                                             registry_, physics_world_);
-        engine::ecs::EntityFactory::setScale(registry_, ground, glm::vec3(40.f, game_config_.ground_height, 0.f));
-
-        GameObject playerObj = {
-            glm::vec3(game_config_.initial_player_position_x, 0.f, 0), glm::vec4(0.25f, 0.25f, 0.25f, 1.0f), "player",
-            false, "geometry-dash"
-        };
-        player_ = engine::ecs::EntityFactory::createDefaultEntity(playerObj,
-                                                                  registry_, physics_world_);
-        engine::ecs::EntityFactory::setScale(registry_, player_, glm::vec3(1.f, 1.f, 1.f));
+        //TODO gameconfig laden?
     }
 
     void Game::update(GLFWwindow* window)
+    //TODO deactivate components, that are out of left screen boundary (RenderComp, Physics)
     {
         if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
         {
@@ -109,5 +115,7 @@ namespace gl3::game
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().disconnect<&
             Game::on_mouse_scroll>(this);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::LevelStartEvent>().disconnect<&
+            Game::on_lvl_start>(this);
     }
 }

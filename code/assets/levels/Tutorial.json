@@ -1,5 +1,73 @@
 {
+  "audioFile": "Senses.wav",
   "velocityMultiplier": 1,
+  "groundLevel": -0.5,
+  "backgrounds": [
+    {
+      "color": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "tag": "background",
+      "textureName": "1",
+      "enableCol": false
+    },
+    {
+      "color": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "tag": "background",
+      "textureName": "2",
+      "enableCol": false
+    },
+    {
+      "color": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "tag": "background",
+      "textureName": "3",
+      "enableCol": false
+    },
+    {
+      "color": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "tag": "background",
+      "textureName": "4",
+      "enableCol": false
+    },
+    {
+      "color": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "tag": "background",
+      "textureName": "5",
+      "enableCol": false
+    },
+    {
+      "color": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "tag": "ground"
+    }
+  ],
   "objects": [
     {
       "position": [
@@ -14,14 +82,7 @@
         1.0
       ],
       "tag": "player",
-      "isTriangle": false,
-      "textureName": "geometry-dash",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ]
+      "textureName": "geometry-dash"
     },
     {
       "position": [
@@ -35,14 +96,7 @@
         0.0,
         1.0
       ],
-      "tag": "platform",
-      "isTriangle": false,
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ]
+      "tag": "platform"
     },
     {
       "position": [
@@ -58,13 +112,7 @@
       ],
       "tag": "obstacle",
       "isTriangle": true,
-      "textureName": "geometry-dash",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ]
+      "textureName": "geometry-dash"
     }
   ]
 }

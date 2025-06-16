@@ -4,7 +4,6 @@
 #include <soloud_wav.h>
 
 #include "engine/Game.h"
-#include "engine/ecs/GameEvents.h"
 #include "engine/userInterface/UIEvents.h"
 
 namespace gl3::engine::audio
@@ -13,6 +12,7 @@ namespace gl3::engine::audio
     {
         SoLoud::Soloud audio_;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
+        std::string filePath;
         unsigned int hopSize = 512; // Size of each hop
         unsigned int bufferSize = 2048; // Size of the analysis buffer
         float bpm = 0.0f; //update this based on audio analysis
@@ -27,14 +27,11 @@ namespace gl3::engine::audio
     public:
         explicit AudioSystem(Game& game);
         ~AudioSystem();
-
-    private:
-        void initializeCurrentAudio();
+        void initializeCurrentAudio(const std::string& fileName);
         void playCurrentAudio();
         void resetCurrentAudio();
+    private:
         void onGlobalVolumeChanged(const ui::VolumeChange& event);
-        void onGameStateChange(ecs::GameStateChange& event);
-        void onPlayerDeath(ecs::PlayerDeath& event);
         Game& game_;
         AudioConfig config_;
         GameState previousState = GameState::None;

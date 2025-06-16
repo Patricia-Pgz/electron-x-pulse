@@ -11,5 +11,6 @@ namespace gl3::engine::ecs {
 
     protected:
         Game &game;
+        bool is_active = true;
     };
 }

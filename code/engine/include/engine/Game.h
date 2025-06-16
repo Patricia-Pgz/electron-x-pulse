@@ -49,8 +49,7 @@ namespace gl3::engine
         float initial_player_position_x = -2.0f;
         float velocity_multiplier = -2.f;
         float level_length = 0.0f;
-        float ground_level = 0.f;
-        float ground_height = 4.0f;
+        float ground_level = -0.5f;
 
         [[nodiscard]] float level_speed(const float seconds_per_beat = 1.f) const
         {
@@ -68,8 +67,9 @@ namespace gl3::engine
         [[nodiscard]] const context::Context& getContext() const { return context_; }
         [[nodiscard]] float getDeltaTime() const { return delta_time_; };
         entt::registry& getRegistry() { return registry_; };
-        [[nodiscard]] ui::UISystem& getUISystem() const {return *ui_system_;};
-        [[nodiscard]] state::StateManagementSystem& getStateManagement() const {return *state_management_system_;};
+        [[nodiscard]] ui::UISystem& getUISystem() const { return *ui_system_; };
+        [[nodiscard]] audio::AudioSystem& getAudioSystem() const { return *audio_system_; };
+        [[nodiscard]] state::StateManagementSystem& getStateManagement() const { return *state_management_system_; };
         [[nodiscard]] entt::entity getPlayer() const { return player_; }
         [[nodiscard]] GameConfig& getCurrentConfig() { return game_config_; }
 
@@ -129,4 +129,3 @@ namespace gl3::engine
         float lastFrameTime_ = 1.0f / 60;
     };
 } // gl3
-
