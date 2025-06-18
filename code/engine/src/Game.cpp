@@ -46,6 +46,7 @@ namespace gl3::engine
         {
             onBeforeUpdate.invoke(*this);
             update(getWindow());
+            updateState();
             updatePhysics();
             draw();
             updateUI();

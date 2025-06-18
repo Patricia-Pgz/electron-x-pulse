@@ -6,7 +6,7 @@ namespace gl3::engine::state
     public:
         //TODO im Constructor game& mitgeben!
         virtual ~GameState() = default;
-        virtual void update(float dt) = 0;
+        virtual void update(float deltaTime) = 0;
 
         virtual void onEnter()
         {

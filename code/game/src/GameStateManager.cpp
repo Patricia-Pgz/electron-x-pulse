@@ -1,13 +1,12 @@
 #include "GameStateManager.h"
 #include <random>
 
-#include "InGameMenuSystem.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/levelloading/LevelLoader.h"
-#include "state/LevelSelectState.h"
+#include "states/LevelSelectState.h"
 #include "engine/stateManagement/StateManagerSystem.h"
 #include "engine/userInterface/UISystem.h"
-#include "State/LevelPlayState.h"
+#include "states/LevelPlayState.h"
 
 namespace gl3::game
 {

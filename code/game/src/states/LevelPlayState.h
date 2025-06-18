@@ -1,13 +1,13 @@
 #pragma once
-#include "./InGameMenuSystem.h"
 #include "engine/Game.h"
-#include "InstructionUI.h"
 #include "engine/audio/AudioSystem.h"
+#include "engine/ecs/EntityFactory.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
 #include "engine/levelloading/Objects.h"
 #include "engine/stateManagement/GameState.h"
 #include "engine/userInterface/UISystem.h"
+#include "ui/InGameMenuSystem.h"
 
 namespace gl3::game::state
 {
@@ -23,7 +23,7 @@ namespace gl3::game::state
         float sky_height;
     };
 
-    class LevelPlayState final : public engine::state::GameState
+    class LevelPlayState : public engine::state::GameState
     {
     public:
         explicit LevelPlayState(ui::InGameMenuSystem& menuUI, const int levelIndex, engine::Game& game)
@@ -55,30 +55,48 @@ namespace gl3::game::state
 
         void onExit() override
         {
+            unloadLevel();
             menu_ui_.setActive(false);
+            game_.getUISystem().getSubsystems(2).setActive(false);
+            game_.getUISystem().getSubsystems(3).setActive(false);
         }
 
-        void update(float dt) override
+        void update(float deltaTime) override
         {
+            if (!level_instantiated_)
+                return;
+
+            delayLevelEnd(deltaTime);
         }
+
+        void delayLevelEnd(float deltaTime);
 
     private:
         void loadLevel();
         void moveObjects() const;
+        void stopMovingObjects() const;
         void startLevel() const;
+        void pauseLevel() const;
+        void resumeLevel() const;
+        void reloadLevel();
+        void unloadLevel();
+
+        void onWindowResize(const engine::context::WindowResizeEvent& evt) const;
+
         [[nodiscard]] LevelBackgroundConfig calculateBackgrounds() const;
         void applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig) const;
         void updateBackgroundEntities() const;
-        void onWindowResize(const engine::context::WindowResizeEvent& evt) const;
-        void reloadLevel();
-        void unloadLevel();
+
         engine::Game& game_;
         ui::InGameMenuSystem& menu_ui_;
-        engine::audio::AudioConfig* audio_config_;
-        bool isLevelInstantiated = false;
+        engine::audio::AudioConfig* audio_config_ = nullptr;
+        bool level_instantiated_ = false;
+        bool timer_active_ = false;
+        bool transition_triggered_ = false;
+        float timer_ = 1.f;
         int level_index_ = -1;
         Level* current_level_ = nullptr;
         entt::entity current_player_ = entt::null;
-        std::vector<entt::entity> backgroundEntities;
+        std::vector<entt::entity> background_entities_;
     };
 }

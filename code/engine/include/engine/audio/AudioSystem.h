@@ -10,8 +10,9 @@ namespace gl3::engine::audio
 {
     struct AudioConfig
     {
-        SoLoud::Soloud audio_;
+        SoLoud::Soloud audio;
         std::unique_ptr<SoLoud::Wav> backgroundMusic;
+        SoLoud::handle currentAudioHandle;
         std::string filePath;
         unsigned int hopSize = 512; // Size of each hop
         unsigned int bufferSize = 2048; // Size of the analysis buffer
@@ -29,7 +30,8 @@ namespace gl3::engine::audio
         ~AudioSystem();
         AudioConfig* initializeCurrentAudio(const std::string& fileName, float positionOffsetX = 0.f);
         void playCurrentAudio();
-        void StopCurrentAudio();
+        void stopCurrentAudio();
+
     private:
         void onGlobalVolumeChanged(const ui::VolumeChange& event);
         Game& game_;

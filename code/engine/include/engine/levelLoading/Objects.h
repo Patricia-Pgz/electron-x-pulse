@@ -28,6 +28,7 @@ struct Level
     std::string audioFile;
     float velocityMultiplier = 1.f;
     float currentLevelSpeed = 1.f;
+    float levelLength = 0.f;
     float groundLevel = 0.f;
     std::vector<GameObject> backgrounds;
     std::vector<GameObject> objects;

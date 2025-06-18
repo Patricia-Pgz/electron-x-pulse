@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/Game.h"
 #include "PlayerInputSystem.h"
-#include "State/LevelPlayState.h"
+#include "states/LevelPlayState.h"
 
 namespace gl3::game
 {

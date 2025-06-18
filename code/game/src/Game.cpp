@@ -1,16 +1,17 @@
 #include "Game.h"
 #include <random>
 
-#include "InGameMenuSystem.h"
 #include "PlayerInputSystem.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/userInterface/UISystem.h"
 #include "engine/levelLoading/LevelSelectUISystem.h"
-#include "InstructionUI.h"
 #include "engine/levelEditor/EditorUISystem.h"
 #include "GameStateManager.h"
 #include "engine/audio/AudioSystem.h"
-#include "State/LevelPlayState.h"
+#include "states/LevelPlayState.h"
+#include "ui/FinishUI.h"
+#include "ui/InGameMenuSystem.h"
+#include "ui/InstructionUI.h"
 
 namespace gl3::game
 {
@@ -95,6 +96,7 @@ namespace gl3::game
         ui_system_->registerSubsystem<engine::levelLoading::LevelSelectUISystem>();
         ui_system_->registerSubsystem<ui::InGameMenuSystem>();
         ui_system_->registerSubsystem<ui::InstructionUI>();
+        ui_system_->registerSubsystem<ui::FinishUI>();
         //ui_system_->registerSubsystem<engine::editor::EditorUISystem>();
     }
 

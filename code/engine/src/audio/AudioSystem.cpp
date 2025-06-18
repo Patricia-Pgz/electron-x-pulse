@@ -11,8 +11,8 @@ namespace gl3::engine::audio
     {
         ecs::EventDispatcher::dispatcher.sink<ui::VolumeChange>().connect<&
             AudioSystem::onGlobalVolumeChanged>(this);
-        config_.audio_.init();
-        config_.audio_.setGlobalVolume(config_.global_volume_);
+        config_.audio.init();
+        config_.audio.setGlobalVolume(config_.global_volume_);
     }
 
     AudioSystem::~AudioSystem()
@@ -41,17 +41,17 @@ namespace gl3::engine::audio
 
     void AudioSystem::playCurrentAudio()
     {
-        config_.audio_.playBackground(*config_.backgroundMusic);
+        config_.currentAudioHandle = config_.audio.playBackground(*config_.backgroundMusic);
     }
 
-    void AudioSystem::StopCurrentAudio()
+    void AudioSystem::stopCurrentAudio()
     {
-        config_.audio_.stopAudioSource(*config_.backgroundMusic);
+        config_.audio.stopAudioSource(*config_.backgroundMusic);
     }
 
     void AudioSystem::onGlobalVolumeChanged(const ui::VolumeChange& event)
     {
         config_.global_volume_ = event.newVolume;
-        config_.audio_.setGlobalVolume(config_.global_volume_);
+        config_.audio.setGlobalVolume(config_.global_volume_);
     }
 }

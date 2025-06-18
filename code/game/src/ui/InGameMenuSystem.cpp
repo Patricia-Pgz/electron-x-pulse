@@ -7,7 +7,6 @@
 
 namespace gl3::game::ui
 {
-    //TODO schöner
     void styleWindow(const ImVec2 windowSize)
     {
         ImGuiStyle& style = ImGui::GetStyle();
@@ -77,7 +76,7 @@ namespace gl3::game::ui
  */
     void InGameMenuSystem::update()
     {
-        if(!is_active) return;
+        if (!is_active) return;
         if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
             if (!escape_pressed_)

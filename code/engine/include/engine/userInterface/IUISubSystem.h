@@ -1,6 +1,6 @@
 #pragma once
 #include <imgui.h>
-#include <imgui_internal.h>
+#include <imgui_internal.h> //need this in every sub system
 #include "engine/Game.h"
 
 namespace gl3::engine::ui

@@ -2,7 +2,6 @@
 
 #include "engine/Constants.h"
 #include "engine/audio/AudioSystem.h"
-#include "engine/ecs/EntityFactory.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
 #include "engine/levelloading/LevelLoader.h"
@@ -42,7 +41,7 @@ namespace gl3::game::state
     void LevelPlayState::applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig) const
     {
         auto& registry = game_.getRegistry();
-        for (auto& entity : backgroundEntities)
+        for (auto& entity : background_entities_)
         {
             if (!registry.valid(entity)) continue;
             if (auto& tag = registry.get<engine::ecs::TagComponent>(entity).tag; tag == "ground")
@@ -74,7 +73,7 @@ namespace gl3::game::state
 
     void LevelPlayState::onWindowResize(const engine::context::WindowResizeEvent& event) const
     {
-        if (!isLevelInstantiated || event.newHeight <= 0 || event.newWidth <= 0) return;
+        if (!level_instantiated_ || event.newHeight <= 0 || event.newWidth <= 0) return;
         updateBackgroundEntities();
     }
 
@@ -100,7 +99,7 @@ namespace gl3::game::state
 
             auto entity = engine::ecs::EntityFactory::createDefaultEntity(
                 object, registry, physicsWorld);
-            backgroundEntities.push_back(entity);
+            background_entities_.push_back(entity);
         }
 
         float initialPlayerPosX = 0.f;
@@ -113,8 +112,9 @@ namespace gl3::game::state
         }
         audio_config_ = game_.getAudioSystem().initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
         current_level_->currentLevelSpeed = current_level_->velocityMultiplier / audio_config_->seconds_per_beat;
+        current_level_->levelLength = 5; //audio_config_->current_audio_length*levelspeed
 
-        isLevelInstantiated = true;
+        level_instantiated_ = true;
         startLevel();
     }
 
@@ -132,25 +132,53 @@ namespace gl3::game::state
         }
     }
 
+    void LevelPlayState::stopMovingObjects() const
+    {
+        const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
+        for (auto& entity : view)
+        {
+            auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
+            auto& tag_comp = view.get<engine::ecs::TagComponent>(entity);
+            if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
+            {
+                b2Body_SetLinearVelocity(physics_comp.body, {0.f, 0.0f});
+            }
+        }
+    }
+
     void LevelPlayState::startLevel() const
     {
-        //TODO brauche ich das event noch?
+        //TODO brauche ich das event noch? -> wenn nein sind start und resume das gleiche
         engine::ecs::EventDispatcher::dispatcher.trigger<engine::ecs::LevelStartEvent>({current_player_});
 
         moveObjects();
         game_.getAudioSystem().playCurrentAudio();
     }
 
+    void LevelPlayState::pauseLevel() const //UI Event abfangen in InGameMenuUI -> ESC
+    {
+        game_.getAudioSystem().stopCurrentAudio();
+        stopMovingObjects();
+    }
+
+    void LevelPlayState::resumeLevel() const //TODO UI event abfangen in InGameMenuUI
+    {
+        moveObjects();
+        game_.getAudioSystem().playCurrentAudio();
+    }
+
+
     /**
      *Resets every entity to its initial Transform and restarts movement and audio
 */
     void LevelPlayState::reloadLevel()
+    //TODO zusätzlich UI event aus InGameMenuUI & FinishMenu abfangen! (restart lvl -> button hinzufügen)
     {
-        game_.getAudioSystem().StopCurrentAudio();
+        game_.getAudioSystem().stopCurrentAudio();
         auto& registry = game_.getRegistry();
         const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
                                         engine::ecs::PhysicsComponent>();
-        backgroundEntities.clear();
+        background_entities_.clear();
         for (auto& entity : view)
         {
             if (!registry.valid(entity)) continue;
@@ -166,7 +194,8 @@ namespace gl3::game::state
             if (registry.get<engine::ecs::TagComponent>(entity).tag == "ground" || registry.get<
                 engine::ecs::TagComponent>(entity).tag == "background")
             {
-                backgroundEntities.push_back(entity);
+                background_entities_.push_back(entity);
+                //TODO backgrounds hier direkt updaten, anstatt in array schieben und dann updaten!
             }
         }
 
@@ -175,10 +204,35 @@ namespace gl3::game::state
         game_.getAudioSystem().playCurrentAudio();
     }
 
+    void LevelPlayState::delayLevelEnd(float deltaTime)
+    {
+        const float currentTime = audio_config_->audio.getStreamTime(audio_config_->currentAudioHandle);
+
+        if (!timer_active_ && currentTime >= 5.0f)
+        {
+            timer_active_ = true;
+        }
+
+        if (timer_active_)
+        {
+            timer_ -= deltaTime;
+
+            if (timer_ <= 0.0f && !transition_triggered_)
+            {
+                transition_triggered_ = true;
+
+                menu_ui_.setActive(false);
+                game_.getUISystem().getSubsystems(2).setActive(false);
+                game_.getUISystem().getSubsystems(3).setActive(true);
+                pauseLevel();
+            }
+        }
+    }
+
+
     void LevelPlayState::unloadLevel()
     {
-        isLevelInstantiated = false;
-        //TODO Level von Game trennen?
-        //TODO player in game auf null setzen + entites aus registry löschen + musik stoppen + schauen ob wirklich alles nötige gelöscht wurde!
+        level_instantiated_ = false;
+        //TODO player in game auf null setzen + entites aus registry löschen + schauen ob wirklich alles nötige gelöscht wurde!
     }
 }
