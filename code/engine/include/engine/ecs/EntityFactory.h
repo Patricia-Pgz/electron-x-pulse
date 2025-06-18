@@ -12,9 +12,18 @@ namespace gl3::engine::ecs
 {
     struct TransformComponent
     {
+        TransformComponent(const glm::vec3 position, const glm::vec3 scale, const float zRotation) :
+            initialPosition(position), initialScale(scale),
+            initialZRotation(zRotation), position(position), scale(scale), zRotation(zRotation)
+        {
+        }
+
+        glm::vec3 initialPosition = {0.0f, 0.0f, 0.0f};
+        glm::vec3 initialScale = {0.f, 0.f, 0.f};
+        float initialZRotation = 0.f;
         glm::vec3 position = {0.0f, 0.0f, 0.0f};
-        float zRotation = 0.0f;
         glm::vec3 scale = {1.0f, 1.0f, 1.0f};
+        float zRotation = 0.0f;
     };
 
     struct RenderComponent
@@ -38,7 +47,7 @@ namespace gl3::engine::ecs
         std::string tag = "undefined";
     };
 
-    /// provides methods to generate a basic entity(either quad or triangle) with basic components
+    /// provides methods to generate a basic entity (either quad or triangle) with basic components
     class EntityFactory
     {
     public:
@@ -49,7 +58,7 @@ namespace gl3::engine::ecs
             const entt::entity entity = registry.create();
             // Add initial components
             const auto transform = registry.emplace<TransformComponent>(
-                entity, object.position, 0.f, object.scale);
+                entity, object.position, object.scale, object.rotation);
             registry.emplace<TagComponent>(entity, object.tag);
             if (object.enableCollision)
             {
@@ -112,7 +121,15 @@ namespace gl3::engine::ecs
             transform.position = newPos;
             b2Body_SetTransform(physics_comp.body, b2Vec2(transform.position.x, transform.position.y),
                                 b2Body_GetRotation(physics_comp.body));
-            //TODO für sowas(siehe auch setScale) evtl entt events benutzen?
+        }
+
+        static void SetRotation(entt::registry& registry, const entt::entity& entity, const float newZRot)
+        {
+            auto& transform = registry.get<TransformComponent>(entity);
+            auto& physics_comp = registry.get<PhysicsComponent>(entity);
+            transform.zRotation = newZRot;
+            b2Body_SetTransform(physics_comp.body, b2Body_GetPosition(physics_comp.body),
+                                b2MakeRot(glm::radians(newZRot)));
         }
 
         struct glData
@@ -185,7 +202,7 @@ namespace gl3::engine::ecs
                                                   const TransformComponent& transform_component,
                                                   const entt::entity& entity,
                                                   const std::string& tag,
-                                                  const bool isTriangle = false) //TODO in physicshelper oder so
+                                                  const bool isTriangle = false)
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = tag == "player" ? b2_dynamicBody : b2_kinematicBody;

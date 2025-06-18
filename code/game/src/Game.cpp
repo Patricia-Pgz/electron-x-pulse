@@ -70,20 +70,7 @@ namespace gl3::game
 
     void Game::on_lvl_start(const engine::ecs::LevelStartEvent& event)
     {
-        player_ = event.player;
-        audio_system_->playCurrentAudio();
-        //TODO evtl folgendes als methode auslagern
-        const auto& entities = registry_.view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
-
-        for (auto& entity : entities)
-        {
-            auto& physics_comp = entities.get<engine::ecs::PhysicsComponent>(entity);
-            auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
-            if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
-            {
-                b2Body_SetLinearVelocity(physics_comp.body, {game_config_.level_speed(), 0.0f});
-            }
-        }
+        player_ = event.player; //TODO brauch ich den hier überhaupt?
     }
 
     void Game::start()

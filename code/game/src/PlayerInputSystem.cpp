@@ -27,6 +27,15 @@ namespace gl3::game::input
             applyJumpImpulse(body);
             canJump = false;
         }
+
+        const float fixedX = game.getRegistry().get<engine::ecs::TransformComponent>(player).initialPosition.x;
+        b2Vec2 pos = b2Body_GetPosition(body);
+        pos.x = fixedX;
+        b2Body_SetTransform(body, pos, b2Body_GetRotation(body));
+
+        b2Vec2 vel = b2Body_GetLinearVelocity(body);
+        vel.x = 0.0f;
+        b2Body_SetLinearVelocity(body, vel);
     }
 
 

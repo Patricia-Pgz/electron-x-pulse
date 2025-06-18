@@ -39,21 +39,13 @@ namespace gl3::game::state
         return {center_x, windowWidth, ground_center_y, ground_height, sky_center_y, sky_height};
     }
 
-    void LevelPlayState::onWindowResize(engine::context::WindowResizeEvent& event) const
+    void LevelPlayState::applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig) const
     {
-        if (!isLevelInstantiated || event.newHeight <= 0 || event.newWidth <= 0) return;
         auto& registry = game_.getRegistry();
-        const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
-                                        engine::ecs::PhysicsComponent>();
-        auto bgConfig = calculateBackgrounds();
-
-        for (auto entity : view)
+        for (auto& entity : backgroundEntities)
         {
-            auto& transform = view.get<engine::ecs::TransformComponent>(entity);
-            auto& tag = view.get<engine::ecs::TagComponent>(entity).tag;
-            auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
-
-            if (tag == "ground")
+            if (!registry.valid(entity)) continue;
+            if (auto& tag = registry.get<engine::ecs::TagComponent>(entity).tag; tag == "ground")
             {
                 engine::ecs::EntityFactory::setPosition(registry, entity, {
                                                             bgConfig.center_x, bgConfig.ground_center_y, 0.f
@@ -72,6 +64,18 @@ namespace gl3::game::state
                                                      });
             }
         }
+    }
+
+    void LevelPlayState::updateBackgroundEntities() const
+    {
+        auto bgConfig = calculateBackgrounds();
+        applyBackgroundEntityTransform(bgConfig);
+    }
+
+    void LevelPlayState::onWindowResize(const engine::context::WindowResizeEvent& event) const
+    {
+        if (!isLevelInstantiated || event.newHeight <= 0 || event.newWidth <= 0) return;
+        updateBackgroundEntities();
     }
 
     void LevelPlayState::loadLevel()
@@ -93,13 +97,14 @@ namespace gl3::game::state
                 object.scale = {bgConfig.windowWidth, bgConfig.sky_height, 1.f};
             }
 
-            engine::ecs::EntityFactory::createDefaultEntity(
+            auto entity = engine::ecs::EntityFactory::createDefaultEntity(
                 object, game_.getRegistry(), game_.getPhysicsWorld());
+            backgroundEntities.push_back(entity);
         }
 
         for (auto& object : current_level_->objects)
         {
-            const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(
+            const auto entity = engine::ecs::EntityFactory::createDefaultEntity(
                 object, game_.getRegistry(), game_.getPhysicsWorld());
             if (object.tag == "player") current_player_ = entity;
         }
@@ -107,14 +112,61 @@ namespace gl3::game::state
         startLevel();
     }
 
-    void LevelPlayState::startLevel()
+    void LevelPlayState::moveObjects() const
     {
-        //TODO evtl in audiosystem statt hier (wenn musik ready)
-        engine::ecs::EventDispatcher::dispatcher.trigger<engine::ecs::LevelStartEvent>({current_player_});
+        const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
+        for (auto& entity : view)
+        {
+            auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
+            auto& tag_comp = view.get<engine::ecs::TagComponent>(entity);
+            if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
+            {
+                b2Body_SetLinearVelocity(physics_comp.body, {current_level_->level_speed() * -1, 0.0f});
+            }
+        }
     }
 
-    void LevelPlayState::reloadLevel() //TODO
+    void LevelPlayState::startLevel() const
     {
+        //TODO brauche ich das event noch?
+        engine::ecs::EventDispatcher::dispatcher.trigger<engine::ecs::LevelStartEvent>({current_player_});
+
+        moveObjects();
+        game_.getAudioSystem().playCurrentAudio();
+    }
+
+    /**
+     *Resets every entity to its initial Transform and restarts movement and audio
+*/
+    void LevelPlayState::reloadLevel()
+    {
+        game_.getAudioSystem().StopCurrentAudio();
+        auto& registry = game_.getRegistry();
+        const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
+                                        engine::ecs::PhysicsComponent>();
+        backgroundEntities.clear();
+        for (auto& entity : view)
+        {
+            if (!registry.valid(entity)) continue;
+            engine::ecs::EntityFactory::setPosition(registry, entity,
+                                                    registry.get<engine::ecs::TransformComponent>(entity).
+                                                             initialPosition);
+            engine::ecs::EntityFactory::setScale(registry, entity,
+                                                 registry.get<engine::ecs::TransformComponent>(entity).
+                                                          initialScale);
+            engine::ecs::EntityFactory::SetRotation(registry, entity,
+                                                    registry.get<engine::ecs::TransformComponent>(entity).
+                                                             initialZRotation);
+            if (registry.get<engine::ecs::TagComponent>(entity).tag == "ground" || registry.get<
+                engine::ecs::TagComponent>(entity).tag == "background")
+            {
+                backgroundEntities.push_back(entity);
+            }
+        }
+
+        updateBackgroundEntities();
+
+        game_.getAudioSystem().playCurrentAudio();
     }
 
     void LevelPlayState::unloadLevel()

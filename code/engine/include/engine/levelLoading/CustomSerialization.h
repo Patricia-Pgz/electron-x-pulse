@@ -25,6 +25,7 @@ struct glz::meta<GameObject>
     static constexpr auto value = glz::object(
         "position", &T::position,
         "scale", &T::scale,
+        "rotation", &T::rotation,
         "color", &T::color,
         "tag", &T::tag,
         "isTriangle", &T::isTriangle,

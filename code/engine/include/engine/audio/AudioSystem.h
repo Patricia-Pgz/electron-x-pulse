@@ -29,7 +29,7 @@ namespace gl3::engine::audio
         ~AudioSystem();
         void initializeCurrentAudio(const std::string& fileName);
         void playCurrentAudio();
-        void resetCurrentAudio();
+        void StopCurrentAudio();
     private:
         void onGlobalVolumeChanged(const ui::VolumeChange& event);
         Game& game_;

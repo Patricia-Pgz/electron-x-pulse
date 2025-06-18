@@ -21,7 +21,7 @@ namespace gl3::engine::audio
             AudioSystem::onGlobalVolumeChanged>(this);
     }
 
-    void AudioSystem::initializeCurrentAudio(const std::string& fileName)
+    void AudioSystem::initializeCurrentAudio(const std::string& fileName) //TODO
     {
         auto path = "audio/" + fileName;
         config_.backgroundMusic = std::make_unique<SoLoud::Wav>();
@@ -33,10 +33,10 @@ namespace gl3::engine::audio
         const std::string audio_file = resolveAssetPath(path);
         config_.bpm = AudioAnalysis::analyzeAudioTempo(audio_file, config_.hopSize, config_.bufferSize);
         config_.seconds_per_beat = 60 / config_.bpm;
-        config_.beatPositions = AudioAnalysis::generateBeatTimestamps(
+        config_.beatPositions = AudioAnalysis::generateBeatTimestamps( //TODO config returnen für level
             config_.current_audio_length,
             config_.seconds_per_beat,
-            game_.getCurrentConfig().initial_player_position_x);
+            game_.getCurrentConfig().initial_player_position_x); //TODO
         game_.getCurrentConfig().level_length = config_.current_audio_length;
     }
 
@@ -45,7 +45,7 @@ namespace gl3::engine::audio
         config_.audio_.playBackground(*config_.backgroundMusic);
     }
 
-    void AudioSystem::resetCurrentAudio()
+    void AudioSystem::StopCurrentAudio()
     {
         config_.audio_.stopAudioSource(*config_.backgroundMusic);
     }

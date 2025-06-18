@@ -3,6 +3,7 @@
 #include "engine/Game.h"
 #include "InstructionUI.h"
 #include "engine/ecs/EventDispatcher.h"
+#include "engine/ecs/GameEvents.h"
 #include "engine/levelloading/Objects.h"
 #include "engine/stateManagement/GameState.h"
 #include "engine/userInterface/UISystem.h"
@@ -29,12 +30,16 @@ namespace gl3::game::state
         {
             engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowResizeEvent>().connect<&
                 LevelPlayState::onWindowResize>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
+                LevelPlayState::reloadLevel>(this);
         }
 
         ~LevelPlayState() override
         {
             engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowResizeEvent>().disconnect<&
                 LevelPlayState::onWindowResize>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
+                LevelPlayState::reloadLevel>(this);
         }
 
         void onEnter() override
@@ -58,10 +63,13 @@ namespace gl3::game::state
 
     private:
         void loadLevel();
+        void moveObjects() const;
+        void startLevel() const;
         [[nodiscard]] LevelBackgroundConfig calculateBackgrounds() const;
-        void onWindowResize(engine::context::WindowResizeEvent& evt) const;
-        void startLevel();
-        void reloadLevel(); //TODO on Death
+        void applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig) const;
+        void updateBackgroundEntities() const;
+        void onWindowResize(const engine::context::WindowResizeEvent& evt) const;
+        void reloadLevel();
         void unloadLevel();
         engine::Game& game_;
         ui::InGameMenuSystem& menu_ui_;
@@ -69,5 +77,6 @@ namespace gl3::game::state
         int level_index_ = -1;
         Level* current_level_ = nullptr;
         entt::entity current_player_ = entt::null;
+        std::vector<entt::entity> backgroundEntities;
     };
 }
