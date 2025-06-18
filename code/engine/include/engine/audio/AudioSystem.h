@@ -27,7 +27,7 @@ namespace gl3::engine::audio
     public:
         explicit AudioSystem(Game& game);
         ~AudioSystem();
-        void initializeCurrentAudio(const std::string& fileName);
+        AudioConfig* initializeCurrentAudio(const std::string& fileName, float positionOffsetX = 0.f);
         void playCurrentAudio();
         void StopCurrentAudio();
     private:

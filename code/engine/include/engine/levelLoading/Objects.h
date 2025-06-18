@@ -27,12 +27,7 @@ struct Level
 {
     std::string audioFile;
     float velocityMultiplier = 1.f;
-
-    [[nodiscard]] float level_speed(const float seconds_per_beat = 1.f) const
-    {
-        return velocityMultiplier / seconds_per_beat;
-    }
-
+    float currentLevelSpeed = 1.f;
     float groundLevel = 0.f;
     std::vector<GameObject> backgrounds;
     std::vector<GameObject> objects;

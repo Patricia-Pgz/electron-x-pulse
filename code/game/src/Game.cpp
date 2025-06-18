@@ -27,8 +27,8 @@ namespace gl3::game
 
     void Game::on_mouse_scroll(engine::context::onMouseScrollEvent& event)
     {
-        if (currentGameState != engine::GameState::PreviewWithScrolling) return;
-        float cameraX = 0.0f; /*cameraPosition.x;*/
+        /*if (currentGameState != engine::GameState::PreviewWithScrolling) return;
+        float cameraX = 0.0f; /*cameraPosition.x;#1#
         float scrollSpeed = 0.5f;
         float minScrollX = 0.0f; // Minimum scroll limit
         int width, height;
@@ -46,7 +46,7 @@ namespace gl3::game
         auto newCameraPosition = glm::vec3(cameraX, context_.getCameraPos().y, context_.getCameraPos().z);
         auto newCameraCenter = glm::vec3(cameraX, context_.getCameraCenter().y, context_.getCameraCenter().z);
         context_.setCameraPos(newCameraPosition);
-        context_.setCameraCenter(newCameraCenter);
+        context_.setCameraCenter(newCameraCenter);*/
     }
 
 

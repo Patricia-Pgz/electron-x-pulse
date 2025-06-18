@@ -219,7 +219,6 @@ namespace gl3::game
     void GameStateManager::onGameStateChange(const engine::ecs::GameStateChange& event)
     {
         auto& stateSystem = game_.getStateManagement();
-        auto& gameConfig = game_.getCurrentConfig();
 
         if (event.newGameState == engine::GameState::LevelSelect)
         {
@@ -238,7 +237,6 @@ namespace gl3::game
         }
 
         return;
-        const auto& config = game_.getCurrentConfig();
 
         // initial_test_game_objects = generateTestObjects(config.initial_player_position_x);
 

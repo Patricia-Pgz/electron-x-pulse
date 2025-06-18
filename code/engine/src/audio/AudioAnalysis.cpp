@@ -4,6 +4,9 @@
 
 namespace gl3::engine
 {
+    /**
+*Returns average bpm of an audio file.
+*/
     float AudioAnalysis::analyzeAudioTempo(const std::string& audioFile, const unsigned int hopSize,
                                            const unsigned int bufferSize)
     {
@@ -62,19 +65,21 @@ namespace gl3::engine
         return bpm;
     }
 
+    /**
+*Returns vector with general beat time stamps in seconds, according to songlength, beatInterval and an optional xOffset/delay.
+*/
     std::vector<float> AudioAnalysis::generateBeatTimestamps(const float songLength, const float beatInterval,
                                                              const float& xOffset)
     {
         std::vector<float> beatTimestamps;
 
-        // Ensure valid inputs
         if (songLength <= 0.0f || beatInterval <= 0.0)
         {
             std::cerr << "Invalid song length or beat interval!" << std::endl;
             return beatTimestamps;
         }
 
-        // Convert song length to the number of beats
+        // Convert song length to number of beats
         const int totalBeats = static_cast<int>(songLength / beatInterval);
 
         // Generate timestamps

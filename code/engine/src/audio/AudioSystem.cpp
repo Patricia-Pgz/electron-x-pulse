@@ -21,23 +21,22 @@ namespace gl3::engine::audio
             AudioSystem::onGlobalVolumeChanged>(this);
     }
 
-    void AudioSystem::initializeCurrentAudio(const std::string& fileName) //TODO
+    AudioConfig* AudioSystem::initializeCurrentAudio(const std::string& fileName, float positionOffsetX)
     {
         auto path = "audio/" + fileName;
         config_.backgroundMusic = std::make_unique<SoLoud::Wav>();
         config_.backgroundMusic->load(resolveAssetPath(path).c_str());
-        //TODO pfad aus json lesen
         config_.backgroundMusic->setLooping(false);
         config_.current_audio_length = static_cast<float>(config_.backgroundMusic->getLength());
 
         const std::string audio_file = resolveAssetPath(path);
         config_.bpm = AudioAnalysis::analyzeAudioTempo(audio_file, config_.hopSize, config_.bufferSize);
         config_.seconds_per_beat = 60 / config_.bpm;
-        config_.beatPositions = AudioAnalysis::generateBeatTimestamps( //TODO config returnen für level
+        config_.beatPositions = AudioAnalysis::generateBeatTimestamps(
             config_.current_audio_length,
             config_.seconds_per_beat,
-            game_.getCurrentConfig().initial_player_position_x); //TODO
-        game_.getCurrentConfig().level_length = config_.current_audio_length;
+            positionOffsetX);
+        return &config_;
     }
 
     void AudioSystem::playCurrentAudio()

@@ -80,8 +80,9 @@ namespace gl3::game::state
 
     void LevelPlayState::loadLevel()
     {
+        auto& registry = game_.getRegistry();
+        auto physicsWorld = game_.getPhysicsWorld();
         current_level_ = engine::levelLoading::LevelLoader::loadLevelByID(level_index_);
-        game_.getAudioSystem().initializeCurrentAudio(current_level_->audioFile);
 
         const auto bgConfig = calculateBackgrounds();
         for (auto& object : current_level_->backgrounds)
@@ -98,16 +99,21 @@ namespace gl3::game::state
             }
 
             auto entity = engine::ecs::EntityFactory::createDefaultEntity(
-                object, game_.getRegistry(), game_.getPhysicsWorld());
+                object, registry, physicsWorld);
             backgroundEntities.push_back(entity);
         }
 
+        float initialPlayerPosX = 0.f;
         for (auto& object : current_level_->objects)
         {
             const auto entity = engine::ecs::EntityFactory::createDefaultEntity(
-                object, game_.getRegistry(), game_.getPhysicsWorld());
+                object, registry, physicsWorld);
             if (object.tag == "player") current_player_ = entity;
+            initialPlayerPosX = object.position.x;
         }
+        audio_config_ = game_.getAudioSystem().initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
+        current_level_->currentLevelSpeed = current_level_->velocityMultiplier / audio_config_->seconds_per_beat;
+
         isLevelInstantiated = true;
         startLevel();
     }
@@ -121,7 +127,7 @@ namespace gl3::game::state
             auto& tag_comp = view.get<engine::ecs::TagComponent>(entity);
             if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
             {
-                b2Body_SetLinearVelocity(physics_comp.body, {current_level_->level_speed() * -1, 0.0f});
+                b2Body_SetLinearVelocity(physics_comp.body, {current_level_->currentLevelSpeed * -1, 0.0f});
             }
         }
     }

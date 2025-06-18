@@ -2,6 +2,7 @@
 #include "./InGameMenuSystem.h"
 #include "engine/Game.h"
 #include "InstructionUI.h"
+#include "engine/audio/AudioSystem.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
 #include "engine/levelloading/Objects.h"
@@ -73,6 +74,7 @@ namespace gl3::game::state
         void unloadLevel();
         engine::Game& game_;
         ui::InGameMenuSystem& menu_ui_;
+        engine::audio::AudioConfig* audio_config_;
         bool isLevelInstantiated = false;
         int level_index_ = -1;
         Level* current_level_ = nullptr;
