@@ -14,12 +14,14 @@ namespace gl3::game::ui
         void update() override;
 
     private:
-        void styleWindow(ImVec2 windowSize);
-        void DrawInGameUI(const ImGuiViewport* viewport, ImFont* font);
+        static void styleWindow(ImVec2 windowSize);
+        void DrawFinishScreen(const ImGuiViewport* viewport, ImFont* heading, ImFont* font);
         bool escape_pressed_ = false;
         static constexpr ImGuiWindowFlags flags_ =
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |
-            ImGuiWindowFlags_NoTitleBar;
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoBackground;
     };
 }

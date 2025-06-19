@@ -33,7 +33,7 @@ namespace gl3::engine::audio
         void stopCurrentAudio();
 
     private:
-        void onGlobalVolumeChanged(const ui::VolumeChange& event);
+        void onGlobalVolumeChanged(const ui::VolumeChangeEvent& event);
         Game& game_;
         AudioConfig config_;
         GameState previousState = GameState::None;

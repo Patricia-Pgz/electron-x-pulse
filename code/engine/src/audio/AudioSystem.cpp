@@ -9,7 +9,7 @@ namespace gl3::engine::audio
 {
     AudioSystem::AudioSystem(Game& game) : game_(game)
     {
-        ecs::EventDispatcher::dispatcher.sink<ui::VolumeChange>().connect<&
+        ecs::EventDispatcher::dispatcher.sink<ui::VolumeChangeEvent>().connect<&
             AudioSystem::onGlobalVolumeChanged>(this);
         config_.audio.init();
         config_.audio.setGlobalVolume(config_.global_volume_);
@@ -17,7 +17,7 @@ namespace gl3::engine::audio
 
     AudioSystem::~AudioSystem()
     {
-        ecs::EventDispatcher::dispatcher.sink<ui::VolumeChange>().disconnect<&
+        ecs::EventDispatcher::dispatcher.sink<ui::VolumeChangeEvent>().disconnect<&
             AudioSystem::onGlobalVolumeChanged>(this);
     }
 
@@ -49,7 +49,7 @@ namespace gl3::engine::audio
         config_.audio.stopAudioSource(*config_.backgroundMusic);
     }
 
-    void AudioSystem::onGlobalVolumeChanged(const ui::VolumeChange& event)
+    void AudioSystem::onGlobalVolumeChanged(const ui::VolumeChangeEvent& event)
     {
         config_.global_volume_ = event.newVolume;
         config_.audio.setGlobalVolume(config_.global_volume_);

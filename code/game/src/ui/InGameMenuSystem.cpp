@@ -2,6 +2,7 @@
 #include "engine/userInterface/FontManager.h"
 #include "engine/Constants.h"
 #include "engine/ecs/EventDispatcher.h"
+#include "engine/ecs/GameEvents.h"
 #include "engine/rendering/TextureManager.h"
 #include "engine/userInterface/UIEvents.h"
 
@@ -23,6 +24,7 @@ namespace gl3::game::ui
         ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
 
         style.ItemSpacing = ImVec2(40, 40);
+        style.FramePadding = ImVec2(10, 10);
     }
 
     void InGameMenuSystem::DrawInGameUI(const ImGuiViewport* viewport, ImFont* font)
@@ -40,18 +42,37 @@ namespace gl3::game::ui
 
         ImGui::SetCursorPosY(windowSize.y * 0.3f);
 
-        ImGui::SetCursorPosX((windowSize.x - ImGui::CalcTextSize("Volume").x) * 0.5f);
-        ImGui::Text("Volume");
-        const auto sliderWidth = windowSize.x * 0.3f;
+        const ImVec2 spacing = ImGui::GetStyle().ItemSpacing;
+        const ImVec2 padding = ImGui::GetStyle().FramePadding;
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(spacing.x, 20.0f));
+        const ImVec2 textSize = ImGui::CalcTextSize("Volume:");
+        ImGui::SetCursorPosX((windowSize.x - textSize.x) * 0.5f);
+        ImGui::Text("Volume:");
+        ImGui::PopStyleVar();
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(spacing.x, spacing.x));
+        const auto sliderWidth = textSize.x * 1.7f;
         ImGui::PushItemWidth(sliderWidth);
         ImGui::SetCursorPosX((windowSize.x - sliderWidth) * 0.5f);
         if (ImGui::SliderFloat("##Volume", &volume_, 0.0f, 1.0f, "%.2f"))
         {
-            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::VolumeChange(volume_));
+            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::VolumeChangeEvent(volume_));
         }
 
-        ImGui::SetCursorPosX((windowSize.x - ImGui::CalcTextSize("Level Selection").x) * 0.5f);
-        ImGui::Button("Level Selection");
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3 * padding.y);
+        const ImVec2 lvlSelectSize = ImGui::CalcTextSize("Level Selection");
+        ImGui::SetCursorPosX((windowSize.x - lvlSelectSize.x - 2 * padding.x) * 0.5f);
+        if (ImGui::Button("Restart Level", {lvlSelectSize.x + 2 * padding.x, lvlSelectSize.y + 2 * padding.y}))
+        {
+            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::RestartLevelEvent{true});
+        }
+
+        ImGui::SetCursorPosX((windowSize.x - lvlSelectSize.x - 2 * padding.x) * 0.5f);
+        if (ImGui::Button("Level Selection", {lvlSelectSize.x + 2 * padding.x, lvlSelectSize.y + 2 * padding.y}))
+        {
+            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::GameStateChange{
+                engine::GameState::LevelSelect
+            });
+        }
 
 
         ImGui::GetWindowDrawList()->AddImage(
@@ -63,6 +84,7 @@ namespace gl3::game::ui
             {1.f, 0.f}
         );
 
+        ImGui::PopStyleVar();
         ImGui::PopStyleColor(8);
         ImGui::PopFont();
         ImGui::End();
@@ -83,6 +105,7 @@ namespace gl3::game::ui
             {
                 escape_pressed_ = true;
                 show_menu_ = !show_menu_;
+                engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{show_menu_});
             }
         }
         else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)

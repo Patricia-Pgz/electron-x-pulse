@@ -4,7 +4,7 @@
 
 namespace gl3::engine::state
 {
-    class StateManagementSystem : public ecs::System
+    class StateManagementSystem final : public ecs::System
     {
     public:
         explicit StateManagementSystem(Game& game) : System(game)

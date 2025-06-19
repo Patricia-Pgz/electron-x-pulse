@@ -2,6 +2,7 @@
 #include "engine/userInterface/FontManager.h"
 #include "engine/Constants.h"
 #include "engine/ecs/EventDispatcher.h"
+#include "engine/ecs/GameEvents.h"
 #include "engine/rendering/TextureManager.h"
 #include "engine/userInterface/UIEvents.h"
 
@@ -12,7 +13,8 @@ namespace gl3::game::ui
         ImGuiStyle& style = ImGui::GetStyle();
         style.WindowBorderSize = 0.f;
         style.WindowPadding = ImVec2(windowSize.x * 0.08, windowSize.y * 0.14);
-        ImGui::GetStyle().FrameRounding = 5.0;
+
+        style.FrameRounding = 5.0;
         ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UINeonColors::pastelNeonViolet2);
         ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet);
@@ -23,31 +25,49 @@ namespace gl3::game::ui
         ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
 
         style.ItemSpacing = ImVec2(40, 40);
+        style.FramePadding = ImVec2(10, 10);
     }
 
-    void FinishUI::DrawInGameUI(const ImGuiViewport* viewport, ImFont* font)
+    void FinishUI::DrawFinishScreen(const ImGuiViewport* viewport, ImFont* heading, ImFont* font)
     {
         const auto viewportSize = viewport->Size;
         const auto viewportPos = viewport->Pos;
-        ImGui::SetNextWindowPos({viewportPos.x, viewportPos.y});
-        ImGui::SetNextWindowSize({viewportSize.x, viewportSize.y});
-        ImGui::PushFont(font);
+        const ImVec2 windowSize = {viewportSize.x * 0.5f, viewportSize.x * 0.5f};
+        ImGui::SetNextWindowSize({windowSize.x, windowSize.y});
+        ImGui::SetNextWindowPos({(viewportSize.x - windowSize.x) * 0.5f, viewportPos.y});
+        ImGui::PushFont(heading);
 
         ImGui::Begin("Menu", nullptr, flags_);
-        const auto windowSize = ImGui::GetWindowSize();
+        const auto windowSizeCur = ImGui::GetWindowSize();
         const auto windowPos = ImGui::GetWindowPos();
-        styleWindow(windowSize);
+        styleWindow(windowSizeCur);
 
-        ImGui::SetCursorPosY(windowSize.y * 0.3f);
-        ImGui::SetCursorPosX((windowSize.x - ImGui::CalcTextSize("Level Selection").x) * 0.5f);
-        ImGui::Button("Level Selection");
+        const ImVec2 textSize = ImGui::CalcTextSize("Victory!");
+        ImGui::SetCursorPos({(windowSizeCur.x - textSize.x) * 0.5f, windowPos.y + windowSizeCur.y * 0.35f});
+        ImGui::Text("Victory!");
+        ImGui::PopFont();
+        ImGui::PushFont(font);
+        const ImVec2 padding = ImGui::GetStyle().FramePadding;
+        const ImVec2 lvlSelectSize = ImGui::CalcTextSize("Level Selection");
+        ImGui::SetCursorPosX((windowSizeCur.x - lvlSelectSize.x - 2 * padding.x) * 0.5f);
+        if (ImGui::Button("Restart Level", {lvlSelectSize.x + 2 * padding.x, lvlSelectSize.y + 2 * padding.y}))
+        {
+            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::RestartLevelEvent{true});
+        }
 
+        ImGui::SetCursorPosX((windowSizeCur.x - lvlSelectSize.x - 2 * padding.x) * 0.5f);
+        if (ImGui::Button("Level Selection", {lvlSelectSize.x + 2 * padding.x, lvlSelectSize.y + 2 * padding.y}))
+        {
+            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::GameStateChange{
+                engine::GameState::LevelSelect
+            });
+        }
 
         ImGui::GetWindowDrawList()->AddImage(
-            engine::rendering::TextureManager::getUITexture("LvlSelectBGTop1").getID(),
+            engine::rendering::TextureManager::getUITexture("Win").getID(),
             windowPos,
-            ImVec2(windowPos.x + windowSize.x,
-                   windowPos.y + windowSize.y),
+            ImVec2(windowPos.x + windowSizeCur.x,
+                   windowPos.y + windowSizeCur.y),
             {0.f, 1.f},
             {1.f, 0.f}
         );
@@ -68,6 +88,7 @@ namespace gl3::game::ui
         if (!is_active) return;
 
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        DrawInGameUI(viewport, engine::ui::FontManager::getFont("pixeloid-bold-26"));
+        DrawFinishScreen(viewport, engine::ui::FontManager::getFont("pixeloid-bold-30"),
+                         engine::ui::FontManager::getFont("pixeloid-bold-26"));
     }
 }

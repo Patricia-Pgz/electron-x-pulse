@@ -15,7 +15,9 @@ namespace gl3::engine::ui{
             }
         }
 
+        //Add custom sized fonts:
         fonts_["pixeloid-bold-26"] = io.Fonts->AddFontFromFileTTF((folder + "/PixeloidSans-Bold.ttf").c_str(), 26);
+        fonts_["pixeloid-bold-30"] = io.Fonts->AddFontFromFileTTF((folder + "/PixeloidSans-Bold.ttf").c_str(), 30);
     }
 
     ImFont* FontManager::getFont(const std::string& name) {

@@ -155,26 +155,45 @@ namespace gl3::game::state
         game_.getAudioSystem().playCurrentAudio();
     }
 
-    void LevelPlayState::pauseLevel() const //UI Event abfangen in InGameMenuUI -> ESC
+    void LevelPlayState::pauseLevel() const
     {
-        game_.getAudioSystem().stopCurrentAudio();
+        audio_config_->audio.setPause(audio_config_->currentAudioHandle, true);
         stopMovingObjects();
     }
 
-    void LevelPlayState::resumeLevel() const //TODO UI event abfangen in InGameMenuUI
+    void LevelPlayState::resumeLevel() const
     {
         moveObjects();
-        game_.getAudioSystem().playCurrentAudio();
+        audio_config_->audio.setPause(audio_config_->currentAudioHandle, false);
     }
 
+    void LevelPlayState::onPauseEvent(const engine::ui::PauseLevelEvent& event) const
+    {
+        if (event.pauseLevel)
+        {
+            pauseLevel();
+        }
+        else
+        {
+            resumeLevel();
+        }
+    }
 
     /**
      *Resets every entity to its initial Transform and restarts movement and audio
 */
     void LevelPlayState::reloadLevel()
-    //TODO zusätzlich UI event aus InGameMenuUI & FinishMenu abfangen! (restart lvl -> button hinzufügen)
     {
         game_.getAudioSystem().stopCurrentAudio();
+
+        timer_ = 1.f;
+        transition_triggered_ = false;
+        timer_active_ = false;
+
+        menu_ui_.setActive(false);
+        game_.getUISystem().getSubsystems(2).setActive(false);
+        game_.getUISystem().getSubsystems(3).setActive(false);
+
         auto& registry = game_.getRegistry();
         const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
                                         engine::ecs::PhysicsComponent>();
@@ -195,13 +214,14 @@ namespace gl3::game::state
                 engine::ecs::TagComponent>(entity).tag == "background")
             {
                 background_entities_.push_back(entity);
-                //TODO backgrounds hier direkt updaten, anstatt in array schieben und dann updaten!
+                //TODO backgrounds hier direkt updaten, anstatt in array schieben und dann updaten! -> verhindert evtl entt errors
             }
         }
 
         updateBackgroundEntities();
 
         game_.getAudioSystem().playCurrentAudio();
+        moveObjects();
     }
 
     void LevelPlayState::delayLevelEnd(float deltaTime)
@@ -233,6 +253,8 @@ namespace gl3::game::state
     void LevelPlayState::unloadLevel()
     {
         level_instantiated_ = false;
-        //TODO player in game auf null setzen + entites aus registry löschen + schauen ob wirklich alles nötige gelöscht wurde!
+        game_.getAudioSystem().stopCurrentAudio();
+
+        //TODO player in game deleten + auf null setzen -> level ptr auf null, nicht deleten + entites aus registry löschen + schauen ob wirklich alles nötige gelöscht wurde!
     }
 }

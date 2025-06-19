@@ -33,6 +33,10 @@ namespace gl3::game::state
                 LevelPlayState::onWindowResize>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
                 LevelPlayState::reloadLevel>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::RestartLevelEvent>().connect<&
+                LevelPlayState::reloadLevel>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().connect<&
+                LevelPlayState::onPauseEvent>(this);
         }
 
         ~LevelPlayState() override
@@ -41,6 +45,10 @@ namespace gl3::game::state
                 LevelPlayState::onWindowResize>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
                 LevelPlayState::reloadLevel>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::RestartLevelEvent>().disconnect<&
+                LevelPlayState::reloadLevel>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().disconnect<&
+                LevelPlayState::onPauseEvent>(this);
         }
 
         void onEnter() override
@@ -82,6 +90,7 @@ namespace gl3::game::state
         void unloadLevel();
 
         void onWindowResize(const engine::context::WindowResizeEvent& evt) const;
+        void onPauseEvent(const engine::ui::PauseLevelEvent& event) const;
 
         [[nodiscard]] LevelBackgroundConfig calculateBackgrounds() const;
         void applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig) const;
