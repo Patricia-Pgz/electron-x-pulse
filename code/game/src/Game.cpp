@@ -84,14 +84,14 @@ namespace gl3::game
 
     void Game::onLvlStart(const engine::ecs::LevelStartEvent& event)
     {
-        player_ = event.player; //TODO brauch ich den hier überhaupt?
+        player_ = event.player;
     }
 
     void Game::onPauseLevel(const engine::ui::PauseLevelEvent& event) const
     {
         if (event.pauseLevel)
         {
-            physics_system_->setActive(false);
+            physics_system_->setActive(false); //TODO lieber pause state
             player_input_system_->setActive(false);
         }
         else

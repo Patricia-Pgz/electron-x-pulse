@@ -101,8 +101,8 @@ namespace gl3::game::state
         void onPauseEvent(const engine::ui::PauseLevelEvent& event) const;
 
         [[nodiscard]] LevelBackgroundConfig calculateBackgrounds() const;
-        void applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig) const;
-        void updateBackgroundEntities() const;
+        void applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig, entt::entity entity) const;
+        void updateBackgroundEntity(LevelBackgroundConfig& bgConfig, entt::entity entity) const;
 
         ui::InGameMenuUI* menu_ui_;
         ui::FinishUI* finish_ui_;
@@ -115,6 +115,5 @@ namespace gl3::game::state
         int level_index_ = -1;
         Level* current_level_ = nullptr;
         entt::entity current_player_ = entt::null;
-        std::vector<entt::entity> background_entities_;
     };
 }

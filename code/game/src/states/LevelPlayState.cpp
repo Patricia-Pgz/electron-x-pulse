@@ -40,49 +40,60 @@ namespace gl3::game::state
         return {center_x, windowWidth, ground_center_y, ground_height, sky_center_y, sky_height};
     }
 
-    void LevelPlayState::applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig) const
+    void LevelPlayState::applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig,
+                                                        const entt::entity entity) const
     {
         auto& registry = game_.getRegistry();
-        for (auto& entity : background_entities_)
+        if (!registry.valid(entity)) return;
+        if (const auto& tag = registry.get<engine::ecs::TagComponent>(entity).tag; tag == "ground")
         {
-            if (!registry.valid(entity)) continue;
-            if (auto& tag = registry.get<engine::ecs::TagComponent>(entity).tag; tag == "ground")
-            {
-                engine::ecs::EntityFactory::setPosition(registry, entity, {
-                                                            bgConfig.center_x, bgConfig.ground_center_y, 0.f
-                                                        });
-                engine::ecs::EntityFactory::setScale(registry, entity, {
-                                                         bgConfig.windowWidth, bgConfig.ground_height, 1.f
-                                                     });
-            }
-            else if (tag == "background")
-            {
-                engine::ecs::EntityFactory::setPosition(registry, entity, {
-                                                            bgConfig.center_x, bgConfig.sky_center_y, 0.f
-                                                        });
-                engine::ecs::EntityFactory::setScale(registry, entity, {
-                                                         bgConfig.windowWidth, bgConfig.sky_height, 1.f
-                                                     });
-            }
+            engine::ecs::EntityFactory::setPosition(registry, entity, {
+                                                        bgConfig.center_x, bgConfig.ground_center_y, 0.f
+                                                    });
+            engine::ecs::EntityFactory::setScale(registry, entity, {
+                                                     bgConfig.windowWidth, bgConfig.ground_height, 1.f
+                                                 });
+        }
+        else if (tag == "background")
+        {
+            engine::ecs::EntityFactory::setPosition(registry, entity, {
+                                                        bgConfig.center_x, bgConfig.sky_center_y, 0.f
+                                                    });
+            engine::ecs::EntityFactory::setScale(registry, entity, {
+                                                     bgConfig.windowWidth, bgConfig.sky_height, 1.f
+                                                 });
         }
     }
 
-    void LevelPlayState::updateBackgroundEntities() const
+    void LevelPlayState::updateBackgroundEntity(LevelBackgroundConfig& bgConfig, entt::entity entity) const
     {
-        auto bgConfig = calculateBackgrounds();
-        applyBackgroundEntityTransform(bgConfig);
+        applyBackgroundEntityTransform(bgConfig, entity);
     }
 
     void LevelPlayState::onWindowResize(const engine::context::WindowResizeEvent& event) const
     {
         if (!level_instantiated_ || event.newHeight <= 0 || event.newWidth <= 0) return;
-        updateBackgroundEntities();
+
+        auto& registry = game_.getRegistry();
+        const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
+                                        engine::ecs::PhysicsComponent>();
+
+        auto bgConfig = calculateBackgrounds();
+        for (auto& entity : view)
+        {
+            if (!registry.valid(entity)) continue;
+            if (registry.get<engine::ecs::TagComponent>(entity).tag == "ground" || registry.get<
+                engine::ecs::TagComponent>(entity).tag == "background")
+            {
+                updateBackgroundEntity(bgConfig, entity);
+            }
+        }
     }
 
     void LevelPlayState::loadLevel()
     {
         auto& registry = game_.getRegistry();
-        auto physicsWorld = game_.getPhysicsWorld();
+        const auto physicsWorld = game_.getPhysicsWorld();
         current_level_ = engine::levelLoading::LevelLoader::loadLevelByID(level_index_);
 
         const auto bgConfig = calculateBackgrounds();
@@ -99,22 +110,21 @@ namespace gl3::game::state
                 object.scale = {bgConfig.windowWidth, bgConfig.sky_height, 1.f};
             }
 
-            auto entity = engine::ecs::EntityFactory::createDefaultEntity(
+            engine::ecs::EntityFactory::createDefaultEntity(
                 object, registry, physicsWorld);
-            background_entities_.push_back(entity);
         }
 
         float initialPlayerPosX = 0.f;
         for (auto& object : current_level_->objects)
         {
-            const auto entity = engine::ecs::EntityFactory::createDefaultEntity(
+            const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(
                 object, registry, physicsWorld);
             if (object.tag == "player") current_player_ = entity;
             initialPlayerPosX = object.position.x;
         }
         audio_config_ = game_.getAudioSystem().initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
         current_level_->currentLevelSpeed = current_level_->velocityMultiplier / audio_config_->seconds_per_beat;
-        current_level_->levelLength = 5; //audio_config_->current_audio_length*levelspeed
+        current_level_->levelLength = 5; //TODO audio_config_->current_audio_length*levelspeed
 
         level_instantiated_ = true;
         startLevel();
@@ -150,7 +160,6 @@ namespace gl3::game::state
 
     void LevelPlayState::startLevel() const
     {
-        //TODO brauche ich das event noch? -> wenn nein sind start und resume das gleiche
         engine::ecs::EventDispatcher::dispatcher.trigger<engine::ecs::LevelStartEvent>({current_player_});
 
         moveObjects();
@@ -188,8 +197,9 @@ namespace gl3::game::state
 */
     void LevelPlayState::reloadLevel()
     {
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{false});
+        //TODO lieber nen levelPauseState drüber pushen und im statemanager playerinput + physics de/reactivieren
         menu_ui_->setActive(true);
-        menu_ui_->showUI(false);
         instruction_ui_->setActive(level_index_ == 0);
         finish_ui_->setActive(false);
 
@@ -203,7 +213,8 @@ namespace gl3::game::state
         auto& registry = game_.getRegistry();
         const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
                                         engine::ecs::PhysicsComponent>();
-        background_entities_.clear();
+
+        auto bgConfig = calculateBackgrounds();
         for (auto& entity : view)
         {
             if (!registry.valid(entity)) continue;
@@ -219,12 +230,10 @@ namespace gl3::game::state
             if (registry.get<engine::ecs::TagComponent>(entity).tag == "ground" || registry.get<
                 engine::ecs::TagComponent>(entity).tag == "background")
             {
-                background_entities_.push_back(entity);
-                //TODO backgrounds hier direkt updaten, anstatt in array schieben und dann updaten! -> verhindert evtl entt errors
+                updateBackgroundEntity(bgConfig, entity);
             }
         }
 
-        updateBackgroundEntities();
 
         game_.getAudioSystem().playCurrentAudio();
         moveObjects();
