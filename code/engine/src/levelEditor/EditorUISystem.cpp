@@ -1,6 +1,7 @@
 #include "engine/levelEditor/EditorUISystem.h"
 #include <iostream>
 #include "engine/Constants.h"
+#include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/rendering/Texture.h"
 #include "engine/rendering/TextureManager.h"

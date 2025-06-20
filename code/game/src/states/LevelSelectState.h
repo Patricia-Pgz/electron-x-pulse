@@ -4,22 +4,23 @@
 
 namespace gl3::engine::state
 {
-    class LevelSelectState : public GameState
+    class LevelSelectState final : public GameState
     {
     public:
-        explicit LevelSelectState(levelLoading::LevelSelectUISystem& levelUI)
-            : level_ui_(levelUI)
+        explicit LevelSelectState(Game& game)
+            : GameState(game)
         {
+            level_ui_ = game.getUISystem().getSubsystem<levelLoading::LevelSelectUISystem>();
         }
 
         void onEnter() override
         {
-            level_ui_.setActive(true);
+            level_ui_->setActive(true);
         }
 
         void onExit() override
         {
-            level_ui_.setActive(false);
+            level_ui_->setActive(false);
         }
 
         void update(float dt) override
@@ -27,7 +28,7 @@ namespace gl3::engine::state
         };
 
     private:
-        levelLoading::LevelSelectUISystem& level_ui_;
+        levelLoading::LevelSelectUISystem* level_ui_;
     };
 }
 

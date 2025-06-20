@@ -33,6 +33,7 @@ namespace gl3::engine::ecs
         glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Default red
         const rendering::Texture* texture = nullptr;
         glm::vec4 uv;
+        bool isActive = true;
     };
 
     struct PhysicsComponent
@@ -40,6 +41,7 @@ namespace gl3::engine::ecs
         b2WorldId physicsWorld = b2_nullWorldId;
         b2BodyId body = b2_nullBodyId;
         b2ShapeId shape = b2_nullShapeId;
+        bool isActive = true;
     };
 
     struct TagComponent

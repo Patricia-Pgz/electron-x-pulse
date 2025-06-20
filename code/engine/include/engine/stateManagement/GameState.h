@@ -4,7 +4,7 @@ namespace gl3::engine::state
     class GameState
     {
     public:
-        //TODO im Constructor game& mitgeben!
+        explicit GameState(Game& game) : game_(game){}
         virtual ~GameState() = default;
         virtual void update(float deltaTime) = 0;
 
@@ -15,5 +15,8 @@ namespace gl3::engine::state
         virtual void onExit()
         {
         };
+
+    protected:
+        Game& game_;
     };
 }

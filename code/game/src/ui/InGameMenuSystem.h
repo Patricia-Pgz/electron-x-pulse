@@ -10,13 +10,16 @@ namespace gl3::game::ui
         explicit InGameMenuSystem(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game)
         {
         };
-
         void update() override;
+        void showUI(const bool showUI)
+        {
+            show_ui = showUI;
+        }
 
     private:
         void DrawInGameUI(const ImGuiViewport* viewport, ImFont* font);
         bool escape_pressed_ = false;
-        bool show_menu_ = false;
+        bool show_ui = false;
         float volume_ = 1.0f;
         static constexpr ImGuiWindowFlags flags_ =
             ImGuiWindowFlags_NoMove |

@@ -1,6 +1,6 @@
 #include "FinishUI.h"
 #include "engine/userInterface/FontManager.h"
-#include "engine/Constants.h"
+#include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
 #include "engine/rendering/TextureManager.h"

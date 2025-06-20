@@ -1,6 +1,6 @@
 #include "InGameMenuSystem.h"
 #include "engine/userInterface/FontManager.h"
-#include "engine/Constants.h"
+#include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
 #include "engine/rendering/TextureManager.h"
@@ -104,8 +104,8 @@ namespace gl3::game::ui
             if (!escape_pressed_)
             {
                 escape_pressed_ = true;
-                show_menu_ = !show_menu_;
-                engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{show_menu_});
+                show_ui = !show_ui;
+                engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{show_ui});
             }
         }
         else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
@@ -113,7 +113,7 @@ namespace gl3::game::ui
             escape_pressed_ = false;
         }
 
-        if (!show_menu_) return;
+        if (!show_ui) return;
 
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         DrawInGameUI(viewport, engine::ui::FontManager::getFont("pixeloid-bold-26"));

@@ -13,7 +13,6 @@ namespace gl3::engine::ui
         };
         virtual void update()
         {
-
         };
         virtual ~IUISubsystem() = default;
         void setActive(const bool setActive)

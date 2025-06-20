@@ -5,6 +5,8 @@
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
 #include "engine/levelloading/LevelLoader.h"
+#include "ui/FinishUI.h"
+#include "ui/InstructionUI.h"
 
 namespace gl3::game::state
 {
@@ -184,15 +186,17 @@ namespace gl3::game::state
 */
     void LevelPlayState::reloadLevel()
     {
+        menu_ui_->setActive(true);
+        menu_ui_->showUI(false);
+        instruction_ui_->setActive(level_index_ == 0);
+        finish_ui_->setActive(false);
+
         game_.getAudioSystem().stopCurrentAudio();
 
         timer_ = 1.f;
         transition_triggered_ = false;
         timer_active_ = false;
 
-        menu_ui_.setActive(false);
-        game_.getUISystem().getSubsystems(2).setActive(false);
-        game_.getUISystem().getSubsystems(3).setActive(false);
 
         auto& registry = game_.getRegistry();
         const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
@@ -241,9 +245,9 @@ namespace gl3::game::state
             {
                 transition_triggered_ = true;
 
-                menu_ui_.setActive(false);
-                game_.getUISystem().getSubsystems(2).setActive(false);
-                game_.getUISystem().getSubsystems(3).setActive(true);
+                menu_ui_->setActive(false);
+                instruction_ui_->setActive(false);
+                finish_ui_->setActive(true);
                 pauseLevel();
             }
         }
@@ -254,7 +258,9 @@ namespace gl3::game::state
     {
         level_instantiated_ = false;
         game_.getAudioSystem().stopCurrentAudio();
-
+        menu_ui_->setActive(false);
+        instruction_ui_->setActive(false);
+        finish_ui_->setActive(false);
         //TODO player in game deleten + auf null setzen -> level ptr auf null, nicht deleten + entites aus registry löschen + schauen ob wirklich alles nötige gelöscht wurde!
     }
 }

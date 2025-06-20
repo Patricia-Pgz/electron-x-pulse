@@ -33,8 +33,8 @@ namespace gl3::game
 
     void GameStateManager::onUiInitialized() const
     {
-        auto& levelUI = dynamic_cast<engine::levelLoading::LevelSelectUISystem&>(game_.getUISystem().getSubsystems(0));
-        game_.getStateManagement().pushState<engine::state::LevelSelectState>(levelUI);
+        game_.getStateManagement().pushState<engine::state::LevelSelectState>(
+            game_);
     }
 
 
@@ -221,17 +221,13 @@ namespace gl3::game
 
         if (event.newGameState == engine::GameState::LevelSelect)
         {
-            auto& levelUI = dynamic_cast<engine::levelLoading::LevelSelectUISystem&>(game_.getUISystem().
-                getSubsystems(0));
-            stateSystem.changeState<engine::state::LevelSelectState>(levelUI);
+            stateSystem.changeState<engine::state::LevelSelectState>(game_);
             return;
         }
 
         if (event.newGameState == engine::GameState::Level && previous_game_state_ != engine::GameState::Level)
         {
-            auto& menuUI = dynamic_cast<ui::InGameMenuSystem&>(game_.getUISystem().
-                                                                     getSubsystems(1));
-            stateSystem.changeState<state::LevelPlayState>(menuUI, event.newLevelIndex, game_);
+            stateSystem.changeState<state::LevelPlayState>(game_, event.newLevelIndex);
             return;
         }
 

@@ -31,8 +31,9 @@ namespace gl3::engine::rendering
                  entity : entities)
             {
                 auto& transform = entities.get<ecs::TransformComponent>(entity);
+                auto& renderComp = entities.get<ecs::RenderComponent>(entity);
 
-                if (context.isInVisibleWindow(transform.position))
+                if (context.isInVisibleWindow(transform.position) && renderComp.isActive)
                 {
                     auto& render_component = entities.get<ecs::RenderComponent>(entity);
                     const auto mvpMatrix = calculateMvpMatrix(transform.position, transform.zRotation, transform.scale,

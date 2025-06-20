@@ -1,4 +1,6 @@
 #pragma once
+#include <typeindex>
+
 #include "engine/ecs/System.h"
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
@@ -15,7 +17,7 @@ namespace gl3::engine::ui
     ///Initializes ImGui and updates itself as well as UI subsystems each UI frame.
     ///@note Only add one high level UI System per game.
     ///summary
-    class UISystem : public ecs::System
+    class UISystem final : public ecs::System
     {
     public:
         using event_t = events::Event<UISystem>;
@@ -68,20 +70,21 @@ namespace gl3::engine::ui
                 onInitialized.invoke();
             }
 
-            updateUI();
             updateSubSystems();
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }
 
-        virtual void updateUI()
+        template <typename T>
+        T* getSubsystem() const
         {
-        };
-
-        [[nodiscard]] IUISubsystem& getSubsystems(const int index) const
-        {
-            return *subsystems[index];
+            static_assert(std::is_base_of_v<IUISubsystem, T>, "T must derive from IUISubsystem");
+            if (const auto subSys = subsystems.find(typeid(T)); subSys != subsystems.end())
+            {
+                return dynamic_cast<T*>(subSys->second.get());
+            }
+            return nullptr;
         }
 
         /**
@@ -93,10 +96,13 @@ namespace gl3::engine::ui
         void registerSubsystem()
         {
             static_assert(std::is_base_of_v<IUISubsystem, T>, "T must derive from IUISubsystem");
-            pendingSubsystems.emplace_back([this]
-            {
-                return std::make_unique<T>(imgui_io, game);
-            });
+            pendingSubsystems.emplace_back(
+                typeid(T),
+                [this]()
+                {
+                    return std::make_unique<T>(imgui_io, game);
+                }
+            );
         }
 
         /**
@@ -110,9 +116,10 @@ namespace gl3::engine::ui
                 return;
             }
             isInitializingSystems = true;
-            for (auto& factory : pendingSubsystems)
+
+            for (auto& [type, factory] : pendingSubsystems)
             {
-                subsystems.emplace_back(factory());
+                subsystems[type] = factory();
             }
 
             pendingSubsystems.clear();
@@ -121,8 +128,8 @@ namespace gl3::engine::ui
 
     protected:
         ImGuiIO* imgui_io = nullptr;
-        std::vector<std::function<std::unique_ptr<IUISubsystem>()>> pendingSubsystems;
-        std::vector<std::unique_ptr<IUISubsystem>> subsystems;
+        std::vector<std::pair<std::type_index, std::function<std::unique_ptr<IUISubsystem>()>>> pendingSubsystems;
+        std::unordered_map<std::type_index, std::unique_ptr<IUISubsystem>> subsystems;
         bool isInitializingSystems = false;
 
         void updateSubSystems() const
@@ -134,9 +141,9 @@ namespace gl3::engine::ui
             }
             if (subsystems.empty()) return;
 
-            for (auto& system : subsystems)
+            for (const auto& val : subsystems | std::views::values)
             {
-                system->update();
+                val->update();
             }
         }
     };
