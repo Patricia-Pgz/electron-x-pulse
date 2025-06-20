@@ -79,8 +79,9 @@ namespace gl3::game::state
         void update(const float deltaTime) override
         {
             if (!level_instantiated_)
+            {
                 return;
-
+            }
             delayLevelEnd(deltaTime);
         }
 

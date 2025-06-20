@@ -174,10 +174,12 @@ namespace gl3::game::state
         if (event.pauseLevel)
         {
             pauseLevel();
+            instruction_ui_->pauseTimer(true);
         }
         else
         {
             resumeLevel();
+            instruction_ui_->pauseTimer(false);
         }
     }
 

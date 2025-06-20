@@ -15,7 +15,7 @@ namespace gl3::engine::ui
         {
         };
         virtual ~IUISubsystem() = default;
-        void setActive(const bool setActive)
+        virtual void setActive(const bool setActive)
         {
             is_active = setActive;
         }

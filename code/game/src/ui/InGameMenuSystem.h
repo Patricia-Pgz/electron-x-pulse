@@ -11,6 +11,13 @@ namespace gl3::game::ui
         {
         };
         void update() override;
+
+        void setActive(const bool setActive) override
+        {
+            is_active = setActive;
+            show_ui = false;
+        }
+
         void showUI(const bool showUI)
         {
             show_ui = showUI;

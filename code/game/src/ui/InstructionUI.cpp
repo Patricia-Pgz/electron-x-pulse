@@ -3,16 +3,10 @@
 
 namespace gl3::game::ui
 {
-    void InstructionUI::activateHints()
+    void InstructionUI::drawHints(const ImGuiViewport* viewport, ImFont* font)
     {
-        timer = 0;
-        show_hints_ = true;
-    }
+        if(!pause_timer){timer_ -= game_.getDeltaTime();}
 
-    void InstructionUI::DrawHints(const ImGuiViewport* viewport, ImFont* font)
-    {
-        if (!show_hints_)return; //TODO GameState? lvl? timer iwo resetten
-        timer -= game_.getDeltaTime();
         const auto viewportSize = viewport->Size;
         const auto viewportPos = viewport->Pos;
         ImGui::SetNextWindowPos({viewportPos.x, viewportPos.y});
@@ -23,7 +17,7 @@ namespace gl3::game::ui
         const auto windowSize = ImGui::GetWindowSize();
         ImGui::GetStyle().WindowPadding = ImVec2(windowSize.x * 0.08, windowSize.y * 0.08);
         ImGui::GetStyle().ItemSpacing = ImVec2(40, 40);
-        ImGui::Text("Press Space to Jump & Escape for Menu");
+        ImGui::Text("Press SPACE to Jump & ESC to open/close Menu");
 
         ImGui::PopStyleColor();
         ImGui::PopFont();
@@ -32,7 +26,15 @@ namespace gl3::game::ui
 
     void InstructionUI::update()
     {
-        if (!is_active || timer <= 0.f) return;
-        DrawHints(ImGui::GetMainViewport(), engine::ui::FontManager::getFont("PixeloidSans"));
+        if (!is_active || timer_ <= 0.f) return;
+        drawHints(ImGui::GetMainViewport(), engine::ui::FontManager::getFont("PixeloidSans"));
     }
+
+    void InstructionUI::setActive(const bool setActive)
+    {
+        is_active = setActive;
+        timer_ = 15;
+        pause_timer = false;
+    }
+
 } // gl3

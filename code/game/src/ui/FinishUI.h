@@ -15,8 +15,7 @@ namespace gl3::game::ui
 
     private:
         static void styleWindow(ImVec2 windowSize);
-        void DrawFinishScreen(const ImGuiViewport* viewport, ImFont* heading, ImFont* font);
-        bool escape_pressed_ = false;
+        static void DrawFinishScreen(const ImGuiViewport* viewport, ImFont* heading, ImFont* font);
         static constexpr ImGuiWindowFlags flags_ =
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |

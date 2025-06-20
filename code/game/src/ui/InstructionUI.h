@@ -10,14 +10,18 @@ namespace gl3::game::ui
         explicit InstructionUI(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game)
         {
         }
-
         void update() override;
+        void setActive(bool setActive) override;
+
+        void pauseTimer(const bool pause)
+        {
+            pause_timer = pause;
+        }
 
     private:
-        void activateHints();
-        void DrawHints(const ImGuiViewport* viewport, ImFont* font);
-        bool show_hints_ = true; //TODO false bis gamemode wechsel
-        float timer = 15;
+        void drawHints(const ImGuiViewport* viewport, ImFont* font);
+        bool pause_timer = false;
+        float timer_ = 15;
         static constexpr ImGuiWindowFlags flags_ =
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |
