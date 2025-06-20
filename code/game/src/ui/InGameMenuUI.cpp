@@ -1,4 +1,4 @@
-#include "InGameMenuSystem.h"
+#include "InGameMenuUI.h"
 #include "engine/userInterface/FontManager.h"
 #include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
@@ -27,7 +27,7 @@ namespace gl3::game::ui
         style.FramePadding = ImVec2(10, 10);
     }
 
-    void InGameMenuSystem::DrawInGameUI(const ImGuiViewport* viewport, ImFont* font)
+    void InGameMenuUI::DrawInGameUI(const ImGuiViewport* viewport, ImFont* font)
     {
         const auto viewportSize = viewport->Size;
         const auto viewportPos = viewport->Pos;
@@ -96,7 +96,7 @@ namespace gl3::game::ui
      * @pre ImGui needs to be set up already. E.g. by calling @ref gl3::engine::ui::UISystem::renderUI on a UISystem instance (or inherited ones) each game UI-Update frame @ref gl3::engine::Game::updateUI.
     * @pre ImGui Frame needs to be running already.
  */
-    void InGameMenuSystem::update()
+    void InGameMenuUI::update()
     {
         if (!is_active) return;
         if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)

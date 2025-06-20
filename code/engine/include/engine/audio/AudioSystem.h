@@ -4,6 +4,7 @@
 #include <soloud_wav.h>
 
 #include "engine/Game.h"
+#include "engine/ecs/System.h"
 #include "engine/userInterface/UIEvents.h"
 
 namespace gl3::engine::audio
@@ -23,20 +24,19 @@ namespace gl3::engine::audio
         std::vector<float> beatPositions;
     };
 
-    class AudioSystem
+    class AudioSystem final : public ecs::System
     {
     public:
         explicit AudioSystem(Game& game);
-        ~AudioSystem();
+        ~AudioSystem() override;
         AudioConfig* initializeCurrentAudio(const std::string& fileName, float positionOffsetX = 0.f);
         void playCurrentAudio();
         void stopCurrentAudio();
 
     private:
         void onGlobalVolumeChanged(const ui::VolumeChangeEvent& event);
-        Game& game_;
         AudioConfig config_;
-        GameState previousState = GameState::None;
+        GameState previous_state_ = GameState::None;
     };
 }
 

@@ -53,12 +53,13 @@ namespace gl3::engine::ui
             FontManager::loadFonts(resolveAssetPath("fonts"));
             imgui_io->Fonts->Build();
 
-            ImGui_ImplGlfw_InitForOpenGL(game.getWindow(), true);
+            ImGui_ImplGlfw_InitForOpenGL(game_.getWindow(), true);
             ImGui_ImplOpenGL3_Init("#version 460");
         }
 
         void renderUI()
         {
+            if(!is_active){return;}
             // Start the frame
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
@@ -100,7 +101,7 @@ namespace gl3::engine::ui
                 typeid(T),
                 [this]()
                 {
-                    return std::make_unique<T>(imgui_io, game);
+                    return std::make_unique<T>(imgui_io, game_);
                 }
             );
         }

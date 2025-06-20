@@ -7,7 +7,7 @@
 
 namespace gl3::engine::audio
 {
-    AudioSystem::AudioSystem(Game& game) : game_(game)
+    AudioSystem::AudioSystem(Game& game) : System(game)
     {
         ecs::EventDispatcher::dispatcher.sink<ui::VolumeChangeEvent>().connect<&
             AudioSystem::onGlobalVolumeChanged>(this);

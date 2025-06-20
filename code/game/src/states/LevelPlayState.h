@@ -8,7 +8,7 @@
 #include "engine/stateManagement/GameState.h"
 #include "engine/userInterface/UISystem.h"
 #include "ui/FinishUI.h"
-#include "ui/InGameMenuSystem.h"
+#include "ui/InGameMenuUI.h"
 #include "ui/InstructionUI.h"
 
 namespace gl3::game::state
@@ -32,7 +32,7 @@ namespace gl3::game::state
             : GameState(game), level_index_(levelIndex)
         {
             const auto& topLvlUI = game_.getUISystem();
-            menu_ui_ = topLvlUI.getSubsystem<ui::InGameMenuSystem>();
+            menu_ui_ = topLvlUI.getSubsystem<ui::InGameMenuUI>();
             instruction_ui_ = topLvlUI.getSubsystem<ui::InstructionUI>();
             finish_ui_ = topLvlUI.getSubsystem<ui::FinishUI>();
 
@@ -104,9 +104,9 @@ namespace gl3::game::state
         void applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig) const;
         void updateBackgroundEntities() const;
 
-        ui::InGameMenuSystem* menu_ui_;
-        ui::FinishUI* finish_ui_{};
-        ui::InstructionUI* instruction_ui_{};
+        ui::InGameMenuUI* menu_ui_;
+        ui::FinishUI* finish_ui_;
+        ui::InstructionUI* instruction_ui_;
         engine::audio::AudioConfig* audio_config_ = nullptr;
         bool level_instantiated_ = false;
         bool timer_active_ = false;

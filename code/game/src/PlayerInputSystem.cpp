@@ -18,8 +18,8 @@ namespace gl3::game::input
     void PlayerInputSystem::update(const entt::entity& player)
     {
         if (player == entt::null || !is_active) return;
-        const auto window = game.getWindow();
-        const auto body = game.getRegistry().get<engine::ecs::PhysicsComponent>(player).body;
+        const auto window = game_.getWindow();
+        const auto body = game_.getRegistry().get<engine::ecs::PhysicsComponent>(player).body;
         b2Vec2 velocity = b2Body_GetLinearVelocity(body);
 
         if (velocity.y < 0.01f && velocity.y >= 0.f && canJump && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
@@ -28,7 +28,7 @@ namespace gl3::game::input
             canJump = false;
         }
 
-        const float fixedX = game.getRegistry().get<engine::ecs::TransformComponent>(player).initialPosition.x;
+        const float fixedX = game_.getRegistry().get<engine::ecs::TransformComponent>(player).initialPosition.x;
         b2Vec2 pos = b2Body_GetPosition(body);
         pos.x = fixedX;
         b2Body_SetTransform(body, pos, b2Body_GetRotation(body));

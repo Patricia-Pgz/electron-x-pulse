@@ -8,9 +8,10 @@
 #include "engine/levelEditor/EditorUISystem.h"
 #include "GameStateManager.h"
 #include "engine/audio/AudioSystem.h"
+#include "engine/physics/PhysicsSystem.h"
 #include "states/LevelPlayState.h"
 #include "ui/FinishUI.h"
-#include "ui/InGameMenuSystem.h"
+#include "ui/InGameMenuUI.h"
 #include "ui/InstructionUI.h"
 
 namespace gl3::game
@@ -18,15 +19,27 @@ namespace gl3::game
     Game::Game(const int width, const int height, const std::string& title, const glm::vec3& camPos,
                const float camZoom)
         : engine::Game(width, height, title, camPos, camZoom), game_state_manager_(new GameStateManager(*this)),
-          player_input_system_(*this)
+          player_input_system_(new input::PlayerInputSystem(*this))
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().connect<&
-            Game::on_mouse_scroll>(this);
+            Game::onMouseScroll>(this);
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::LevelStartEvent>().connect<&
-            Game::on_lvl_start>(this);
+            Game::onLvlStart>(this);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().connect<&
+            Game::onPauseLevel>(this);
     }
 
-    void Game::on_mouse_scroll(engine::context::onMouseScrollEvent& event)
+    Game::~Game()
+    {
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().disconnect<&
+            Game::onMouseScroll>(this);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::LevelStartEvent>().disconnect<&
+            Game::onLvlStart>(this);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().disconnect<&
+            Game::onPauseLevel>(this);
+    }
+
+    void Game::onMouseScroll(engine::context::onMouseScrollEvent& event)
     {
         /*if (currentGameState != engine::GameState::PreviewWithScrolling) return;
         float cameraX = 0.0f; /*cameraPosition.x;#1#
@@ -57,9 +70,9 @@ namespace gl3::game
 
         for (auto entity : entities)
         {
-            auto& tag_component = entities.get<engine::ecs::TagComponent>(entity);
+            auto& tag = entities.get<engine::ecs::TagComponent>(entity).tag;
             auto& physics_component = entities.get<engine::ecs::PhysicsComponent>(entity);
-            if (tag_component.tag != "beat" && tag_component.tag != "timeline")
+            if (tag != "beat" && tag != "timeline")
             {
                 b2Body_SetTransform(physics_component.body,
                                     b2Vec2(b2Body_GetPosition(physics_component.body).x + context_.getCameraPos().x,
@@ -69,24 +82,32 @@ namespace gl3::game
         }
     }
 
-    void Game::on_lvl_start(const engine::ecs::LevelStartEvent& event)
+    void Game::onLvlStart(const engine::ecs::LevelStartEvent& event)
     {
         player_ = event.player; //TODO brauch ich den hier überhaupt?
     }
 
+    void Game::onPauseLevel(const engine::ui::PauseLevelEvent& event) const
+    {
+        if (event.pauseLevel)
+        {
+            physics_system_->setActive(false);
+            player_input_system_->setActive(false);
+        }
+        else
+        {
+            physics_system_->setActive(true);
+            player_input_system_->setActive(true);
+        }
+    }
+
     void Game::start()
     {
-        //TODO gameconfig laden?
     }
 
     void Game::update(GLFWwindow* window)
-    //TODO deactivate components, that are out of left screen boundary (RenderComp, Physics)
     {
-        if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
-        {
-            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::GameStateChange(engine::GameState::Level));
-        }
-        player_input_system_.update(player_);
+        player_input_system_->update(player_);
     }
 
     //TODO delete entities when levelReload/Load/wechsel
@@ -94,17 +115,9 @@ namespace gl3::game
     void Game::registerUiSystems()
     {
         ui_system_->registerSubsystem<engine::levelLoading::LevelSelectUISystem>();
-        ui_system_->registerSubsystem<ui::InGameMenuSystem>();
+        ui_system_->registerSubsystem<ui::InGameMenuUI>();
         ui_system_->registerSubsystem<ui::InstructionUI>();
         ui_system_->registerSubsystem<ui::FinishUI>();
         //ui_system_->registerSubsystem<engine::editor::EditorUISystem>();
-    }
-
-    Game::~Game()
-    {
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().disconnect<&
-            Game::on_mouse_scroll>(this);
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::LevelStartEvent>().disconnect<&
-            Game::on_lvl_start>(this);
     }
 }

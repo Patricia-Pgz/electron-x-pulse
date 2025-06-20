@@ -58,7 +58,7 @@ namespace gl3::engine::state
         void update() const
         {
             if (auto* state = getCurrentState())
-                state->update(game.getDeltaTime());
+                state->update(game_.getDeltaTime());
         }
 
     private:

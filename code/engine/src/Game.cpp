@@ -72,7 +72,6 @@ namespace gl3::engine
     void Game::updatePhysics()
     {
         physics_system_->runPhysicsStep();
-        //TODO implement way to deactivate physics / stop game / only update active physics comps
     }
 
     void Game::draw()

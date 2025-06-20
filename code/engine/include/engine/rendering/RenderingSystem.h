@@ -25,8 +25,10 @@ namespace gl3::engine::rendering
 
         void draw() const
         {
-            auto& registry = game.getRegistry();
-            auto& context = game.getContext();
+            if(!is_active){return;}
+
+            auto& registry = game_.getRegistry();
+            auto& context = game_.getContext();
             for (const auto& entities = registry.view<ecs::TransformComponent, ecs::RenderComponent>(); const auto&
                  entity : entities)
             {

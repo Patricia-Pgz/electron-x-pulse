@@ -16,13 +16,16 @@ namespace gl3::game
     private:
         void start() override;
         void update(GLFWwindow* window) override;
+
         void registerUiSystems() override;
         void moveEntitiesScrolling();
-        void on_mouse_scroll(engine::context::onMouseScrollEvent& event);
-        void on_lvl_start(const engine::ecs::LevelStartEvent& event);
+
+        void onMouseScroll(engine::context::onMouseScrollEvent& event);
+        void onLvlStart(const engine::ecs::LevelStartEvent& event);
+        void onPauseLevel(const engine::ui::PauseLevelEvent& event) const;
 
         GameStateManager* game_state_manager_;
-        input::PlayerInputSystem player_input_system_;
+        input::PlayerInputSystem* player_input_system_;
 
         float unit = 1.f;
         bool loadLevelFromFile = true;

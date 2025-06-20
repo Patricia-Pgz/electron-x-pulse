@@ -16,18 +16,18 @@ namespace gl3::engine::physics
 
         void runPhysicsStep()
         {
-            if (game.getPlayer() == entt::null || !is_active) return;
-            accumulator += game.getDeltaTime();
+            if (game_.getPlayer() == entt::null || !is_active) return;
+            accumulator += game_.getDeltaTime();
             if (accumulator >= fixedTimeStep)
             {
-                const b2WorldId world = game.getPhysicsWorld();
+                const b2WorldId world = game_.getPhysicsWorld();
                 b2World_Step(world, fixedTimeStep, subStepCount);
-                PlayerContactListener::checkForPlayerCollision(game.getRegistry(), game.getPlayer());
+                PlayerContactListener::checkForPlayerCollision(game_.getRegistry(), game_.getPlayer());
 
-                if (game.currentGameState == GameState::PreviewWithScrolling) return;
+                if (game_.currentGameState == GameState::PreviewWithScrolling) return;
 
                 // Update entities based on physics step
-                const auto& entities = game.getRegistry().view<
+                const auto& entities = game_.getRegistry().view<
                     ecs::TagComponent, ecs::TransformComponent,
                     ecs::PhysicsComponent>();
 
@@ -39,7 +39,7 @@ namespace gl3::engine::physics
                         continue;
                     }
 
-                    if (auto [x, y] = b2Body_GetPosition(physics_comp.body); x <= game.getContext().getWindowBounds()[0]
+                    if (auto [x, y] = b2Body_GetPosition(physics_comp.body); x <= game_.getContext().getWindowBounds()[0]
                         - 1 * pixelsPerMeter)
                     {
                         b2Body_SetAwake(physics_comp.body, false);
