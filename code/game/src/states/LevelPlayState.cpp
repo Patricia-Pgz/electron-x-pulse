@@ -128,7 +128,7 @@ namespace gl3::game::state
         }
         audio_config_ = game_.getAudioSystem()->initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
         current_level_->currentLevelSpeed = current_level_->velocityMultiplier / audio_config_->seconds_per_beat;
-        current_level_->levelLength = 5; //TODO audio_config_->current_audio_length*levelspeed
+        current_level_->levelLength = audio_config_->current_audio_length * current_level_->currentLevelSpeed;
 
         level_instantiated_ = true;
         startLevel();
@@ -164,7 +164,7 @@ namespace gl3::game::state
 
     void LevelPlayState::startLevel() const
     {
-        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{false}); //TODO anders lösen
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{false});
         moveObjects();
         game_.getAudioSystem()->playCurrentAudio();
     }
@@ -201,7 +201,6 @@ namespace gl3::game::state
     void LevelPlayState::reloadLevel()
     {
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{false});
-        //TODO lieber nen levelPauseState drüber pushen und im statemanager playerinput + physics de/reactivieren
         menu_ui_->setActive(true);
         instruction_ui_->setActive(level_index_ == 0);
         finish_ui_->setActive(false);
@@ -246,7 +245,7 @@ namespace gl3::game::state
     {
         const float currentTime = audio_config_->audio.getStreamTime(audio_config_->currentAudioHandle);
 
-        if (!timer_active_ && currentTime >= 5.0f)
+        if (!timer_active_ && currentTime >= audio_config_->current_audio_length)
         {
             timer_active_ = true;
         }
