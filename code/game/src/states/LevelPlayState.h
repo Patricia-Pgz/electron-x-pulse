@@ -32,9 +32,9 @@ namespace gl3::game::state
             : GameState(game), level_index_(levelIndex)
         {
             const auto& topLvlUI = game_.getUISystem();
-            menu_ui_ = topLvlUI.getSubsystem<ui::InGameMenuUI>();
-            instruction_ui_ = topLvlUI.getSubsystem<ui::InstructionUI>();
-            finish_ui_ = topLvlUI.getSubsystem<ui::FinishUI>();
+            menu_ui_ = topLvlUI->getSubsystem<ui::InGameMenuUI>();
+            instruction_ui_ = topLvlUI->getSubsystem<ui::InstructionUI>();
+            finish_ui_ = topLvlUI->getSubsystem<ui::FinishUI>();
 
             engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowResizeEvent>().connect<&
                 LevelPlayState::onWindowResize>(this);
@@ -71,9 +71,6 @@ namespace gl3::game::state
         void onExit() override
         {
             unloadLevel();
-            menu_ui_->setActive(false);
-            instruction_ui_->setActive(false);
-            finish_ui_->setActive(false);
         }
 
         void update(const float deltaTime) override

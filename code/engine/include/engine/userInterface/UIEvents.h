@@ -15,6 +15,11 @@ namespace gl3::engine::ui
         int newLevelIndex;
     };
 
+    struct StartLevelEvent
+    {
+        bool startLevel;
+    };
+
     struct PauseLevelEvent
     {
         bool pauseLevel;
@@ -25,10 +30,6 @@ namespace gl3::engine::ui
         bool restartLevel;
     };
 
-    struct StartLevelEvent
-    {
-        bool startLevel;
-    };
 
     /**
    * Call this event to Change the volume of "audio_" in @ref Game.h

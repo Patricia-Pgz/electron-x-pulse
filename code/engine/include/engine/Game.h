@@ -54,10 +54,12 @@ namespace gl3::engine
         [[nodiscard]] const context::Context& getContext() const { return context_; }
         [[nodiscard]] float getDeltaTime() const { return delta_time_; };
         entt::registry& getRegistry() { return registry_; };
-        [[nodiscard]] ui::UISystem& getUISystem() const { return *ui_system_; };
-        [[nodiscard]] audio::AudioSystem& getAudioSystem() const { return *audio_system_; };
-        [[nodiscard]] state::StateManagementSystem& getStateManagement() const { return *state_management_system_; };
+        [[nodiscard]] ui::UISystem* getUISystem() const { return ui_system_; };
+        [[nodiscard]] physics::PhysicsSystem* getPhysicsSystem() const {return physics_system_;}
+        [[nodiscard]] audio::AudioSystem* getAudioSystem() const { return audio_system_; };
+        [[nodiscard]] state::StateManagementSystem* getStateManagement() const { return state_management_system_; };
         [[nodiscard]] entt::entity getPlayer() const { return player_; }
+        void setPlayer(const entt::entity player){player_ = player;}
 
         using event_t = events::Event<Game, Game&>;
 

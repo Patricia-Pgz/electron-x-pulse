@@ -3,10 +3,13 @@
 #include "engine/Constants.h"
 #include "engine/audio/AudioSystem.h"
 #include "engine/ecs/EventDispatcher.h"
-#include "engine/ecs/GameEvents.h"
 #include "engine/levelloading/LevelLoader.h"
 #include "ui/FinishUI.h"
 #include "ui/InstructionUI.h"
+#include <box2d/box2d.h>
+
+#include "../../../extern/box2d/src/body.h"
+#include "engine/physics/PhysicsSystem.h"
 
 namespace gl3::game::state
 {
@@ -121,8 +124,9 @@ namespace gl3::game::state
                 object, registry, physicsWorld);
             if (object.tag == "player") current_player_ = entity;
             initialPlayerPosX = object.position.x;
+            game_.setPlayer(current_player_);
         }
-        audio_config_ = game_.getAudioSystem().initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
+        audio_config_ = game_.getAudioSystem()->initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
         current_level_->currentLevelSpeed = current_level_->velocityMultiplier / audio_config_->seconds_per_beat;
         current_level_->levelLength = 5; //TODO audio_config_->current_audio_length*levelspeed
 
@@ -160,10 +164,9 @@ namespace gl3::game::state
 
     void LevelPlayState::startLevel() const
     {
-        engine::ecs::EventDispatcher::dispatcher.trigger<engine::ecs::LevelStartEvent>({current_player_});
-
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{false}); //TODO anders lösen
         moveObjects();
-        game_.getAudioSystem().playCurrentAudio();
+        game_.getAudioSystem()->playCurrentAudio();
     }
 
     void LevelPlayState::pauseLevel() const
@@ -193,7 +196,7 @@ namespace gl3::game::state
     }
 
     /**
-     *Resets every entity to its initial Transform and restarts movement and audio
+     *Resets every entity to its initial Transform, restarts movement and audio
 */
     void LevelPlayState::reloadLevel()
     {
@@ -203,7 +206,7 @@ namespace gl3::game::state
         instruction_ui_->setActive(level_index_ == 0);
         finish_ui_->setActive(false);
 
-        game_.getAudioSystem().stopCurrentAudio();
+        game_.getAudioSystem()->stopCurrentAudio();
 
         timer_ = 1.f;
         transition_triggered_ = false;
@@ -235,7 +238,7 @@ namespace gl3::game::state
         }
 
 
-        game_.getAudioSystem().playCurrentAudio();
+        game_.getAudioSystem()->playCurrentAudio();
         moveObjects();
     }
 
@@ -268,10 +271,14 @@ namespace gl3::game::state
     void LevelPlayState::unloadLevel()
     {
         level_instantiated_ = false;
-        game_.getAudioSystem().stopCurrentAudio();
+        game_.getAudioSystem()->stopCurrentAudio();
         menu_ui_->setActive(false);
         instruction_ui_->setActive(false);
         finish_ui_->setActive(false);
-        //TODO player in game deleten + auf null setzen -> level ptr auf null, nicht deleten + entites aus registry löschen + schauen ob wirklich alles nötige gelöscht wurde!
+
+        engine::ecs::EntityFactory::clearRegistry(game_.getRegistry());
+        level_index_ = -1;
+        current_level_ = nullptr;
+        current_player_ = entt::null;
     }
 }

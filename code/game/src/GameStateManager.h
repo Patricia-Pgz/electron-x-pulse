@@ -12,11 +12,9 @@ namespace gl3::game
 
     private:
         void onUiInitialized() const;
-        void onGameStateChange(const engine::ecs::GameStateChange& newState);
-        void onPlayerDeath(engine::ecs::PlayerDeath& event);
+        void onGameStateChange(const engine::ecs::GameStateChange& newState) const;
+        void onPauseLevel(const engine::ui::PauseLevelEvent& event) const;
 
-        void resetComponents();
-        void reset();
         Game& game_;
         engine::events::Event<engine::ui::UISystem>::handle_t onUIInitHandle;
         engine::GameState current_game_state_ = engine::GameState::None;

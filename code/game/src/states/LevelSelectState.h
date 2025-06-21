@@ -2,15 +2,14 @@
 #include "engine/stateManagement/GameState.h"
 #include "engine/levelLoading/LevelSelectUISystem.h"
 
-namespace gl3::engine::state
+namespace gl3::game::state
 {
-    class LevelSelectState final : public GameState
+    class LevelSelectState final : public engine::state::GameState
     {
     public:
         explicit LevelSelectState(Game& game)
-            : GameState(game)
+            : GameState(game), level_ui_(game.getUISystem()->getSubsystem<engine::levelLoading::LevelSelectUISystem>())
         {
-            level_ui_ = game.getUISystem().getSubsystem<levelLoading::LevelSelectUISystem>();
         }
 
         void onEnter() override
@@ -28,7 +27,6 @@ namespace gl3::engine::state
         };
 
     private:
-        levelLoading::LevelSelectUISystem* level_ui_;
+        engine::levelLoading::LevelSelectUISystem* level_ui_;
     };
 }
-

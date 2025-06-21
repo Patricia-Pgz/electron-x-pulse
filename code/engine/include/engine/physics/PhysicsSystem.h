@@ -4,10 +4,12 @@
 #include "engine/ecs/EntityFactory.h"
 #include "engine/ecs/System.h"
 #include "engine/Game.h"
+#include <box2d/box2d.h>
+#include "../../../../extern/box2d/src/body.h"
 
 namespace gl3::engine::physics
 {
-    class PhysicsSystem : public ecs::System
+    class PhysicsSystem final : public ecs::System
     {
     public:
         explicit PhysicsSystem(Game& game) : System(game)
@@ -16,7 +18,7 @@ namespace gl3::engine::physics
 
         void runPhysicsStep()
         {
-            if (game_.getPlayer() == entt::null || !is_active) return;
+            if (!game_.getRegistry().valid(game_.getPlayer()) || !is_active) return;
             accumulator += game_.getDeltaTime();
             if (accumulator >= fixedTimeStep)
             {
@@ -39,7 +41,8 @@ namespace gl3::engine::physics
                         continue;
                     }
 
-                    if (auto [x, y] = b2Body_GetPosition(physics_comp.body); x <= game_.getContext().getWindowBounds()[0]
+                    if (auto [x, y] = b2Body_GetPosition(physics_comp.body); x <= game_.getContext().getWindowBounds()[
+                            0]
                         - 1 * pixelsPerMeter)
                     {
                         b2Body_SetAwake(physics_comp.body, false);
@@ -52,15 +55,37 @@ namespace gl3::engine::physics
                     transformComp.position.y = p.y;
                     transformComp.zRotation = glm::degrees(b2Rot_GetAngle(q));
                 }
-
+                processDeletions();
                 accumulator -= fixedTimeStep;
             }
         };
+
+        void markBodyForDeletion(const b2BodyId body)
+        {
+            if (b2Body_IsValid(body))
+            {
+                bodiesToDelete.push_back(body);
+            }
+        }
 
     private:
         const float fixedTimeStep = 1.0f / 60.0f;
         const int subStepCount = 4;
         float accumulator = 0.f;
+
+        std::vector<b2BodyId> bodiesToDelete;
+
+        void processDeletions()
+        {
+            for (const auto body : bodiesToDelete)
+            {
+                if (b2Body_IsValid(body))
+                {
+                    b2DestroyBody(body);
+                }
+            }
+            bodiesToDelete.clear();
+        }
 
         static void onPlayerGrounded();
     };

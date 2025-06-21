@@ -28,13 +28,14 @@ namespace gl3::game::input
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerGrounded>().disconnect<&
                 PlayerInputSystem::onPlayerGrounded>(this);
         };
-        void update(const entt::entity& player);
+        void update();
 
     private:
         static b2Vec2 calculateJumpImpulse(b2BodyId body, const JumpConfig& config);
         void onPlayerGrounded(engine::ecs::PlayerGrounded& event);
         void applyJumpImpulse(b2BodyId body) const;
         bool canJump = true;
-        float distancePerBeat = 2.0f; // Example: player travels 2 units per beat
+        float distancePerBeat = 2.0f; // Example: player travels 2 units per beat //TODO
+        entt::entity player_ = entt::null;
     };
 } // gl3

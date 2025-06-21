@@ -77,9 +77,21 @@ namespace gl3::engine::ecs
             return entity;
         };
 
+        /*
+         *Call this to empty the registry and correctly delete the components
+         */
+        static void clearRegistry(entt::registry& registry)
+        {
+            for (const auto view = registry.view<PhysicsComponent>(); auto& entity : view)
+            {
+                destroyPhysicsComponent(registry, entity);
+            }
+
+            registry.clear();
+        }
+
         static void destroyPhysicsComponent(entt::registry& registry, const entt::entity entity)
         {
-            //TODO brauchts das?
             if (registry.all_of<PhysicsComponent>(entity))
             {
                 auto& physics = registry.get<PhysicsComponent>(entity);

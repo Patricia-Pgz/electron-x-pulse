@@ -1,8 +1,7 @@
 #include "GameStateManager.h"
-#include <random>
 
 #include "engine/ecs/EntityFactory.h"
-#include "engine/levelloading/LevelLoader.h"
+#include "engine/physics/PhysicsSystem.h"
 #include "states/LevelSelectState.h"
 #include "engine/stateManagement/StateManagerSystem.h"
 #include "engine/userInterface/UISystem.h"
@@ -14,9 +13,9 @@ namespace gl3::game
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::GameStateChange>().connect<&
             GameStateManager::onGameStateChange>(this);
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
-            GameStateManager::onPlayerDeath>(this);
-        onUIInitHandle = game_.getUISystem().onInitialized.addListener([this]()
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().connect<&
+            GameStateManager::onPauseLevel>(this);
+        onUIInitHandle = game_.getUISystem()->onInitialized.addListener([this]()
         {
             onUiInitialized();
         });
@@ -26,14 +25,14 @@ namespace gl3::game
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::GameStateChange>().disconnect<&
             GameStateManager::onGameStateChange>(this);
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
-            GameStateManager::onPlayerDeath>(this);
-        game_.getUISystem().onInitialized.removeListener(onUIInitHandle);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().disconnect<&
+            GameStateManager::onPauseLevel>(this);
+        game_.getUISystem()->onInitialized.removeListener(onUIInitHandle);
     }
 
     void GameStateManager::onUiInitialized() const
     {
-        game_.getStateManagement().pushState<engine::state::LevelSelectState>(
+        game_.getStateManagement()->pushState<state::LevelSelectState>(
             game_);
     }
 
@@ -215,189 +214,35 @@ namespace gl3::game
         return game_objects;
     }*/
 
-    void GameStateManager::onGameStateChange(const engine::ecs::GameStateChange& event)
+    void GameStateManager::onGameStateChange(const engine::ecs::GameStateChange& newState) const
     {
-        auto& stateSystem = game_.getStateManagement();
+        auto* stateSystem = game_.getStateManagement();
 
-        if (event.newGameState == engine::GameState::LevelSelect)
+        if (newState.newGameState == engine::GameState::LevelSelect)
         {
-            stateSystem.changeState<engine::state::LevelSelectState>(game_);
+            game_.getPhysicsSystem()->setActive(false);
+            stateSystem->changeState<state::LevelSelectState>(game_);
             return;
         }
 
-        if (event.newGameState == engine::GameState::Level && previous_game_state_ != engine::GameState::Level)
+        if (newState.newGameState == engine::GameState::Level && previous_game_state_ != engine::GameState::Level)
         {
-            stateSystem.changeState<state::LevelPlayState>(game_, event.newLevelIndex);
+            stateSystem->changeState<state::LevelPlayState>(game_, newState.newLevelIndex);
             return;
         }
+    }
 
-        return;
-
-        // initial_test_game_objects = generateTestObjects(config.initial_player_position_x);
-
-        if (current_game_state_ == engine::GameState::Level || current_game_state_ ==
-            engine::GameState::PreviewWithTesting ||
-            current_game_state_ == engine::GameState::PreviewWithScrolling)
+    void GameStateManager::onPauseLevel(const engine::ui::PauseLevelEvent& event) const
+    {
+        if (event.pauseLevel)
         {
-            /*for (auto& object : initial_test_game_objects)
-            {
-                auto posY = object.positionY == 0
-                                ? config.ground_level + object.scaleY / 2
-                                : config.ground_level - object.scaleY / 2 + object.positionY;
-
-                if (object.isPlatform)
-                {
-                    const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(
-                        game_.getRegistry(), glm::vec3(object.positionX, posY, 0.0f),
-                        object.color, "platform", game_.getPhysicsWorld());
-                    engine::ecs::EntityFactory::setScale(game_.getRegistry(), entity,
-                                                         glm::vec3(object.scaleX, object.scaleY, 0.f));
-                    object.entityID = entity;
-                    object.positionY = posY;
-                }
-                else
-                {
-                    const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(
-                        game_.getRegistry(), glm::vec3(object.positionX, posY, 0.0f),
-                        object.color, "obstacle", game_.getPhysicsWorld(), true);
-                    engine::ecs::EntityFactory::setScale(game_.getRegistry(), entity,
-                                                         glm::vec3(object.scaleX, object.scaleY, 0.f));
-                    object.entityID = entity;
-                    object.positionY = posY;
-                }
-            }*/
-
-            /*int index = 0;
-            for (auto beat : beatPositions)
-            {
-                if (index < 1)
-                {
-                    index++;
-                    continue;
-                }
-
-                if (index % 2 == 0)
-                {
-                    auto height = 0.25f;
-                    auto randomColor = glm::vec4(0.1, 0.5, 0.3, 1.0f);
-                    engine::ecs::EntityFactory::createDefaultEntity(
-                        registry_, glm::vec3(beat, groundLevel + height / 2, 0.0f), glm::vec3(0.5f, height, 0.f),
-                        0.f, randomColor, "platform", physicsWorld);
-                }
-                else
-                {
-                    engine::ecs::EntityFactory::createDefaultEntity(registry_, glm::vec3(beat, -0.875f, 0.0f),
-                                                                    glm::vec3(0.5f, 0.5f, 0.f),
-                                                                    0.f, glm::vec4(1.0, 0.1, 0.05, 1), "obstacle",
-                                                                    physicsWorld);
-                }
-                index++;
-            }*/
+            game_.getPhysicsSystem()->setActive(false);
+            game_.getPlayerInputSystem()->setActive(false);
         }
-
-        /*if (current_game_state_ == engine::GameState::PreviewWithScrolling || current_game_state_ ==
-            engine::GameState::PreviewWithTesting)
+        else
         {
-            const auto timeLine = engine::ecs::EntityFactory::createDefaultEntity(
-                game_.getRegistry(), glm::vec3(0, config.ground_level, 0.0f), glm::vec4(0.1, 0.1, 1.0, 1.0f),
-                "timeline",
-                game_.getPhysicsWorld());
-            engine::ecs::EntityFactory::setScale(game_.getRegistry(), timeLine, glm::vec3(40.f, 0.05f, 0.f));
-
-            std::vector<GameObject> tempObjects;
-            tempObjects.push_back(GameObject(0.f, config.ground_level, true, 40.f, 0.05f,
-                                             glm::vec4(0.1, 0.1, 1.0, 1.0f),
-                                             timeLine));
-
-            for (auto beatPosition : beatPositions)
-            {
-                auto timeLineColor = glm::vec4(0.1, 0.1, 1.0, 1.0f);
-                const auto beat = engine::ecs::EntityFactory::createDefaultEntity(
-                    game_.getRegistry(), glm::vec3(beatPosition, config.ground_level, 0.0f), timeLineColor, "beat",
-                    game_.getPhysicsWorld());
-                engine::ecs::EntityFactory::setScale(game_.getRegistry(), beat, glm::vec3(0.05f, 0.5f, 0.f));
-                tempObjects.push_back(GameObject(beatPosition, config.ground_level, true, 0.05f, 0.5f, timeLineColor,
-                                                 beat));
-            }
-            initial_test_game_objects = tempObjects;
-        }*/
-
-
-        previous_game_state_ = current_game_state_;
-        current_game_state_ = event.newGameState;
-    }
-
-    void GameStateManager::resetComponents()
-    {
-        /*std::cout << "reset comps";
-        const auto view = game_.getRegistry().view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
-                                                   engine::ecs::PhysicsComponent>();
-        for (auto entity : view)
-
-        {
-            auto& transform = view.get<engine::ecs::TransformComponent>(entity);
-            auto& tag = view.get<engine::ecs::TagComponent>(entity).tag;
-            auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
-            b2Body_SetLinearVelocity(physics_comp.body, {0.f, 0.0f});
-
-            if (tag == "player")
-            {
-                engine::ecs::EntityFactory::setPosition(game_.getRegistry(), entity,
-                                                        glm::vec3(game_.getCurrentConfig().initial_player_position_x,
-                                                                  game_.getCurrentConfig().ground_level + transform.
-                                                                  scale.y / 2, 0.f));
-                continue;
-            }
-            if (tag == "ground")
-            {
-                engine::ecs::EntityFactory::setPosition(game_.getRegistry(), entity,
-                                                        glm::vec3(
-                                                            0, game_.getCurrentConfig().ground_level - game_.
-                                                            getCurrentConfig().ground_height / 2, 0.0f));
-                continue;
-            }
-            b2Body_SetLinearVelocity(physics_comp.body, {game_.getCurrentConfig().level_speed(), 0.f});
-            auto obj = std::ranges::find_if(initial_test_game_objects,
-                                            [entity](const GameObject& o)
-                                            {
-                                                return o.entityID == entity;
-                                            });
-            engine::ecs::EntityFactory::setPosition(game_.getRegistry(), entity,
-                                                    glm::vec3(obj->positionX, obj->positionY, 0.f));
-        }*/
-    }
-
-    void GameStateManager::reset()
-    {
-        std::cout << "reset";
-
-        //TODO resetCurrentAudio + timing verbessern
-
-
-        // Reset all entities to their initial states
-        resetComponents();
-        if (current_game_state_ != engine::GameState::Menu && current_game_state_ !=
-            engine::GameState::PreviewWithScrolling)
-        {
-            const auto& entities = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
-
-            for (auto& entity : entities)
-            {
-                auto& physics_comp = entities.get<engine::ecs::PhysicsComponent>(entity);
-                auto& tag_comp = entities.get<engine::ecs::TagComponent>(entity);
-                if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
-                {
-                    //b2Body_SetLinearVelocity(physics_comp.body, {game_.getCurrentConfig().level_speed(), 0.0f});
-                }
-            }
+            game_.getPhysicsSystem()->setActive(true);
+            game_.getPlayerInputSystem()->setActive(true);
         }
-        is_resetting_ = false;
-    }
-
-    void GameStateManager::onPlayerDeath(engine::ecs::PlayerDeath& event)
-    {
-        std::cout << "Player died! Calling reset..." << std::endl;
-        is_resetting_ = true;
-        reset();
     }
 } // gl3

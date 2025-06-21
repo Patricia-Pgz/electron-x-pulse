@@ -23,20 +23,12 @@ namespace gl3::game
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().connect<&
             Game::onMouseScroll>(this);
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::LevelStartEvent>().connect<&
-            Game::onLvlStart>(this);
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().connect<&
-            Game::onPauseLevel>(this);
     }
 
     Game::~Game()
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().disconnect<&
             Game::onMouseScroll>(this);
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::LevelStartEvent>().disconnect<&
-            Game::onLvlStart>(this);
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().disconnect<&
-            Game::onPauseLevel>(this);
     }
 
     void Game::onMouseScroll(engine::context::onMouseScrollEvent& event)
@@ -82,32 +74,13 @@ namespace gl3::game
         }
     }
 
-    void Game::onLvlStart(const engine::ecs::LevelStartEvent& event)
-    {
-        player_ = event.player;
-    }
-
-    void Game::onPauseLevel(const engine::ui::PauseLevelEvent& event) const
-    {
-        if (event.pauseLevel)
-        {
-            physics_system_->setActive(false); //TODO lieber pause state
-            player_input_system_->setActive(false);
-        }
-        else
-        {
-            physics_system_->setActive(true);
-            player_input_system_->setActive(true);
-        }
-    }
-
     void Game::start()
     {
     }
 
     void Game::update(GLFWwindow* window)
     {
-        player_input_system_->update(player_);
+        player_input_system_->update();
     }
 
     //TODO delete entities when levelReload/Load/wechsel
