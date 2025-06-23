@@ -21,4 +21,3 @@ file(TO_CMAKE_PATH "${CMAKE_SOURCE_DIR}/assets" ASSET_PATH)
 add_compile_definitions(ASSET_ROOT=${ASSET_PATH})
 
 add_subdirectory(game)
-add_subdirectory(levelEditor)

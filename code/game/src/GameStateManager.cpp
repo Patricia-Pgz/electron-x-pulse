@@ -43,6 +43,7 @@ namespace gl3::game
         if (newState.newGameState == engine::GameState::LevelSelect)
         {
             game_.getPhysicsSystem()->setActive(false);
+            game_.getPlayerInputSystem()->setActive(false);
             stateSystem->changeState<state::LevelSelectState>(game_);
             return;
         }

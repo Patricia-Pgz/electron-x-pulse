@@ -46,7 +46,7 @@ namespace gl3::engine::levelLoading
         levelNames.reserve(metaData.size());
         for (const auto& meta : metaData)
         {
-            levelNames.push_back(meta.fileName);
+            levelNames.push_back(meta.name);
         }
 
         constexpr float columns = 4.f;

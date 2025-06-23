@@ -5,7 +5,7 @@
 namespace gl3::engine::levelLoading
 {
     std::vector<LevelMeta> LevelLoader::meta_data_;
-    std::unordered_map<int, Level> LevelLoader::loaded_levels_;
+    std::unordered_map<int, std::unique_ptr<Level>> LevelLoader::loaded_levels_;
     std::unordered_map<int, std::string> LevelLoader::idToFilename_;
 
     namespace fs = std::filesystem;
@@ -17,7 +17,7 @@ namespace gl3::engine::levelLoading
     {
         if (const auto existingLevel = loaded_levels_.find(ID); existingLevel != loaded_levels_.end())
         {
-            return &existingLevel->second;
+            return existingLevel->second.get();
         }
 
         const auto path = std::filesystem::path(resolveAssetPath("levels")) / filename;
@@ -28,16 +28,15 @@ namespace gl3::engine::levelLoading
         }
 
         std::string json((std::istreambuf_iterator(file)), std::istreambuf_iterator<char>());
-        std::cout << json;
 
-        Level level;
-        if (const auto err = glz::read_json(level, json); err)
+        auto level = std::make_unique<Level>();
+        if (const auto err = glz::read_json(*level, json); err)
         {
             throw std::runtime_error("Failed to parse level JSON: " + std::to_string(static_cast<float>(err.ec)));
         }
 
         auto [it, _] = loaded_levels_.emplace(ID, std::move(level));
-        return &it->second;
+        return it->second.get();
     }
 
     /**

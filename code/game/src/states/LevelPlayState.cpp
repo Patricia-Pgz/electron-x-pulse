@@ -136,12 +136,11 @@ namespace gl3::game::state
 
     void LevelPlayState::moveObjects() const
     {
-        const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
-        for (auto& entity : view)
+        for (const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
+             auto& entity : view)
         {
             auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
-            auto& tag_comp = view.get<engine::ecs::TagComponent>(entity);
-            if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
+            if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
             {
                 b2Body_SetLinearVelocity(physics_comp.body, {current_level_->currentLevelSpeed * -1, 0.0f});
             }
@@ -150,12 +149,11 @@ namespace gl3::game::state
 
     void LevelPlayState::stopMovingObjects() const
     {
-        const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
-        for (auto& entity : view)
+        for (const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
+             auto& entity : view)
         {
             auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
-            auto& tag_comp = view.get<engine::ecs::TagComponent>(entity);
-            if (tag_comp.tag == "platform" || tag_comp.tag == "obstacle")
+            if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
             {
                 b2Body_SetLinearVelocity(physics_comp.body, {0.f, 0.0f});
             }
@@ -207,7 +205,7 @@ namespace gl3::game::state
 
         game_.getAudioSystem()->stopCurrentAudio();
 
-        timer_ = 1.f;
+        timer_ = 3.f;
         transition_triggered_ = false;
         timer_active_ = false;
 

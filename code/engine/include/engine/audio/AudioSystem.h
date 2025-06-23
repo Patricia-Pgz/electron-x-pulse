@@ -19,7 +19,7 @@ namespace gl3::engine::audio
         unsigned int bufferSize = 2048; // Size of the analysis buffer
         float bpm = 0.0f; //update this based on audio analysis
         float seconds_per_beat = 1.f;
-        float current_audio_length = 0.f; //TODO wird neu berechnet, wenn anderes lvl = song ausgewählt
+        float current_audio_length = 0.f;
         float global_volume_ = 1.0f;
         std::vector<float> beatPositions;
     };
@@ -36,7 +36,6 @@ namespace gl3::engine::audio
     private:
         void onGlobalVolumeChanged(const ui::VolumeChangeEvent& event);
         AudioConfig config_;
-        GameState previous_state_ = GameState::None;
     };
 }
 

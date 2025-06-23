@@ -62,7 +62,7 @@ namespace gl3::game::state
         {
             loadLevel();
             menu_ui_->setActive(true);
-            if (level_index_ == 0)
+            if (level_index_ == 0) //Tutorial
             {
                 instruction_ui_->setActive(true); //deactivates itself after timer
             }
@@ -108,7 +108,7 @@ namespace gl3::game::state
         bool level_instantiated_ = false;
         bool timer_active_ = false;
         bool transition_triggered_ = false;
-        float timer_ = 1.f;
+        float timer_ = 3.f;
         int level_index_ = -1;
         Level* current_level_ = nullptr;
         entt::entity current_player_ = entt::null;
