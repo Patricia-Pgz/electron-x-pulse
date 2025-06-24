@@ -28,8 +28,8 @@ namespace gl3::game::state
     class LevelPlayState final : public engine::state::GameState
     {
     public:
-        explicit LevelPlayState(engine::Game& game, const int levelIndex)
-            : GameState(game), level_index_(levelIndex)
+        explicit LevelPlayState(engine::Game& game, const int levelIndex, const bool editMode)
+            : GameState(game), edit_mode_(editMode), level_index_(levelIndex)
         {
             const auto& topLvlUI = game_.getUISystem();
             menu_ui_ = topLvlUI->getSubsystem<ui::InGameMenuUI>();
@@ -39,7 +39,7 @@ namespace gl3::game::state
             engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowResizeEvent>().connect<&
                 LevelPlayState::onWindowResize>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
-                LevelPlayState::reloadLevel>(this);
+                LevelPlayState::onPlayerDeath>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::RestartLevelEvent>().connect<&
                 LevelPlayState::reloadLevel>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().connect<&
@@ -51,7 +51,7 @@ namespace gl3::game::state
             engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowResizeEvent>().disconnect<&
                 LevelPlayState::onWindowResize>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
-                LevelPlayState::reloadLevel>(this);
+                LevelPlayState::onPlayerDeath>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::RestartLevelEvent>().disconnect<&
                 LevelPlayState::reloadLevel>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().disconnect<&
@@ -79,6 +79,11 @@ namespace gl3::game::state
             {
                 return;
             }
+            if (edit_mode_ && glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS)
+            {
+                game_.getAudioSystem()->playCurrentAudio();
+                pauseOrStartLevel(false);
+            }
             delayLevelEnd(deltaTime);
         }
 
@@ -86,14 +91,13 @@ namespace gl3::game::state
         void loadLevel();
         void moveObjects() const;
         void stopMovingObjects() const;
-        void startLevel() const;
-        void pauseLevel() const;
-        void resumeLevel() const;
+        void pauseOrStartLevel(bool stop) const;
         void reloadLevel();
         void unloadLevel();
         void delayLevelEnd(float deltaTime);
 
         void onWindowResize(const engine::context::WindowResizeEvent& evt) const;
+        void onPlayerDeath(const engine::ecs::PlayerDeath& event);
         void onPauseEvent(const engine::ui::PauseLevelEvent& event) const;
 
         [[nodiscard]] LevelBackgroundConfig calculateBackgrounds() const;
@@ -104,6 +108,7 @@ namespace gl3::game::state
         ui::FinishUI* finish_ui_;
         ui::InstructionUI* instruction_ui_;
         engine::audio::AudioConfig* audio_config_ = nullptr;
+        bool edit_mode_ = false;
         bool level_instantiated_ = false;
         bool timer_active_ = false;
         bool transition_triggered_ = false;

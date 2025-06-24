@@ -9,15 +9,20 @@ namespace gl3::game
     public:
         explicit GameStateManager(Game& game);
         ~GameStateManager();
+
         const engine::GameState& getCurrentState() const
         {
             return current_game_state_;
         }
 
+        const engine::GameState& getPreviousState() const
+        {
+            return previous_game_state_;
+        }
+
     private:
         void onUiInitialized() const;
-        void onGameStateChange(const engine::ecs::GameStateChange& newState) const;
-        void onPauseLevel(const engine::ui::PauseLevelEvent& event) const;
+        void onGameStateChange(const engine::ecs::GameStateChange& newState);
 
         Game& game_;
         engine::events::Event<engine::ui::UISystem>::handle_t onUIInitHandle;

@@ -1,5 +1,4 @@
 #include "LevelPlayState.h"
-
 #include "engine/Constants.h"
 #include "engine/audio/AudioSystem.h"
 #include "engine/ecs/EventDispatcher.h"
@@ -8,6 +7,7 @@
 #include "ui/InstructionUI.h"
 #include <box2d/box2d.h>
 
+#include "Game.h"
 #include "../../../extern/box2d/src/body.h"
 #include "engine/physics/PhysicsSystem.h"
 
@@ -132,7 +132,11 @@ namespace gl3::game::state
         game_.getContext().setClearColor(current_level_->clearColor);
 
         level_instantiated_ = true;
-        startLevel();
+        if (!edit_mode_)
+        {
+            game_.getAudioSystem()->playCurrentAudio();
+            pauseOrStartLevel(false);
+        }
     }
 
     void LevelPlayState::moveObjects() const
@@ -161,37 +165,36 @@ namespace gl3::game::state
         }
     }
 
-    void LevelPlayState::startLevel() const
+    void LevelPlayState::pauseOrStartLevel(const bool stop) const
     {
-        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{false});
-        moveObjects();
-        game_.getAudioSystem()->playCurrentAudio();
-    }
-
-    void LevelPlayState::pauseLevel() const
-    {
-        audio_config_->audio.setPause(audio_config_->currentAudioHandle, true);
-        stopMovingObjects();
-    }
-
-    void LevelPlayState::resumeLevel() const
-    {
-        moveObjects();
-        audio_config_->audio.setPause(audio_config_->currentAudioHandle, false);
-    }
-
-    void LevelPlayState::onPauseEvent(const engine::ui::PauseLevelEvent& event) const
-    {
-        if (event.pauseLevel)
+        auto* PlayerInputSystem = dynamic_cast<Game&>(game_).getPlayerInputSystem();
+        if (stop)
         {
-            pauseLevel();
+            game_.getPhysicsSystem()->setActive(false);
+            PlayerInputSystem->setActive(false);
+            audio_config_->audio.setPause(audio_config_->currentAudioHandle, true);
+            stopMovingObjects();
             instruction_ui_->pauseTimer(true);
         }
         else
         {
-            resumeLevel();
+            game_.getPhysicsSystem()->setActive(true);
+            PlayerInputSystem->setActive(true);
+            moveObjects();
+            audio_config_->audio.setPause(audio_config_->currentAudioHandle, false);
             instruction_ui_->pauseTimer(false);
         }
+    }
+
+    void LevelPlayState::onPauseEvent(const engine::ui::PauseLevelEvent& event) const
+    {
+        pauseOrStartLevel(event.pauseLevel);
+    }
+
+    void LevelPlayState::onPlayerDeath(const engine::ecs::PlayerDeath& event)
+    {
+        game_.getAudioSystem()->playOneShot("crash");
+        reloadLevel();
     }
 
     /**
@@ -199,7 +202,7 @@ namespace gl3::game::state
 */
     void LevelPlayState::reloadLevel()
     {
-        game_.getAudioSystem()->playOneShot("crash");
+        audio_config_->audio.stop(audio_config_->currentAudioHandle); //stop the current background music
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{false});
         menu_ui_->setActive(true);
         instruction_ui_->setActive(level_index_ == 0);
@@ -236,9 +239,8 @@ namespace gl3::game::state
             }
         }
 
-
         game_.getAudioSystem()->playCurrentAudio();
-        moveObjects();
+        pauseOrStartLevel(false);
     }
 
     void LevelPlayState::delayLevelEnd(float deltaTime)
@@ -262,9 +264,9 @@ namespace gl3::game::state
                 instruction_ui_->setActive(false);
                 finish_ui_->setActive(true);
 
-                game_.getAudioSystem()->playOneShot("win"); //TODO stoppen wenn lvl verlassen wird
+                game_.getAudioSystem()->playOneShot("win");
 
-                pauseLevel();
+                pauseOrStartLevel(true);
             }
         }
     }
@@ -274,6 +276,7 @@ namespace gl3::game::state
     {
         level_instantiated_ = false;
         game_.getAudioSystem()->stopCurrentAudio();
+        game_.getAudioSystem()->stopAllOneShots();
         menu_ui_->setActive(false);
         instruction_ui_->setActive(false);
         finish_ui_->setActive(false);
@@ -282,5 +285,6 @@ namespace gl3::game::state
         level_index_ = -1;
         current_level_ = nullptr;
         current_player_ = entt::null;
+        edit_mode_ = false;
     }
 }

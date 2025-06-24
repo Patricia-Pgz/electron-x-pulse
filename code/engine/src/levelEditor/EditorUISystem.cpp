@@ -129,6 +129,7 @@ namespace gl3::engine::editor
         {
             ecs::EventDispatcher::dispatcher.trigger(
                 TileSelectedEvent{
+                    //TODO anpassen, damit tiles setzen wieder klappt!
                     {
                         {
                             selected_grid_cell->x, -selected_grid_cell->y, 0.f

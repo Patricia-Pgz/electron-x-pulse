@@ -21,6 +21,16 @@ namespace gl3::engine::audio
             AudioSystem::onGlobalVolumeChanged>(this);
     }
 
+    void AudioSystem::update()
+    {
+        activeHandles.erase(
+    std::ranges::remove_if(activeHandles,
+                           [this](const SoLoud::handle h) {
+                               return !config_.audio.isValidVoiceHandle(h);
+                           }).begin(),
+    activeHandles.end());
+    }
+
     void AudioSystem::loadOneShot(const std::string& sfxName, const std::string& fileName)
     {
         const auto path = "audio/" + fileName;
@@ -38,7 +48,7 @@ namespace gl3::engine::audio
     {
         if (const auto wav = oneShotSounds_.find(sfxName); wav != oneShotSounds_.end())
         {
-            config_.audio.play(*wav->second);
+            activeHandles.push_back(config_.audio.play(*wav->second));
         }
         else
         {
@@ -53,6 +63,19 @@ namespace gl3::engine::audio
             oneShotSounds_.erase(wav);
         }
     }
+
+    void AudioSystem::stopAllOneShots()
+    {
+        for (const auto handle : activeHandles)
+        {
+            if (config_.audio.isValidVoiceHandle(handle))
+            {
+                config_.audio.stop(handle);
+            }
+        }
+        activeHandles.clear();
+    }
+
 
     AudioConfig* AudioSystem::initializeCurrentAudio(const std::string& fileName, float positionOffsetX)
     {

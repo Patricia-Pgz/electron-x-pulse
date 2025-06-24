@@ -91,6 +91,6 @@ namespace gl3::game
         ui_system_->registerSubsystem<ui::InGameMenuUI>();
         ui_system_->registerSubsystem<ui::InstructionUI>();
         ui_system_->registerSubsystem<ui::FinishUI>();
-        //ui_system_->registerSubsystem<engine::editor::EditorUISystem>();
+        ui_system_->registerSubsystem<engine::editor::EditorUISystem>();
     }
 }

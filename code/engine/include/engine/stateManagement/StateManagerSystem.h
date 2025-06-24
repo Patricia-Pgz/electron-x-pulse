@@ -12,11 +12,11 @@ namespace gl3::engine::state
         };
 
         template <typename TState, typename... Args>
-        void pushState(Args&&... args)
+        void pushState(const bool exitCurrent = true, Args&&... args)
         {
             static_assert(std::is_base_of_v<GameState, TState>, "TState must derive from GameState");
 
-            if (!states.empty())
+            if (exitCurrent && !states.empty())
                 states.back()->onExit();
 
             states.push_back(std::make_unique<TState>(std::forward<Args>(args)...));
@@ -38,14 +38,14 @@ namespace gl3::engine::state
             states.back()->onEnter();
         }
 
-        void popState()
+        void popState(const bool enterNext = true)
         {
             if (!states.empty())
             {
                 states.back()->onExit();
                 states.pop_back();
 
-                if (!states.empty())
+                if (!states.empty() && enterNext)
                     states.back()->onEnter();
             }
         }
@@ -55,10 +55,20 @@ namespace gl3::engine::state
             return states.empty() ? nullptr : states.back().get();
         }
 
+        [[nodiscard]] const std::vector<std::unique_ptr<GameState>>& getStates() const
+        {
+            return states;
+        }
+
         void update() const
         {
-            if (auto* state = getCurrentState())
-                state->update(game_.getDeltaTime());
+            const float deltaTime = game_.getDeltaTime();
+
+            for (const auto& state : getStates())
+            {
+                if (state)
+                    state->update(deltaTime);
+            }
         }
 
     private:

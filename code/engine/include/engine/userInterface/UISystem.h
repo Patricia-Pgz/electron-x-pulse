@@ -1,6 +1,6 @@
 #pragma once
 #include <typeindex>
-
+#include <ranges>
 #include "engine/ecs/System.h"
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
@@ -59,7 +59,7 @@ namespace gl3::engine::ui
 
         void renderUI()
         {
-            if(!is_active){return;}
+            if (!is_active) { return; }
             // Start the frame
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();

@@ -14,10 +14,11 @@ namespace gl3::engine::editor
         GameObject object;
     };
 
-    class EditorUISystem : public ui::IUISubsystem
+    class EditorUISystem final : public ui::IUISubsystem
     {
     public:
-        explicit EditorUISystem(ImGuiIO* imguiIO, Game& game) : IUISubsystem(imguiIO, game), editor_system(new EditorSystem(game))
+        explicit EditorUISystem(ImGuiIO* imguiIO, Game& game) : IUISubsystem(imguiIO, game),
+                                                                editor_system(new EditorSystem(game))
         {
         };
         void update() override;

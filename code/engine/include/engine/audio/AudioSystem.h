@@ -29,17 +29,20 @@ namespace gl3::engine::audio
     public:
         explicit AudioSystem(Game& game);
         ~AudioSystem() override;
+        void update();
         void loadOneShot(const std::string& sfxName, const std::string& fileName);
         void playOneShot(const std::string& sfxName);
         void unloadOneShot(const std::string& sfxName);
         AudioConfig* initializeCurrentAudio(const std::string& fileName, float positionOffsetX = 0.f);
         void playCurrentAudio();
         void stopCurrentAudio();
+        void stopAllOneShots();
 
     private:
         void onGlobalVolumeChanged(const ui::VolumeChangeEvent& event);
         AudioConfig config_;
         std::unordered_map<std::string, std::unique_ptr<SoLoud::Wav>> oneShotSounds_;
+        std::vector<SoLoud::handle> activeHandles;
     };
 }
 

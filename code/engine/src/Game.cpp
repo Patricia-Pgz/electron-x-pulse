@@ -87,5 +87,6 @@ namespace gl3::engine
     void Game::updateState()
     {
         state_management_system_->update();
+        audio_system_->update();
     }
 } // gl3
