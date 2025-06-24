@@ -82,8 +82,6 @@ namespace gl3::game::state
             delayLevelEnd(deltaTime);
         }
 
-        void delayLevelEnd(float deltaTime);
-
     private:
         void loadLevel();
         void moveObjects() const;
@@ -93,6 +91,7 @@ namespace gl3::game::state
         void resumeLevel() const;
         void reloadLevel();
         void unloadLevel();
+        void delayLevelEnd(float deltaTime);
 
         void onWindowResize(const engine::context::WindowResizeEvent& evt) const;
         void onPauseEvent(const engine::ui::PauseLevelEvent& event) const;
@@ -108,7 +107,7 @@ namespace gl3::game::state
         bool level_instantiated_ = false;
         bool timer_active_ = false;
         bool transition_triggered_ = false;
-        float timer_ = 3.f;
+        float timer_ = 1.f;
         int level_index_ = -1;
         Level* current_level_ = nullptr;
         entt::entity current_player_ = entt::null;

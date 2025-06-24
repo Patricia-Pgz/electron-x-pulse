@@ -38,6 +38,7 @@ namespace gl3::engine
     {
         None,
         LevelSelect,
+        EditMode,
         Menu,
         Level,
         PreviewWithScrolling,
@@ -52,6 +53,7 @@ namespace gl3::engine
         [[nodiscard]] GLFWwindow* getWindow() const { return context_.getWindow(); }
         [[nodiscard]] b2WorldId getPhysicsWorld() const { return physics_world_; };
         [[nodiscard]] const context::Context& getContext() const { return context_; }
+        context::Context& getContext() { return context_; }
         [[nodiscard]] float getDeltaTime() const { return delta_time_; };
         entt::registry& getRegistry() { return registry_; };
         [[nodiscard]] ui::UISystem* getUISystem() const { return ui_system_; };

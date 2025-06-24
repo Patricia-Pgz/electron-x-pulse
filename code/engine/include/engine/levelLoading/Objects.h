@@ -30,6 +30,7 @@ struct Level
     float currentLevelSpeed = 1.f;
     float levelLength = 0.f;
     float groundLevel = 0.f;
+    glm::vec4 clearColor = {1, 1, 1, 1};
     std::vector<GameObject> backgrounds;
     std::vector<GameObject> objects;
 };

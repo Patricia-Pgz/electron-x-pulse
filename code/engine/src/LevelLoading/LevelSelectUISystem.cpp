@@ -145,12 +145,47 @@ namespace gl3::engine::levelLoading
         const auto padding = ImGui::GetStyle().ItemSpacing;
 
         ImGui::PushFont(ui::FontManager::getFont("pixeloid-bold-26"));
+
+        const auto editTextSize = ImGui::CalcTextSize("Edit Mode");
+        const ImVec2 editButtonSize = {editTextSize.x + padding.x, editTextSize.y + padding.y};
+        ImGui::SetCursorPos({windowPos.x + padding.x, windowPos.y + padding.y});
+
+        bool pushedStyle = false;
+
+        if (editModeActive)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::Cyan);
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::pastelNeonViolet);
+            pushedStyle = true;
+        }
+        if (ImGui::Button("Edit Mode", editButtonSize))
+        {
+            editModeActive = !editModeActive;
+
+            if (editModeActive)
+            {
+                ecs::EventDispatcher::dispatcher.trigger(ecs::GameStateChange{GameState::EditMode});
+            }
+            else
+            {
+                ecs::EventDispatcher::dispatcher.trigger(ecs::GameStateChange{GameState::LevelSelect});
+            }
+        }
+        if (pushedStyle)
+        {
+            ImGui::PopStyleColor(3);
+        }
+        ImGui::PopFont();
+
+        ImGui::PushFont(ui::FontManager::getFont("pixeloid-bold-30"));
+
         const ImVec2 textSize = ImGui::CalcTextSize("Select a Level");
         ImGui::SetCursorPos({(windowSize.x - textSize.x) * 0.5f, windowPos.y + padding.y});
         ImGui::Text("Select a Level");
 
         const auto buttonTextSize = ImGui::CalcTextSize("Exit");
-        const ImVec2 buttonSize = {buttonTextSize.x + padding.x * 2, buttonTextSize.y + padding.y * 2};
+        const ImVec2 buttonSize = {buttonTextSize.x + padding.x * 2, buttonTextSize.y + padding.y};
         ImGui::SetCursorPos({(windowSize.x - buttonSize.x) * 0.5f, windowSize.y - buttonSize.y - padding.y * 0.5f});
         if (ImGui::Button("Exit", buttonSize))
         {

@@ -9,6 +9,10 @@ namespace gl3::game
     public:
         explicit GameStateManager(Game& game);
         ~GameStateManager();
+        const engine::GameState& getCurrentState() const
+        {
+            return current_game_state_;
+        }
 
     private:
         void onUiInitialized() const;

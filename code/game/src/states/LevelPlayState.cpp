@@ -129,6 +129,7 @@ namespace gl3::game::state
         audio_config_ = game_.getAudioSystem()->initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
         current_level_->currentLevelSpeed = current_level_->velocityMultiplier / audio_config_->seconds_per_beat;
         current_level_->levelLength = audio_config_->current_audio_length * current_level_->currentLevelSpeed;
+        game_.getContext().setClearColor(current_level_->clearColor);
 
         level_instantiated_ = true;
         startLevel();
@@ -198,6 +199,7 @@ namespace gl3::game::state
 */
     void LevelPlayState::reloadLevel()
     {
+        game_.getAudioSystem()->playOneShot("crash");
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{false});
         menu_ui_->setActive(true);
         instruction_ui_->setActive(level_index_ == 0);
@@ -205,7 +207,7 @@ namespace gl3::game::state
 
         game_.getAudioSystem()->stopCurrentAudio();
 
-        timer_ = 3.f;
+        timer_ = 1.f;
         transition_triggered_ = false;
         timer_active_ = false;
 
@@ -243,7 +245,7 @@ namespace gl3::game::state
     {
         const float currentTime = audio_config_->audio.getStreamTime(audio_config_->currentAudioHandle);
 
-        if (!timer_active_ && currentTime >= audio_config_->current_audio_length)
+        if (!timer_active_ && currentTime >= audio_config_->current_audio_length - 1) //slight
         {
             timer_active_ = true;
         }
@@ -259,6 +261,9 @@ namespace gl3::game::state
                 menu_ui_->setActive(false);
                 instruction_ui_->setActive(false);
                 finish_ui_->setActive(true);
+
+                game_.getAudioSystem()->playOneShot("win"); //TODO stoppen wenn lvl verlassen wird
+
                 pauseLevel();
             }
         }

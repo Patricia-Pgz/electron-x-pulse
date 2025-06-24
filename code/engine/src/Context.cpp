@@ -63,7 +63,7 @@ namespace gl3::engine::context
         glfwSetTime(1.0 / 60);
         while (!glfwWindowShouldClose(window))
         {
-            glClearColor(1.f, 0.47f, 0.f, 1.f);
+            glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             update(*this);
             glfwPollEvents();

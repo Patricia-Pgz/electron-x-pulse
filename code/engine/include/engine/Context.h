@@ -3,9 +3,9 @@
 #include <functional>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "Events.h"
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
 
 namespace gl3::engine::context
 {
@@ -36,6 +36,7 @@ namespace gl3::engine::context
         [[nodiscard]] glm::vec3 getCameraPos() const { return cameraPosition; }
         [[nodiscard]] glm::vec3 getCameraCenter() const { return cameraCenter; }
         [[nodiscard]] float getCurrentZoom() const { return zoom; }
+        void setClearColor(const glm::vec4& color) { clearColor = color; }
 
         [[nodiscard]] std::vector<float> getWindowBounds() const
         {
@@ -51,6 +52,7 @@ namespace gl3::engine::context
         float zoom;
         glm::vec3 cameraPosition;
         glm::vec3 cameraCenter{0.0f, 0.0f, 0.0f};
+        glm::vec4 clearColor = {1, 1, 1, 1};
         float windowLeft, windowRight, windowBottom, windowTop;
     };
 }

@@ -21,9 +21,42 @@ namespace gl3::engine::audio
             AudioSystem::onGlobalVolumeChanged>(this);
     }
 
+    void AudioSystem::loadOneShot(const std::string& sfxName, const std::string& fileName)
+    {
+        const auto path = "audio/" + fileName;
+        auto wav = std::make_unique<SoLoud::Wav>();
+        if (wav->load(resolveAssetPath(path).c_str()) != 0)
+        {
+            std::cerr << "[AudioSystem] Failed to load SFX: " << fileName << std::endl;
+            return;
+        }
+
+        oneShotSounds_[sfxName] = std::move(wav);
+    }
+
+    void AudioSystem::playOneShot(const std::string& sfxName)
+    {
+        if (const auto wav = oneShotSounds_.find(sfxName); wav != oneShotSounds_.end())
+        {
+            config_.audio.play(*wav->second);
+        }
+        else
+        {
+            std::cerr << "[AudioSystem] SFX not found: " << sfxName << std::endl;
+        }
+    }
+
+    void AudioSystem::unloadOneShot(const std::string& sfxName)
+    {
+        if (const auto wav = oneShotSounds_.find(sfxName); wav != oneShotSounds_.end())
+        {
+            oneShotSounds_.erase(wav);
+        }
+    }
+
     AudioConfig* AudioSystem::initializeCurrentAudio(const std::string& fileName, float positionOffsetX)
     {
-        auto path = "audio/" + fileName;
+        const auto path = "audio/" + fileName;
         config_.backgroundMusic = std::make_unique<SoLoud::Wav>();
         config_.backgroundMusic->load(resolveAssetPath(path).c_str());
         config_.backgroundMusic->setLooping(false);

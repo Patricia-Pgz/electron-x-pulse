@@ -34,6 +34,8 @@ namespace gl3::game
     {
         game_.getStateManagement()->pushState<state::LevelSelectState>(
             game_);
+        game_.getAudioSystem()->loadOneShot("win", "win.wav");
+        game_.getAudioSystem()->loadOneShot("crash", "crash.wav");
     }
 
     void GameStateManager::onGameStateChange(const engine::ecs::GameStateChange& newState) const

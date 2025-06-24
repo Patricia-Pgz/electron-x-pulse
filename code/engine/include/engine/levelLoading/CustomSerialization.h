@@ -54,6 +54,7 @@ struct glz::meta<Level>
         "audioFile", &T::audioFile,
         "velocityMultiplier", &T::velocityMultiplier,
         "groundLevel", &T::groundLevel,
+        "clearColor", &T::clearColor,
         "backgrounds", &T::backgrounds,
         "objects", &T::objects
     );

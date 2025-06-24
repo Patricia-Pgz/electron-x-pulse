@@ -10,6 +10,7 @@ namespace gl3::game::ui
         explicit InstructionUI(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game)
         {
         }
+
         void update() override;
         void setActive(bool setActive) override;
 
@@ -26,7 +27,8 @@ namespace gl3::game::ui
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |
             ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoBackground |
             ImGuiWindowFlags_NoBringToFrontOnFocus;
     };
 } // gl3
-
