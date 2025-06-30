@@ -34,11 +34,16 @@ namespace gl3::engine::editor
         void highlightSelectedButton(const std::vector<std::string>& buttonIDs);
         ImVec2 grid_center = {0.f, 0.f};
         float grid_offset = 0.5f;
-        std::unique_ptr<ImVec2> selected_grid_cell = nullptr;
+        std::unique_ptr<ImVec2> selected_grid_cell = std::make_unique<ImVec2>(0.0f, 0.0f);
         glm::vec2 selected_scale = {1.f, 1.f};
         char tag_input_buffer[128] = "";
         std::string selected_tag = "undefined";
         bool is_triangle = false;
+        bool use_color_ = false;
+        glm::vec4 selected_color_ = {1.0f, 1.0f, 1.0f, 1.0f};
         EditorSystem* editor_system;
+        static constexpr ImGuiWindowFlags flags_ =
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoResize;
     };
 }

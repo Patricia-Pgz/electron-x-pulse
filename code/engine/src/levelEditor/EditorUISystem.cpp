@@ -102,9 +102,9 @@ namespace gl3::engine::editor
                         },
                         glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
                         selected_tag, is_triangle,
-                        name, uv
+                        name, {selected_scale.x, selected_scale.y, 0.f}, uv
                     }
-                }); //TODO                     selected_scale wieder mitschicken!!
+                });
             }
             if (ImGui::IsItemHovered())
             {
@@ -136,7 +136,7 @@ namespace gl3::engine::editor
                         },
                         glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
                         selected_tag, is_triangle,
-                        name, {1, 1, 1}, {0, 0, 1, 1}
+                        name, {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}
                     }
                 });
         }
@@ -195,7 +195,6 @@ namespace gl3::engine::editor
     {
         ImGuiStyle& style = ImGui::GetStyle();
 
-        style.WindowBorderSize = 2.f;
         style.WindowPadding = ImVec2(10, 10);
         style.WindowRounding = 3.0f;
         ImGui::GetStyle().FrameRounding = 5.0;
@@ -215,7 +214,7 @@ namespace gl3::engine::editor
         styleWindow();
         ImGui::PushStyleColor(ImGuiCol_Text, UINeonColors::windowBgColor);
         ImGui::PushFont(ui::FontManager::getFont("PixeloidSans-Bold"));
-        ImGui::Begin("Tile Panel");
+        ImGui::Begin("Tile Panel", nullptr, flags_);
         ImGui::PopStyleColor();
         ImGui::PopFont();
 
@@ -277,20 +276,84 @@ namespace gl3::engine::editor
         const float tileSize = (availableWidth - totalSpacing) / tilesPerRow;
 
         ImGui::Separator();
-        ImGui::Text("Textures:");
-        int tileIndex = 0;
-        for (const auto& [name, texture] : rendering::TextureManager::getAllTextures())
-        {
-            if (tileIndex % tilesPerRow != 0)
-                ImGui::SameLine();
-            visualizeSingleTextureUI(*texture, name, tileSize);
-            tileIndex++;
-        }
-        ImGui::Separator();
+        ImGui::Text("Select Visual:");
 
-        for (const auto& [name, texture] : rendering::TextureManager::getAllTileSets())
+        if (ImGui::RadioButton("##Color", use_color_))
         {
-            visualizeTileSetUI(*texture, name, tileSize);
+            use_color_ = true;
+        }
+        ImGui::SameLine();
+
+        if (use_color_)
+        {
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y);
+            ImGui::ColorButton("##ColorPreview",
+                               {selected_color_.x, selected_color_.y, selected_color_.z, selected_color_.w},
+                               0,
+                               ImVec2(20, 20));
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetStyle().FramePadding.y * 0.5f);
+
+            if (ImGui::IsItemClicked())
+            {
+                ImGui::OpenPopup("ColorPickerPopup");
+            }
+        }
+
+        ImGui::SameLine();
+        ImGui::Text("Color");
+        ImGui::SameLine();
+
+        if (ImGui::RadioButton("Texture", !use_color_))
+        {
+            use_color_ = false;
+        }
+
+        if (use_color_)
+        {
+            static bool pickerWasOpen = false;
+
+            if (ImGui::BeginPopup("ColorPickerPopup"))
+            {
+                pickerWasOpen = true;
+
+                ImGui::ColorPicker4("##picker", reinterpret_cast<float*>(&selected_color_));
+
+                ImGui::EndPopup();
+            }
+            else if (pickerWasOpen)
+            {
+                pickerWasOpen = false;
+
+                ecs::EventDispatcher::dispatcher.trigger(
+                    TileSelectedEvent{
+                        {
+                            {
+                                selected_grid_cell->x, -selected_grid_cell->y, 0.f
+                            },
+                            selected_color_,
+                            selected_tag, is_triangle,
+                            "", {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}
+                        }
+                    });
+            }
+        }
+        else
+        {
+            ImGui::Text("Textures:");
+            int tileIndex = 0;
+            for (const auto& [name, texture] : rendering::TextureManager::getAllTextures())
+            {
+                if (tileIndex % tilesPerRow != 0)
+                    ImGui::SameLine();
+                visualizeSingleTextureUI(*texture, name, tileSize);
+                tileIndex++;
+            }
+            ImGui::Separator();
+
+            for (const auto& [name, texture] : rendering::TextureManager::getAllTileSets())
+            {
+                visualizeTileSetUI(*texture, name, tileSize);
+            }
         }
 
         ImGui::PopStyleColor(4);
