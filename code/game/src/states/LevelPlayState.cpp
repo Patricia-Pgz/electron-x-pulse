@@ -165,10 +165,10 @@ namespace gl3::game::state
         }
     }
 
-    void LevelPlayState::pauseOrStartLevel(const bool stop) const
+    void LevelPlayState::pauseOrStartLevel(const bool pause) const
     {
         auto* PlayerInputSystem = dynamic_cast<Game&>(game_).getPlayerInputSystem();
-        if (stop)
+        if (pause)
         {
             game_.getPhysicsSystem()->setActive(false);
             PlayerInputSystem->setActive(false);
@@ -194,7 +194,21 @@ namespace gl3::game::state
     void LevelPlayState::onPlayerDeath(const engine::ecs::PlayerDeath& event)
     {
         game_.getAudioSystem()->playOneShot("crash");
+        onRestartLevel();
+    }
+
+    void LevelPlayState::onRestartLevel()
+    {
+        //game will be reset and stopped if player restarts level and then presses enter in edit mode
+        if (edit_mode_) play_test_ = true;
         reloadLevel();
+        startLevel();
+    }
+
+    void LevelPlayState::startLevel() const
+    {
+        game_.getAudioSystem()->playCurrentAudio();
+        pauseOrStartLevel(false);
     }
 
     /**
@@ -202,8 +216,6 @@ namespace gl3::game::state
 */
     void LevelPlayState::reloadLevel()
     {
-        audio_config_->audio.stop(audio_config_->currentAudioHandle); //stop the current background music
-        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{false});
         menu_ui_->setActive(true);
         instruction_ui_->setActive(level_index_ == 0);
         finish_ui_->setActive(false);
@@ -238,9 +250,6 @@ namespace gl3::game::state
                 updateBackgroundEntity(bgConfig, entity);
             }
         }
-
-        game_.getAudioSystem()->playCurrentAudio();
-        pauseOrStartLevel(false);
     }
 
     void LevelPlayState::delayLevelEnd(float deltaTime)
@@ -286,5 +295,6 @@ namespace gl3::game::state
         current_level_ = nullptr;
         current_player_ = entt::null;
         edit_mode_ = false;
+        play_test_ = false;
     }
 }

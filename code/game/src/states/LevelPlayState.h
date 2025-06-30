@@ -41,7 +41,7 @@ namespace gl3::game::state
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
                 LevelPlayState::onPlayerDeath>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::RestartLevelEvent>().connect<&
-                LevelPlayState::reloadLevel>(this);
+                LevelPlayState::onRestartLevel>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().connect<&
                 LevelPlayState::onPauseEvent>(this);
         }
@@ -79,10 +79,29 @@ namespace gl3::game::state
             {
                 return;
             }
-            if (edit_mode_ && glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS)
+
+            if (glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS)
             {
-                game_.getAudioSystem()->playCurrentAudio();
-                pauseOrStartLevel(false);
+                if (!enter_pressed_)
+                {
+                    enter_pressed_ = true;
+                    play_test_ = !play_test_;
+                    if (play_test_)
+                    {
+                        game_.getAudioSystem()->playCurrentAudio();
+                        pauseOrStartLevel(false);
+                    }
+                    else
+                    {
+                        game_.getAudioSystem()->stopCurrentAudio();
+                        pauseOrStartLevel(true);
+                        reloadLevel();
+                    }
+                }
+            }
+            else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
+            {
+                enter_pressed_ = false;
             }
             delayLevelEnd(deltaTime);
         }
@@ -91,13 +110,15 @@ namespace gl3::game::state
         void loadLevel();
         void moveObjects() const;
         void stopMovingObjects() const;
-        void pauseOrStartLevel(bool stop) const;
+        void pauseOrStartLevel(bool pause) const;
         void reloadLevel();
         void unloadLevel();
         void delayLevelEnd(float deltaTime);
 
         void onWindowResize(const engine::context::WindowResizeEvent& evt) const;
         void onPlayerDeath(const engine::ecs::PlayerDeath& event);
+        void onRestartLevel();
+        void startLevel() const;
         void onPauseEvent(const engine::ui::PauseLevelEvent& event) const;
 
         [[nodiscard]] LevelBackgroundConfig calculateBackgrounds() const;
@@ -109,6 +130,7 @@ namespace gl3::game::state
         ui::InstructionUI* instruction_ui_;
         engine::audio::AudioConfig* audio_config_ = nullptr;
         bool edit_mode_ = false;
+        bool play_test_ = false;
         bool level_instantiated_ = false;
         bool timer_active_ = false;
         bool transition_triggered_ = false;
@@ -116,5 +138,7 @@ namespace gl3::game::state
         int level_index_ = -1;
         Level* current_level_ = nullptr;
         entt::entity current_player_ = entt::null;
+        bool prev_enter_state_ = false;
+        bool enter_pressed_ = false;
     };
 }
