@@ -1,5 +1,7 @@
 #include "engine/levelEditor/EditorUISystem.h"
 #include <iostream>
+
+#include "../../../game/src/Game.h"
 #include "engine/Constants.h"
 #include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
@@ -9,6 +11,13 @@
 
 namespace gl3::engine::editor
 {
+    void EditorUISystem::onMouseScroll(const context::MouseScrollEvent& event)
+    {
+        const auto offset = static_cast<float>(event.yOffset * pixelsPerMeter);
+        game_.getContext().moveCameraX(offset);
+        camera_x_offset += static_cast<float>(event.yOffset);
+    }
+
     void EditorUISystem::DrawGrid(const float gridSpacing)
     {
         const ImVec2 screenSize = imgui_io_->DisplaySize;
@@ -37,12 +46,14 @@ namespace gl3::engine::editor
         if (ImGui::IsMouseClicked(0) && !ImGui::GetIO().WantCaptureMouse)
         {
             ImVec2 mousePos = ImGui::GetMousePos();
+            float scrollOffsetX = ImGui::GetScrollX();
+            game_.getContext().moveCameraX(scrollOffsetX * gridSpacing);
 
             // Snap click to grid cell
             ImVec2 relativePos(mousePos.x - grid_center.x, mousePos.y - grid_center.y);
 
-            int cellX = static_cast<int>(std::round(relativePos.x / gridSpacing));;
-            int cellY = static_cast<int>(std::round(relativePos.y / gridSpacing));
+            const int cellX = static_cast<int>(std::round(relativePos.x / gridSpacing));
+            const int cellY = static_cast<int>(std::round(relativePos.y / gridSpacing));
 
             std::cout << "cellX: " + std::to_string(cellX) + "cellY: " + std::to_string(cellY);
 
@@ -61,8 +72,7 @@ namespace gl3::engine::editor
         {
             const int cellX = static_cast<int>(selected_grid_cell->x);
             const int cellY = static_cast<int>(selected_grid_cell->y);
-
-            const auto cellCenter = ImVec2(grid_center.x + static_cast<float>(cellX) * gridSpacing,
+            const auto cellCenter = ImVec2(grid_center.x + static_cast<float>(cellX) + camera_x_offset * gridSpacing,
                                            grid_center.y + static_cast<float>(cellY) * gridSpacing);
             const auto topLeft = ImVec2(cellCenter.x - gridSpacing * 0.5f, cellCenter.y - gridSpacing * 0.5f);
             const auto cellBottomRight = ImVec2(cellCenter.x + gridSpacing * 0.5f, cellCenter.y + gridSpacing * 0.5f);
@@ -129,7 +139,6 @@ namespace gl3::engine::editor
         {
             ecs::EventDispatcher::dispatcher.trigger(
                 TileSelectedEvent{
-                    //TODO anpassen, damit tiles setzen wieder klappt!
                     {
                         {
                             selected_grid_cell->x, -selected_grid_cell->y, 0.f

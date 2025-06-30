@@ -20,10 +20,20 @@ namespace gl3::engine::editor
         explicit EditorUISystem(ImGuiIO* imguiIO, Game& game) : IUISubsystem(imguiIO, game),
                                                                 editor_system(new EditorSystem(game))
         {
+            ecs::EventDispatcher::dispatcher.sink<context::MouseScrollEvent>().connect<&
+                EditorUISystem::onMouseScroll>(this);
         };
+
+        ~EditorUISystem() override
+        {
+            ecs::EventDispatcher::dispatcher.sink<context::MouseScrollEvent>().disconnect<&
+                EditorUISystem::onMouseScroll>(this);
+        }
+
         void update() override;
 
     private:
+        void onMouseScroll(const context::MouseScrollEvent& event);
         void DrawGrid(float gridSpacing);
         void DrawTileSelectionPanel();
         void createCustomUI();
@@ -42,6 +52,7 @@ namespace gl3::engine::editor
         bool use_color_ = false;
         glm::vec4 selected_color_ = {1.0f, 1.0f, 1.0f, 1.0f};
         EditorSystem* editor_system;
+        float camera_x_offset = 0.f;
         static constexpr ImGuiWindowFlags flags_ =
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoResize;

@@ -14,6 +14,7 @@ namespace gl3::game::state
         {
             editor_ui_system_ = game_.getUISystem()->getSubsystem<engine::editor::EditorUISystem>();
         };
+
         ~EditorState() override = default;
 
         void onEnter() override

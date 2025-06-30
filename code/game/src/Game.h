@@ -21,7 +21,7 @@ namespace gl3::game
         void registerUiSystems() override;
 
         void moveEntitiesScrolling();
-        void onMouseScroll(engine::context::onMouseScrollEvent& event);
+        void onMouseScroll(engine::context::MouseScrollEvent& event);
 
         GameStateManager* game_state_manager_;
         input::PlayerInputSystem* player_input_system_;

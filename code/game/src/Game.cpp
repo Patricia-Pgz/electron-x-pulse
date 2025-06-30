@@ -21,17 +21,17 @@ namespace gl3::game
         : engine::Game(width, height, title, camPos, camZoom), game_state_manager_(new GameStateManager(*this)),
           player_input_system_(new input::PlayerInputSystem(*this))
     {
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().connect<&
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::context::MouseScrollEvent>().connect<&
             Game::onMouseScroll>(this);
     }
 
     Game::~Game()
     {
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::context::onMouseScrollEvent>().disconnect<&
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::context::MouseScrollEvent>().disconnect<&
             Game::onMouseScroll>(this);
     }
 
-    void Game::onMouseScroll(engine::context::onMouseScrollEvent& event)
+    void Game::onMouseScroll(engine::context::MouseScrollEvent& event)
     {
         /*if (currentGameState != engine::GameState::PreviewWithScrolling) return;
         float cameraX = 0.0f; /*cameraPosition.x;#1#

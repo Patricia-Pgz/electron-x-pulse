@@ -15,23 +15,28 @@ namespace gl3::engine::context
         int newHeight;
     };
 
-    struct onMouseScrollEvent
+    struct MouseScrollEvent
     {
         double xOffset;
         double yOffset;
     };
 
-    class Context
+    class Context final
     {
     public:
         using Callback = std::function<void(Context&)>;
         explicit Context(int width = 800, int height = 600, const std::string& title = "Game",
                          glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 0.0f), float camZoom = 1.0f);
-        virtual ~Context();
+        ~Context();
         void run(const Callback& update);
         void calculateWindowBounds();
         void setCameraPos(const glm::vec3 position) { cameraPosition = position; }
         void setCameraCenter(const glm::vec3 position) { cameraCenter = position; }
+        void moveCameraX(const float dx)
+        {
+            cameraPosition.x += dx;
+            cameraCenter.x += dx;
+        }
         [[nodiscard]] GLFWwindow* getWindow() const { return window; }
         [[nodiscard]] glm::vec3 getCameraPos() const { return cameraPosition; }
         [[nodiscard]] glm::vec3 getCameraCenter() const { return cameraCenter; }

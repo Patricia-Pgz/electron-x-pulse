@@ -18,7 +18,7 @@ namespace gl3::engine::context
     void Context::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     {
         auto contextInstance = static_cast<Context*>(glfwGetWindowUserPointer(window));
-        ecs::EventDispatcher::dispatcher.trigger(onMouseScrollEvent{xoffset, yoffset});
+        ecs::EventDispatcher::dispatcher.trigger(MouseScrollEvent{xoffset, yoffset});
         contextInstance->calculateWindowBounds(); //recalculate window bounds if user scrolled in the scene
     }
 
