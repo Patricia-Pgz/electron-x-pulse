@@ -33,7 +33,7 @@ namespace gl3::engine::editor
         void update() override;
 
     private:
-        void onMouseScroll(const context::MouseScrollEvent& event);
+        void onMouseScroll(const context::MouseScrollEvent& event) const;
         void DrawGrid(float gridSpacing);
         void DrawTileSelectionPanel();
         void createCustomUI();
@@ -52,7 +52,6 @@ namespace gl3::engine::editor
         bool use_color_ = false;
         glm::vec4 selected_color_ = {1.0f, 1.0f, 1.0f, 1.0f};
         EditorSystem* editor_system;
-        float camera_x_offset = 0.f;
         static constexpr ImGuiWindowFlags flags_ =
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoResize;

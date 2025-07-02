@@ -41,7 +41,7 @@ namespace gl3::engine::rendering
             const auto screenSize = ImGui::GetIO().DisplaySize;
 
             const float ndcX = (screenPosX / screenSize.x) * 2.0f - 1.0f;
-            const float ndcY = 1.0f - (screenPosY / screenSize.y) * 2.0f; // invert y
+            const float ndcY = (screenPosY / screenSize.y) * 2.0f - 1.0f;
 
             const glm::vec4 clipPos = glm::vec4(ndcX, ndcY, 0.f, 1.f);
 
@@ -71,7 +71,7 @@ namespace gl3::engine::rendering
             const float ndcY = clip.y / clip.w;
 
             float screenX = (ndcX * 0.5f + 0.5f) * screenSize.x;
-            float screenY = (1.0f - (ndcY * 0.5f + 0.5f)) * screenSize.y;
+            float screenY = (ndcY * 0.5f + 0.5f) * screenSize.y;
 
             return {screenX, screenY};
         }

@@ -5,17 +5,16 @@
 #include "engine/Constants.h"
 #include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
+#include "engine/rendering/MVPMatrixHelper.h"
 #include "engine/rendering/Texture.h"
 #include "engine/rendering/TextureManager.h"
 #include "engine/userInterface/FontManager.h"
 
 namespace gl3::engine::editor
 {
-    void EditorUISystem::onMouseScroll(const context::MouseScrollEvent& event)
+    void EditorUISystem::onMouseScroll(const context::MouseScrollEvent& event) const
     {
-        const auto offset = static_cast<float>(event.yOffset * pixelsPerMeter);
-        game_.getContext().moveCameraX(offset);
-        camera_x_offset += static_cast<float>(event.yOffset);
+        game_.getContext().moveCameraX(static_cast<float>(event.yOffset) * pixelsPerMeter);
     }
 
     void EditorUISystem::DrawGrid(const float gridSpacing)
@@ -46,38 +45,40 @@ namespace gl3::engine::editor
         if (ImGui::IsMouseClicked(0) && !ImGui::GetIO().WantCaptureMouse)
         {
             ImVec2 mousePos = ImGui::GetMousePos();
-            float scrollOffsetX = ImGui::GetScrollX();
-            game_.getContext().moveCameraX(scrollOffsetX * gridSpacing);
+            glm::vec2 worldPos = rendering::MVPMatrixHelper::screenToWorld(game_, mousePos.x, mousePos.y);
 
             // Snap click to grid cell
-            ImVec2 relativePos(mousePos.x - grid_center.x, mousePos.y - grid_center.y);
+            int cellX = static_cast<int>(std::round(worldPos.x));
+            int cellY = static_cast<int>(std::round(worldPos.y));
 
-            const int cellX = static_cast<int>(std::round(relativePos.x / gridSpacing));
-            const int cellY = static_cast<int>(std::round(relativePos.y / gridSpacing));
 
-            std::cout << "cellX: " + std::to_string(cellX) + "cellY: " + std::to_string(cellY);
+            std::cout << "Clicked cell: (" << cellX << ", " << cellY << ")\n";
 
-            if (ImVec2 clickedCell(static_cast<float>(cellX), static_cast<float>(cellY)); selected_grid_cell &&
+            if (ImVec2 clickedCell(static_cast<float>(cellX), static_cast<float>(cellY));
+                selected_grid_cell &&
                 selected_grid_cell->x == clickedCell.x && selected_grid_cell->y == clickedCell.y)
             {
                 selected_grid_cell.reset();
             }
             else
             {
-                selected_grid_cell = std::make_unique<ImVec2>(clickedCell);
+                // Store selected grid cell in world coords
+                selected_grid_cell = std::make_unique<ImVec2>(static_cast<float>(cellX), static_cast<float>(cellY));
             }
         }
-
         if (selected_grid_cell)
         {
-            const int cellX = static_cast<int>(selected_grid_cell->x);
-            const int cellY = static_cast<int>(selected_grid_cell->y);
-            const auto cellCenter = ImVec2(grid_center.x + static_cast<float>(cellX) + camera_x_offset * gridSpacing,
-                                           grid_center.y + static_cast<float>(cellY) * gridSpacing);
-            const auto topLeft = ImVec2(cellCenter.x - gridSpacing * 0.5f, cellCenter.y - gridSpacing * 0.5f);
-            const auto cellBottomRight = ImVec2(cellCenter.x + gridSpacing * 0.5f, cellCenter.y + gridSpacing * 0.5f);
+            // Convert cell (world grid pos) to screen space for drawing
+            glm::vec2 screenPos = rendering::MVPMatrixHelper::toScreen(game_, selected_grid_cell->x,
+                                                                       selected_grid_cell->y);
+            std::cout << screenPos.y;
+            ImDrawList* drawList = ImGui::GetBackgroundDrawList();
 
-            drawList->AddRect(topLeft, cellBottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+            // Calculate top-left and bottom-right in screen space for the cell rect
+            ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
+            ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
+
+            drawList->AddRect(topLeft, bottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
         }
     }
 

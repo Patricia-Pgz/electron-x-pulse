@@ -21,8 +21,6 @@ target_compile_features(${EXE_FILE} PUBLIC cxx_std_20)
 target_link_libraries(${EXE_FILE}
         PRIVATE
         Electrine
-        nlohmann_json::nlohmann_json
-        glaze::glaze
 )
 
 # Copy assets to output dir before launch
