@@ -58,7 +58,8 @@ git clone --recursive --depth 1 https://gitlab2.informatik.uni-wuerzburg.de/GE/T
 4. You should now have a running configuration -> compile the code and play ElectronXPulse with integrated Level Editor!
 
 To use Electrine Engine in your own game, clone as mentioned above and add the engine as subdirectory and link your game executable against Electrine in your CMAKEList.
-Exampl using Electrine in your game:
+
+#Exampl using Electrine in your game:
 
 //In your CMakeList:
 ```cmake
@@ -77,7 +78,7 @@ target_link_libraries(MyNewGame PRIVATE Electrine)
 target_compile_features(MyNewGame PRIVATE cxx_std_20)
 ```
 
-//Include headers in your .cpp files, e.g.:
+#Include headers in your .cpp files, e.g.:
 ```cpp
 #include <Electrine/SomeHeader.h>
 ```
