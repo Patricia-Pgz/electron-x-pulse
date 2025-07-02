@@ -14,7 +14,7 @@
 | Study Program | Games Engineering B.Sc.|
 | Engine Version | Electrine 0.1 |
 
-### Abstract
+## Abstract
 
 Electrine Engine transforms rhythm into gameplay. Built for flexibility and creative control, it powers core systems like rendering, physics, audio, UI, state management and ECS.
 With its integrated level editor, level loading system and audio analysis, developers can intuitively design levels that precisely align with the beat.
@@ -40,7 +40,7 @@ RepositoryRoot/
     └── trailer/                // Trailer (MP4)
 ```
 
-## Quick Start
+### Quick Start: ElectronXPulse
 
 This is a simple quick start guide how to clone my project and get it running.
 Prequisits: C++20 Compiler (MSVC) & Windows11 SDK installed
@@ -57,11 +57,10 @@ git clone --recursive --depth 1 https://gitlab2.informatik.uni-wuerzburg.de/GE/T
 
 4. You should now have a running configuration -> compile the code and play ElectronXPulse with integrated Level Editor!
 
+### Example Usage of Electrine in your game:
 To use Electrine Engine in your own game, clone as mentioned above and add the engine as subdirectory and link your game executable against Electrine in your CMAKEList.
 
-# Exampl using Electrine in your game:
-
-//In your CMakeList:
+In your CMakeList:
 ```cmake
 cmake_minimum_required(VERSION 3.18)
 project(MyNewGame)
@@ -78,7 +77,7 @@ target_link_libraries(MyNewGame PRIVATE Electrine)
 target_compile_features(MyNewGame PRIVATE cxx_std_20)
 ```
 
-# Include headers in your .cpp files, e.g.:
+Include headers in your .cpp files:
 ```cpp
 #include <Electrine/SomeHeader.h>
 ```
