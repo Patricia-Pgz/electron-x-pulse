@@ -136,7 +136,9 @@ namespace gl3::game::state
         {
             game_.getAudioSystem()->playCurrentAudio();
             pauseOrStartLevel(false);
+            return;
         }
+        instruction_ui_->pauseTimer(true);
     }
 
     void LevelPlayState::moveObjects() const
@@ -201,6 +203,7 @@ namespace gl3::game::state
     {
         //game will be reset and stopped if player restarts level and then presses enter in edit mode
         if (edit_mode_) play_test_ = true;
+        instruction_ui_->resetTimer();
         reloadLevel();
         startLevel();
     }
@@ -208,11 +211,12 @@ namespace gl3::game::state
     void LevelPlayState::startLevel() const
     {
         game_.getAudioSystem()->playCurrentAudio();
+        instruction_ui_->resetTimer();
         pauseOrStartLevel(false);
     }
 
     /**
-     *Resets every entity to its initial Transform, restarts movement and audio
+     *Resets every entity to its initial Transform, resets audio
 */
     void LevelPlayState::reloadLevel()
     {
@@ -254,7 +258,8 @@ namespace gl3::game::state
 
     void LevelPlayState::delayLevelEnd(float deltaTime)
     {
-        const float currentTime = audio_config_->audio.getStreamTime(audio_config_->currentAudioHandle);
+        const auto currentTime = static_cast<float>(audio_config_->audio.getStreamTime(
+            audio_config_->currentAudioHandle));
 
         if (!timer_active_ && currentTime >= audio_config_->current_audio_length - 1) //slight
         {
@@ -296,5 +301,40 @@ namespace gl3::game::state
         current_player_ = entt::null;
         edit_mode_ = false;
         play_test_ = false;
+    }
+
+    void LevelPlayState::update(const float deltaTime)
+    {
+        if (!level_instantiated_)
+        {
+            return;
+        }
+
+        if (glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS)
+        {
+            if (!enter_pressed_)
+            {
+                enter_pressed_ = true;
+                play_test_ = !play_test_;
+                engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayModeChange{play_test_});
+                if (play_test_)
+                {
+                    game_.getAudioSystem()->playCurrentAudio();
+                    instruction_ui_->resetTimer();
+                    pauseOrStartLevel(false);
+                }
+                else
+                {
+                    game_.getAudioSystem()->stopCurrentAudio();
+                    pauseOrStartLevel(true);
+                    reloadLevel();
+                }
+            }
+        }
+        else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
+        {
+            enter_pressed_ = false;
+        }
+        delayLevelEnd(deltaTime);
     }
 }

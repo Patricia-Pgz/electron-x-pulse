@@ -31,7 +31,7 @@ struct glz::meta<GameObject>
         "isTriangle", &T::isTriangle,
         "textureName", &T::textureName,
         "uv", &T::uv,
-        "enableCol", &T::enableCollision
+        "generatePhysicsComp", &T::generatePhysicsComp
     );
 };
 

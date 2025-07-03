@@ -62,7 +62,7 @@ namespace gl3::engine::ecs
             const auto transform = registry.emplace<TransformComponent>(
                 entity, object.position, object.scale, object.rotation);
             registry.emplace<TagComponent>(entity, object.tag);
-            if (object.enableCollision)
+            if (object.generatePhysicsComp) //TODO rotation
             {
                 registry.emplace<PhysicsComponent>(
                     entity, createPhysicsBody(physicsWorld, transform, entity, object.tag, object.isTriangle)
@@ -71,7 +71,7 @@ namespace gl3::engine::ecs
             const rendering::Texture* tex = object.textureName.empty()
                                                 ? nullptr
                                                 : rendering::TextureManager::get(object.textureName);
-            registry.emplace<RenderComponent>(
+            registry.emplace<RenderComponent>( //TODO rotation
                 entity, createRenderComponent(object.color, object.isTriangle, tex, object.uv));
 
             return entity;

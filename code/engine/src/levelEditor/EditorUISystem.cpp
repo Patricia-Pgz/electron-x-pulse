@@ -1,6 +1,4 @@
 #include "engine/levelEditor/EditorUISystem.h"
-#include <iostream>
-
 #include "../../../game/src/Game.h"
 #include "engine/Constants.h"
 #include "engine/userInterface/UIConstants.h"
@@ -16,6 +14,12 @@ namespace gl3::engine::editor
     {
         game_.getContext().moveCameraX(static_cast<float>(event.yOffset) * pixelsPerMeter);
     }
+
+    void EditorUISystem::onPlayModeChange(const ecs::PlayModeChange& event)
+    {
+        is_in_play_mode_ = event.isPlayMode;
+    }
+
 
     void EditorUISystem::DrawGrid(const float gridSpacing)
     {
@@ -44,17 +48,14 @@ namespace gl3::engine::editor
 
         if (ImGui::IsMouseClicked(0) && !ImGui::GetIO().WantCaptureMouse)
         {
-            ImVec2 mousePos = ImGui::GetMousePos();
-            glm::vec2 worldPos = rendering::MVPMatrixHelper::screenToWorld(game_, mousePos.x, mousePos.y);
+            const ImVec2 mousePos = ImGui::GetMousePos();
+            const glm::vec2 worldPos = rendering::MVPMatrixHelper::screenToWorld(game_, mousePos.x, mousePos.y);
 
             // Snap click to grid cell
-            int cellX = static_cast<int>(std::round(worldPos.x));
-            int cellY = static_cast<int>(std::round(worldPos.y));
+            const int cellX = static_cast<int>(std::round(worldPos.x));
+            const int cellY = static_cast<int>(std::round(worldPos.y));
 
-
-            std::cout << "Clicked cell: (" << cellX << ", " << cellY << ")\n";
-
-            if (ImVec2 clickedCell(static_cast<float>(cellX), static_cast<float>(cellY));
+            if (const ImVec2 clickedCell(static_cast<float>(cellX), static_cast<float>(cellY));
                 selected_grid_cell &&
                 selected_grid_cell->x == clickedCell.x && selected_grid_cell->y == clickedCell.y)
             {
@@ -68,17 +69,16 @@ namespace gl3::engine::editor
         }
         if (selected_grid_cell)
         {
-            // Convert cell (world grid pos) to screen space for drawing
-            glm::vec2 screenPos = rendering::MVPMatrixHelper::toScreen(game_, selected_grid_cell->x,
-                                                                       selected_grid_cell->y);
-            std::cout << screenPos.y;
-            ImDrawList* drawList = ImGui::GetBackgroundDrawList();
+            // Convert cell (world grid pos) to ImGui screen space for drawing
+            const auto screenPos = rendering::MVPMatrixHelper::toScreen(game_, selected_grid_cell->x,
+                                                                        selected_grid_cell->y);
+            ImDrawList* imDrawList = ImGui::GetBackgroundDrawList();
 
             // Calculate top-left and bottom-right in screen space for the cell rect
-            ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
-            ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
+            const ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
+            const ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
 
-            drawList->AddRect(topLeft, bottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+            imDrawList->AddRect(topLeft, bottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
         }
     }
 
@@ -113,7 +113,7 @@ namespace gl3::engine::editor
                         },
                         glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
                         selected_tag, is_triangle,
-                        name, {selected_scale.x, selected_scale.y, 0.f}, uv
+                        name, {selected_scale.x, selected_scale.y, 0.f}, uv, zRotation, generate_physics_comp
                     }
                 });
             }
@@ -146,7 +146,7 @@ namespace gl3::engine::editor
                         },
                         glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
                         selected_tag, is_triangle,
-                        name, {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}
+                        name, {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, zRotation, generate_physics_comp
                     }
                 });
         }
@@ -163,9 +163,6 @@ namespace gl3::engine::editor
         for (const auto& id : buttonIDs)
         {
             const bool isSelected = (selected_tag == id);
-            ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
 
             if (isSelected)
             {
@@ -179,8 +176,6 @@ namespace gl3::engine::editor
             {
                 ImGui::PopStyleColor(3);
             }
-
-            ImGui::PopStyleColor(3);
 
             if (pressed)
             {
@@ -212,6 +207,13 @@ namespace gl3::engine::editor
         ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_TitleBg, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_TitleBgActive, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_CheckMark, UINeonColors::pastelNeonViolet2);
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::Cyan);
+        ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
 
         style.ItemSpacing = ImVec2(10, 10);
     }
@@ -243,10 +245,8 @@ namespace gl3::engine::editor
         ImGui::PopStyleColor(2);
 
         ImGui::Text("3.) Scale:");
-        auto itemWidth = ImGui::GetContentRegionAvail().x * 0.4f;
+        const auto itemWidth = ImGui::GetContentRegionAvail().x * 0.4f;
         ImGui::SetNextItemWidth(itemWidth);
-        ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
-        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet2);
         if (ImGui::InputFloat("X", &selected_scale.x, 0.1f, 1.0f, "%.2f"))
         {
             if (selected_scale.x < 0.0f)
@@ -254,17 +254,14 @@ namespace gl3::engine::editor
         }
         ImGui::SameLine();
         ImGui::SetNextItemWidth(itemWidth);
-        ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
-        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet2);
         if (ImGui::InputFloat("Y", &selected_scale.y, 0.1f, 10.f, "%.2f"))
         {
             if (selected_scale.x < 0.0f)
                 selected_scale.x = 0.1f;
         }
-        ImGui::PopStyleColor(4);
 
         ImGui::Text("4.) Select tag:");
-        std::vector<std::string> tagButtonIDs{"platform", "obstacle"};
+        const std::vector<std::string> tagButtonIDs{"platform", "obstacle"};
         highlightSelectedButton(tagButtonIDs);
         ImGui::Text("Custom tag:");
         ImGui::SameLine();
@@ -279,14 +276,23 @@ namespace gl3::engine::editor
         {
             selected_tag = tag_input_buffer;
         }
-        ImGui::Text("5.) Select Tile to place:");
+
+        const auto nextItemWidth = ImGui::GetContentRegionAvail().x * 0.4f;
+        ImGui::SetNextItemWidth(nextItemWidth);
+        ImGui::InputFloat("5.) Z-Rotation:", &zRotation, 0.1f, 1.0f, "%.2f");
+        zRotation = fmod(zRotation, 360.0f);
+        if (zRotation < 0.0f)
+            zRotation += 360.0f;
+
+        ImGui::Text("6.) Generate PhysicsComponent");
+        ImGui::Checkbox("##PhysicsComp", &generate_physics_comp);
+
         const float availableWidth = ImGui::GetContentRegionAvail().x;
         const float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
         const float totalSpacing = itemSpacing * (tilesPerRow + 2);
         const float tileSize = (availableWidth - totalSpacing) / tilesPerRow;
-
         ImGui::Separator();
-        ImGui::Text("Select Visual:");
+        ImGui::Text("7.) Select Visual:");
 
         if (ImGui::RadioButton("##Color", use_color_))
         {
@@ -342,7 +348,8 @@ namespace gl3::engine::editor
                             },
                             selected_color_,
                             selected_tag, is_triangle,
-                            "", {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}
+                            "", {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, zRotation,
+                            generate_physics_comp
                         }
                     });
             }
@@ -366,7 +373,7 @@ namespace gl3::engine::editor
             }
         }
 
-        ImGui::PopStyleColor(4);
+        ImGui::PopStyleColor(11);
         ImGui::PopFont();
         ImGui::End();
     }
@@ -379,7 +386,7 @@ namespace gl3::engine::editor
 
     void EditorUISystem::update()
     {
-        if (!is_active) return;
+        if (!is_active || is_in_play_mode_) return;
         createCustomUI();
     }
 }

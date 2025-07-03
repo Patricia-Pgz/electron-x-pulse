@@ -13,7 +13,7 @@ struct GameObject
     glm::vec3 scale = {1.f, 1.f, 1.f};
     glm::vec4 uv = {0, 0, 1, 1};
     float rotation = 0.f;
-    bool enableCollision = true;
+    bool generatePhysicsComp = true;
 };
 
 struct LevelMeta

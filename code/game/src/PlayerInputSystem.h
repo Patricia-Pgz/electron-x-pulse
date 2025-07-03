@@ -34,6 +34,7 @@ namespace gl3::game::input
         static b2Vec2 calculateJumpImpulse(b2BodyId body, const JumpConfig& config);
         void onPlayerGrounded(engine::ecs::PlayerGrounded& event);
         void applyJumpImpulse(b2BodyId body) const;
+        bool enter_pressed_ = false;
         bool canJump = true;
         float distancePerBeat = 2.0f; // Example: player travels 2 units per beat //TODO
         entt::entity player_ = entt::null;

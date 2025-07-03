@@ -34,6 +34,7 @@ namespace gl3::game::state
             const auto& topLvlUI = game_.getUISystem();
             menu_ui_ = topLvlUI->getSubsystem<ui::InGameMenuUI>();
             instruction_ui_ = topLvlUI->getSubsystem<ui::InstructionUI>();
+            instruction_ui_->setEditMode(edit_mode_);
             finish_ui_ = topLvlUI->getSubsystem<ui::FinishUI>();
 
             engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowResizeEvent>().connect<&
@@ -60,12 +61,12 @@ namespace gl3::game::state
 
         void onEnter() override
         {
-            loadLevel();
             menu_ui_->setActive(true);
             if (level_index_ == 0) //Tutorial
             {
                 instruction_ui_->setActive(true); //deactivates itself after timer
             }
+            loadLevel();
         }
 
         void onExit() override
@@ -73,37 +74,11 @@ namespace gl3::game::state
             unloadLevel();
         }
 
-        void update(const float deltaTime) override
-        {
-            if (!level_instantiated_)
-            {
-                return;
-            }
+        void update(float deltaTime) override;
 
-            if (glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS)
-            {
-                if (!enter_pressed_)
-                {
-                    enter_pressed_ = true;
-                    play_test_ = !play_test_;
-                    if (play_test_)
-                    {
-                        game_.getAudioSystem()->playCurrentAudio();
-                        pauseOrStartLevel(false);
-                    }
-                    else
-                    {
-                        game_.getAudioSystem()->stopCurrentAudio();
-                        pauseOrStartLevel(true);
-                        reloadLevel();
-                    }
-                }
-            }
-            else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
-            {
-                enter_pressed_ = false;
-            }
-            delayLevelEnd(deltaTime);
+        [[nodiscard]] bool getPlayMode() const
+        {
+            return play_test_;
         }
 
     private:
@@ -134,7 +109,7 @@ namespace gl3::game::state
         bool level_instantiated_ = false;
         bool timer_active_ = false;
         bool transition_triggered_ = false;
-        float timer_ = 1.f;
+        float timer_ = 1.;
         int level_index_ = -1;
         Level* current_level_ = nullptr;
         entt::entity current_player_ = entt::null;

@@ -18,7 +18,7 @@
       ],
       "tag": "background",
       "textureName": "1",
-      "enableCol": false
+      "generatePhysicsComp": false
     },
     {
       "color": [
@@ -29,7 +29,7 @@
       ],
       "tag": "background",
       "textureName": "2",
-      "enableCol": false
+      "generatePhysicsComp": false
     },
     {
       "color": [
@@ -40,7 +40,7 @@
       ],
       "tag": "background",
       "textureName": "3",
-      "enableCol": false
+      "generatePhysicsComp": false
     },
     {
       "color": [
@@ -51,7 +51,7 @@
       ],
       "tag": "background",
       "textureName": "4",
-      "enableCol": false
+      "generatePhysicsComp": false
     },
     {
       "color": [
@@ -62,7 +62,7 @@
       ],
       "tag": "background",
       "textureName": "5",
-      "enableCol": false
+      "generatePhysicsComp": false
     },
     {
       "color": [

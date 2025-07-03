@@ -24,11 +24,20 @@ namespace gl3::game::input
 
         if (velocity.y < 0.01f && velocity.y >= 0.f && canJump && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
-            applyJumpImpulse(body);
-            canJump = false;
+            if (!enter_pressed_)
+            {
+                enter_pressed_ = true;
+                applyJumpImpulse(body);
+                canJump = false;
+            }
+        }
+        else if (glfwGetKey(game_.getWindow(), GLFW_KEY_SPACE) == GLFW_RELEASE)
+        {
+            enter_pressed_ = false;
         }
 
-        const float fixedX = game_.getRegistry().get<engine::ecs::TransformComponent>(game_.getPlayer()).initialPosition.x;
+        const float fixedX = game_.getRegistry().get<engine::ecs::TransformComponent>(game_.getPlayer()).initialPosition
+                                  .x;
         b2Vec2 pos = b2Body_GetPosition(body);
         pos.x = fixedX;
         b2Body_SetTransform(body, pos, b2Body_GetRotation(body));
@@ -50,5 +59,6 @@ namespace gl3::game::input
     void PlayerInputSystem::onPlayerGrounded(engine::ecs::PlayerGrounded& event)
     {
         canJump = true;
+        enter_pressed_ = false;
     }
 } // gl3

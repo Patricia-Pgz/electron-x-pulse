@@ -28,6 +28,15 @@ namespace gl3::engine::ecs
     };
 
     /**
+*Call this event, when the level is in Edit Mode and starts to play.
+*
+*/
+    struct PlayModeChange
+    {
+        bool isPlayMode = false;
+    };
+
+    /**
     *Call GameExit event, when you want to close the game. E.g. on clicking an exit button, etc.
     */
     struct GameExit

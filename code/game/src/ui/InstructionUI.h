@@ -16,12 +16,20 @@ namespace gl3::game::ui
 
         void pauseTimer(const bool pause)
         {
-            pause_timer = pause;
+            pause_timer_ = pause;
+        }
+
+        void resetTimer();
+
+        void setEditMode(const bool isEditing)
+        {
+            edit_mode_ = isEditing;
         }
 
     private:
         void drawHints(const ImGuiViewport* viewport, ImFont* font);
-        bool pause_timer = false;
+        bool edit_mode_ = false;
+        bool pause_timer_ = false;
         float timer_ = 15;
         static constexpr ImGuiWindowFlags flags_ =
             ImGuiWindowFlags_NoMove |
