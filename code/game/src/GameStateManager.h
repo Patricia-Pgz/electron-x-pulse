@@ -10,12 +10,12 @@ namespace gl3::game
         explicit GameStateManager(Game& game);
         ~GameStateManager();
 
-        const engine::GameState& getCurrentState() const
+        [[nodiscard]] const engine::GameState& getCurrentState() const
         {
             return current_game_state_;
         }
 
-        const engine::GameState& getPreviousState() const
+        [[nodiscard]] const engine::GameState& getPreviousState() const
         {
             return previous_game_state_;
         }

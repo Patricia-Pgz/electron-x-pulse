@@ -126,7 +126,8 @@ namespace gl3::game::state
             initialPlayerPosX = object.position.x;
             game_.setPlayer(current_player_);
         }
-        audio_config_ = game_.getAudioSystem()->initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
+        game_.getAudioSystem()->initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
+        audio_config_ = game_.getAudioSystem()->getConfig();
         current_level_->currentLevelSpeed = current_level_->velocityMultiplier / audio_config_->seconds_per_beat;
         current_level_->levelLength = audio_config_->current_audio_length * current_level_->currentLevelSpeed;
         game_.getContext().setClearColor(current_level_->clearColor);
@@ -146,6 +147,7 @@ namespace gl3::game::state
         for (const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
              auto& entity : view)
         {
+            if(!game_.getRegistry().valid(entity) || entity == entt::null)return;
             auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
             if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
             {
@@ -159,6 +161,7 @@ namespace gl3::game::state
         for (const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
              auto& entity : view)
         {
+            if(!game_.getRegistry().valid(entity) || entity == entt::null)return;
             auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
             if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
             {
@@ -203,7 +206,6 @@ namespace gl3::game::state
     {
         //game will be reset and stopped if player restarts level and then presses enter in edit mode
         if (edit_mode_) play_test_ = true;
-        instruction_ui_->resetTimer();
         reloadLevel();
         startLevel();
     }
@@ -211,14 +213,13 @@ namespace gl3::game::state
     void LevelPlayState::startLevel() const
     {
         game_.getAudioSystem()->playCurrentAudio();
-        instruction_ui_->resetTimer();
         pauseOrStartLevel(false);
     }
 
     /**
      *Resets every entity to its initial Transform, resets audio
 */
-    void LevelPlayState::reloadLevel()
+    void LevelPlayState::reloadLevel() //TODO gets called twice???
     {
         menu_ui_->setActive(true);
         instruction_ui_->setActive(level_index_ == 0);
@@ -294,6 +295,9 @@ namespace gl3::game::state
         menu_ui_->setActive(false);
         instruction_ui_->setActive(false);
         finish_ui_->setActive(false);
+        menu_ui_ = nullptr;
+        instruction_ui_ = nullptr;
+        finish_ui_ = nullptr;
 
         engine::ecs::EntityFactory::clearRegistry(game_.getRegistry());
         level_index_ = -1;

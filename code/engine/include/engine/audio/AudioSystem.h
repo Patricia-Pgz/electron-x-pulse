@@ -2,6 +2,7 @@
 #include <memory>
 #include <soloud.h>
 #include <soloud_wav.h>
+#include <stdexcept>
 
 #include "engine/Game.h"
 #include "engine/ecs/System.h"
@@ -33,14 +34,16 @@ namespace gl3::engine::audio
         void loadOneShot(const std::string& sfxName, const std::string& fileName);
         void playOneShot(const std::string& sfxName);
         void unloadOneShot(const std::string& sfxName);
-        AudioConfig* initializeCurrentAudio(const std::string& fileName, float positionOffsetX = 0.f);
+        void initializeCurrentAudio(const std::string& fileName, float positionOffsetX = 0.f);
+        AudioConfig* getConfig();
         void playCurrentAudio();
         void stopCurrentAudio();
         void stopAllOneShots();
+        void resetConfig();
 
     private:
         void onGlobalVolumeChanged(const ui::VolumeChangeEvent& event);
-        AudioConfig config_;
+        std::unique_ptr<AudioConfig> config_;
         std::unordered_map<std::string, std::unique_ptr<SoLoud::Wav>> oneShotSounds_;
         std::vector<SoLoud::handle> activeHandles;
     };

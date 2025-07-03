@@ -92,6 +92,8 @@ namespace gl3::engine::ecs
 
         static void destroyPhysicsComponent(entt::registry& registry, const entt::entity entity)
         {
+            if (!registry.valid(entity))
+                return;
             if (registry.all_of<PhysicsComponent>(entity))
             {
                 auto& physics = registry.get<PhysicsComponent>(entity);

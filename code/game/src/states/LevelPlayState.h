@@ -54,7 +54,7 @@ namespace gl3::game::state
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
                 LevelPlayState::onPlayerDeath>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::RestartLevelEvent>().disconnect<&
-                LevelPlayState::reloadLevel>(this);
+                LevelPlayState::onRestartLevel>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().disconnect<&
                 LevelPlayState::onPauseEvent>(this);
         }
@@ -100,9 +100,9 @@ namespace gl3::game::state
         void applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig, entt::entity entity) const;
         void updateBackgroundEntity(LevelBackgroundConfig& bgConfig, entt::entity entity) const;
 
-        ui::InGameMenuUI* menu_ui_;
-        ui::FinishUI* finish_ui_;
-        ui::InstructionUI* instruction_ui_;
+        ui::InGameMenuUI* menu_ui_ = nullptr;
+        ui::FinishUI* finish_ui_ = nullptr;
+        ui::InstructionUI* instruction_ui_ = nullptr;
         engine::audio::AudioConfig* audio_config_ = nullptr;
         bool edit_mode_ = false;
         bool play_test_ = false;

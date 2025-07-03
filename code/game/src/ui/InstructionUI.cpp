@@ -24,6 +24,12 @@ namespace gl3::game::ui
         ImGui::End();
     }
 
+    void InstructionUI::onRestartLevel() {
+        if(!is_active)return;
+        resetTimer();
+    }
+
+
     void InstructionUI::update()
     {
         if (!is_active || timer_ <= 0.f) return;
@@ -33,6 +39,7 @@ namespace gl3::game::ui
     void InstructionUI::setActive(const bool setActive)
     {
         is_active = setActive;
+        if(!setActive) return;
         resetTimer();
     }
 
