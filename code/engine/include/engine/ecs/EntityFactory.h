@@ -59,20 +59,20 @@ namespace gl3::engine::ecs
             // Create an entity
             const entt::entity entity = registry.create();
             // Add initial components
-            const auto transform = registry.emplace<TransformComponent>(
+            registry.emplace<TransformComponent>(
                 entity, object.position, object.scale, object.rotation);
             registry.emplace<TagComponent>(entity, object.tag);
             if (object.generatePhysicsComp) //TODO rotation
             {
                 registry.emplace<PhysicsComponent>(
-                    entity, createPhysicsBody(physicsWorld, transform, entity, object.tag, object.isTriangle)
+                    entity, createPhysicsBody(physicsWorld, entity, object)
                 );
             }
             const rendering::Texture* tex = object.textureName.empty()
                                                 ? nullptr
                                                 : rendering::TextureManager::get(object.textureName);
             registry.emplace<RenderComponent>( //TODO rotation
-                entity, createRenderComponent(object.color, object.isTriangle, tex, object.uv));
+                entity, createRenderComponent(object, tex));
 
             return entity;
         };
@@ -197,31 +197,29 @@ namespace gl3::engine::ecs
             return boxData;
         }
 
-        static RenderComponent createRenderComponent(const glm::vec4& color, const bool& isTriangle,
-                                                     const rendering::Texture* texture, const glm::vec4& uv)
+        static RenderComponent createRenderComponent(const GameObject& object,
+                                                     const rendering::Texture* texture)
         {
-            auto data = isTriangle ? getTriangleVertices(1.f, 1.f, uv) : getBoxVertices(1.f, 1.f, uv);
+            auto data = object.isTriangle ? getTriangleVertices(1.f, 1.f, object.uv) : getBoxVertices(1.f, 1.f, object.uv);
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
 
             return RenderComponent(
                 rendering::Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
                 rendering::Mesh(vertices, indices),
-                color,
+                object.color,
                 texture
             );
         }
 
         static PhysicsComponent createPhysicsBody(const b2WorldId& physicsWorld,
-                                                  const TransformComponent& transform_component,
                                                   const entt::entity& entity,
-                                                  const std::string& tag,
-                                                  const bool isTriangle = false)
+                                                  const GameObject& object)
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = tag == "player" ? b2_dynamicBody : b2_kinematicBody;
-            bodyDef.position = {transform_component.position.x, transform_component.position.y};
-            //bodyDef.rotation = b2MakeRot(glm::radians(zRotation));
+            bodyDef.type = object.tag == "player" ? b2_dynamicBody : b2_kinematicBody;
+            bodyDef.position = {object.position.x, object.position.y};
+            bodyDef.rotation = b2MakeRot(glm::radians(object.rotation));
             bodyDef.fixedRotation = true;
             bodyDef.linearDamping = 0.0f;
             bodyDef.userData = reinterpret_cast<void*>(static_cast<uintptr_t>(entity));
@@ -231,13 +229,13 @@ namespace gl3::engine::ecs
             shapeDef.density = 0.1f;
             shapeDef.friction = 0.0f;
             shapeDef.restitution = 0.0f;
-            if (tag == "player")
+            if (object.tag == "player")
             {
                 shapeDef.enableContactEvents = true;
             }
 
-            const b2Polygon polygon = createPolygon(isTriangle, transform_component.scale.x,
-                                                    transform_component.scale.y);
+            const b2Polygon polygon = createPolygon(object.isTriangle, object.scale.x,
+                                                    object.scale.y);
             const b2ShapeId shape = b2CreatePolygonShape(body, &shapeDef, &polygon);
 
             return PhysicsComponent(physicsWorld, body, shape);

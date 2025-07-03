@@ -2,6 +2,12 @@
   "audioFile": "SensesShort.wav",
   "velocityMultiplier": 1,
   "groundLevel": -0.5,
+  "clearColor": [
+    0.098,
+    0.098,
+    0.439,
+    1.0
+  ],
   "backgrounds": [
     {
       "color": [
@@ -60,9 +66,9 @@
     },
     {
       "color": [
-        1.0,
-        1.0,
-        1.0,
+        0.337,
+        0.306,
+        0.478,
         1.0
       ],
       "tag": "ground"

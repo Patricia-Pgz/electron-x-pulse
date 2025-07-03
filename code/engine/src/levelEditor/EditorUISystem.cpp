@@ -12,6 +12,7 @@ namespace gl3::engine::editor
 {
     void EditorUISystem::onMouseScroll(const context::MouseScrollEvent& event) const
     {
+        if(!is_active || is_in_play_mode_ || !editor_scrolling_active_) return;
         game_.getContext().moveCameraX(static_cast<float>(event.yOffset) * pixelsPerMeter);
     }
 
@@ -131,7 +132,6 @@ namespace gl3::engine::editor
                                                   const float tileSize) const
     {
         std::string btnID = name + "_full";
-        ImGui::GetStyle().FrameRounding = 1.0;
         ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet); // normal
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2); // hovered
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
@@ -227,6 +227,11 @@ namespace gl3::engine::editor
         ImGui::PushStyleColor(ImGuiCol_Text, UINeonColors::windowBgColor);
         ImGui::PushFont(ui::FontManager::getFont("PixeloidSans-Bold"));
         ImGui::Begin("Tile Panel", nullptr, flags_);
+        if (ImGui::IsWindowHovered()) {
+            editor_scrolling_active_ = false;
+        }else {
+            editor_scrolling_active_ = true;
+        }
         ImGui::PopStyleColor();
         ImGui::PopFont();
 
@@ -277,9 +282,10 @@ namespace gl3::engine::editor
             selected_tag = tag_input_buffer;
         }
 
+        ImGui::Text("5.) Z-Rotation:");
         const auto nextItemWidth = ImGui::GetContentRegionAvail().x * 0.4f;
         ImGui::SetNextItemWidth(nextItemWidth);
-        ImGui::InputFloat("5.) Z-Rotation:", &zRotation, 0.1f, 1.0f, "%.2f");
+        ImGui::InputFloat("##zRot", &zRotation, 0.1f, 1.0f, "%.2f");
         zRotation = fmod(zRotation, 360.0f);
         if (zRotation < 0.0f)
             zRotation += 360.0f;

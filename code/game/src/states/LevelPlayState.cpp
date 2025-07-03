@@ -195,7 +195,7 @@ namespace gl3::game::state
 
     void LevelPlayState::onPlayerDeath(const engine::ecs::PlayerDeath& event)
     {
-        game_.getAudioSystem()->playOneShot("crash");
+        //TODO game_.getAudioSystem()->playOneShot("crash");
         onRestartLevel();
     }
 
@@ -278,7 +278,7 @@ namespace gl3::game::state
                 instruction_ui_->setActive(false);
                 finish_ui_->setActive(true);
 
-                game_.getAudioSystem()->playOneShot("win");
+                //game_.getAudioSystem()->playOneShot("win"); TODO git sound pushen
 
                 pauseOrStartLevel(true);
             }
@@ -309,14 +309,17 @@ namespace gl3::game::state
         {
             return;
         }
-
-        if (glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS)
+        delayLevelEnd(deltaTime);
+        if(!edit_mode_)return;
+        if (glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS) //TODO evtl in editstate enter abfragen
         {
             if (!enter_pressed_)
             {
                 enter_pressed_ = true;
                 play_test_ = !play_test_;
                 engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayModeChange{play_test_});
+                game_.getContext().setCameraPos({0.0f, 0.0f, 1.0f});
+                game_.getContext().setCameraCenter({0.f, 0.f, 0.f});
                 if (play_test_)
                 {
                     game_.getAudioSystem()->playCurrentAudio();
@@ -335,6 +338,5 @@ namespace gl3::game::state
         {
             enter_pressed_ = false;
         }
-        delayLevelEnd(deltaTime);
     }
 }
