@@ -31,7 +31,10 @@ struct glz::meta<GameObject>
         "isTriangle", &T::isTriangle,
         "textureName", &T::textureName,
         "uv", &T::uv,
-        "generatePhysicsComp", &T::generatePhysicsComp
+        "generatePhysicsComp", &T::generatePhysicsComp,
+        "vertexShaderPath", &T::vertexShaderPath,
+        "fragmentShaderPath", &T::fragmentShaderPath,
+        "parallaxFactor", &T::parallaxFactor
     );
 };
 
@@ -53,6 +56,7 @@ struct glz::meta<Level>
     static constexpr auto value = glz::object(
         "audioFile", &T::audioFile,
         "velocityMultiplier", &T::velocityMultiplier,
+        "playerStartPosX", &T::playerStartPosX,
         "groundLevel", &T::groundLevel,
         "clearColor", &T::clearColor,
         "backgrounds", &T::backgrounds,

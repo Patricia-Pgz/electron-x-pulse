@@ -2,7 +2,6 @@
 #include <memory>
 #include <soloud.h>
 #include <soloud_wav.h>
-#include <stdexcept>
 
 #include "engine/Game.h"
 #include "engine/ecs/System.h"

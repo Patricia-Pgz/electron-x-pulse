@@ -28,9 +28,9 @@ namespace gl3::engine::rendering
 
     unsigned int Shader::loadAndCompileShader(GLuint shaderType, const fs::path& shaderPath)
     {
-        auto shaderSource = readText(shaderPath);
-        auto source = shaderSource.c_str();
-        auto shaderID = glCreateShader(shaderType);
+        const auto shaderSource = readText(shaderPath);
+        const auto source = shaderSource.c_str();
+        const auto shaderID = glCreateShader(shaderType);
         glShaderSource(shaderID, 1, &source, nullptr);
         glCompileShader(shaderID);
 
@@ -50,27 +50,38 @@ namespace gl3::engine::rendering
 
     std::string Shader::readText(const fs::path& filePath)
     {
-        std::ifstream sourceFile(resolveAssetPath(filePath));
+        const std::ifstream sourceFile(resolveAssetPath(filePath));
         std::stringstream buffer;
         buffer << sourceFile.rdbuf();
         return buffer.str();
     }
 
-    void Shader::setMatrix(const std::string& uniformName, glm::mat4 matrix) const
+    void Shader::setMat4(const std::string& uniformName, glm::mat4 matrix) const
     {
-        auto uniformLocation = glGetUniformLocation(shaderProgram, uniformName.c_str());
+        const auto uniformLocation = glGetUniformLocation(shaderProgram, uniformName.c_str());
         glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix));
     }
 
-    void Shader::setVector(const std::string& uniformName, glm::vec4 vector) const
+    void Shader::setFloat(const std::string& uniformName, const float value) const {
+        const GLint location = glGetUniformLocation(shaderProgram, uniformName.c_str());
+        glUniform1f(location, value);
+    }
+
+    void Shader::setVec3(const std::string& uniformName, const glm::vec3& value) const
     {
-        auto uniformLocation = glGetUniformLocation(shaderProgram, uniformName.c_str());
+        const GLint location = glGetUniformLocation(shaderProgram, uniformName.c_str());
+        glUniform3fv(location, 1, glm::value_ptr(value));
+    }
+
+    void Shader::setVector4(const std::string& uniformName, glm::vec4 vector) const
+    {
+        const auto uniformLocation = glGetUniformLocation(shaderProgram, uniformName.c_str());
         glUniform4fv(uniformLocation, 1, glm::value_ptr(vector));
     }
 
     void Shader::setInt(const std::string& name, const int value) const
     {
-        GLint location = glGetUniformLocation(shaderProgram, name.c_str());
+        const GLint location = glGetUniformLocation(shaderProgram, name.c_str());
         if (location == -1)
         {
             std::cerr << "Warning: uniform '" << name << "' not found or not used in shader." << std::endl;

@@ -6,7 +6,7 @@
 
 namespace gl3::engine::rendering
 {
-    class RenderingSystem : public ecs::System
+    class RenderingSystem final : public ecs::System
     {
     public:
         explicit RenderingSystem(Game& game) : System(game)
@@ -25,7 +25,7 @@ namespace gl3::engine::rendering
 
         void draw() const
         {
-            if(!is_active){return;}
+            if (!is_active) { return; }
 
             auto& registry = game_.getRegistry();
             auto& context = game_.getContext();
@@ -37,19 +37,18 @@ namespace gl3::engine::rendering
 
                 if (context.isInVisibleWindow(transform.position) && renderComp.isActive)
                 {
-                    auto& render_component = entities.get<ecs::RenderComponent>(entity);
                     const auto mvpMatrix = calculateMvpMatrix(transform.position, transform.zRotation, transform.scale,
                                                               context);
-                    render_component.shader.use();
-                    render_component.shader.setMatrix("mvp", mvpMatrix);
-                    render_component.shader.setVector("color", render_component.color);
-                    if (render_component.texture)
+                    renderComp.shader.use();
+                    renderComp.shader.setMat4("mvp", mvpMatrix);
+                    renderComp.shader.setVector4("color", renderComp.color);
+                    if (renderComp.texture)
                     {
-                        render_component.shader.setInt("useTexture", 1);
-                        render_component.texture->bind(0); // Bind texture to slot 0
-                        render_component.shader.setInt("texture1", 0);
+                        renderComp.shader.setInt("useTexture", 1);
+                        renderComp.texture->bind(0); // Bind texture to slot 0
+                        renderComp.shader.setInt("texture1", 0);
                     }
-                    render_component.mesh.draw();
+                    renderComp.mesh.draw();
                 }
             }
         };

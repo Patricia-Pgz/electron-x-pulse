@@ -14,6 +14,9 @@ struct GameObject
     glm::vec4 uv = {0, 0, 1, 1};
     float rotation = 0.f;
     bool generatePhysicsComp = true;
+    float parallaxFactor = 0.f;
+    std::string vertexShaderPath;
+    std::string fragmentShaderPath;
 };
 
 struct LevelMeta
@@ -27,11 +30,13 @@ struct Level
 {
     std::string audioFile;
     float velocityMultiplier = 1.f;
-    float currentLevelSpeed = 1.f;
-    float levelLength = 0.f;
+    float playerStartPosX = 0.f;
     float groundLevel = 0.f;
     glm::vec4 clearColor = {1, 1, 1, 1};
     std::vector<GameObject> backgrounds;
     std::vector<GameObject> objects;
+    float currentLevelSpeed = 1.f;
+    float levelLength = 0.f;
+    float finalBeatIndex = 0.f;
 };
 

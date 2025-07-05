@@ -12,9 +12,11 @@ namespace gl3::engine::ecs
 {
     struct TransformComponent
     {
-        TransformComponent(const glm::vec3 position, const glm::vec3 scale, const float zRotation) :
+        TransformComponent(const glm::vec3 position, const glm::vec3 scale, const float zRotation,
+                           const float parallax) :
             initialPosition(position), initialScale(scale),
-            initialZRotation(zRotation), position(position), scale(scale), zRotation(zRotation)
+            initialZRotation(zRotation), position(position), scale(scale), zRotation(zRotation),
+            parallaxFactor(parallax)
         {
         }
 
@@ -24,6 +26,7 @@ namespace gl3::engine::ecs
         glm::vec3 position = {0.0f, 0.0f, 0.0f};
         glm::vec3 scale = {1.0f, 1.0f, 1.0f};
         float zRotation = 0.0f;
+        float parallaxFactor = 0.f;
     };
 
     struct RenderComponent
@@ -62,7 +65,8 @@ namespace gl3::engine::ecs
             const entt::entity entity = registry.create();
             // Add initial components
             registry.emplace<TransformComponent>(
-                entity, object.position, object.scale, object.rotation);
+                entity, object.position, object.scale, object.rotation, object.parallaxFactor
+            );
             registry.emplace<TagComponent>(entity, object.tag);
             if (object.generatePhysicsComp) //TODO rotation
             {
@@ -227,13 +231,18 @@ namespace gl3::engine::ecs
                             : getBoxVertices(1.f, 1.f, object.uv);
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
-
+            const std::string vertexPath = !object.vertexShaderPath.empty()
+                                               ? object.vertexShaderPath
+                                               : "shaders/vertexShader.vert";
+            const std::string fragmentPath = !object.fragmentShaderPath.empty()
+                                                 ? object.fragmentShaderPath
+                                                 : "shaders/fragmentShader.frag";
             return RenderComponent(
-                rendering::Shader("shaders/vertexShader.vert", "shaders/fragmentShader.frag"),
+                rendering::Shader(vertexPath, fragmentPath),
                 rendering::Mesh(vertices, indices),
                 object.color,
-                texture
-            );
+                texture,
+                object.uv);
         }
 
         static PhysicsComponent createPhysicsBody(const b2WorldId& physicsWorld,

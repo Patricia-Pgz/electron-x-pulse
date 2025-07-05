@@ -18,6 +18,17 @@ namespace gl3::engine::ecs
         int newLevelIndex = -1;
     };
 
+
+    /**
+*Call this event, when the level length is computed based on speed and seconds per beat. Pass in the index of the final beat.
+*
+*/
+    struct LevelLengthComputed
+    {
+        float levelLength = 0.f;
+        float finalBeatIndex = 0.f;
+    };
+
     /**
 *Call this event, when the level is loaded and ready to play.
 *

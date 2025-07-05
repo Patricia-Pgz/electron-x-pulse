@@ -128,8 +128,14 @@ namespace gl3::game::state
         }
         game_.getAudioSystem()->initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
         audio_config_ = game_.getAudioSystem()->getConfig();
+        //Ensures, that every unit is synced to the beat
         current_level_->currentLevelSpeed = current_level_->velocityMultiplier / audio_config_->seconds_per_beat;
         current_level_->levelLength = audio_config_->current_audio_length * current_level_->currentLevelSpeed;
+        current_level_->finalBeatIndex = audio_config_->current_audio_length / audio_config_->seconds_per_beat;
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::LevelLengthComputed{
+            current_level_->levelLength, current_level_->finalBeatIndex
+        });
+
         game_.getContext().setClearColor(current_level_->clearColor);
 
         level_instantiated_ = true;
@@ -170,8 +176,9 @@ namespace gl3::game::state
         }
     }
 
-    void LevelPlayState::pauseOrStartLevel(const bool pause) const
+    void LevelPlayState::pauseOrStartLevel(const bool pause)
     {
+        paused = pause;
         auto* PlayerInputSystem = dynamic_cast<Game&>(game_).getPlayerInputSystem();
         if (pause)
         {
@@ -191,7 +198,7 @@ namespace gl3::game::state
         }
     }
 
-    void LevelPlayState::onPauseEvent(const engine::ui::PauseLevelEvent& event) const
+    void LevelPlayState::onPauseEvent(const engine::ui::PauseLevelEvent& event)
     {
         pauseOrStartLevel(event.pauseLevel);
     }
@@ -210,7 +217,7 @@ namespace gl3::game::state
         startLevel();
     }
 
-    void LevelPlayState::startLevel() const
+    void LevelPlayState::startLevel()
     {
         game_.getAudioSystem()->playCurrentAudio();
         pauseOrStartLevel(false);
@@ -314,6 +321,9 @@ namespace gl3::game::state
             return;
         }
         delayLevelEnd(deltaTime);
+        if (!paused)
+            engine::visual_effects::Parallax::moveBgObjectsParallax(
+                game_.getRegistry(), deltaTime, current_level_->currentLevelSpeed);
         if (!edit_mode_)return;
         if (glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS) //TODO evtl in editstate enter abfragen
         {
