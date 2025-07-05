@@ -10,6 +10,15 @@ namespace gl3::engine::ui
     /**
 * Call LevelSelect event, whenever a different level is selected. Listen to this event and apply changes accordingly.
 */
+    struct EditorObjectDelete
+    {
+        glm::vec2 position;
+    };
+
+
+    /**
+* Call LevelSelect event, whenever a different level is selected. Listen to this event and apply changes accordingly.
+*/
     struct LevelSelectEvent
     {
         int newLevelIndex;

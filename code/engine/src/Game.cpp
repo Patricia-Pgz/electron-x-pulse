@@ -4,7 +4,7 @@
 #include "engine/rendering/RenderingSystem.h"
 #include "engine/userInterface/UISystem.h"
 #include "engine/audio/AudioSystem.h"
-#include "engine/levelloading/LevelLoader.h"
+#include "engine/levelloading/LevelManager.h"
 #include "engine/stateManagement/StateManagerSystem.h"
 
 
@@ -40,7 +40,7 @@ namespace gl3::engine
         start();
         registerUiSystems();
         rendering::TextureManager::loadTextures();
-        levelLoading::LevelLoader::loadAllMetaData();
+        levelLoading::LevelManager::loadAllMetaData();
         onAfterStartup.invoke(*this);
         context_.run([&](Context& ctx)
         {
@@ -51,6 +51,7 @@ namespace gl3::engine
             draw();
             updateUI();
             updateDeltaTime();
+            ecs::EntityFactory::deleteMarkedEntities(registry_);
             onAfterUpdate.invoke(*this);
         });
         onBeforeShutdown.invoke(*this);

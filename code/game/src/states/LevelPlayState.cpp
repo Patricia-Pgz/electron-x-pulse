@@ -2,7 +2,7 @@
 #include "engine/Constants.h"
 #include "engine/audio/AudioSystem.h"
 #include "engine/ecs/EventDispatcher.h"
-#include "engine/levelloading/LevelLoader.h"
+#include "engine/levelloading/LevelManager.h"
 #include "ui/FinishUI.h"
 #include "ui/InstructionUI.h"
 #include <box2d/box2d.h>
@@ -97,7 +97,7 @@ namespace gl3::game::state
     {
         auto& registry = game_.getRegistry();
         const auto physicsWorld = game_.getPhysicsWorld();
-        current_level_ = engine::levelLoading::LevelLoader::loadLevelByID(level_index_);
+        current_level_ = engine::levelLoading::LevelManager::loadLevelByID(level_index_);
 
         const auto bgConfig = calculateBackgrounds();
         for (auto& object : current_level_->backgrounds)

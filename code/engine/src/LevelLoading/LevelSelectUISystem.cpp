@@ -6,7 +6,7 @@
 #include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
-#include "engine/levelloading/LevelLoader.h"
+#include "engine/levelloading/LevelManager.h"
 
 namespace gl3::engine::levelLoading
 {
@@ -37,7 +37,7 @@ namespace gl3::engine::levelLoading
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
         ImGui::BeginChild("Lvl Select Buttons");
 
-        auto metaData = LevelLoader::getMetaData();
+        auto metaData = LevelManager::getMetaData();
         std::ranges::sort(metaData, [](const LevelMeta& a, const LevelMeta& b)
         {
             return a.id < b.id;

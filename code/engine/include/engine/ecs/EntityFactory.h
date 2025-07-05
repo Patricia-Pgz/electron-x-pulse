@@ -53,6 +53,8 @@ namespace gl3::engine::ecs
     class EntityFactory
     {
     public:
+        static inline std::unordered_set<entt::entity> entitiesMarkedForDeletion_;
+
         static entt::entity createDefaultEntity(GameObject& object, entt::registry& registry,
                                                 const b2WorldId& physicsWorld = b2_nullWorldId)
         {
@@ -112,6 +114,24 @@ namespace gl3::engine::ecs
             registry.remove<PhysicsComponent>(entity);
         }
 
+
+        static void markEntityForDeletion(entt::entity entity)
+        {
+            entitiesMarkedForDeletion_.emplace(entity);
+        }
+
+        static void deleteMarkedEntities(entt::registry& registry)
+        {
+            for (const entt::entity& entity : entitiesMarkedForDeletion_)
+            {
+                if (registry.valid(entity))
+                {
+                    destroyPhysicsComponent(registry, entity);
+                    registry.destroy(entity);
+                }
+            }
+            entitiesMarkedForDeletion_.clear();
+        }
 
         ///Deletes an entity and its components, that was created with the createDefaultEntity method.
         static void deleteDefaultEntity(entt::registry& registry, const entt::entity entity)
@@ -202,7 +222,9 @@ namespace gl3::engine::ecs
         static RenderComponent createRenderComponent(const GameObject& object,
                                                      const rendering::Texture* texture)
         {
-            auto data = object.isTriangle ? getTriangleVertices(1.f, 1.f, object.uv) : getBoxVertices(1.f, 1.f, object.uv);
+            auto data = object.isTriangle
+                            ? getTriangleVertices(1.f, 1.f, object.uv)
+                            : getBoxVertices(1.f, 1.f, object.uv);
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
 

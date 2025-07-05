@@ -3,6 +3,7 @@
 #include "engine/Constants.h"
 #include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
+#include "engine/levelloading/LevelManager.h"
 #include "engine/rendering/MVPMatrixHelper.h"
 #include "engine/rendering/Texture.h"
 #include "engine/rendering/TextureManager.h"
@@ -21,8 +22,23 @@ namespace gl3::engine::editor
         is_in_play_mode_ = event.isPlayMode;
     }
 
+    void EditorUISystem::deleteEntity() const
+    {
+        const auto view = game_.getRegistry().view<ecs::TransformComponent>();
 
-    void EditorUISystem::DrawGrid(const float gridSpacing)
+        for (auto& entity : view)
+        {
+            const auto transform = view.get<ecs::TransformComponent>(entity);
+            if (transform.position.x == selected_grid_cell->x && transform.position.y == selected_grid_cell->y)
+            {
+                ecs::EntityFactory::markEntityForDeletion(entity); //TODO mark only the one with the highest z value
+            }
+        }
+        levelLoading::LevelManager::removeObjectAtPosition({selected_grid_cell->x, selected_grid_cell->y});
+        //TODO remove only the one with the highest z vale -> sorting
+    }
+
+    void EditorUISystem::drawGrid(const float gridSpacing)
     {
         const ImVec2 screenSize = imgui_io_->DisplaySize;
         grid_center = ImVec2(screenSize.x * 0.5f, screenSize.y * 0.5f);
@@ -135,16 +151,18 @@ namespace gl3::engine::editor
             if (ImGui::ImageButton(buttonId.c_str(), texture.getID(),
                                    ImVec2(tileSize, tileSize), uv0, uv1) && selected_grid_cell)
             {
-                ecs::EventDispatcher::dispatcher.trigger(TileSelectedEvent{
+                const GameObject object = {
                     {
-                        {
-                            selected_grid_cell->x, -selected_grid_cell->y, 0.f
-                        },
-                        glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                        selected_tag, is_triangle,
-                        name, {selected_scale.x, selected_scale.y, 0.f}, uv, zRotation, generate_physics_comp
-                    }
-                });
+                        selected_grid_cell->x, -selected_grid_cell->y, 0.f
+                    },
+                    glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                    selected_tag, is_triangle,
+                    name, {selected_scale.x, selected_scale.y, 0.f}, uv, selected_z_rotation_, generate_physics_comp
+                };
+                levelLoading::LevelManager::addObjectToCurrentLevel(object);
+
+                ecs::EventDispatcher::dispatcher.trigger(
+                    TileSelectedEvent{object});
             }
             if (ImGui::IsItemHovered())
             {
@@ -166,17 +184,19 @@ namespace gl3::engine::editor
         if (ImGui::ImageButton(btnID.c_str(), texture.getID(),
                                ImVec2(tileSize, tileSize), ImVec2(0, 0), ImVec2(1, -1)) && selected_grid_cell)
         {
+            const GameObject object = {
+                {
+                    selected_grid_cell->x, -selected_grid_cell->y, 0.f
+                },
+                glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                selected_tag, is_triangle,
+                name, {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, selected_z_rotation_,
+                generate_physics_comp
+            };
+            levelLoading::LevelManager::addObjectToCurrentLevel(object);
+
             ecs::EventDispatcher::dispatcher.trigger(
-                TileSelectedEvent{
-                    {
-                        {
-                            selected_grid_cell->x, -selected_grid_cell->y, 0.f
-                        },
-                        glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                        selected_tag, is_triangle,
-                        name, {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, zRotation, generate_physics_comp
-                    }
-                });
+                TileSelectedEvent{object});
         }
         if (ImGui::IsItemHovered())
         {
@@ -268,17 +288,27 @@ namespace gl3::engine::editor
 
         ImGui::PushFont(ui::FontManager::getFont("PixeloidSans"));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 1.0f, 1.0f));
+
+        if (ImGui::Button("Save Level"))
+        {
+            levelLoading::LevelManager::saveCurrentLevel();
+        }
+
+        if (selected_grid_cell)
+        {
+            if (ImGui::Button("Delete Selected Element"))
+            {
+                deleteEntity();
+            }
+        }
         ImGui::Text("1.) Click on grid to select position");
 
         ImGui::Text("2.) Select shape:");
-        ImGui::PushStyleColor(ImGuiCol_CheckMark, UINeonColors::pastelNeonViolet2);
         if (ImGui::RadioButton("Rectangle", !is_triangle))
             is_triangle = false;
         ImGui::SameLine();
-        ImGui::PushStyleColor(ImGuiCol_CheckMark, UINeonColors::pastelNeonViolet2);
         if (ImGui::RadioButton("Triangle", is_triangle))
             is_triangle = true;
-        ImGui::PopStyleColor(2);
 
         ImGui::Text("3.) Scale:");
         const auto itemWidth = ImGui::GetContentRegionAvail().x * 0.4f;
@@ -316,10 +346,10 @@ namespace gl3::engine::editor
         ImGui::Text("5.) Z-Rotation:");
         const auto nextItemWidth = ImGui::GetContentRegionAvail().x * 0.4f;
         ImGui::SetNextItemWidth(nextItemWidth);
-        ImGui::InputFloat("##zRot", &zRotation, 0.1f, 1.0f, "%.2f");
-        zRotation = fmod(zRotation, 360.0f);
-        if (zRotation < 0.0f)
-            zRotation += 360.0f;
+        ImGui::InputFloat("##zRot", &selected_z_rotation_, 0.1f, 1.0f, "%.2f");
+        selected_z_rotation_ = fmod(selected_z_rotation_, 360.0f);
+        if (selected_z_rotation_ < 0.0f)
+            selected_z_rotation_ += 360.0f;
 
         ImGui::Text("6.) Generate PhysicsComponent");
         ImGui::Checkbox("##PhysicsComp", &generate_physics_comp);
@@ -377,18 +407,19 @@ namespace gl3::engine::editor
             {
                 pickerWasOpen = false;
 
+                const GameObject object = {
+                    {
+                        selected_grid_cell->x, -selected_grid_cell->y, 0.f
+                    },
+                    selected_color_,
+                    selected_tag, is_triangle,
+                    "", {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, selected_z_rotation_,
+                    generate_physics_comp
+                };
+                levelLoading::LevelManager::addObjectToCurrentLevel(object);
+
                 ecs::EventDispatcher::dispatcher.trigger(
-                    TileSelectedEvent{
-                        {
-                            {
-                                selected_grid_cell->x, -selected_grid_cell->y, 0.f
-                            },
-                            selected_color_,
-                            selected_tag, is_triangle,
-                            "", {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, zRotation,
-                            generate_physics_comp
-                        }
-                    });
+                    TileSelectedEvent{object});
             }
         }
         else
@@ -418,7 +449,7 @@ namespace gl3::engine::editor
     void EditorUISystem::createCustomUI()
     {
         DrawTileSelectionPanel();
-        DrawGrid(1.f * pixelsPerMeter);
+        drawGrid(1.f * pixelsPerMeter);
     }
 
     void EditorUISystem::update()

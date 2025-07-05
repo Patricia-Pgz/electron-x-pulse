@@ -6,13 +6,16 @@
 
 namespace gl3::engine::levelLoading
 {
-    class LevelLoader
+    class LevelManager
     {
     public:
         static void loadAllMetaData(
             const std::filesystem::path& levelDir = resolveAssetPath("levels"));
         static const std::vector<LevelMeta>& getMetaData() { return meta_data_; }
         static Level* loadLevelByID(int ID);
+        static void addObjectToCurrentLevel(const GameObject& object);
+        static void removeObjectAtPosition(glm::vec2 position);
+        static void saveCurrentLevel();
 
         static const std::unordered_map<int, std::unique_ptr<Level>>& getLevels()
         {
@@ -24,6 +27,7 @@ namespace gl3::engine::levelLoading
         static std::unordered_map<int, std::unique_ptr<Level>> loaded_levels_; //Levels with IDs
         static std::unordered_map<int, std::string> idToFilename_;
         static Level* loadLevel(int ID, const std::string& filename);
+        static int most_recent_loaded_lvl_ID;
     };
 }
 
