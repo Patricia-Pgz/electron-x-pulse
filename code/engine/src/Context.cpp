@@ -1,5 +1,7 @@
 #include <stdexcept>
 #include "engine/Context.h"
+
+#include "engine/Constants.h"
 #include "engine/Game.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
@@ -76,8 +78,8 @@ namespace gl3::engine::context
         int width, height;
         glfwGetWindowSize(window, &width, &height);
 
-        float halfWidth = (static_cast<float>(width) / 2.0f);
-        float halfHeight = (static_cast<float>(height) / 2.0f);
+        float halfWidth = (width / 2.0f) / pixelsPerMeter / zoom;
+        float halfHeight = (height / 2.0f) / pixelsPerMeter / zoom;
 
         windowLeft = cameraPosition.x - halfWidth;
         windowRight = cameraPosition.x + halfWidth;

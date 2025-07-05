@@ -15,9 +15,11 @@ namespace gl3::engine::rendering
     public:
         static glm::mat4 calculateViewMatrix(const context::Context& context)
         {
-            return lookAt(context.getCameraPos(),
-                          context.getCameraCenter(),
-                          glm::vec3(0.0f, 1.0f, 0.0f));
+            return glm::lookAt(
+                context.getCameraPos(),
+                context.getCameraCenter(),
+                glm::vec3(0.0f, 1.0f, 0.0f)
+            );
         }
 
         static glm::mat4 calculateProjectionMatrix(const std::vector<float>& windowBounds)
@@ -31,9 +33,10 @@ namespace gl3::engine::rendering
                                               const glm::vec3& scale)
         {
             auto model = glm::mat4(1.0f);
-            model = translate(model, glm::vec3(position.x * pixelsPerMeter, position.y * pixelsPerMeter, 0.f));
-            model = rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
-            return glm::scale(model, glm::vec3(scale.x * pixelsPerMeter, scale.y * pixelsPerMeter, 0.f));
+            model = glm::translate(model, position * pixelsPerMeter); // world to pixel
+            model = glm::rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::scale(model, scale * pixelsPerMeter); // scale in pixels
+            return model;
         }
 
         static glm::vec2 screenToWorld(const Game& game, const float screenPosX, const float screenPosY)

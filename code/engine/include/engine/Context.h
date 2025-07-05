@@ -1,8 +1,11 @@
 #pragma once
 #include <string>
 #include <functional>
+#include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#include "Constants.h"
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
@@ -32,11 +35,15 @@ namespace gl3::engine::context
         void calculateWindowBounds();
         void setCameraPos(const glm::vec3 position) { cameraPosition = position; }
         void setCameraCenter(const glm::vec3 position) { cameraCenter = position; }
+
         void moveCameraX(const float dx)
         {
-            cameraPosition.x += dx;
-            cameraCenter.x += dx;
+            cameraPosition.x += dx * 1.0f;
+            cameraCenter.x += dx * 1.0f;
+            std::cout << cameraPosition.x;
+            std::cout << cameraCenter.x;
         }
+
         [[nodiscard]] GLFWwindow* getWindow() const { return window; }
         [[nodiscard]] glm::vec3 getCameraPos() const { return cameraPosition; }
         [[nodiscard]] glm::vec3 getCameraCenter() const { return cameraCenter; }

@@ -12,8 +12,8 @@ namespace gl3::engine::editor
 {
     void EditorUISystem::onMouseScroll(const context::MouseScrollEvent& event) const
     {
-        if(!is_active || is_in_play_mode_ || !editor_scrolling_active_) return;
-        game_.getContext().moveCameraX(static_cast<float>(event.yOffset) * pixelsPerMeter);
+        if (!is_active || is_in_play_mode_ || !editor_scrolling_active_) return;
+        game_.getContext().moveCameraX(static_cast<float>(event.yOffset));
     }
 
     void EditorUISystem::onPlayModeChange(const ecs::PlayModeChange& event)
@@ -68,18 +68,46 @@ namespace gl3::engine::editor
                 selected_grid_cell = std::make_unique<ImVec2>(static_cast<float>(cellX), static_cast<float>(cellY));
             }
         }
+
+        // Get mouse position in screen space
+        const ImVec2 mousePosScreen = ImGui::GetMousePos();
+
+        // Convert to world coordinates
+        const glm::vec2 mousePosWorld = rendering::MVPMatrixHelper::screenToWorld(
+            game_, mousePosScreen.x, mousePosScreen.y);
+
+        // Snap to grid (round world coords)
+        const int cellX = static_cast<int>(std::round(mousePosWorld.x));
+        const int cellY = static_cast<int>(std::round(mousePosWorld.y));
+
+        // Convert snapped cell back to screen space for drawing
+        const glm::vec2 cellScreenPos = rendering::MVPMatrixHelper::toScreen(
+            game_, static_cast<float>(cellX), static_cast<float>(cellY));
+        const float cellSize = gridSpacing;
+
+        // Define cell rectangle (centered at cellScreenPos)
+        ImVec2 cellTopLeft(cellScreenPos.x - cellSize * 0.5f, cellScreenPos.y - cellSize * 0.5f);
+        ImVec2 cellBottomRight(cellScreenPos.x + cellSize * 0.5f, cellScreenPos.y + cellSize * 0.5f);
+
+        // Draw highlight
+        drawList->AddRectFilled(cellTopLeft, cellBottomRight, IM_COL32(100, 100, 255, 100));
+
+        // Tooltip with accurate world coordinates
+        ImGui::BeginTooltip();
+        ImGui::Text("Cell: (%d, %d)", cellX, cellY);
+        ImGui::EndTooltip();
+
         if (selected_grid_cell)
         {
             // Convert cell (world grid pos) to ImGui screen space for drawing
             const auto screenPos = rendering::MVPMatrixHelper::toScreen(game_, selected_grid_cell->x,
                                                                         selected_grid_cell->y);
-            ImDrawList* imDrawList = ImGui::GetBackgroundDrawList();
 
             // Calculate top-left and bottom-right in screen space for the cell rect
             const ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
             const ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
 
-            imDrawList->AddRect(topLeft, bottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+            drawList->AddRect(topLeft, bottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
         }
     }
 
@@ -227,9 +255,12 @@ namespace gl3::engine::editor
         ImGui::PushStyleColor(ImGuiCol_Text, UINeonColors::windowBgColor);
         ImGui::PushFont(ui::FontManager::getFont("PixeloidSans-Bold"));
         ImGui::Begin("Tile Panel", nullptr, flags_);
-        if (ImGui::IsWindowHovered()) {
+        if (ImGui::IsWindowHovered())
+        {
             editor_scrolling_active_ = false;
-        }else {
+        }
+        else
+        {
             editor_scrolling_active_ = true;
         }
         ImGui::PopStyleColor();

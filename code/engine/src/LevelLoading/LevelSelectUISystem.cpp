@@ -105,6 +105,7 @@ namespace gl3::engine::levelLoading
 
     void LevelSelectUISystem::DrawLevelSelect(const ImGuiViewport* viewport, ImFont* font)
     {
+        ImGui::GetStyle() = ImGuiStyle(); //TODO
         ImGui::PushFont(font);
         ImGui::SetNextWindowPos(viewport->Pos);
         const auto viewportSize = viewport->Size;

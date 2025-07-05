@@ -29,16 +29,16 @@ namespace gl3::game::state
         float bottom_m = windowBounds[2] / pixelsPerMeter;
         float top_m = windowBounds[3] / pixelsPerMeter;
 
-        float center_x = (left_m + right_m) / 2.f;
-        float windowWidth = right_m - left_m;
+        const float center_x = (left_m + right_m) / 2.f;
+        const float windowWidth = right_m - left_m;
 
-        float groundLevel = current_level_->groundLevel;
+        const float groundLevel = current_level_->groundLevel;
 
-        float ground_center_y = (bottom_m + groundLevel) / 2.f;
-        float ground_height = groundLevel - bottom_m;
-
-        float sky_center_y = (groundLevel + top_m) / 2.f;
-        float sky_height = top_m - groundLevel;
+        constexpr float kMinHeight = 0.01f; // 1 cm, avoid 0 height
+        const float ground_center_y = (bottom_m + groundLevel) / 2.f;
+        const float ground_height = std::max(kMinHeight, groundLevel - bottom_m);
+        const float sky_center_y = (groundLevel + top_m) / 2.f;
+        const float sky_height = std::max(kMinHeight, top_m - groundLevel);
 
         return {center_x, windowWidth, ground_center_y, ground_height, sky_center_y, sky_height};
     }
@@ -147,7 +147,7 @@ namespace gl3::game::state
         for (const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
              auto& entity : view)
         {
-            if(!game_.getRegistry().valid(entity) || entity == entt::null)return;
+            if (!game_.getRegistry().valid(entity) || entity == entt::null)return;
             auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
             if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
             {
@@ -161,7 +161,7 @@ namespace gl3::game::state
         for (const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
              auto& entity : view)
         {
-            if(!game_.getRegistry().valid(entity) || entity == entt::null)return;
+            if (!game_.getRegistry().valid(entity) || entity == entt::null)return;
             auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
             if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
             {
@@ -314,7 +314,7 @@ namespace gl3::game::state
             return;
         }
         delayLevelEnd(deltaTime);
-        if(!edit_mode_)return;
+        if (!edit_mode_)return;
         if (glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS) //TODO evtl in editstate enter abfragen
         {
             if (!enter_pressed_)
