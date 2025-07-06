@@ -40,8 +40,6 @@ namespace gl3::engine::context
         {
             cameraPosition.x += dx * 1.0f;
             cameraCenter.x += dx * 1.0f;
-            std::cout << cameraPosition.x;
-            std::cout << cameraCenter.x;
         }
 
         [[nodiscard]] GLFWwindow* getWindow() const { return window; }

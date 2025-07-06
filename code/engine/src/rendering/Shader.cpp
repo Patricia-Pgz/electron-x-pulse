@@ -62,9 +62,21 @@ namespace gl3::engine::rendering
         glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(matrix));
     }
 
-    void Shader::setFloat(const std::string& uniformName, const float value) const {
+    void Shader::setFloat(const std::string& uniformName, const float value) const
+    {
         const GLint location = glGetUniformLocation(shaderProgram, uniformName.c_str());
         glUniform1f(location, value);
+    }
+
+    void Shader::setFloatArray(const std::string& name, const float* values, int count) const
+    {
+        const GLint location = glGetUniformLocation(shaderProgram, name.c_str());
+        if (location == -1)
+        {
+            std::cerr << "Warning: uniform '" << name << "' not found or not used.\n";
+            return;
+        }
+        glUniform1fv(location, count, values);
     }
 
     void Shader::setVec3(const std::string& uniformName, const glm::vec3& value) const
