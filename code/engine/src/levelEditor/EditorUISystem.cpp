@@ -14,7 +14,7 @@ namespace gl3::engine::editor
     void EditorUISystem::onMouseScroll(const context::MouseScrollEvent& event) const
     {
         if (!is_active || is_in_play_mode_ || !editor_scrolling_active_) return;
-        game_.getContext().moveCameraX(static_cast<float>(event.yOffset));
+        game_.getContext().moveCameraX(static_cast<float>(event.yOffset * 50.0f));
     }
 
     void EditorUISystem::onPlayModeChange(const ecs::PlayModeChange& event)
@@ -66,7 +66,8 @@ namespace gl3::engine::editor
         if (ImGui::IsMouseClicked(0) && !ImGui::GetIO().WantCaptureMouse)
         {
             const ImVec2 mousePos = ImGui::GetMousePos();
-            const glm::vec2 worldPos = rendering::MVPMatrixHelper::screenToWorld(game_, mousePos.x, mousePos.y);
+            const glm::vec2 worldPos = rendering::MVPMatrixHelper::screenToWorld(
+                game_.getContext(), mousePos.x, mousePos.y);
 
             // Snap click to grid cell
             const int cellX = static_cast<int>(std::round(worldPos.x));
@@ -90,7 +91,7 @@ namespace gl3::engine::editor
 
         // Convert to world coordinates
         const glm::vec2 mousePosWorld = rendering::MVPMatrixHelper::screenToWorld(
-            game_, mousePosScreen.x, mousePosScreen.y);
+            game_.getContext(), mousePosScreen.x, mousePosScreen.y);
 
         // Snap to grid (round world coords)
         const int cellX = static_cast<int>(std::round(mousePosWorld.x));
@@ -98,7 +99,7 @@ namespace gl3::engine::editor
 
         // Convert snapped cell back to screen space for drawing
         const glm::vec2 cellScreenPos = rendering::MVPMatrixHelper::toScreen(
-            game_, static_cast<float>(cellX), static_cast<float>(cellY));
+            game_.getContext(), static_cast<float>(cellX), static_cast<float>(cellY));
         const float cellSize = gridSpacing;
 
         // Define cell rectangle (centered at cellScreenPos)
@@ -116,7 +117,7 @@ namespace gl3::engine::editor
         if (selected_grid_cell)
         {
             // Convert cell (world grid pos) to ImGui screen space for drawing
-            const auto screenPos = rendering::MVPMatrixHelper::toScreen(game_, selected_grid_cell->x,
+            const auto screenPos = rendering::MVPMatrixHelper::toScreen(game_.getContext(), selected_grid_cell->x,
                                                                         selected_grid_cell->y);
 
             // Calculate top-left and bottom-right in screen space for the cell rect

@@ -37,8 +37,13 @@ namespace gl3::engine::context
 
         void moveCameraX(const float dx)
         {
+            std::cout << "dx:" + std::to_string(dx) << std::endl;
+            std::cout << "CameraPosXBefore:" + std::to_string(cameraPosition.x) << std::endl;
+            std::cout << "CameraCenterXBefore:" + std::to_string(cameraCenter.x) << std::endl;
             cameraPosition.x += dx * 1.0f;
             cameraCenter.x += dx * 1.0f;
+            std::cout << "CameraPosXAfter:" + std::to_string(cameraPosition.x) << std::endl;
+            std::cout << "CameraCenterXAfter:" + std::to_string(cameraCenter.x) << std::endl;
         }
 
         [[nodiscard]] GLFWwindow* getWindow() const { return window; }
@@ -51,7 +56,8 @@ namespace gl3::engine::context
         {
             return {windowLeft, windowRight, windowBottom, windowTop};
         };
-        [[nodiscard]] bool isInVisibleWindow(const glm::vec2& position, float margin = 1.f) const;
+        [[nodiscard]] bool isInVisibleWindow(const glm::vec2& position, const glm::vec2 scale,
+                                             const float margin = 1.f) const;
 
     private:
         void onExitApplication() const;

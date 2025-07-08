@@ -18,7 +18,7 @@ namespace gl3::engine::rendering
         {
             const auto model = MVPMatrixHelper::calculateModelMatrix(position, zRotationInDegrees, scale);
             const glm::mat4 view = MVPMatrixHelper::calculateViewMatrix(context);
-            const glm::mat4 projection = MVPMatrixHelper::calculateProjectionMatrix(context.getWindowBounds());
+            const glm::mat4 projection = MVPMatrixHelper::calculateProjectionMatrix(context);
 
             return projection * view * model;
         }
@@ -32,10 +32,11 @@ namespace gl3::engine::rendering
             for (const auto& entities = registry.view<ecs::TransformComponent, ecs::RenderComponent>(); const auto&
                  entity : entities)
             {
+                //TODO sort back-front + render then
                 auto& transform = entities.get<ecs::TransformComponent>(entity);
                 auto& renderComp = entities.get<ecs::RenderComponent>(entity);
 
-                if (context.isInVisibleWindow(transform.position) && renderComp.isActive)
+                if (context.isInVisibleWindow(transform.position, transform.scale) && renderComp.isActive)
                 {
                     const auto mvpMatrix = calculateMvpMatrix(transform.position, transform.zRotation, transform.scale,
                                                               context);

@@ -1,7 +1,7 @@
 {
   "audioFile": "SensesShort.wav",
   "velocityMultiplier": 1,
-  "playerStartPostX": -2,
+  "playerStartPosX": -2,
   "groundLevel": -0.5,
   "clearColor": [
     0.098,

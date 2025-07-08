@@ -7,6 +7,7 @@
 #include "engine/Game.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
+#include "engine/rendering/MVPMatrixHelper.h"
 
 
 namespace gl3::engine::context
@@ -93,12 +94,42 @@ namespace gl3::engine::context
         windowTop = cameraPosition.y + halfHeight;
     }
 
-    bool Context::isInVisibleWindow(const glm::vec2& position, const float margin) const
+
+    bool Context::isInVisibleWindow(const glm::vec2& position, const glm::vec2 scale, const float margin) const
     {
-        return position.x >= (windowLeft - margin) &&
-            position.x <= (windowRight + margin) &&
-            position.y >= (windowBottom - margin) &&
-            position.y <= (windowTop + margin);
+        int width;
+        int height;
+        glfwGetWindowSize(window, &width, &height);
+        auto fWidth = static_cast<float>(width);
+        const auto fHeight = static_cast<float>(height);
+
+        auto screenPos = rendering::MVPMatrixHelper::toScreen(*this, position.x, position.y);
+        auto posLeft = position.x - scale.x * 0.5f;
+        auto posRight = position.x + scale.x * 0.5f;
+        auto posTop = position.y + scale.y * 0.5f;
+        auto posBot = position.y - scale.y * 0.5f;
+
+        auto screenPosLeft = rendering::MVPMatrixHelper::toScreen(*this, posLeft, 0.f);
+        auto screenPosRight = rendering::MVPMatrixHelper::toScreen(*this, posRight, 0.f);
+        auto screenPosTop = rendering::MVPMatrixHelper::toScreen(*this, 0.f, posTop);
+        auto screenPosBot = rendering::MVPMatrixHelper::toScreen(*this, 0.f, posBot);
+
+        /*auto x0 = rendering::MVPMatrixHelper::screenToWorld(*this, -1.0, 0.f);
+        auto x1 = rendering::MVPMatrixHelper::screenToWorld(*this, 1.0, 0.f);
+        x0 = rendering::MVPMatrixHelper::toScreen(*this, x0.x, 0.f);
+        x1 = rendering::MVPMatrixHelper::toScreen(*this, x1.x, 0.f);
+        fWidth = x1.x - x0.x;*/
+        auto screenCamPos = rendering::MVPMatrixHelper::screenToWorld(*this, cameraPosition.x,
+                                                                      cameraPosition.y);
+        if (screenCamPos.x >= screenPosLeft.x - fWidth && screenCamPos.x <= screenPosRight.x)
+        {
+            std::cout << "Element within" << std::endl;
+        }
+        else
+        {
+            std::cout << "Element out" << std::endl;
+        }
+        return screenCamPos.x >= screenPosLeft.x - fWidth && screenCamPos.x <= screenPosRight.x;
     }
 
     void Context::onExitApplication() const
