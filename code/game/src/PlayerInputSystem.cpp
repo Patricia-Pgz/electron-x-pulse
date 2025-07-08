@@ -1,26 +1,25 @@
 #include "PlayerInputSystem.h"
+
+#include "engine/audio/AudioSystem.h"
 #include "engine/ecs/EntityFactory.h"
+#include "engine/physics/PlayerContactListener.h"
+#include "glm/gtc/constants.hpp"
 
 namespace gl3::game::input
 {
-    //TODO Wie will ich Jumpimpuls jetzt wirklich berechnen?
-    b2Vec2 PlayerInputSystem::calculateJumpImpulse(const b2BodyId body, const JumpConfig& config)
-    {
-        const float distancePerBeat = 60.0f / config.bpm;
-        const float jumpDuration = config.beatsPerJump * distancePerBeat;
-        const float initialVelocity = (config.gravity * jumpDuration) / 2.0f;
-        const float bodyMass = b2Body_GetMass(body);
-        const b2Vec2 jumpImpulse(0.0f, initialVelocity * bodyMass);
-
-        return jumpImpulse;
-    }
-
     void PlayerInputSystem::update()
     {
         if (!game_.getRegistry().valid(game_.getPlayer()) || !is_active) return;
         const auto window = game_.getWindow();
         const auto body = game_.getRegistry().get<engine::ecs::PhysicsComponent>(game_.getPlayer()).body;
+        auto& transform = game_.getRegistry().get<engine::ecs::TransformComponent>(game_.getPlayer());
         b2Vec2 velocity = b2Body_GetLinearVelocity(body);
+
+        if (engine::physics::PlayerContactListener::playerGrounded)
+        {
+            canJump = true;
+            enter_pressed_ = false;
+        }
 
         if (velocity.y < 0.01f && velocity.y >= 0.f && canJump && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
@@ -45,20 +44,46 @@ namespace gl3::game::input
         b2Vec2 vel = b2Body_GetLinearVelocity(body);
         vel.x = 0.0f;
         b2Body_SetLinearVelocity(body, vel);
+        if (!engine::physics::PlayerContactListener::playerGrounded)
+        {
+            //playeranim
+            transform.zRotation += rotationSpeed * game_.getDeltaTime();
+        }
+        else
+        {
+            if (engine::physics::PlayerContactListener::playerGrounded)
+            {
+                //stop rotation
+                float& angle = transform.zRotation;
+                angle = glm::mix(angle, 0.0f, game_.getDeltaTime() * 10.0f); // smooth angle
+                angle = std::fmod(angle, glm::two_pi<float>());
+                if (std::abs(angle) < 0.01f)
+                {
+                    angle = 0.0f;
+                }
+            }
+        }
     }
 
 
-    void PlayerInputSystem::applyJumpImpulse(const b2BodyId body) const
+    void PlayerInputSystem::applyJumpImpulse(const b2BodyId body)
     {
-        /*const b2Vec2 jumpImpulse = calculateJumpImpulse(
-            body, JumpConfig(9.81, game.getCurrentConfig().bpm, distancePerBeat));*/
-        b2Body_ApplyLinearImpulseToCenter(body, {0.f, 0.5f}, true);
-        //TODO so berechnen, dass player am höchsten  punkt distanceperbeat hoch hüpft?
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayerJump{true});
+        const float gravityY = std::abs(b2World_GetGravity(game_.getPhysicsWorld()).y);
+        const float mass = b2Body_GetMass(body);
+
+        landingUnitsAhead = game_.getAudioSystem()->getConfig()->seconds_per_beat;
+        // Time to travel horizontally
+        const float timeToLand = landingUnitsAhead / curr_lvl_speed;
+
+        const float jumpVelocity = (desiredJumpHeight + 0.5f * gravityY * timeToLand * timeToLand) / timeToLand;
+        const float impulse = mass * jumpVelocity;
+
+        b2Body_ApplyLinearImpulseToCenter(body, b2Vec2(0.0f, impulse), true);
     }
 
-    void PlayerInputSystem::onPlayerGrounded(engine::ecs::PlayerGrounded& event)
+    void PlayerInputSystem::onLvlLengthCompute(const engine::ecs::LevelLengthComputed& event)
     {
-        canJump = true;
-        enter_pressed_ = false;
+        curr_lvl_speed = event.levelSpeed;
     }
 } // gl3

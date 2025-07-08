@@ -26,6 +26,7 @@ namespace gl3::engine::ecs
     struct LevelLengthComputed
     {
         float levelLength = 0.f;
+        float levelSpeed = 0.f;
         float finalBeatIndex = 0.f;
     };
 
@@ -56,11 +57,11 @@ namespace gl3::engine::ecs
     };
 
     /**
-    *PlayerGrounded event gets called, whenever the normal of a player contact, that is not an obstacle, is nearly vertical and pointing upwards. Meaning the player lands on top of a walkable object.
+    *Call this when player jumps.
     */
-    struct PlayerGrounded
+    struct PlayerJump
     {
-        entt::entity player;
+        bool grounded = true;
     };
 
     /**

@@ -6,11 +6,14 @@ uniform vec4 color;
 out vec4 FragColor;
 
 void main() {
-    if(useTexture){
-    vec4 texColor = texture(texture1, TexCoord);
-    FragColor = texColor;
-    } else{
-    FragColor = color;
+    if (useTexture) {
+        vec4 texColor = texture(texture1, TexCoord);
+        if (texColor.a < 0.65)
+        discard;
+        FragColor = texColor;
+    } else {
+        FragColor = color;
     }
-     //TODO farbe + textur = texcolor * color, etc.?
+
+    //TODO farbe + textur = texcolor * color, etc.?
 }

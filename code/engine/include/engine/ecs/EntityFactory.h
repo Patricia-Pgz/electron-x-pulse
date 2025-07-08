@@ -10,6 +10,9 @@
 
 namespace gl3::engine::ecs
 {
+    static constexpr const char* GROUND_SENSOR_TAG = "bottomCollider";
+    static constexpr const char* RIGHT_SENSOR_TAG = "rightCollider";
+
     struct TransformComponent
     {
         TransformComponent(const glm::vec3 position, const glm::vec3 scale, const float zRotation,
@@ -41,9 +44,22 @@ namespace gl3::engine::ecs
 
     struct PhysicsComponent
     {
+        PhysicsComponent(const b2WorldId physicsWorld, const b2BodyId body, const b2ShapeId shape,
+                         const b2ShapeId groundSensor = b2_nullShapeId,
+                         const b2ShapeId rightSensor = b2_nullShapeId): physicsWorld(physicsWorld), body(body),
+                                                                        shape(shape),
+                                                                        groundSensorShape(groundSensor),
+                                                                        rightWallSensorShape(rightSensor)
+        {
+        }
+
         b2WorldId physicsWorld = b2_nullWorldId;
         b2BodyId body = b2_nullBodyId;
         b2ShapeId shape = b2_nullShapeId;
+
+        // Only used for player
+        b2ShapeId groundSensorShape = b2_nullShapeId;
+        b2ShapeId rightWallSensorShape = b2_nullShapeId;
         bool isActive = true;
     };
 
@@ -247,7 +263,7 @@ namespace gl3::engine::ecs
 
         static PhysicsComponent createPhysicsBody(const b2WorldId& physicsWorld,
                                                   const entt::entity& entity,
-                                                  const GameObject& object)
+                                                  GameObject& object)
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = object.tag == "player" ? b2_dynamicBody : b2_kinematicBody;
@@ -259,19 +275,25 @@ namespace gl3::engine::ecs
             const auto body = b2CreateBody(physicsWorld, &bodyDef);
 
             b2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.density = 0.1f;
+            shapeDef.density = 0.f;
             shapeDef.friction = 0.0f;
             shapeDef.restitution = 0.0f;
+
+            std::vector<b2ShapeId> sensors;
             if (object.tag == "player")
             {
                 shapeDef.enableContactEvents = true;
+
+                sensors = createSensors(object, body);
             }
 
             const b2Polygon polygon = createPolygon(object.isTriangle, object.scale.x,
                                                     object.scale.y);
             const b2ShapeId shape = b2CreatePolygonShape(body, &shapeDef, &polygon);
 
-            return PhysicsComponent(physicsWorld, body, shape);
+            return object.tag == "player"
+                       ? PhysicsComponent(physicsWorld, body, shape, sensors[0], sensors[1])
+                       : PhysicsComponent(physicsWorld, body, shape);
         };
 
         static b2Polygon createPolygon(const bool isTriangle, const float scaleX, const float scaleY)
@@ -294,6 +316,39 @@ namespace gl3::engine::ecs
             }
 
             return polygon;
+        }
+
+    private:
+        static std::vector<b2ShapeId> createSensors(const GameObject& player, const b2BodyId playerBody)
+        {
+            b2ShapeId groundSensor = b2_nullShapeId;
+            b2ShapeId rightSensor = b2_nullShapeId;
+            const float halfWidth = player.scale.x * 0.5f;
+            const float halfHeight = player.scale.y * 0.5f;
+            b2ShapeDef groundSensorDef = b2DefaultShapeDef();
+            b2ShapeDef rightSensorDef = b2DefaultShapeDef();
+            // ground sensor
+            groundSensorDef.isSensor = true;
+            groundSensorDef.enableContactEvents = true;
+            groundSensorDef.userData = const_cast<void*>(static_cast<const void*>(GROUND_SENSOR_TAG));
+
+            b2Polygon groundBox;
+            groundBox = b2MakeOffsetBox(halfWidth * 0.8f, 0.15f,
+                                        {0.f, 0.f - halfHeight - 0.15f},
+                                        b2MakeRot(0.0f));
+            groundSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &groundBox);
+
+            // Right Side Sensor
+            rightSensorDef.isSensor = true;
+            rightSensorDef.enableContactEvents = true;
+            rightSensorDef.userData = const_cast<void*>(static_cast<const void*>(GROUND_SENSOR_TAG));
+
+            b2Polygon rightBox;
+            rightBox = b2MakeOffsetBox(0.15f, halfHeight * 0.8f,
+                                       {0.f + halfWidth + 0.15f, 0.f},
+                                       b2MakeRot(0.0f));
+            rightSensor = b2CreatePolygonShape(playerBody, &rightSensorDef, &rightBox);
+            return {groundSensor, rightSensor};
         }
     };
 } // engine

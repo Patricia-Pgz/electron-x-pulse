@@ -27,10 +27,16 @@ namespace gl3::engine::rendering
             throw std::runtime_error("Failed to load texture: " + path);
         }
 
-        GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB; //TODO
         const std::filesystem::path file = path;
         file_name = file.stem().string();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        if (nrChannels == 4)
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        }
+        else
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        }
         glGenerateMipmap(GL_TEXTURE_2D);
         std::string filename = std::filesystem::path(path).filename().string();
         std::ranges::transform(filename, filename.begin(), ::tolower);

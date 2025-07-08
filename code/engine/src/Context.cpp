@@ -1,6 +1,8 @@
 #include <stdexcept>
 #include "engine/Context.h"
 
+#include <GL/gl.h>
+
 #include "engine/Constants.h"
 #include "engine/Game.h"
 #include "engine/ecs/EventDispatcher.h"
@@ -36,6 +38,10 @@ namespace gl3::engine::context
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_RED_BITS, 8);
+        glfwWindowHint(GLFW_GREEN_BITS, 8);
+        glfwWindowHint(GLFW_BLUE_BITS, 8);
+        glfwWindowHint(GLFW_ALPHA_BITS, 8);
 
         window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
         if (window == nullptr)

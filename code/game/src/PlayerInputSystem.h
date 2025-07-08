@@ -7,36 +7,32 @@
 
 namespace gl3::game::input
 {
-    struct JumpConfig
-    {
-        float gravity;
-        float bpm;
-        float beatsPerJump;
-    };
-
     class PlayerInputSystem : public engine::ecs::System
     {
     public:
         explicit PlayerInputSystem(engine::Game& game) : System(game)
         {
-            engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerGrounded>().connect<&
-                PlayerInputSystem::onPlayerGrounded>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::LevelLengthComputed>().connect<&
+                PlayerInputSystem::onLvlLengthCompute>(this);
         };
 
         ~PlayerInputSystem() override
         {
-            engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerGrounded>().disconnect<&
-                PlayerInputSystem::onPlayerGrounded>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::LevelLengthComputed>().disconnect<&
+                PlayerInputSystem::onLvlLengthCompute>(this);
         };
         void update();
 
     private:
-        static b2Vec2 calculateJumpImpulse(b2BodyId body, const JumpConfig& config);
-        void onPlayerGrounded(engine::ecs::PlayerGrounded& event);
-        void applyJumpImpulse(b2BodyId body) const;
+        void onLvlLengthCompute(const engine::ecs::LevelLengthComputed& event);
+        void applyJumpImpulse(b2BodyId body);
+        float curr_lvl_speed = 1.f;
         bool enter_pressed_ = false;
         bool canJump = true;
-        float distancePerBeat = 2.0f; // Example: player travels 2 units per beat //TODO
+        float desiredJumpHeight = 1.f;
+        float jumpHeightFactor = 1.f;
+        float landingUnitsAhead = 1.f;
         entt::entity player_ = entt::null;
+        float rotationSpeed = -270.f;
     };
 } // gl3

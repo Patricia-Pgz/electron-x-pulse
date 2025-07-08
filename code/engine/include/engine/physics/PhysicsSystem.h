@@ -14,6 +14,8 @@ namespace gl3::engine::physics
     public:
         explicit PhysicsSystem(Game& game) : System(game)
         {
+            ecs::EventDispatcher::dispatcher.sink<ecs::PlayerJump>().connect<&
+                PhysicsSystem::onPlayerJump>(this);
         };
 
         void runPhysicsStep()
@@ -24,7 +26,8 @@ namespace gl3::engine::physics
             {
                 const b2WorldId world = game_.getPhysicsWorld();
                 b2World_Step(world, fixedTimeStep, subStepCount);
-                PlayerContactListener::checkForPlayerCollision(game_.getRegistry(), game_.getPlayer());
+                PlayerContactListener::checkForPlayerCollision(game_.getRegistry(), game_.getPlayer(),
+                                                               game_.getPhysicsWorld());
 
                 if (game_.currentGameState == GameState::PreviewWithScrolling) return;
 
@@ -53,7 +56,12 @@ namespace gl3::engine::physics
                     auto [p, q] = b2Body_GetTransform(physics_comp.body);
                     transformComp.position.x = p.x;
                     transformComp.position.y = p.y;
-                    transformComp.zRotation = glm::degrees(b2Rot_GetAngle(q));
+                }
+                if (player_jump_this_frame)
+                //Wait for physics step, before setting player grounded from other classes/events
+                {
+                    PlayerContactListener::playerGrounded = !player_jump_this_frame;
+                    player_jump_this_frame = false;
                 }
                 processDeletions();
                 accumulator -= fixedTimeStep;
@@ -72,6 +80,7 @@ namespace gl3::engine::physics
         const float fixedTimeStep = 1.0f / 60.0f;
         const int subStepCount = 4;
         float accumulator = 0.f;
+        bool player_jump_this_frame = false;
 
         std::vector<b2BodyId> bodiesToDelete;
 
@@ -87,6 +96,9 @@ namespace gl3::engine::physics
             bodiesToDelete.clear();
         }
 
-        static void onPlayerGrounded();
+        void onPlayerJump(const ecs::PlayerJump& event)
+        {
+            player_jump_this_frame = event.grounded;
+        }
     };
 } // gl3

@@ -29,8 +29,9 @@ namespace gl3::engine::rendering
                                               const glm::vec3& scale)
         {
             auto model = glm::mat4(1.0f);
-            model = glm::translate(model, {position.x * pixelsPerMeter, position.y * pixelsPerMeter, position.z});
             // world to pixel, z only for layering
+
+            model = glm::translate(model, {position.x * pixelsPerMeter, position.y * pixelsPerMeter, position.z});
             model = glm::rotate(model, glm::radians(zRotationInDegrees), glm::vec3(0.0f, 0.0f, 1.0f));
             model = glm::scale(model, scale * pixelsPerMeter); // scale in pixels
             return model;

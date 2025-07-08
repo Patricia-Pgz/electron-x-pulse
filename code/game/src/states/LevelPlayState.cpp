@@ -133,7 +133,7 @@ namespace gl3::game::state
         current_level_->levelLength = audio_config_->current_audio_length * current_level_->currentLevelSpeed;
         current_level_->finalBeatIndex = audio_config_->current_audio_length / audio_config_->seconds_per_beat;
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::LevelLengthComputed{
-            current_level_->levelLength, current_level_->finalBeatIndex
+            current_level_->levelLength, current_level_->currentLevelSpeed, current_level_->finalBeatIndex
         });
 
         game_.getContext().setClearColor(current_level_->clearColor);
@@ -320,10 +320,11 @@ namespace gl3::game::state
         {
             return;
         }
-        delayLevelEnd(deltaTime);
         if (!paused)
+        {
             engine::visual_effects::Parallax::moveBgObjectsParallax(
                 game_.getRegistry(), deltaTime, current_level_->currentLevelSpeed);
+        }
         if (!edit_mode_)return;
         if (glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS) //TODO evtl in editstate enter abfragen
         {
