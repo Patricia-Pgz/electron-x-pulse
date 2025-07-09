@@ -203,6 +203,41 @@
       "parallaxFactor": 0
     }
   ],
+  "groups": [
+    {
+      "name": "1",
+      "children": [
+        {
+          "tag": "platform",
+          "position": [
+            1,
+            0,
+            0
+          ],
+          "color": [
+            0,
+            0.2,
+            0.6,
+            1
+          ]
+        },
+        {
+          "tag": "platform",
+          "position": [
+            2,
+            0,
+            0
+          ],
+          "color": [
+            0,
+            0.2,
+            0.6,
+            1
+          ]
+        }
+      ]
+    }
+  ],
   "objects": [
     {
       "position": [
@@ -961,102 +996,6 @@
       "tag": "platform",
       "isTriangle": false,
       "textureName": "",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "parallaxFactor": 0
-    },
-    {
-      "position": [
-        0,
-        -0,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        1,
-        0,
-        0,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "Test",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "parallaxFactor": 0
-    },
-    {
-      "position": [
-        2,
-        -0,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        1,
-        0,
-        0,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "Test",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "parallaxFactor": 0
-    },
-    {
-      "position": [
-        1,
-        -0,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        1,
-        0,
-        0,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "Test",
       "uv": [
         0,
         0,

@@ -76,6 +76,64 @@ namespace gl3::engine::physics
             }
         }
 
+        static GameObject computeGroupAABB(const entt::registry& registry, const std::vector<entt::entity>& objects)
+        {
+            if (objects.empty())
+            {
+                return {};
+            }
+
+            entt::entity leftMost = entt::null;
+            entt::entity rightMost = entt::null;
+            entt::entity topMost = entt::null;
+            entt::entity bottomMost = entt::null;
+            ecs::TransformComponent transformMostLeft = entt::null;
+            ecs::TransformComponent transformMostRight = entt::null;
+            ecs::TransformComponent transFormTop = entt::null;
+            ecs::TransformComponent transformBot = entt::null;
+
+            for (const auto& entity : objects)
+            {
+                auto transform = registry.get<ecs::TransformComponent>(entity);
+                transformMostLeft = registry.get<ecs::TransformComponent>(leftMost);
+                transformMostRight = registry.get<ecs::TransformComponent>(rightMost);
+                transFormTop = registry.get<ecs::TransformComponent>(topMost);
+                transformBot = registry.get<ecs::TransformComponent>(bottomMost);
+                if (leftMost == entt::null || transform.position.x - transform.scale.x * 0.5f < transformMostLeft.
+                    position.x - transformMostLeft.scale.x * 0.5f)
+                {
+                    leftMost = entity;
+                }
+                if (rightMost == entt::null || transform.position.x + transform.scale.x * 0.5f > transformMostRight.
+                    position.x + transformMostRight.scale.x * 0.5f)
+                {
+                    rightMost = entity;
+                }
+                if (topMost == entt::null || transform.position.y + transform.scale.y * 0.5f > transFormTop.position.y +
+                    transFormTop.scale.y * 0.5f)
+                {
+                    topMost = entity;
+                }
+                if (bottomMost == entt::null || transform.position.y - transform.scale.y * 0.5f < transformBot.position.
+                    y - transformBot.scale.y *
+                    0.5f)
+                {
+                    bottomMost = entity;
+                }
+            }
+
+            const float left = transformMostLeft.position.x - transformMostLeft.scale.x * 0.5f;
+            const float right = transformMostRight.position.x + transformMostRight.scale.x * 0.5f;
+            const float top = transFormTop.position.y + transFormTop.scale.y * 0.5f;
+            const float bottom = transformBot.position.y - transformBot.scale.y * 0.5f;
+
+            GameObject result;
+            result.position = {(left + right) * 0.5f, (top + bottom) * 0.5f, 0.f};
+            result.scale = {right - left, top - bottom, 0.f};
+
+            return result;
+        }
+
     private:
         const float fixedTimeStep = 1.0f / 60.0f;
         const int subStepCount = 4;

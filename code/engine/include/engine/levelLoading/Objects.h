@@ -14,9 +14,17 @@ struct GameObject
     glm::vec4 uv = {0, 0, 1, 1};
     float rotation = 0.f;
     bool generatePhysicsComp = true;
+    bool generateRenderComp = true;
     float parallaxFactor = 0.f;
     std::string vertexShaderPath;
     std::string fragmentShaderPath;
+};
+
+struct GameObjectGroup
+{
+    std::string name;
+    std::vector<GameObject> children;
+    GameObject colliderAABB;
 };
 
 struct LevelMeta
@@ -34,6 +42,7 @@ struct Level
     float groundLevel = 0.f;
     glm::vec4 clearColor = {1, 1, 1, 1};
     std::vector<GameObject> backgrounds;
+    std::vector<GameObjectGroup> groups;
     std::vector<GameObject> objects;
     float currentLevelSpeed = 1.f;
     float levelLength = 0.f;

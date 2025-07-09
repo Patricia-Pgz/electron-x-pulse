@@ -24,10 +24,10 @@ namespace gl3::game::state
     {
         const auto windowBounds = game_.getContext().getWindowBounds(); // pixels: left, right, bottom, top
 
-        float left_m = windowBounds[0] / pixelsPerMeter;
-        float right_m = windowBounds[1] / pixelsPerMeter;
-        float bottom_m = windowBounds[2] / pixelsPerMeter;
-        float top_m = windowBounds[3] / pixelsPerMeter;
+        const float left_m = windowBounds[0] / pixelsPerMeter;
+        const float right_m = windowBounds[1] / pixelsPerMeter;
+        const float bottom_m = windowBounds[2] / pixelsPerMeter;
+        const float top_m = windowBounds[3] / pixelsPerMeter;
 
         const float center_x = (left_m + right_m) / 2.f;
         const float windowWidth = right_m - left_m;
@@ -117,6 +117,40 @@ namespace gl3::game::state
                 object, registry, physicsWorld);
         }
 
+        for (auto& objGroup : current_level_->groups)
+        {
+            std::vector<entt::entity> children;
+            //objGroup.colliderAABB.generateRenderComp = false;
+            for (auto& obj : objGroup.children)
+            {
+                obj.generatePhysicsComp = false;
+                glm::vec2 localOffset = {
+                    obj.position.x - objGroup.colliderAABB.position.x, obj.position.y - objGroup.colliderAABB.position.y
+                };
+                const entt::entity entity = engine::ecs::EntityFactory::createDefaultEntity(
+                    obj, registry, physicsWorld);
+                registry.emplace<engine::ecs::Parent>(entity, nullptr, localOffset);
+                children.push_back(entity);
+            }
+
+            if (objGroup.colliderAABB.scale.x <= 0.f || objGroup.colliderAABB.scale.y <= 0.f)
+            {
+                objGroup.colliderAABB = engine::physics::PhysicsSystem::computeGroupAABB(registry, children);
+                if (objGroup.colliderAABB.scale.x <= 0)
+                {
+                    std::cerr << "Invalid bounding box size!";
+                    return;
+                }
+            }
+
+            entt::entity groupAABBEntity = engine::ecs::EntityFactory::createDefaultEntity(
+                objGroup.colliderAABB, registry, physicsWorld);
+            for (const auto& child : children)
+            {
+                registry.get<engine::ecs::Parent>(child).parentObject = &groupAABBEntity;
+            }
+        }
+
         float initialPlayerPosX = 0.f;
         for (auto& object : current_level_->objects)
         {
@@ -154,7 +188,7 @@ namespace gl3::game::state
              auto& entity : view)
         {
             if (!game_.getRegistry().valid(entity) || entity == entt::null)return;
-            auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
+            const auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
             if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
             {
                 b2Body_SetLinearVelocity(physics_comp.body, {current_level_->currentLevelSpeed * -1, 0.0f});
@@ -168,7 +202,7 @@ namespace gl3::game::state
              auto& entity : view)
         {
             if (!game_.getRegistry().valid(entity) || entity == entt::null)return;
-            auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
+            const auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
             if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
             {
                 b2Body_SetLinearVelocity(physics_comp.body, {0.f, 0.0f});

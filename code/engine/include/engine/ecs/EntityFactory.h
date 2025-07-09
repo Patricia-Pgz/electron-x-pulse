@@ -10,8 +10,15 @@
 
 namespace gl3::engine::ecs
 {
-    static constexpr const char* GROUND_SENSOR_TAG = "bottomCollider";
-    static constexpr const char* RIGHT_SENSOR_TAG = "rightCollider";
+    static constexpr auto GROUND_SENSOR_TAG = "bottomCollider";
+    static constexpr auto RIGHT_SENSOR_TAG = "rightCollider";
+
+    ///parent for grouping objects, includes pointer to parent entity and the child's local offset to it
+    struct Parent
+    {
+        entt::entity* parentObject;
+        glm::vec2 localOffset;
+    };
 
     struct TransformComponent
     {
@@ -84,7 +91,7 @@ namespace gl3::engine::ecs
                 entity, object.position, object.scale, object.rotation, object.parallaxFactor
             );
             registry.emplace<TagComponent>(entity, object.tag);
-            if (object.generatePhysicsComp) //TODO rotation
+            if (object.generatePhysicsComp)
             {
                 registry.emplace<PhysicsComponent>(
                     entity, createPhysicsBody(physicsWorld, entity, object)
@@ -93,14 +100,17 @@ namespace gl3::engine::ecs
             const rendering::Texture* tex = object.textureName.empty()
                                                 ? nullptr
                                                 : rendering::TextureManager::get(object.textureName);
-            registry.emplace<RenderComponent>( //TODO rotation
-                entity, createRenderComponent(object, tex));
+            if (object.generateRenderComp)
+            {
+                registry.emplace<RenderComponent>(
+                    entity, createRenderComponent(object, tex));
+            }
 
             return entity;
         };
 
-        /*
-         *Call this to empty the registry and correctly delete the components
+        /**
+         *Call this to empty the registry and correctly delete the components (preferably after update loop / @see static void markEntityForDeletion(entt::entity entity))
          */
         static void clearRegistry(entt::registry& registry)
         {

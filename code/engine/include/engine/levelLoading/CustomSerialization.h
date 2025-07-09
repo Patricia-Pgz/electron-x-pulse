@@ -19,6 +19,17 @@ struct glz::meta<glm::vec4>
 };
 
 template <>
+struct glz::meta<GameObjectGroup>
+{
+    using T = GameObjectGroup;
+    static constexpr auto value = glz::object(
+        "name", &T::name,
+        "children", &T::children,
+        "colliderAABB", &T::colliderAABB
+    );
+};
+
+template <>
 struct glz::meta<GameObject>
 {
     using T = GameObject;
@@ -32,6 +43,7 @@ struct glz::meta<GameObject>
         "textureName", &T::textureName,
         "uv", &T::uv,
         "generatePhysicsComp", &T::generatePhysicsComp,
+        "generateRenderComp", &T::generateRenderComp,
         "vertexShaderPath", &T::vertexShaderPath,
         "fragmentShaderPath", &T::fragmentShaderPath,
         "parallaxFactor", &T::parallaxFactor
@@ -60,6 +72,7 @@ struct glz::meta<Level>
         "groundLevel", &T::groundLevel,
         "clearColor", &T::clearColor,
         "backgrounds", &T::backgrounds,
+        "groups", &T::groups,
         "objects", &T::objects
     );
 };
