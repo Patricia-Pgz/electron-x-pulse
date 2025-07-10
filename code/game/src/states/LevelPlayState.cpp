@@ -46,16 +46,15 @@ namespace gl3::game::state
     void LevelPlayState::applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig,
                                                         const entt::entity entity) const
     {
+        int width, height;
+        glfwGetWindowSize(game_.getWindow(), &width, &height);
         auto& registry = game_.getRegistry();
         if (!registry.valid(entity)) return;
         if (const auto& tag = registry.get<engine::ecs::TagComponent>(entity).tag; tag == "ground")
         {
-            engine::ecs::EntityFactory::setPosition(registry, entity, {
-                                                        bgConfig.center_x, bgConfig.ground_center_y, 0.f
-                                                    });
-            engine::ecs::EntityFactory::setScale(registry, entity, {
-                                                     bgConfig.windowWidth, bgConfig.ground_height, 1.f
-                                                 });
+            auto& transform = registry.get<engine::ecs::TransformComponent>(entity);
+            transform.position = {bgConfig.center_x, bgConfig.ground_center_y, 0.f};
+            transform.scale = {bgConfig.windowWidth, bgConfig.ground_height, 1.f};
         }
         else if (tag == "background")
         {
@@ -68,15 +67,14 @@ namespace gl3::game::state
         }
     }
 
-    void LevelPlayState::updateBackgroundEntity(LevelBackgroundConfig& bgConfig, entt::entity entity) const
-    {
-        applyBackgroundEntityTransform(bgConfig, entity);
-    }
-
     void LevelPlayState::onWindowResize(const engine::context::WindowResizeEvent& event) const
     {
         if (!level_instantiated_ || event.newHeight <= 0 || event.newWidth <= 0) return;
+        updateBackgroundEntitySizes();
+    }
 
+    void LevelPlayState::updateBackgroundEntitySizes() const
+    {
         auto& registry = game_.getRegistry();
         const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
                                         engine::ecs::PhysicsComponent>();
@@ -88,7 +86,7 @@ namespace gl3::game::state
             if (registry.get<engine::ecs::TagComponent>(entity).tag == "ground" || registry.get<
                 engine::ecs::TagComponent>(entity).tag == "background")
             {
-                updateBackgroundEntity(bgConfig, entity);
+                applyBackgroundEntityTransform(bgConfig, entity);
             }
         }
     }
@@ -126,9 +124,10 @@ namespace gl3::game::state
                 objGroup.colliderAABB = engine::physics::PhysicsSystem::computeGroupAABB(objGroup.children);
                 objGroup.colliderAABB.tag = "platform";
             }
+            objGroup.colliderAABB.generateRenderComp = false;
             entt::entity groupAABBEntity = engine::ecs::EntityFactory::createDefaultEntity(
                 objGroup.colliderAABB, registry, physicsWorld);
-            objGroup.colliderAABB.generateRenderComp = false;
+
             for (auto& obj : objGroup.children)
             {
                 obj.generatePhysicsComp = false;
@@ -283,7 +282,7 @@ namespace gl3::game::state
             if (registry.get<engine::ecs::TagComponent>(entity).tag == "ground" || registry.get<
                 engine::ecs::TagComponent>(entity).tag == "background")
             {
-                updateBackgroundEntity(bgConfig, entity);
+                applyBackgroundEntityTransform(bgConfig, entity);
             }
         }
     }

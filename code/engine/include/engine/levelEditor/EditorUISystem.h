@@ -69,7 +69,7 @@ namespace gl3::engine::editor
         void highlightSelectedButton(const std::vector<std::string>& buttonIDs);
 
         bool is_in_play_mode_ = false;
-        bool editor_scrolling_active_ = true;
+        bool is_mouse_in_edit = true;
         ImVec2 grid_center = {0.f, 0.f};
         float grid_offset = 0.5f;
         std::unique_ptr<ImVec2> selected_grid_cell = std::make_unique<ImVec2>(0.0f, 0.0f);

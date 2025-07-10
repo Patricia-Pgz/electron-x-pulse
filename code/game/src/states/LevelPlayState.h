@@ -45,6 +45,8 @@ namespace gl3::game::state
                 LevelPlayState::onRestartLevel>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().connect<&
                 LevelPlayState::onPauseEvent>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::context::MouseScrollEvent>().connect<&
+                LevelPlayState::updateBackgroundEntitySizes>(this);
         }
 
         ~LevelPlayState() override
@@ -57,6 +59,8 @@ namespace gl3::game::state
                 LevelPlayState::onRestartLevel>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().disconnect<&
                 LevelPlayState::onPauseEvent>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::context::MouseScrollEvent>().disconnect<&
+                LevelPlayState::updateBackgroundEntitySizes>(this);
         }
 
         void onEnter() override
@@ -91,6 +95,7 @@ namespace gl3::game::state
         void delayLevelEnd(float deltaTime);
 
         void onWindowResize(const engine::context::WindowResizeEvent& evt) const;
+        void updateBackgroundEntitySizes() const;
         void onPlayerDeath(const engine::ecs::PlayerDeath& event);
         void onRestartLevel();
         void startLevel();

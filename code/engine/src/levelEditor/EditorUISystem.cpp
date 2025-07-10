@@ -13,7 +13,7 @@ namespace gl3::engine::editor
 {
     void EditorUISystem::onMouseScroll(const context::MouseScrollEvent& event) const
     {
-        if (!is_active || is_in_play_mode_ || !editor_scrolling_active_) return;
+        if (!is_active || is_in_play_mode_ || !is_mouse_in_edit) return;
         game_.getContext().moveCameraX(static_cast<float>(event.yOffset * 50.0f));
     }
 
@@ -86,33 +86,36 @@ namespace gl3::engine::editor
             }
         }
 
-        // Get mouse position in screen space
-        const ImVec2 mousePosScreen = ImGui::GetMousePos();
+        if (is_mouse_in_edit)
+        {
+            // Get mouse position in screen space
+            const ImVec2 mousePosScreen = ImGui::GetMousePos();
 
-        // Convert to world coordinates
-        const glm::vec2 mousePosWorld = rendering::MVPMatrixHelper::screenToWorld(
-            game_.getContext(), mousePosScreen.x, mousePosScreen.y);
+            // Convert to world coordinates
+            const glm::vec2 mousePosWorld = rendering::MVPMatrixHelper::screenToWorld(
+                game_.getContext(), mousePosScreen.x, mousePosScreen.y);
 
-        // Snap to grid (round world coords)
-        const int cellX = static_cast<int>(std::round(mousePosWorld.x));
-        const int cellY = static_cast<int>(std::round(mousePosWorld.y));
+            // Snap to grid (round world coords)
+            const int cellX = static_cast<int>(std::round(mousePosWorld.x));
+            const int cellY = static_cast<int>(std::round(mousePosWorld.y));
 
-        // Convert snapped cell back to screen space for drawing
-        const glm::vec2 cellScreenPos = rendering::MVPMatrixHelper::toScreen(
-            game_.getContext(), static_cast<float>(cellX), static_cast<float>(cellY));
-        const float cellSize = gridSpacing;
+            // Convert snapped cell back to screen space for drawing
+            const glm::vec2 cellScreenPos = rendering::MVPMatrixHelper::toScreen(
+                game_.getContext(), static_cast<float>(cellX), static_cast<float>(cellY));
+            const float cellSize = gridSpacing;
 
-        // Define cell rectangle (centered at cellScreenPos)
-        ImVec2 cellTopLeft(cellScreenPos.x - cellSize * 0.5f, cellScreenPos.y - cellSize * 0.5f);
-        ImVec2 cellBottomRight(cellScreenPos.x + cellSize * 0.5f, cellScreenPos.y + cellSize * 0.5f);
+            // Define cell rectangle (centered at cellScreenPos)
+            ImVec2 cellTopLeft(cellScreenPos.x - cellSize * 0.5f, cellScreenPos.y - cellSize * 0.5f);
+            ImVec2 cellBottomRight(cellScreenPos.x + cellSize * 0.5f, cellScreenPos.y + cellSize * 0.5f);
 
-        // Draw highlight
-        drawList->AddRectFilled(cellTopLeft, cellBottomRight, IM_COL32(100, 100, 255, 100));
+            // Draw highlight
+            drawList->AddRectFilled(cellTopLeft, cellBottomRight, IM_COL32(100, 100, 255, 100));
 
-        // Tooltip with accurate world coordinates
-        ImGui::BeginTooltip();
-        ImGui::Text("Cell: (%d, %d)", cellX, cellY);
-        ImGui::EndTooltip();
+            // Tooltip with accurate world coordinates
+            ImGui::BeginTooltip();
+            ImGui::Text("Cell: (%d, %d)", cellX, cellY);
+            ImGui::EndTooltip();
+        }
 
         if (selected_grid_cell)
         {
@@ -154,14 +157,13 @@ namespace gl3::engine::editor
             {
                 const GameObject object = {
                     {
-                        selected_grid_cell->x, -selected_grid_cell->y, 0.f
+                        selected_grid_cell->x, selected_grid_cell->y, 0.f
                     },
                     glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
                     selected_tag, is_triangle,
                     name, {selected_scale.x, selected_scale.y, 0.f}, uv, selected_z_rotation_, generate_physics_comp
                 };
                 levelLoading::LevelManager::addObjectToCurrentLevel(object);
-
                 ecs::EventDispatcher::dispatcher.trigger(
                     TileSelectedEvent{object});
             }
@@ -187,7 +189,7 @@ namespace gl3::engine::editor
         {
             const GameObject object = {
                 {
-                    selected_grid_cell->x, -selected_grid_cell->y, 0.f
+                    selected_grid_cell->x, selected_grid_cell->y, 0.f
                 },
                 glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
                 selected_tag, is_triangle,
@@ -278,11 +280,11 @@ namespace gl3::engine::editor
         ImGui::Begin("Tile Panel", nullptr, flags_);
         if (ImGui::IsWindowHovered())
         {
-            editor_scrolling_active_ = false;
+            is_mouse_in_edit = false;
         }
         else
         {
-            editor_scrolling_active_ = true;
+            is_mouse_in_edit = true;
         }
         ImGui::PopStyleColor();
         ImGui::PopFont();
@@ -410,7 +412,7 @@ namespace gl3::engine::editor
 
                 const GameObject object = {
                     {
-                        selected_grid_cell->x, -selected_grid_cell->y, 0.f
+                        selected_grid_cell->x, selected_grid_cell->y, 0.f
                     },
                     selected_color_,
                     selected_tag, is_triangle,
