@@ -5,29 +5,24 @@
 #include "ui/FinishUI.h"
 #include "ui/InstructionUI.h"
 #include <box2d/box2d.h>
+#include "../../../extern/box2d/src/body.h"
 
 #include "Game.h"
-#include "../../../extern/box2d/src/body.h"
 #include "engine/physics/PhysicsSystem.h"
-#include "engine/rendering/MVPMatrixHelper.h"
 
 namespace gl3::game::state
 {
-    void LevelPlayState::onWindowSize(const engine::context::WindowBoundsRecomputeEvent& event)
+    /**
+     * Recompute the sizes of backround/ground entities -> they stay fixed to the center of their part of the screen (parted by current_level_->groundLevel)
+     * @param event The event, that the Context sends, when the window size changes.
+     */
+    void LevelPlayState::onWindowSizeChange(const engine::context::WindowBoundsRecomputeEvent& event) const
     {
-        int width, height;
-        glfwGetWindowSize(game_.getWindow(), &width, &height);
-        const auto fWidth = static_cast<float>(width);
-        const auto fHeight = static_cast<float>(height);
-        const auto worldBottomRightScreenCorner = engine::rendering::MVPMatrixHelper::screenToWorld(
-            game_.getContext(), fWidth, fHeight);
-        auto windowLeftWorld = worldBottomRightScreenCorner.x - fWidth / pixelsPerMeter;
-        auto windowRightWorld = worldBottomRightScreenCorner.x;
-        auto windowTopWorld = worldBottomRightScreenCorner.y + fHeight / pixelsPerMeter;
-        auto windowBottomWorld = worldBottomRightScreenCorner.y;
-
-        currentWindowBounds = {windowLeftWorld, windowRightWorld, windowTopWorld, windowBottomWorld};
-
+        const auto windowBounds = *event.windowBounds;
+        const auto windowLeftWorld = windowBounds[0];
+        const auto windowRightWorld = windowBounds[1];
+        const auto windowTopWorld = windowBounds[2];
+        const auto windowBottomWorld = windowBounds[3];
 
         const float center_x = (windowLeftWorld + windowRightWorld) * 0.5f;
         const float windowWidth = windowRightWorld - windowLeftWorld;
@@ -41,12 +36,11 @@ namespace gl3::game::state
         const float skyHeight = std::max(kMinHeight, windowTopWorld - groundLevel);
 
         auto& registry = game_.getRegistry();
-        auto entities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>();
+        const auto entities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>();
 
         for (auto entity : entities)
         {
-            auto tag = entities.get<engine::ecs::TagComponent>(entity).tag;
-            if (tag == "ground")
+            if (auto tag = entities.get<engine::ecs::TagComponent>(entity).tag; tag == "ground")
             {
                 engine::ecs::EntityFactory::setPosition(registry, entity, {
                                                             center_x, groundCenterY, 0.f

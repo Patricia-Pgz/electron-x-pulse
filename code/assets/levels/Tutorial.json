@@ -38,6 +38,7 @@
         1
       ],
       "generatePhysicsComp": false,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0.1
@@ -70,6 +71,7 @@
         1
       ],
       "generatePhysicsComp": false,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0.3
@@ -102,6 +104,7 @@
         1
       ],
       "generatePhysicsComp": false,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0.5
@@ -134,6 +137,7 @@
         1
       ],
       "generatePhysicsComp": false,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0.7
@@ -166,6 +170,7 @@
         1
       ],
       "generatePhysicsComp": false,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0.9
@@ -198,6 +203,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -208,34 +214,105 @@
       "name": "1",
       "children": [
         {
-          "tag": "platform",
           "position": [
             1,
             0,
             0
           ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": 0,
           "color": [
             0,
             0.2,
             0.6,
             1
-          ]
+          ],
+          "tag": "platform",
+          "isTriangle": false,
+          "textureName": "",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "generatePhysicsComp": false,
+          "generateRenderComp": true,
+          "vertexShaderPath": "",
+          "fragmentShaderPath": "",
+          "parallaxFactor": 0
         },
         {
-          "tag": "platform",
           "position": [
             2,
             0,
             0
           ],
+          "scale": [
+            1,
+            1,
+            1
+          ],
+          "rotation": 0,
           "color": [
             0,
             0.2,
             0.6,
             1
-          ]
+          ],
+          "tag": "platform",
+          "isTriangle": false,
+          "textureName": "",
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "generatePhysicsComp": false,
+          "generateRenderComp": true,
+          "vertexShaderPath": "",
+          "fragmentShaderPath": "",
+          "parallaxFactor": 0
         }
-      ]
+      ],
+      "colliderAABB": {
+        "position": [
+          1.5,
+          0,
+          0
+        ],
+        "scale": [
+          2,
+          1,
+          0
+        ],
+        "rotation": 0,
+        "color": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "tag": "platform",
+        "isTriangle": false,
+        "textureName": "",
+        "uv": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "generatePhysicsComp": true,
+        "generateRenderComp": false,
+        "vertexShaderPath": "",
+        "fragmentShaderPath": "",
+        "parallaxFactor": 0
+      }
     }
   ],
   "objects": [
@@ -267,6 +344,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -299,6 +377,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -331,6 +410,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -363,6 +443,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -395,6 +476,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -427,6 +509,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -459,6 +542,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -491,6 +575,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -523,6 +608,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -555,6 +641,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -587,6 +674,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -619,6 +707,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -651,6 +740,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -683,6 +773,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -715,6 +806,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -747,6 +839,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -779,6 +872,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -811,6 +905,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -843,6 +938,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -875,6 +971,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -907,6 +1004,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -939,6 +1037,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -971,6 +1070,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
@@ -1003,6 +1103,7 @@
         1
       ],
       "generatePhysicsComp": true,
+      "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
       "parallaxFactor": 0
