@@ -5,7 +5,6 @@
 #include "engine/ecs/System.h"
 #include "engine/Game.h"
 #include <box2d/box2d.h>
-#include "../../../../extern/box2d/src/body.h"
 
 namespace gl3::engine::physics
 {
@@ -43,22 +42,26 @@ namespace gl3::engine::physics
                     {
                         continue;
                     }
+                    auto [x, y] = b2Body_GetPosition(physics_comp.body);
+                    auto& transformComp = entities.get<ecs::TransformComponent>(entity);
 
-                    if (auto [x, y] = b2Body_GetPosition(physics_comp.body); x <= game_.getContext().getWindowBounds()[
-                            0]
-                        - 1 * pixelsPerMeter)
+                    //Check if most right point of object is still in window
+                    /*if (game_.getContext().getScreenPosObjBounds({x, y}, {transformComp.scale.x, transformComp.scale.y})
+                        [1].x <=)
                     {
                         b2Body_SetAwake(physics_comp.body, false);
                         physics_comp.isActive = false;
                     }
-
-                    auto& transformComp = entities.get<ecs::TransformComponent>(entity);
-                    auto [p, q] = b2Body_GetTransform(physics_comp.body);
-                    transformComp.position.x = p.x;
-                    transformComp.position.y = p.y;
+                    else*/
+                    {
+                        auto [p, q] = b2Body_GetTransform(physics_comp.body);
+                        transformComp.position.x = p.x;
+                        transformComp.position.y = p.y;
+                    }
                 }
-                if (player_jump_this_frame)
+
                 //Wait for physics step, before setting player grounded from other classes/events
+                if (player_jump_this_frame)
                 {
                     PlayerContactListener::playerGrounded = !player_jump_this_frame;
                     player_jump_this_frame = false;
@@ -76,56 +79,47 @@ namespace gl3::engine::physics
             }
         }
 
-        static GameObject computeGroupAABB(const entt::registry& registry, const std::vector<entt::entity>& objects)
+        static GameObject computeGroupAABB(const std::vector<GameObject>& objects)
         {
             if (objects.empty())
             {
                 return {};
             }
 
-            entt::entity leftMost = entt::null;
-            entt::entity rightMost = entt::null;
-            entt::entity topMost = entt::null;
-            entt::entity bottomMost = entt::null;
-            ecs::TransformComponent transformMostLeft = entt::null;
-            ecs::TransformComponent transformMostRight = entt::null;
-            ecs::TransformComponent transFormTop = entt::null;
-            ecs::TransformComponent transformBot = entt::null;
+            // Pointers to the objects defining the bounds
+            const GameObject* leftMost = nullptr;
+            const GameObject* rightMost = nullptr;
+            const GameObject* topMost = nullptr;
+            const GameObject* bottomMost = nullptr;
 
-            for (const auto& entity : objects)
+            for (const auto& obj : objects)
             {
-                auto transform = registry.get<ecs::TransformComponent>(entity);
-                transformMostLeft = registry.get<ecs::TransformComponent>(leftMost);
-                transformMostRight = registry.get<ecs::TransformComponent>(rightMost);
-                transFormTop = registry.get<ecs::TransformComponent>(topMost);
-                transformBot = registry.get<ecs::TransformComponent>(bottomMost);
-                if (leftMost == entt::null || transform.position.x - transform.scale.x * 0.5f < transformMostLeft.
-                    position.x - transformMostLeft.scale.x * 0.5f)
+                if (!leftMost || obj.position.x - obj.scale.x * 0.5f < leftMost->position.x - leftMost->scale.x * 0.5f)
                 {
-                    leftMost = entity;
+                    leftMost = &obj;
                 }
-                if (rightMost == entt::null || transform.position.x + transform.scale.x * 0.5f > transformMostRight.
-                    position.x + transformMostRight.scale.x * 0.5f)
-                {
-                    rightMost = entity;
-                }
-                if (topMost == entt::null || transform.position.y + transform.scale.y * 0.5f > transFormTop.position.y +
-                    transFormTop.scale.y * 0.5f)
-                {
-                    topMost = entity;
-                }
-                if (bottomMost == entt::null || transform.position.y - transform.scale.y * 0.5f < transformBot.position.
-                    y - transformBot.scale.y *
+                if (!rightMost || obj.position.x + obj.scale.x * 0.5f > rightMost->position.x + rightMost->scale.x *
                     0.5f)
                 {
-                    bottomMost = entity;
+                    rightMost = &obj;
+                }
+                if (!topMost || obj.position.y + obj.scale.y * 0.5f > topMost->position.y + topMost->scale.y * 0.5f)
+                {
+                    topMost = &obj;
+                }
+                if (!bottomMost || obj.position.y - obj.scale.y * 0.5f < bottomMost->position.y - bottomMost->scale.y *
+                    0.5f)
+                {
+                    bottomMost = &obj;
                 }
             }
 
-            const float left = transformMostLeft.position.x - transformMostLeft.scale.x * 0.5f;
-            const float right = transformMostRight.position.x + transformMostRight.scale.x * 0.5f;
-            const float top = transFormTop.position.y + transFormTop.scale.y * 0.5f;
-            const float bottom = transformBot.position.y - transformBot.scale.y * 0.5f;
+            if (!leftMost || !rightMost || !topMost || !bottomMost) return {};
+
+            const float left = leftMost->position.x - leftMost->scale.x * 0.5f;
+            const float right = rightMost->position.x + rightMost->scale.x * 0.5f;
+            const float top = topMost->position.y + topMost->scale.y * 0.5f;
+            const float bottom = bottomMost->position.y - bottomMost->scale.y * 0.5f;
 
             GameObject result;
             result.position = {(left + right) * 0.5f, (top + bottom) * 0.5f, 0.f};

@@ -48,10 +48,11 @@ namespace gl3::engine::rendering
 
         static glm::vec2 screenToWorld(const context::Context& context, const float screenPosX, const float screenPosY)
         {
-            const auto screenSize = ImGui::GetIO().DisplaySize;
+            int width, height;
+            glfwGetWindowSize(context.getWindow(), &width, &height);
 
-            const float ndcX = (screenPosX / screenSize.x) * 2.0f - 1.0f;
-            const float ndcY = (screenPosY / screenSize.y) * 2.0f - 1.0f;
+            const float ndcX = (screenPosX / static_cast<float>(width)) * 2.0f - 1.0f;
+            const float ndcY = (screenPosY / static_cast<float>(height)) * 2.0f - 1.0f;
 
             const glm::vec4 clipPos = glm::vec4(ndcX, ndcY, 0.f, 1.f);
 

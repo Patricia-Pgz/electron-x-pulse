@@ -22,8 +22,9 @@ namespace gl3::engine::ecs
 
     struct TransformComponent
     {
-        TransformComponent(const glm::vec3 position, const glm::vec3 scale, const float zRotation,
-                           const float parallax) :
+        explicit TransformComponent(const glm::vec3 position = {0.0f, 0.0f, 0.0f}, const glm::vec3 scale = {1.0f, 1.0f, 1.0f},
+                           const float zRotation = 0.0f,
+                           const float parallax = 0.0f) :
             initialPosition(position), initialScale(scale),
             initialZRotation(zRotation), position(position), scale(scale), zRotation(zRotation),
             parallaxFactor(parallax)
@@ -31,7 +32,7 @@ namespace gl3::engine::ecs
         }
 
         glm::vec3 initialPosition = {0.0f, 0.0f, 0.0f};
-        glm::vec3 initialScale = {0.f, 0.f, 0.f};
+        glm::vec3 initialScale = {1.0f, 1.0f, 1.0f};
         float initialZRotation = 0.f;
         glm::vec3 position = {0.0f, 0.0f, 0.0f};
         glm::vec3 scale = {1.0f, 1.0f, 1.0f};

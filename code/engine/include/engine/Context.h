@@ -32,6 +32,7 @@ namespace gl3::engine::context
         ~Context();
         void run(const Callback& update);
         void calculateWindowBounds();
+        void calculateWorldWindowBounds();
         void setCameraPos(const glm::vec3 position) { cameraPosition = position; }
         void setCameraCenter(const glm::vec3 position) { cameraCenter = position; }
 
@@ -56,8 +57,14 @@ namespace gl3::engine::context
         {
             return {windowLeft, windowRight, windowBottom, windowTop};
         };
-        [[nodiscard]] bool isInVisibleWindow(const glm::vec2& position, const glm::vec2 scale,
-                                             const float margin = 1.f) const;
+
+        [[nodiscard]] std::vector<float> getWorldWindowBounds() const
+        {
+            return {windowLeftWorld, windowRightWorld, windowTopWorld, windowBottomWorld};
+        }
+
+        [[nodiscard]] bool isInVisibleWindow(const glm::vec2& position, glm::vec2 scale,
+                                             float margin = 0.f) const;
 
     private:
         void onExitApplication() const;
@@ -68,6 +75,7 @@ namespace gl3::engine::context
         glm::vec3 cameraPosition;
         glm::vec3 cameraCenter{0.0f, 0.0f, 0.0f};
         glm::vec4 clearColor = {1, 1, 1, 1};
-        float windowLeft, windowRight, windowBottom, windowTop;
+        float windowLeft, windowRight, windowBottom, windowTop = 0.f;
+        float windowLeftWorld, windowRightWorld, windowTopWorld, windowBottomWorld = 0.f;
     };
 }

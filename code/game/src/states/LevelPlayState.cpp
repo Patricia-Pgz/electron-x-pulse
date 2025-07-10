@@ -22,25 +22,25 @@ namespace gl3::game::state
 */
     LevelBackgroundConfig LevelPlayState::calculateBackgrounds() const
     {
-        const auto windowBounds = game_.getContext().getWindowBounds(); // pixels: left, right, bottom, top
+        const auto windowBounds = game_.getContext().getWorldWindowBounds();
 
-        const float left_m = windowBounds[0] / pixelsPerMeter;
-        const float right_m = windowBounds[1] / pixelsPerMeter;
-        const float bottom_m = windowBounds[2] / pixelsPerMeter;
-        const float top_m = windowBounds[3] / pixelsPerMeter;
+        const float leftBound = windowBounds[0];
+        const float rightBound = windowBounds[1];
+        const float topBound = windowBounds[2];
+        const float bottomBound = windowBounds[3];
 
-        const float center_x = (left_m + right_m) / 2.f;
-        const float windowWidth = right_m - left_m;
+        const float center_x = (leftBound + rightBound) * 0.5f;
+        const float windowWidth = rightBound - leftBound;
 
         const float groundLevel = current_level_->groundLevel;
 
         constexpr float kMinHeight = 0.01f; // 1 cm, avoid 0 height
-        const float ground_center_y = (bottom_m + groundLevel) / 2.f;
-        const float ground_height = std::max(kMinHeight, groundLevel - bottom_m);
-        const float sky_center_y = (groundLevel + top_m) / 2.f;
-        const float sky_height = std::max(kMinHeight, top_m - groundLevel);
+        const float groundCenterY = (bottomBound + groundLevel) / 2.f;
+        const float groundHeight = std::max(kMinHeight, groundLevel - bottomBound);
+        const float skyCenterY = (groundLevel + topBound) / 2.f;
+        const float skyHeight = std::max(kMinHeight, topBound - groundLevel);
 
-        return {center_x, windowWidth, ground_center_y, ground_height, sky_center_y, sky_height};
+        return {center_x, windowWidth, groundCenterY, groundHeight, skyCenterY, skyHeight};
     }
 
     void LevelPlayState::applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig,
@@ -117,10 +117,18 @@ namespace gl3::game::state
                 object, registry, physicsWorld);
         }
 
+
         for (auto& objGroup : current_level_->groups)
         {
-            std::vector<entt::entity> children;
-            //objGroup.colliderAABB.generateRenderComp = false;
+            //compute AABB if it is still on standard values
+            if (objGroup.colliderAABB.scale.x <= 1.f || objGroup.colliderAABB.scale.y <= 1.f)
+            {
+                objGroup.colliderAABB = engine::physics::PhysicsSystem::computeGroupAABB(objGroup.children);
+                objGroup.colliderAABB.tag = "platform";
+            }
+            entt::entity groupAABBEntity = engine::ecs::EntityFactory::createDefaultEntity(
+                objGroup.colliderAABB, registry, physicsWorld);
+            objGroup.colliderAABB.generateRenderComp = false;
             for (auto& obj : objGroup.children)
             {
                 obj.generatePhysicsComp = false;
@@ -129,25 +137,7 @@ namespace gl3::game::state
                 };
                 const entt::entity entity = engine::ecs::EntityFactory::createDefaultEntity(
                     obj, registry, physicsWorld);
-                registry.emplace<engine::ecs::Parent>(entity, nullptr, localOffset);
-                children.push_back(entity);
-            }
-
-            if (objGroup.colliderAABB.scale.x <= 0.f || objGroup.colliderAABB.scale.y <= 0.f)
-            {
-                objGroup.colliderAABB = engine::physics::PhysicsSystem::computeGroupAABB(registry, children);
-                if (objGroup.colliderAABB.scale.x <= 0)
-                {
-                    std::cerr << "Invalid bounding box size!";
-                    return;
-                }
-            }
-
-            entt::entity groupAABBEntity = engine::ecs::EntityFactory::createDefaultEntity(
-                objGroup.colliderAABB, registry, physicsWorld);
-            for (const auto& child : children)
-            {
-                registry.get<engine::ecs::Parent>(child).parentObject = &groupAABBEntity;
+                registry.emplace<engine::ecs::Parent>(entity, &groupAABBEntity, localOffset);
             }
         }
 
