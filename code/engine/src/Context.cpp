@@ -16,17 +16,12 @@ namespace gl3::engine::context
     {
         auto contextInstance = static_cast<Context*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
-        contextInstance->calculateWindowBounds();
         contextInstance->calculateWorldWindowBounds();
-        ecs::EventDispatcher::dispatcher.trigger(WindowResizeEvent{width, height});
     }
 
     void Context::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     {
-        auto contextInstance = static_cast<Context*>(glfwGetWindowUserPointer(window));
         ecs::EventDispatcher::dispatcher.trigger(MouseScrollEvent{xoffset, yoffset});
-        contextInstance->calculateWindowBounds(); //recalculate window bounds if user scrolled in the scene
-        contextInstance->calculateWorldWindowBounds();
     }
 
     Context::Context(const int width, const int height, const std::string& title, const glm::vec3 camPos,
@@ -64,7 +59,6 @@ namespace gl3::engine::context
         {
             throw std::runtime_error("gl error");
         }
-        calculateWindowBounds();
         calculateWorldWindowBounds();
         ecs::EventDispatcher::dispatcher.sink<ecs::GameExit>().connect<&
             Context::onExitApplication>(this);
@@ -83,34 +77,25 @@ namespace gl3::engine::context
         }
     }
 
-    void Context::calculateWindowBounds()
-    {
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
-
-        float halfWidth = (width / 2.0f) / pixelsPerMeter / zoom;
-        float halfHeight = (height / 2.0f) / pixelsPerMeter / zoom;
-
-        windowLeft = cameraPosition.x - halfWidth;
-        windowRight = cameraPosition.x + halfWidth;
-        windowBottom = cameraPosition.y - halfHeight;
-        windowTop = cameraPosition.y + halfHeight;
-    }
-
     void Context::calculateWorldWindowBounds()
     {
         int width, height;
         glfwGetWindowSize(window, &width, &height);
         const auto fWidth = static_cast<float>(width);
         const auto fHeight = static_cast<float>(height);
-        const auto worldTopRightScreenCorner = rendering::MVPMatrixHelper::screenToWorld(*this, fWidth, fHeight);
+        const auto BottomRightScreenCorner = rendering::MVPMatrixHelper::screenToWorld(*this, fWidth, fHeight);
 
-        windowLeftWorld = worldTopRightScreenCorner.x - fWidth / pixelsPerMeter;
-        windowRightWorld = worldTopRightScreenCorner.x;
-        windowBottomWorld = worldTopRightScreenCorner.y - fHeight / pixelsPerMeter;
-        windowTopWorld = worldTopRightScreenCorner.y;
 
-        std::cout << worldTopRightScreenCorner.y << std::endl;
+        auto windowLeftWorld = BottomRightScreenCorner.x - fWidth / pixelsPerMeter;
+        auto windowRightWorld = BottomRightScreenCorner.x;
+        auto windowTopWorld = BottomRightScreenCorner.y + fHeight / pixelsPerMeter;
+        auto windowBottomWorld = BottomRightScreenCorner.y;
+
+        windowBounds = {windowLeftWorld, windowRightWorld, windowTopWorld, windowBottomWorld};
+
+        ecs::EventDispatcher::dispatcher.trigger(WindowBoundsRecomputeEvent{
+            width, height, &windowBounds
+        });
     }
 
     bool Context::isInVisibleWindow(const glm::vec2& position, const glm::vec2 scale, const float margin) const
@@ -123,11 +108,11 @@ namespace gl3::engine::context
         const auto posLeft = position.x - scale.x * 0.5f;
         const auto posRight = position.x + scale.x * 0.5f;
 
-        const auto worldTopRightScreenCorner = rendering::MVPMatrixHelper::screenToWorld(*this, fWidth, fHeight);
+        const auto worldBottomRightScreenCorner = rendering::MVPMatrixHelper::screenToWorld(*this, fWidth, fHeight);
         const auto worldScreenWidth = fWidth / pixelsPerMeter;
 
-        return posRight >= worldTopRightScreenCorner.x - worldScreenWidth - margin && posLeft <=
-            worldTopRightScreenCorner.x + margin;
+        return posRight >= worldBottomRightScreenCorner.x - worldScreenWidth - margin && posLeft <=
+            worldBottomRightScreenCorner.x + margin;
     }
 
     void Context::onExitApplication() const

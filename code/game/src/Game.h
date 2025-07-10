@@ -11,7 +11,6 @@ namespace gl3::game
     {
     public:
         Game(int width, int height, const std::string& title, const glm::vec3& camPos, float camZoom);
-        ~Game() override;
         [[nodiscard]] input::PlayerInputSystem* getPlayerInputSystem() const {return player_input_system_;}
 
     private:
@@ -19,9 +18,6 @@ namespace gl3::game
         void update(GLFWwindow* window) override;
 
         void registerUiSystems() override;
-
-        void moveEntitiesScrolling();
-        void onMouseScroll(engine::context::MouseScrollEvent& event);
 
         GameStateManager* game_state_manager_;
         input::PlayerInputSystem* player_input_system_;

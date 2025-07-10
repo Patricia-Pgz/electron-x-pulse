@@ -11,10 +11,11 @@
 
 namespace gl3::engine::context
 {
-    struct WindowResizeEvent
+    struct WindowBoundsRecomputeEvent
     {
         int newWidth;
         int newHeight;
+        std::vector<float>* windowBounds;
     };
 
     struct MouseScrollEvent
@@ -31,20 +32,20 @@ namespace gl3::engine::context
                          glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 0.0f), float camZoom = 1.0f);
         ~Context();
         void run(const Callback& update);
-        void calculateWindowBounds();
         void calculateWorldWindowBounds();
-        void setCameraPos(const glm::vec3 position) { cameraPosition = position; }
-        void setCameraCenter(const glm::vec3 position) { cameraCenter = position; }
+
+        void setCameraPosAndCenter(const glm::vec3 position, const glm::vec3 center)
+        {
+            cameraPosition = position;
+            cameraCenter = center;
+            calculateWorldWindowBounds();
+        }
 
         void moveCameraX(const float dx)
         {
-            std::cout << "dx:" + std::to_string(dx) << std::endl;
-            std::cout << "CameraPosXBefore:" + std::to_string(cameraPosition.x) << std::endl;
-            std::cout << "CameraCenterXBefore:" + std::to_string(cameraCenter.x) << std::endl;
             cameraPosition.x += dx * 1.0f;
             cameraCenter.x += dx * 1.0f;
-            std::cout << "CameraPosXAfter:" + std::to_string(cameraPosition.x) << std::endl;
-            std::cout << "CameraCenterXAfter:" + std::to_string(cameraCenter.x) << std::endl;
+            calculateWorldWindowBounds();
         }
 
         [[nodiscard]] GLFWwindow* getWindow() const { return window; }
@@ -53,14 +54,9 @@ namespace gl3::engine::context
         [[nodiscard]] float getCurrentZoom() const { return zoom; }
         void setClearColor(const glm::vec4& color) { clearColor = color; }
 
-        [[nodiscard]] std::vector<float> getWindowBounds() const
+        [[nodiscard]] std::vector<float>& getWorldWindowBounds()
         {
-            return {windowLeft, windowRight, windowBottom, windowTop};
-        };
-
-        [[nodiscard]] std::vector<float> getWorldWindowBounds() const
-        {
-            return {windowLeftWorld, windowRightWorld, windowTopWorld, windowBottomWorld};
+            return windowBounds;
         }
 
         [[nodiscard]] bool isInVisibleWindow(const glm::vec2& position, glm::vec2 scale,
@@ -75,7 +71,6 @@ namespace gl3::engine::context
         glm::vec3 cameraPosition;
         glm::vec3 cameraCenter{0.0f, 0.0f, 0.0f};
         glm::vec4 clearColor = {1, 1, 1, 1};
-        float windowLeft, windowRight, windowBottom, windowTop = 0.f;
-        float windowLeftWorld, windowRightWorld, windowTopWorld, windowBottomWorld = 0.f;
+        std::vector<float> windowBounds; // windowLeftWorld, windowRightWorld, windowTopWorld, windowBottomWorld
     };
 }

@@ -13,18 +13,6 @@
 
 namespace gl3::game::state
 {
-    struct LevelBackgroundConfig
-    {
-        float center_x;
-        float windowWidth;
-
-        float ground_center_y;
-        float ground_height;
-
-        float sky_center_y;
-        float sky_height;
-    };
-
     class LevelPlayState final : public engine::state::GameState
     {
     public:
@@ -36,31 +24,26 @@ namespace gl3::game::state
             instruction_ui_ = topLvlUI->getSubsystem<ui::InstructionUI>();
             instruction_ui_->setEditMode(edit_mode_);
             finish_ui_ = topLvlUI->getSubsystem<ui::FinishUI>();
-
-            engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowResizeEvent>().connect<&
-                LevelPlayState::onWindowResize>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
                 LevelPlayState::onPlayerDeath>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::RestartLevelEvent>().connect<&
                 LevelPlayState::onRestartLevel>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().connect<&
                 LevelPlayState::onPauseEvent>(this);
-            engine::ecs::EventDispatcher::dispatcher.sink<engine::context::MouseScrollEvent>().connect<&
-                LevelPlayState::updateBackgroundEntitySizes>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowBoundsRecomputeEvent>().connect<&
+                LevelPlayState::onWindowSize>(this);
         }
 
         ~LevelPlayState() override
         {
-            engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowResizeEvent>().disconnect<&
-                LevelPlayState::onWindowResize>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().disconnect<&
                 LevelPlayState::onPlayerDeath>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::RestartLevelEvent>().disconnect<&
                 LevelPlayState::onRestartLevel>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::PauseLevelEvent>().disconnect<&
                 LevelPlayState::onPauseEvent>(this);
-            engine::ecs::EventDispatcher::dispatcher.sink<engine::context::MouseScrollEvent>().disconnect<&
-                LevelPlayState::updateBackgroundEntitySizes>(this);
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowBoundsRecomputeEvent>().disconnect<&
+                LevelPlayState::onWindowSize>(this);
         }
 
         void onEnter() override
@@ -94,16 +77,11 @@ namespace gl3::game::state
         void unloadLevel();
         void delayLevelEnd(float deltaTime);
 
-        void onWindowResize(const engine::context::WindowResizeEvent& evt) const;
-        void updateBackgroundEntitySizes() const;
         void onPlayerDeath(const engine::ecs::PlayerDeath& event);
+        void onWindowSize(const engine::context::WindowBoundsRecomputeEvent& event);
         void onRestartLevel();
         void startLevel();
         void onPauseEvent(const engine::ui::PauseLevelEvent& event);
-
-        [[nodiscard]] LevelBackgroundConfig calculateBackgrounds() const;
-        void applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig, entt::entity entity) const;
-        void updateBackgroundEntity(LevelBackgroundConfig& bgConfig, entt::entity entity) const;
 
         ui::InGameMenuUI* menu_ui_ = nullptr;
         ui::FinishUI* finish_ui_ = nullptr;
@@ -121,5 +99,6 @@ namespace gl3::game::state
         entt::entity current_player_ = entt::null;
         bool prev_enter_state_ = false;
         bool enter_pressed_ = false;
+        std::vector<float> currentWindowBounds;
     };
 }

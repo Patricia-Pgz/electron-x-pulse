@@ -1,5 +1,4 @@
 #include "LevelPlayState.h"
-#include "engine/Constants.h"
 #include "engine/audio/AudioSystem.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/levelloading/LevelManager.h"
@@ -10,83 +9,57 @@
 #include "Game.h"
 #include "../../../extern/box2d/src/body.h"
 #include "engine/physics/PhysicsSystem.h"
+#include "engine/rendering/MVPMatrixHelper.h"
 
 namespace gl3::game::state
 {
-    /**
-     *@short Calculates the scales and positions for the two horizontally divided background visuals.
-*The Background is divided horizontally by the groundlevel. In the upper portion, objects tagged "background" get layered on top of each other,
-*in the order in which they appear in the level's .json file @see LevelPlayState::loadLevel()
-*Same for the bottom part, which layers objects tagged as "ground".
-*@warning This does not keep aspect ratios of textures, it just fits the object sizes and positions to the screen. May stretch textures!
-*/
-    LevelBackgroundConfig LevelPlayState::calculateBackgrounds() const
+    void LevelPlayState::onWindowSize(const engine::context::WindowBoundsRecomputeEvent& event)
     {
-        const auto windowBounds = game_.getContext().getWorldWindowBounds();
+        int width, height;
+        glfwGetWindowSize(game_.getWindow(), &width, &height);
+        const auto fWidth = static_cast<float>(width);
+        const auto fHeight = static_cast<float>(height);
+        const auto worldBottomRightScreenCorner = engine::rendering::MVPMatrixHelper::screenToWorld(
+            game_.getContext(), fWidth, fHeight);
+        auto windowLeftWorld = worldBottomRightScreenCorner.x - fWidth / pixelsPerMeter;
+        auto windowRightWorld = worldBottomRightScreenCorner.x;
+        auto windowTopWorld = worldBottomRightScreenCorner.y + fHeight / pixelsPerMeter;
+        auto windowBottomWorld = worldBottomRightScreenCorner.y;
 
-        const float leftBound = windowBounds[0];
-        const float rightBound = windowBounds[1];
-        const float topBound = windowBounds[2];
-        const float bottomBound = windowBounds[3];
+        currentWindowBounds = {windowLeftWorld, windowRightWorld, windowTopWorld, windowBottomWorld};
 
-        const float center_x = (leftBound + rightBound) * 0.5f;
-        const float windowWidth = rightBound - leftBound;
+
+        const float center_x = (windowLeftWorld + windowRightWorld) * 0.5f;
+        const float windowWidth = windowRightWorld - windowLeftWorld;
 
         const float groundLevel = current_level_->groundLevel;
 
         constexpr float kMinHeight = 0.01f; // 1 cm, avoid 0 height
-        const float groundCenterY = (bottomBound + groundLevel) / 2.f;
-        const float groundHeight = std::max(kMinHeight, groundLevel - bottomBound);
-        const float skyCenterY = (groundLevel + topBound) / 2.f;
-        const float skyHeight = std::max(kMinHeight, topBound - groundLevel);
+        const float groundCenterY = (windowBottomWorld + groundLevel) / 2.f;
+        const float groundHeight = std::max(kMinHeight, groundLevel - windowBottomWorld);
+        const float skyCenterY = (groundLevel + windowTopWorld) / 2.f;
+        const float skyHeight = std::max(kMinHeight, windowTopWorld - groundLevel);
 
-        return {center_x, windowWidth, groundCenterY, groundHeight, skyCenterY, skyHeight};
-    }
-
-    void LevelPlayState::applyBackgroundEntityTransform(LevelBackgroundConfig& bgConfig,
-                                                        const entt::entity entity) const
-    {
-        int width, height;
-        glfwGetWindowSize(game_.getWindow(), &width, &height);
         auto& registry = game_.getRegistry();
-        if (!registry.valid(entity)) return;
-        if (const auto& tag = registry.get<engine::ecs::TagComponent>(entity).tag; tag == "ground")
-        {
-            auto& transform = registry.get<engine::ecs::TransformComponent>(entity);
-            transform.position = {bgConfig.center_x, bgConfig.ground_center_y, 0.f};
-            transform.scale = {bgConfig.windowWidth, bgConfig.ground_height, 1.f};
-        }
-        else if (tag == "background")
-        {
-            engine::ecs::EntityFactory::setPosition(registry, entity, {
-                                                        bgConfig.center_x, bgConfig.sky_center_y, 0.f
-                                                    });
-            engine::ecs::EntityFactory::setScale(registry, entity, {
-                                                     bgConfig.windowWidth, bgConfig.sky_height, 1.f
-                                                 });
-        }
-    }
+        auto entities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>();
 
-    void LevelPlayState::onWindowResize(const engine::context::WindowResizeEvent& event) const
-    {
-        if (!level_instantiated_ || event.newHeight <= 0 || event.newWidth <= 0) return;
-        updateBackgroundEntitySizes();
-    }
-
-    void LevelPlayState::updateBackgroundEntitySizes() const
-    {
-        auto& registry = game_.getRegistry();
-        const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
-                                        engine::ecs::PhysicsComponent>();
-
-        auto bgConfig = calculateBackgrounds();
-        for (auto& entity : view)
+        for (auto entity : entities)
         {
-            if (!registry.valid(entity)) continue;
-            if (registry.get<engine::ecs::TagComponent>(entity).tag == "ground" || registry.get<
-                engine::ecs::TagComponent>(entity).tag == "background")
+            auto tag = entities.get<engine::ecs::TagComponent>(entity).tag;
+            if (tag == "ground")
             {
-                applyBackgroundEntityTransform(bgConfig, entity);
+                engine::ecs::EntityFactory::setPosition(registry, entity, {
+                                                            center_x, groundCenterY, 0.f
+                                                        });
+                engine::ecs::EntityFactory::setScale(registry, entity, {
+                                                         windowWidth, groundHeight, 1.f
+                                                     });
+            }
+            else if (tag == "background")
+            {
+                auto& transform = registry.get<engine::ecs::TransformComponent>(entity);
+                transform.position = {center_x, skyCenterY, 0.f};
+                transform.scale = {windowWidth, skyHeight, 1.f};
             }
         }
     }
@@ -97,24 +70,11 @@ namespace gl3::game::state
         const auto physicsWorld = game_.getPhysicsWorld();
         current_level_ = engine::levelLoading::LevelManager::loadLevelByID(level_index_);
 
-        const auto bgConfig = calculateBackgrounds();
         for (auto& object : current_level_->backgrounds)
         {
-            if (object.tag == "ground")
-            {
-                object.position = {bgConfig.center_x, bgConfig.ground_center_y, 0.f};
-                object.scale = {bgConfig.windowWidth, bgConfig.ground_height, 1.f};
-            }
-            else
-            {
-                object.position = {bgConfig.center_x, bgConfig.sky_center_y, 0.f};
-                object.scale = {bgConfig.windowWidth, bgConfig.sky_height, 1.f};
-            }
-
             engine::ecs::EntityFactory::createDefaultEntity(
                 object, registry, physicsWorld);
         }
-
 
         for (auto& objGroup : current_level_->groups)
         {
@@ -228,7 +188,7 @@ namespace gl3::game::state
 
     void LevelPlayState::onPlayerDeath(const engine::ecs::PlayerDeath& event)
     {
-        //TODO game_.getAudioSystem()->playOneShot("crash");
+        game_.getAudioSystem()->playOneShot("crash");
         onRestartLevel();
     }
 
@@ -249,8 +209,9 @@ namespace gl3::game::state
     /**
      *Resets every entity to its initial Transform, resets audio
 */
-    void LevelPlayState::reloadLevel() //TODO gets called twice???
+    void LevelPlayState::reloadLevel()
     {
+        std::cout << "reload";
         menu_ui_->setActive(true);
         instruction_ui_->setActive(level_index_ == 0);
         finish_ui_->setActive(false);
@@ -266,10 +227,10 @@ namespace gl3::game::state
         const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
                                         engine::ecs::PhysicsComponent>();
 
-        auto bgConfig = calculateBackgrounds();
         for (auto& entity : view)
         {
-            if (!registry.valid(entity)) continue;
+            auto tag = view.get<engine::ecs::TagComponent>(entity).tag;
+            if (!registry.valid(entity) || tag == "ground" || tag == "background") continue;
             engine::ecs::EntityFactory::setPosition(registry, entity,
                                                     registry.get<engine::ecs::TransformComponent>(entity).
                                                              initialPosition);
@@ -279,11 +240,6 @@ namespace gl3::game::state
             engine::ecs::EntityFactory::SetRotation(registry, entity,
                                                     registry.get<engine::ecs::TransformComponent>(entity).
                                                              initialZRotation);
-            if (registry.get<engine::ecs::TagComponent>(entity).tag == "ground" || registry.get<
-                engine::ecs::TagComponent>(entity).tag == "background")
-            {
-                applyBackgroundEntityTransform(bgConfig, entity);
-            }
         }
     }
 
@@ -309,7 +265,7 @@ namespace gl3::game::state
                 instruction_ui_->setActive(false);
                 finish_ui_->setActive(true);
 
-                //game_.getAudioSystem()->playOneShot("win"); TODO git sound pushen
+                game_.getAudioSystem()->playOneShot("win");
 
                 pauseOrStartLevel(true);
             }
@@ -356,8 +312,8 @@ namespace gl3::game::state
                 enter_pressed_ = true;
                 play_test_ = !play_test_;
                 engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayModeChange{play_test_});
-                game_.getContext().setCameraPos({0.0f, 0.0f, 1.0f});
-                game_.getContext().setCameraCenter({0.f, 0.f, 0.f});
+                game_.getContext().setCameraPosAndCenter({0.0f, 0.0f, 1.0f}, {0.f, 0.f, 0.f});
+
                 if (play_test_)
                 {
                     game_.getAudioSystem()->playCurrentAudio();
