@@ -23,12 +23,16 @@ namespace gl3::engine::editor
         {
             ecs::EventDispatcher::dispatcher.sink<context::MouseScrollEvent>().connect<&
                 EditorUISystem::onMouseScroll>(this);
+            ecs::EventDispatcher::dispatcher.sink<ecs::LevelLengthComputed>().connect<&
+                EditorUISystem::onLvlComputed>(this);
         };
 
         ~EditorUISystem() override
         {
             ecs::EventDispatcher::dispatcher.sink<context::MouseScrollEvent>().disconnect<&
                 EditorUISystem::onMouseScroll>(this);
+            ecs::EventDispatcher::dispatcher.sink<ecs::LevelLengthComputed>().disconnect<&
+                EditorUISystem::onLvlComputed>(this);
         }
 
         void setActive(const bool setActive) override
@@ -50,7 +54,8 @@ namespace gl3::engine::editor
 
     private:
         void onPlayModeChange(const ecs::EditorPlayModeChange& event);
-        void deleteEntity() const;
+        void onLvlComputed(ecs::LevelLengthComputed& event);
+        void deleteAllAtSelectedPosition() const;
 
         void onMouseScroll(const context::MouseScrollEvent& event) const;
 
@@ -82,6 +87,7 @@ namespace gl3::engine::editor
         bool use_color_ = false;
         glm::vec4 selected_color_ = {1.0f, 1.0f, 1.0f, 1.0f};
         EditorSystem* editor_system;
+        float* finalBeatPosition;
         static constexpr ImGuiWindowFlags flags_ =
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoResize;

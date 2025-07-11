@@ -22,7 +22,20 @@ namespace gl3::engine::editor
         is_in_play_mode_ = event.isPlayMode;
     }
 
-    void EditorUISystem::deleteEntity() const
+    /**
+     * Saves a pointer to the current levels final beat position. (For visualization)
+     * @param event ecs::LevelLengthComputed sends the computed final beat index of the current level's song
+     */
+    void EditorUISystem::onLvlComputed(ecs::LevelLengthComputed& event)
+    {
+        //pointer to finalBeatPosition
+        finalBeatPosition = &event.finalBeatIndex;
+    }
+
+    /**
+     * Deleted all entities from the registry, that have their TransformComponent position at the currently selected cell's position.
+     */
+    void EditorUISystem::deleteAllAtSelectedPosition() const
     {
         const auto view = game_.getRegistry().view<ecs::TransformComponent>();
 
@@ -31,13 +44,17 @@ namespace gl3::engine::editor
             const auto transform = view.get<ecs::TransformComponent>(entity);
             if (transform.position.x == selected_grid_cell->x && transform.position.y == selected_grid_cell->y)
             {
-                ecs::EntityFactory::markEntityForDeletion(entity); //TODO mark only the one with the highest z value
+                ecs::EntityFactory::markEntityForDeletion(entity);
             }
         }
         levelLoading::LevelManager::removeObjectAtPosition({selected_grid_cell->x, selected_grid_cell->y});
-        //TODO remove only the one with the highest z vale -> sorting
     }
 
+
+    /**
+     * Draws the Editor grid overlay for selecting cells and placing tiles.
+     * @param gridSpacing defines how big the grid cells are.
+     */
     void EditorUISystem::drawGrid(const float gridSpacing)
     {
         const ImVec2 screenSize = imgui_io_->DisplaySize;
@@ -301,7 +318,7 @@ namespace gl3::engine::editor
         {
             if (ImGui::Button("Delete Selected Element"))
             {
-                deleteEntity();
+                deleteAllAtSelectedPosition();
             }
         }
         ImGui::Text("1.) Click on grid to select position");
