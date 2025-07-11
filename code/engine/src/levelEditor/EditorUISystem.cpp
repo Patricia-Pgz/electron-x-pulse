@@ -17,7 +17,7 @@ namespace gl3::engine::editor
         game_.getContext().moveCameraX(static_cast<float>(event.yOffset * 50.0f));
     }
 
-    void EditorUISystem::onPlayModeChange(const ecs::PlayModeChange& event)
+    void EditorUISystem::onPlayModeChange(const ecs::EditorPlayModeChange& event)
     {
         is_in_play_mode_ = event.isPlayMode;
     }

@@ -18,6 +18,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::onWindowSizeChange(const engine::context::WindowBoundsRecomputeEvent& event) const
     {
+        if (!level_instantiated_)return;
         const auto windowBounds = *event.windowBounds;
         const auto windowLeftWorld = windowBounds[0];
         const auto windowRightWorld = windowBounds[1];
@@ -58,6 +59,12 @@ namespace gl3::game::state
         }
     }
 
+    /**
+     * Loads the selected level via LevelManager, instantiates all entities from the loaded data structure (GameObject/Level),
+     * calls on AudioSystem to instantiate the current config = analyse audio, creates AABB for grouped objects,
+     * calculates levelLength, speed and final beat, and sends the current player to Game.
+     * Then sets up ui and internal properties for starting the level/edit mode.
+     */
     void LevelPlayState::loadLevel()
     {
         auto& registry = game_.getRegistry();
@@ -108,6 +115,7 @@ namespace gl3::game::state
         //Ensures, that every unit is synced to the beat
         current_level_->currentLevelSpeed = current_level_->velocityMultiplier / audio_config_->seconds_per_beat;
         current_level_->levelLength = audio_config_->current_audio_length * current_level_->currentLevelSpeed;
+        //TODO visualisieren!(Editor)
         current_level_->finalBeatIndex = audio_config_->current_audio_length / audio_config_->seconds_per_beat;
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::LevelLengthComputed{
             current_level_->levelLength, current_level_->currentLevelSpeed, current_level_->finalBeatIndex
@@ -116,16 +124,25 @@ namespace gl3::game::state
         game_.getContext().setClearColor(current_level_->clearColor);
 
         level_instantiated_ = true;
+        instruction_ui_->setEditMode(edit_mode_);
+        instruction_ui_->pauseTimer(edit_mode_); //pause timer if in edit mode
+
         if (!edit_mode_)
         {
+            //start level directly if not in edit mode
             game_.getAudioSystem()->playCurrentAudio();
-            pauseOrStartLevel(false);
+            pauseOrStartLevel(true);
             return;
         }
-        instruction_ui_->pauseTimer(true);
+        //is in edit mode -> deactivate physics and player input
+        setSystemsActive(false);
     }
 
-    void LevelPlayState::moveObjects() const
+    /**
+     * Starts movement of objects towards the player.
+     * @param move determines if the objects should start or stop moving towards the player.
+     */
+    void LevelPlayState::moveObjects(const bool move) const
     {
         for (const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
              auto& entity : view)
@@ -134,66 +151,72 @@ namespace gl3::game::state
             const auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
             if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
             {
-                b2Body_SetLinearVelocity(physics_comp.body, {current_level_->currentLevelSpeed * -1, 0.0f});
+                if (move)
+                {
+                    b2Body_SetLinearVelocity(physics_comp.body, {current_level_->currentLevelSpeed * -1, 0.0f});
+                }
+                else
+                {
+                    b2Body_SetLinearVelocity(physics_comp.body, {0.f, 0.0f});
+                }
             }
         }
     }
 
-    void LevelPlayState::stopMovingObjects() const
-    {
-        for (const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
-             auto& entity : view)
-        {
-            if (!game_.getRegistry().valid(entity) || entity == entt::null)return;
-            const auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
-            if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
-            {
-                b2Body_SetLinearVelocity(physics_comp.body, {0.f, 0.0f});
-            }
-        }
-    }
 
+    /**
+     * Pauses or resumes the level. @note This does not reset entities, audio, etc. it just stops/resumes audio, movement, and timers.
+     * @param pause Bool that determines if the level should be paused or resumed.
+     */
     void LevelPlayState::pauseOrStartLevel(const bool pause)
     {
         paused = pause;
-        auto* PlayerInputSystem = dynamic_cast<Game&>(game_).getPlayerInputSystem();
-        if (pause)
-        {
-            game_.getPhysicsSystem()->setActive(false);
-            PlayerInputSystem->setActive(false);
-            audio_config_->audio.setPause(audio_config_->currentAudioHandle, true);
-            stopMovingObjects();
-            instruction_ui_->pauseTimer(true);
-        }
-        else
-        {
-            game_.getPhysicsSystem()->setActive(true);
-            PlayerInputSystem->setActive(true);
-            moveObjects();
-            audio_config_->audio.setPause(audio_config_->currentAudioHandle, false);
-            instruction_ui_->pauseTimer(false);
-        }
+        setSystemsActive(!pause);
+        moveObjects(!pause);
+        audio_config_->audio.setPause(audio_config_->currentAudioHandle, pause);
+        instruction_ui_->pauseTimer(pause);
     }
 
+    void LevelPlayState::setSystemsActive(const bool setActive) const
+    {
+        game_.getPhysicsSystem()->setActive(setActive);
+        dynamic_cast<Game&>(game_).getPlayerInputSystem()->setActive(setActive);
+    }
+
+    /**
+     * Pauses or resumes level when engine::ui::PauseLevelEvent was triggered.
+     * @param event PauseLevelEvent, is sent by UI and determines to pause or resume the level.
+     */
     void LevelPlayState::onPauseEvent(const engine::ui::PauseLevelEvent& event)
     {
         pauseOrStartLevel(event.pauseLevel);
     }
 
+    /**
+     *
+     * @param event Resarts the level on player death event, plays a crash sound.
+     */
     void LevelPlayState::onPlayerDeath(const engine::ecs::PlayerDeath& event)
     {
         game_.getAudioSystem()->playOneShot("crash");
-        onRestartLevel();
+        onRestartLevel(engine::ui::RestartLevelEvent{true});
     }
 
-    void LevelPlayState::onRestartLevel()
+    /**
+     * Resets all entities to their initial state and starts the level if
+     * @param event Determines if the game should start after resetting all entities
+     */
+    void LevelPlayState::onRestartLevel(const engine::ui::RestartLevelEvent& event)
     {
         //game will be reset and stopped if player restarts level and then presses enter in edit mode
-        if (edit_mode_) play_test_ = true;
         reloadLevel();
+        if (!event.startLevel) return;
         startLevel();
     }
 
+    /**
+     * Freshly starts the (already reset) level and audio.
+     */
     void LevelPlayState::startLevel()
     {
         game_.getAudioSystem()->playCurrentAudio();
@@ -201,11 +224,12 @@ namespace gl3::game::state
     }
 
     /**
-     *Resets every entity to its initial Transform, resets audio
+     *Resets every entity to its initial Transform, resets audio, deactivates systems
 */
     void LevelPlayState::reloadLevel()
     {
         std::cout << "reload";
+        setSystemsActive(false);
         menu_ui_->setActive(true);
         instruction_ui_->setActive(level_index_ == 0);
         finish_ui_->setActive(false);
@@ -237,12 +261,17 @@ namespace gl3::game::state
         }
     }
 
-    void LevelPlayState::delayLevelEnd(float deltaTime)
+    /**
+     * Starts a timer, when the end of the audio track is reached -> level is won.
+     * Shows a winning screen and sound after expiration of the timer.
+     * @param deltaTime The game's time since the previous frame.
+     */
+    void LevelPlayState::delayLevelEnd(const float deltaTime)
     {
-        const auto currentTime = static_cast<float>(audio_config_->audio.getStreamTime(
+        const auto currentAudioTime = static_cast<float>(audio_config_->audio.getStreamTime(
             audio_config_->currentAudioHandle));
 
-        if (!timer_active_ && currentTime >= audio_config_->current_audio_length - 1) //slight
+        if (!timer_active_ && currentAudioTime >= audio_config_->current_audio_length - 1) //slight margin
         {
             timer_active_ = true;
         }
@@ -266,7 +295,10 @@ namespace gl3::game::state
         }
     }
 
-
+    /**
+     * Resets everything on returning to the level selection screen.
+     * Clears the game's entity registry.
+     */
     void LevelPlayState::unloadLevel()
     {
         level_instantiated_ = false;
@@ -283,8 +315,6 @@ namespace gl3::game::state
         level_index_ = -1;
         current_level_ = nullptr;
         current_player_ = entt::null;
-        edit_mode_ = false;
-        play_test_ = false;
     }
 
     void LevelPlayState::update(const float deltaTime)
@@ -295,36 +325,9 @@ namespace gl3::game::state
         }
         if (!paused)
         {
-            engine::visual_effects::Parallax::moveBgObjectsParallax(
+            engine::visual_effects::Parallax::moveBgObjectsParallax( //TODO über UVs
                 game_.getRegistry(), deltaTime, current_level_->currentLevelSpeed);
-        }
-        if (!edit_mode_)return;
-        if (glfwGetKey(game_.getWindow(), GLFW_KEY_ENTER) == GLFW_PRESS) //TODO evtl in editstate enter abfragen
-        {
-            if (!enter_pressed_)
-            {
-                enter_pressed_ = true;
-                play_test_ = !play_test_;
-                engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayModeChange{play_test_});
-                game_.getContext().setCameraPosAndCenter({0.0f, 0.0f, 1.0f}, {0.f, 0.f, 0.f});
-
-                if (play_test_)
-                {
-                    game_.getAudioSystem()->playCurrentAudio();
-                    instruction_ui_->resetTimer();
-                    pauseOrStartLevel(false);
-                }
-                else
-                {
-                    game_.getAudioSystem()->stopCurrentAudio();
-                    pauseOrStartLevel(true);
-                    reloadLevel();
-                }
-            }
-        }
-        else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
-        {
-            enter_pressed_ = false;
+            delayLevelEnd(deltaTime);
         }
     }
 }

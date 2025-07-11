@@ -10,11 +10,13 @@
 
 namespace gl3::game
 {
-    GameStateManager::GameStateManager(Game& game) : game_(game)
+    GameStateManager::GameStateManager(Game& game) : game(game)
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::GameStateChange>().connect<&
             GameStateManager::onGameStateChange>(this);
-        onUIInitHandle = game_.getUISystem()->onInitialized.addListener([this]()
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::EditeModeButtonPress>().connect<&
+            GameStateManager::onEditModeChange>(this);
+        onUIInitHandle = game.getUISystem()->onInitialized.addListener([this]()
         {
             onUiInitialized();
         });
@@ -24,24 +26,31 @@ namespace gl3::game
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::GameStateChange>().disconnect<&
             GameStateManager::onGameStateChange>(this);
-        game_.getUISystem()->onInitialized.removeListener(onUIInitHandle);
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::EditeModeButtonPress>().disconnect<&
+            GameStateManager::onEditModeChange>(this);
+        game.getUISystem()->onInitialized.removeListener(onUIInitHandle);
     }
 
     void GameStateManager::onUiInitialized() const
     {
-        game_.getStateManagement()->pushState<state::LevelSelectState>(true,
-                                                                       game_);
-        game_.getAudioSystem()->loadOneShot("win", "win.wav");
-        game_.getAudioSystem()->loadOneShot("crash", "crash.wav");
+        game.getStateManagement()->pushState<state::LevelSelectState>(true,
+                                                                      game);
+        game.getAudioSystem()->loadOneShot("win", "win.wav");
+        game.getAudioSystem()->loadOneShot("crash", "crash.wav");
+    }
+
+    void GameStateManager::onEditModeChange(const engine::ui::EditeModeButtonPress& event)
+    {
+        is_edit_mode = event.edit;
     }
 
     void GameStateManager::onGameStateChange(const engine::ecs::GameStateChange& newState)
     {
-        auto* stateSystem = game_.getStateManagement();
-        previous_game_state_ = current_game_state_;
-        current_game_state_ = newState.newGameState;
+        auto* stateSystem = game.getStateManagement();
+        previous_game_state = current_game_state;
+        current_game_state = newState.newGameState;
 
-        if (current_game_state_ == engine::GameState::LevelSelect)
+        if (current_game_state == engine::GameState::LevelSelect)
         {
             if (dynamic_cast<state::EditorState*>(stateSystem->getCurrentState()) != nullptr)
             {
@@ -50,18 +59,16 @@ namespace gl3::game
                 //pop EditorState without starting LevelPlayState, because it is already running as well -> enterNext = false
                 //now there is only the LevelPlayState in the state stack -> safe to change to LevelSelect now
             }
-            stateSystem->changeState<state::LevelSelectState>(game_);
+            stateSystem->changeState<state::LevelSelectState>(game);
             return;
         }
 
-        if (current_game_state_ == engine::GameState::Level && previous_game_state_ != engine::GameState::Level)
+        if (current_game_state == engine::GameState::Level && previous_game_state != engine::GameState::Level)
         {
-            stateSystem->changeState<state::LevelPlayState>(game_, newState.newLevelIndex,
-                                                            previous_game_state_ == engine::GameState::EditMode);
-            if (previous_game_state_ != engine::GameState::EditMode) return;
+            stateSystem->changeState<state::LevelPlayState>(game, newState.newLevelIndex, is_edit_mode);
+            if (!is_edit_mode) return;
 
-            stateSystem->pushState<state::EditorState>(false, game_);
-            return;
+            stateSystem->pushState<state::EditorState>(false, game);
         }
     }
 } // gl3

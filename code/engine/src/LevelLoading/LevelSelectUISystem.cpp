@@ -7,6 +7,7 @@
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
 #include "engine/levelloading/LevelManager.h"
+#include "engine/userInterface/UIEvents.h"
 
 namespace gl3::engine::levelLoading
 {
@@ -163,15 +164,7 @@ namespace gl3::engine::levelLoading
         if (ImGui::Button("Edit Mode", editButtonSize))
         {
             editModeActive = !editModeActive;
-
-            if (editModeActive)
-            {
-                ecs::EventDispatcher::dispatcher.trigger(ecs::GameStateChange{GameState::EditMode});
-            }
-            else
-            {
-                ecs::EventDispatcher::dispatcher.trigger(ecs::GameStateChange{GameState::LevelSelect});
-            }
+            ecs::EventDispatcher::dispatcher.trigger(ui::EditeModeButtonPress{editModeActive});
         }
         if (pushedStyle)
         {

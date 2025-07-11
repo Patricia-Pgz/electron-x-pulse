@@ -36,12 +36,12 @@ namespace gl3::engine::editor
             is_active = setActive;
             if (is_active)
             {
-                ecs::EventDispatcher::dispatcher.sink<ecs::PlayModeChange>().connect<&
+                ecs::EventDispatcher::dispatcher.sink<ecs::EditorPlayModeChange>().connect<&
                     EditorUISystem::onPlayModeChange>(this);
             }
             else
             {
-                ecs::EventDispatcher::dispatcher.sink<ecs::PlayModeChange>().disconnect<&
+                ecs::EventDispatcher::dispatcher.sink<ecs::EditorPlayModeChange>().disconnect<&
                     EditorUISystem::onPlayModeChange>(this);
             }
         }
@@ -49,7 +49,7 @@ namespace gl3::engine::editor
         void update() override;
 
     private:
-        void onPlayModeChange(const ecs::PlayModeChange& event);
+        void onPlayModeChange(const ecs::EditorPlayModeChange& event);
         void deleteEntity() const;
 
         void onMouseScroll(const context::MouseScrollEvent& event) const;

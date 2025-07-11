@@ -12,23 +12,25 @@ namespace gl3::game
 
         [[nodiscard]] const engine::GameState& getCurrentState() const
         {
-            return current_game_state_;
+            return current_game_state;
         }
 
         [[nodiscard]] const engine::GameState& getPreviousState() const
         {
-            return previous_game_state_;
+            return previous_game_state;
         }
 
     private:
         void onUiInitialized() const;
+        void onEditModeChange(const engine::ui::EditeModeButtonPress& event);
         void onGameStateChange(const engine::ecs::GameStateChange& newState);
 
-        Game& game_;
+        Game& game;
         engine::events::Event<engine::ui::UISystem>::handle_t onUIInitHandle;
-        engine::GameState current_game_state_ = engine::GameState::None;
-        engine::GameState previous_game_state_ = engine::GameState::None;
+        engine::GameState current_game_state = engine::GameState::None;
+        engine::GameState previous_game_state = engine::GameState::None;
         std::vector<GameObject> initial_test_game_objects;
-        bool is_resetting_ = false;
+        bool is_resetting = false;
+        bool is_edit_mode = false;
     };
 }

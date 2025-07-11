@@ -10,14 +10,13 @@ namespace gl3::engine::ecs
 {
     /**
     *Use GameStateChange event to track your current game state, and react to it changing.
-    *
+    *@property newLevelIndex is used for GameState::Level
      */
     struct GameStateChange
     {
         GameState newGameState = GameState::LevelSelect;
         int newLevelIndex = -1;
     };
-
 
     /**
 *Call this event, when the level length is computed based on speed and seconds per beat. Pass in the index of the final beat.
@@ -43,7 +42,7 @@ namespace gl3::engine::ecs
 *Call this event, when the level is in Edit Mode and starts to play.
 *
 */
-    struct PlayModeChange
+    struct EditorPlayModeChange
     {
         bool isPlayMode = false;
     };

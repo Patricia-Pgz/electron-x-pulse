@@ -22,7 +22,6 @@ namespace gl3::game::state
             const auto& topLvlUI = game_.getUISystem();
             menu_ui_ = topLvlUI->getSubsystem<ui::InGameMenuUI>();
             instruction_ui_ = topLvlUI->getSubsystem<ui::InstructionUI>();
-            instruction_ui_->setEditMode(edit_mode_);
             finish_ui_ = topLvlUI->getSubsystem<ui::FinishUI>();
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
                 LevelPlayState::onPlayerDeath>(this);
@@ -63,23 +62,18 @@ namespace gl3::game::state
 
         void update(float deltaTime) override;
 
-        [[nodiscard]] bool getPlayMode() const
-        {
-            return play_test_;
-        }
-
     private:
         void loadLevel();
-        void moveObjects() const;
-        void stopMovingObjects() const;
+        void moveObjects(bool move) const;
         void pauseOrStartLevel(bool pause);
+        void setSystemsActive(bool setActive) const;
         void reloadLevel();
         void unloadLevel();
         void delayLevelEnd(float deltaTime);
 
         void onPlayerDeath(const engine::ecs::PlayerDeath& event);
         void onWindowSizeChange(const engine::context::WindowBoundsRecomputeEvent& event) const;
-        void onRestartLevel();
+        void onRestartLevel(const engine::ui::RestartLevelEvent& event);
         void startLevel();
         void onPauseEvent(const engine::ui::PauseLevelEvent& event);
 
@@ -87,9 +81,8 @@ namespace gl3::game::state
         ui::FinishUI* finish_ui_ = nullptr;
         ui::InstructionUI* instruction_ui_ = nullptr;
         engine::audio::AudioConfig* audio_config_ = nullptr;
-        bool paused = true;
         bool edit_mode_ = false;
-        bool play_test_ = false;
+        bool paused = true;
         bool level_instantiated_ = false;
         bool timer_active_ = false;
         bool transition_triggered_ = false;
@@ -97,8 +90,7 @@ namespace gl3::game::state
         int level_index_ = -1;
         Level* current_level_ = nullptr;
         entt::entity current_player_ = entt::null;
-        bool prev_enter_state_ = false;
-        bool enter_pressed_ = false;
+
         std::vector<float> currentWindowBounds;
     };
 }

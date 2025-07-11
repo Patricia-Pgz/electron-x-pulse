@@ -7,12 +7,13 @@
 
 namespace gl3::engine::ui
 {
+
     /**
-* Call LevelSelect event, whenever a different level is selected. Listen to this event and apply changes accordingly.
-*/
-    struct EditorObjectDelete
+ * Button to change to edit mode was pressed.
+ */
+    struct EditeModeButtonPress
     {
-        glm::vec2 position;
+        bool edit = true;
     };
 
 
@@ -34,9 +35,15 @@ namespace gl3::engine::ui
         bool pauseLevel;
     };
 
+    /** Signal that you want to restart the current level
+     *
+     */
     struct RestartLevelEvent
     {
-        bool restartLevel;
+        /** startLevel determines if the level should directly start after reload
+ *
+ */
+        bool startLevel;
     };
 
 

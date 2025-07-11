@@ -24,14 +24,17 @@ namespace gl3::game::state
 
         void onExit() override
         {
+            enter_pressed_ = false;
+            play_test_ = false;
             editor_ui_system_->setActive(false);
+            game_.getContext().setCameraPosAndCenter({0.0f, 0.0f, 1.0f}, {0.f, 0.f, 0.f});
         }
 
-        void update(const float deltaTime) override
-        {
-        }
+        void update(float deltaTime) override;
 
     private:
         engine::editor::EditorUISystem* editor_ui_system_;
+        bool enter_pressed_ = false;
+        bool play_test_ = false;
     };
 }
