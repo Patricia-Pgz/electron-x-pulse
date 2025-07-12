@@ -13,11 +13,13 @@ namespace gl3::engine::rendering
         static std::unordered_map<std::string, std::unique_ptr<Texture>> texture_cache_;
         static std::unordered_map<std::string, std::unique_ptr<Texture>> tile_set_cache_;
         static std::unordered_map<std::string, std::unique_ptr<Texture>> ui_texture_cache_;
+        static std::unordered_map<std::string, std::unique_ptr<Texture>> bg_texture_cache_;
         static void add(const std::string& key, const std::filesystem::path& path, int tilesX = 8, int tilesY = 8);
         static void loadTextures();
         static void addAllTexturesFromFolder(const std::filesystem::path& textureFolderPath);
-        static const Texture* get(const std::string& key);
-        static const Texture& getUITexture(const std::string& key);
+        static const Texture* getTileOrSingleTex(const std::string& key);
+        static const Texture* getUITexture(const std::string& key);
+        static const Texture* getBgTexture(const std::string& key);
 
         static const std::unordered_map<std::string, std::unique_ptr<Texture>>& getAllTextures()
         {
@@ -32,6 +34,11 @@ namespace gl3::engine::rendering
         static const std::unordered_map<std::string, std::unique_ptr<Texture>>& getAllUITextures()
         {
             return ui_texture_cache_;
+        }
+
+        static const std::unordered_map<std::string, std::unique_ptr<Texture>>& getAllBgTextures()
+        {
+            return bg_texture_cache_;
         }
 
         static void load(const std::string& key, const std::string& path);

@@ -97,7 +97,6 @@ namespace gl3::game::state
                 object.position = {bgConfig.centerX, bgConfig.skyCenterY, 0.f};
                 object.scale = {bgConfig.windowWidth, bgConfig.skyHeight, 0.f};
             }
-
             engine::ecs::EntityFactory::createDefaultEntity(
                 object, registry, physicsWorld);
         }
@@ -156,7 +155,7 @@ namespace gl3::game::state
         {
             //start level directly if not in edit mode
             game_.getAudioSystem()->playCurrentAudio();
-            pauseOrStartLevel(true);
+            pauseOrStartLevel(false);
             return;
         }
         //is in edit mode -> deactivate physics and player input

@@ -59,7 +59,7 @@ namespace gl3::engine::levelLoading
         for (int i = 0; i < levelNames.size(); ++i)
         {
             if (ImGui::ImageButton(levelNames[i].c_str(),
-                                   rendering::TextureManager::getUITexture("LevelButton1").getID(),
+                                   rendering::TextureManager::getUITexture("LevelButton1")->getID(),
                                    ImVec2(buttonWidth, buttonWidth))) //TODO (www.freepik.com)
             {
                 ecs::EventDispatcher::dispatcher.trigger(ecs::GameStateChange(GameState::Level, i));
@@ -84,7 +84,7 @@ namespace gl3::engine::levelLoading
                 overlayMin.y + overlaySize.y
             );
 
-            const auto overlayTex = rendering::TextureManager::get("geometry-dash")->getID();
+            const auto overlayTex = rendering::TextureManager::getTileOrSingleTex("geometry-dash")->getID();
             ImGui::GetWindowDrawList()->AddImage(overlayTex, overlayMin, overlayMax, {0.f, 1.f}, {1.f, 0.f});
 
             const auto textSize = ImGui::CalcTextSize(levelNames[i].c_str());
@@ -125,7 +125,7 @@ namespace gl3::engine::levelLoading
         const auto windowPos = ImGui::GetWindowPos();
 
         ImGui::GetWindowDrawList()->AddImage(
-            rendering::TextureManager::getUITexture("LvlSelectBG1").getID(),
+            rendering::TextureManager::getUITexture("LvlSelectBG1")->getID(),
             windowPos,
             ImVec2(windowPos.x + windowSize.x,
                    windowPos.y + windowSize.y),
@@ -136,7 +136,7 @@ namespace gl3::engine::levelLoading
         DrawLevelButtons();
 
         ImGui::GetWindowDrawList()->AddImage(
-            rendering::TextureManager::getUITexture("LvlSelectBGTop1").getID(),
+            rendering::TextureManager::getUITexture("LvlSelectBGTop1")->getID(),
             windowPos,
             ImVec2(windowPos.x + windowSize.x,
                    windowPos.y + windowSize.y),

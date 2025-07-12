@@ -22,9 +22,10 @@ namespace gl3::engine::ecs
 
     struct TransformComponent
     {
-        explicit TransformComponent(const glm::vec3 position = {0.0f, 0.0f, 0.0f}, const glm::vec3 scale = {1.0f, 1.0f, 1.0f},
-                           const float zRotation = 0.0f,
-                           const float parallax = 0.0f) :
+        explicit TransformComponent(const glm::vec3 position = {0.0f, 0.0f, 0.0f},
+                                    const glm::vec3 scale = {1.0f, 1.0f, 1.0f},
+                                    const float zRotation = 0.0f,
+                                    const float parallax = 0.0f) :
             initialPosition(position), initialScale(scale),
             initialZRotation(zRotation), position(position), scale(scale), zRotation(zRotation),
             parallaxFactor(parallax)
@@ -100,7 +101,7 @@ namespace gl3::engine::ecs
             }
             const rendering::Texture* tex = object.textureName.empty()
                                                 ? nullptr
-                                                : rendering::TextureManager::get(object.textureName);
+                                                : rendering::TextureManager::getTileOrSingleTex(object.textureName);
             if (object.generateRenderComp)
             {
                 registry.emplace<RenderComponent>(

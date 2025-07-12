@@ -64,7 +64,7 @@ namespace gl3::game::ui
         }
 
         ImGui::GetWindowDrawList()->AddImage(
-            engine::rendering::TextureManager::getUITexture("Win").getID(),
+            engine::rendering::TextureManager::getUITexture("Win")->getID(),
             windowPos,
             ImVec2(windowPos.x + windowSizeCur.x,
                    windowPos.y + windowSizeCur.y),

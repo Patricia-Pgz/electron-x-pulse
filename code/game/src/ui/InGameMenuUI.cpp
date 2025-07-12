@@ -76,7 +76,7 @@ namespace gl3::game::ui
 
 
         ImGui::GetWindowDrawList()->AddImage(
-            engine::rendering::TextureManager::getUITexture("LvlSelectBGTop1").getID(),
+            engine::rendering::TextureManager::getUITexture("LvlSelectBGTop1")->getID(),
             windowPos,
             ImVec2(windowPos.x + windowSize.x,
                    windowPos.y + windowSize.y),
