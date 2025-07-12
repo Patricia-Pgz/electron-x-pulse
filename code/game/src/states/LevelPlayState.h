@@ -13,6 +13,18 @@
 
 namespace gl3::game::state
 {
+    struct LevelBackgroundConfig
+    {
+        float centerX;
+        float windowWidth;
+
+        float groundCenterY;
+        float groundHeight;
+
+        float skyCenterY;
+        float skyHeight;
+    };
+
     class LevelPlayState final : public engine::state::GameState
     {
     public:
@@ -73,6 +85,7 @@ namespace gl3::game::state
 
         void onPlayerDeath(const engine::ecs::PlayerDeath& event);
         void onWindowSizeChange(const engine::context::WindowBoundsRecomputeEvent& event) const;
+        LevelBackgroundConfig updateBackgrounds(const std::vector<float>& windowBounds) const;
         void onRestartLevel(const engine::ui::RestartLevelEvent& event);
         void startLevel();
         void onPauseEvent(const engine::ui::PauseLevelEvent& event);
@@ -90,7 +103,5 @@ namespace gl3::game::state
         int level_index_ = -1;
         Level* current_level_ = nullptr;
         entt::entity current_player_ = entt::null;
-
-        std::vector<float> currentWindowBounds;
     };
 }

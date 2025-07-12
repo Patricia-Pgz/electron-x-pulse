@@ -20,6 +20,39 @@ namespace gl3::game::state
     {
         if (!level_instantiated_)return;
         const auto windowBounds = *event.windowBounds;
+        const auto bgConfig = updateBackgrounds(windowBounds);
+        auto& registry = game_.getRegistry();
+        const auto entities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>();
+
+        for (auto entity : entities)
+        {
+            if (auto tag = entities.get<engine::ecs::TagComponent>(entity).tag; tag == "ground")
+            {
+                engine::ecs::EntityFactory::setPosition(registry, entity, {
+                                                            bgConfig.centerX, bgConfig.groundCenterY, 0.f
+                                                        });
+                engine::ecs::EntityFactory::setScale(registry, entity, {
+                                                         bgConfig.windowWidth, bgConfig.groundHeight, 1.f
+                                                     });
+            }
+            else if (tag == "background")
+            {
+                auto& transform = registry.get<engine::ecs::TransformComponent>(entity);
+                transform.position = {bgConfig.centerX, bgConfig.skyCenterY, 0.f};
+                transform.scale = {bgConfig.windowWidth, bgConfig.skyHeight, 1.f};
+            }
+        }
+    }
+
+    /**
+     *@short Calculates the scales and positions for the two horizontally divided background visuals.
+*The Background is divided horizontally by the groundlevel. In the upper portion, objects tagged "background" get layered on top of each other,
+*in the order in which they appear in the level's .json file @see LevelPlayState::loadLevel()
+*Same for the bottom part, which layers objects tagged as "ground".
+*@warning This does not keep aspect ratios of textures, it just fits the object sizes and positions to the screen. May stretch textures!
+*/
+    LevelBackgroundConfig LevelPlayState::updateBackgrounds(const std::vector<float>& windowBounds) const
+    {
         const auto windowLeftWorld = windowBounds[0];
         const auto windowRightWorld = windowBounds[1];
         const auto windowTopWorld = windowBounds[2];
@@ -36,27 +69,7 @@ namespace gl3::game::state
         const float skyCenterY = (groundLevel + windowTopWorld) / 2.f;
         const float skyHeight = std::max(kMinHeight, windowTopWorld - groundLevel);
 
-        auto& registry = game_.getRegistry();
-        const auto entities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>();
-
-        for (auto entity : entities)
-        {
-            if (auto tag = entities.get<engine::ecs::TagComponent>(entity).tag; tag == "ground")
-            {
-                engine::ecs::EntityFactory::setPosition(registry, entity, {
-                                                            center_x, groundCenterY, 0.f
-                                                        });
-                engine::ecs::EntityFactory::setScale(registry, entity, {
-                                                         windowWidth, groundHeight, 1.f
-                                                     });
-            }
-            else if (tag == "background")
-            {
-                auto& transform = registry.get<engine::ecs::TransformComponent>(entity);
-                transform.position = {center_x, skyCenterY, 0.f};
-                transform.scale = {windowWidth, skyHeight, 1.f};
-            }
-        }
+        return {center_x, windowWidth, groundCenterY, groundHeight, skyCenterY, skyHeight};
     }
 
     /**
@@ -73,6 +86,18 @@ namespace gl3::game::state
 
         for (auto& object : current_level_->backgrounds)
         {
+            const auto bgConfig = updateBackgrounds(game_.getContext().getWorldWindowBounds());
+            if (object.tag == "ground")
+            {
+                object.position = {bgConfig.centerX, bgConfig.groundCenterY, 0.f};
+                object.scale = {bgConfig.windowWidth, bgConfig.groundHeight, 0.f};
+            }
+            else
+            {
+                object.position = {bgConfig.centerX, bgConfig.skyCenterY, 0.f};
+                object.scale = {bgConfig.windowWidth, bgConfig.skyHeight, 0.f};
+            }
+
             engine::ecs::EntityFactory::createDefaultEntity(
                 object, registry, physicsWorld);
         }
