@@ -13,13 +13,14 @@ namespace gl3::engine::ecs
     static constexpr auto GROUND_SENSOR_TAG = "bottomCollider";
     static constexpr auto RIGHT_SENSOR_TAG = "rightCollider";
 
-    ///parent for grouping objects, includes pointer to parent entity and the child's local offset to it
+    ///parent for grouping objects, includes parent entity and the child's local offset to it.
     struct Parent
     {
-        entt::entity* parentObject;
+        entt::entity parentObject;
         glm::vec2 localOffset;
     };
 
+    ///transform properties for entity, later used for rendering
     struct TransformComponent
     {
         explicit TransformComponent(const glm::vec3 position = {0.0f, 0.0f, 0.0f},
@@ -41,6 +42,7 @@ namespace gl3::engine::ecs
         float parallaxFactor = 0.f;
     };
 
+    ///RenderComponent for entities, used in rendering system.
     struct RenderComponent
     {
         rendering::Shader shader;
@@ -51,8 +53,17 @@ namespace gl3::engine::ecs
         bool isActive = true;
     };
 
+    ///PhysicsComponent for entity. Used in physics system with Box2D body and shape.
     struct PhysicsComponent
     {
+        /**
+         *
+         * @param physicsWorld The current Box2D world, in which the entity exists.
+         * @param body The entity's Box2D physics body.
+         * @param shape The entity's Box2D physics shape.
+         * @param groundSensor An additional Sensor for the player to check if they are grounded.
+         * @param rightSensor An additional Sensor for the player to check if they hit something from the left.
+         */
         PhysicsComponent(const b2WorldId physicsWorld, const b2BodyId body, const b2ShapeId shape,
                          const b2ShapeId groundSensor = b2_nullShapeId,
                          const b2ShapeId rightSensor = b2_nullShapeId): physicsWorld(physicsWorld), body(body),
@@ -72,17 +83,27 @@ namespace gl3::engine::ecs
         bool isActive = true;
     };
 
+    ///TagComponent for an entity, that needs to be identified by a string tag.
     struct TagComponent
     {
         std::string tag = "undefined";
     };
 
-    /// provides methods to generate a basic entity (either quad or triangle) with basic components
+    /**
+     *Provides methods and helpers to create and delete enTT entity (either quad or triangle) with basic components.
+     */
     class EntityFactory
     {
     public:
         static inline std::unordered_set<entt::entity> entitiesMarkedForDeletion_;
 
+        /**
+         * A wrapper for faster creation of entities with specific components (defined by @param object)
+         * @param object The object from which to create components for the entity.
+         * @param registry The game's enTT registry, which holds the entities.
+         * @param physicsWorld The current Box2D physics world.
+         * @return The newly created entity ID
+         */
         static entt::entity createDefaultEntity(GameObject& object, entt::registry& registry,
                                                 const b2WorldId& physicsWorld = b2_nullWorldId)
         {
@@ -124,6 +145,11 @@ namespace gl3::engine::ecs
             registry.clear();
         }
 
+        /**
+         * Destroys an entities PhysicsComponent the correct way, if it has one.
+         * @param registry The current enTT registry
+         * @param entity The entity of which to destroy the Physics Component
+         */
         static void destroyPhysicsComponent(entt::registry& registry, const entt::entity entity)
         {
             if (!registry.valid(entity))
@@ -172,6 +198,12 @@ namespace gl3::engine::ecs
             registry.destroy(entity);
         }
 
+        /**
+         * Changes the Scale in an entities Transform and Physics Component. @not This is meant for entities that actually have both a Transform and Physics Component.
+         * @param registry The current enTT registry
+         * @param entity The entity that should be scales
+         * @param newScale The scale to apply to the entity's Transform and PhysicsComponent.
+         */
         static void setScale(entt::registry& registry, const entt::entity& entity, const glm::vec3& newScale)
         {
             const auto& tag_comp = registry.get<TagComponent>(entity);
@@ -182,6 +214,12 @@ namespace gl3::engine::ecs
             b2Shape_SetPolygon(physics_comp.shape, &polygon);
         };
 
+        /**
+         * Changes the position of an entities Transform and PhysicsComponent. @note This is only meant for entities with both Transform and Physics Component.
+         * @param registry The current enTT registry
+         * @param entity The entity of which to change position
+         * @param newPos The new position for the entity's Transform and PhysicsComponent
+         */
         static void setPosition(entt::registry& registry, const entt::entity& entity, const glm::vec3& newPos)
         {
             auto& transform = registry.get<TransformComponent>(entity);
@@ -251,6 +289,12 @@ namespace gl3::engine::ecs
             return boxData;
         }
 
+        /**
+         * Creates a RenderComponent from properties in @param object to render an entity from in the RenderingSystem.
+         * @param object The GameObject holding the properties for generating the RenderComponent
+         * @param texture A pointer to a texture, is null_ptr if a color should be used instead
+         * @return The newly created RenderComponent for an entity.
+         */
         static RenderComponent createRenderComponent(const GameObject& object,
                                                      const rendering::Texture* texture)
         {
@@ -273,9 +317,16 @@ namespace gl3::engine::ecs
                 object.uv);
         }
 
+        /**
+         * Creates the physics body and shape for a given enTT entity, set by properties from @param object
+         * @param physicsWorld The current Box2D physics world.
+         * @param entity The entity for which to create the body and shape.
+         * @param object The GameObject from which to take parameters like scale.
+         * @return The newly created PhysicsComponent for the entity.
+         */
         static PhysicsComponent createPhysicsBody(const b2WorldId& physicsWorld,
                                                   const entt::entity& entity,
-                                                  GameObject& object)
+                                                  const GameObject& object)
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = object.tag == "player" ? b2_dynamicBody : b2_kinematicBody;
@@ -296,6 +347,7 @@ namespace gl3::engine::ecs
             {
                 shapeDef.enableContactEvents = true;
 
+                //create additional sensors for player ground and collision checks.
                 sensors = createSensors(object, body);
             }
 
@@ -308,6 +360,13 @@ namespace gl3::engine::ecs
                        : PhysicsComponent(physicsWorld, body, shape);
         };
 
+        /**
+         *
+         * @param isTriangle Determines to generate vertices for a triangle or quad.
+         * @param scaleX The full scale it should have on x-axis.
+         * @param scaleY Full scale on y-axis.
+         * @return A b2Polygon, either quad or triangle for creating physics shapes.
+         */
         static b2Polygon createPolygon(const bool isTriangle, const float scaleX, const float scaleY)
         {
             b2Polygon polygon;
@@ -331,10 +390,14 @@ namespace gl3::engine::ecs
         }
 
     private:
+        /**
+         * Creates the additional sensors for player contacts.
+         * @param player The current level's player GameObject.
+         * @param playerBody The player's Box2D body.
+         * @return A vector with the player's ground and right sensor for ground and collision checks.
+         */
         static std::vector<b2ShapeId> createSensors(const GameObject& player, const b2BodyId playerBody)
         {
-            b2ShapeId groundSensor = b2_nullShapeId;
-            b2ShapeId rightSensor = b2_nullShapeId;
             const float halfWidth = player.scale.x * 0.5f;
             const float halfHeight = player.scale.y * 0.5f;
             b2ShapeDef groundSensorDef = b2DefaultShapeDef();
@@ -348,7 +411,7 @@ namespace gl3::engine::ecs
             groundBox = b2MakeOffsetBox(halfWidth * 0.8f, 0.15f,
                                         {0.f, 0.f - halfHeight - 0.15f},
                                         b2MakeRot(0.0f));
-            groundSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &groundBox);
+            b2ShapeId groundSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &groundBox);
 
             // Right Side Sensor
             rightSensorDef.isSensor = true;
@@ -359,7 +422,7 @@ namespace gl3::engine::ecs
             rightBox = b2MakeOffsetBox(0.15f, halfHeight * 0.8f,
                                        {0.f + halfWidth + 0.15f, 0.f},
                                        b2MakeRot(0.0f));
-            rightSensor = b2CreatePolygonShape(playerBody, &rightSensorDef, &rightBox);
+            b2ShapeId rightSensor = b2CreatePolygonShape(playerBody, &rightSensorDef, &rightBox);
             return {groundSensor, rightSensor};
         }
     };

@@ -18,10 +18,10 @@ namespace gl3::game::state
      */
     void LevelPlayState::onWindowSizeChange(const engine::context::WindowBoundsRecomputeEvent& event) const
     {
-        if (!level_instantiated_)return;
+        if (!level_instantiated)return;
         const auto windowBounds = *event.windowBounds;
         const auto bgConfig = updateBackgrounds(windowBounds);
-        auto& registry = game_.getRegistry();
+        auto& registry = game.getRegistry();
         const auto entities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>();
 
         for (auto entity : entities)
@@ -61,7 +61,7 @@ namespace gl3::game::state
         const float center_x = (windowLeftWorld + windowRightWorld) * 0.5f;
         const float windowWidth = windowRightWorld - windowLeftWorld;
 
-        const float groundLevel = current_level_->groundLevel;
+        const float groundLevel = current_level->groundLevel;
 
         constexpr float kMinHeight = 0.01f; // 1 cm, avoid 0 height
         const float groundCenterY = (windowBottomWorld + groundLevel) / 2.f;
@@ -80,13 +80,13 @@ namespace gl3::game::state
      */
     void LevelPlayState::loadLevel()
     {
-        auto& registry = game_.getRegistry();
-        const auto physicsWorld = game_.getPhysicsWorld();
-        current_level_ = engine::levelLoading::LevelManager::loadLevelByID(level_index_);
+        auto& registry = game.getRegistry();
+        const auto physicsWorld = game.getPhysicsWorld();
+        current_level = engine::levelLoading::LevelManager::loadLevelByID(level_index);
 
-        for (auto& object : current_level_->backgrounds)
+        for (auto& object : current_level->backgrounds)
         {
-            const auto bgConfig = updateBackgrounds(game_.getContext().getWorldWindowBounds());
+            const auto bgConfig = updateBackgrounds(game.getContext().getWorldWindowBounds());
             if (object.tag == "ground")
             {
                 object.position = {bgConfig.centerX, bgConfig.groundCenterY, 0.f};
@@ -101,7 +101,7 @@ namespace gl3::game::state
                 object, registry, physicsWorld);
         }
 
-        for (auto& objGroup : current_level_->groups)
+        for (auto& objGroup : current_level->groups)
         {
             //compute AABB if it is still on standard values
             if (objGroup.colliderAABB.scale.x <= 1.f || objGroup.colliderAABB.scale.y <= 1.f)
@@ -121,40 +121,41 @@ namespace gl3::game::state
                 };
                 const entt::entity entity = engine::ecs::EntityFactory::createDefaultEntity(
                     obj, registry, physicsWorld);
-                registry.emplace<engine::ecs::Parent>(entity, &groupAABBEntity, localOffset);
+                registry.emplace<engine::ecs::Parent>(entity, groupAABBEntity, localOffset);
             }
         }
 
         float initialPlayerPosX = 0.f;
-        for (auto& object : current_level_->objects)
+        for (auto& object : current_level->objects)
         {
             const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(
                 object, registry, physicsWorld);
-            if (object.tag == "player") current_player_ = entity;
+            if (object.tag == "player") current_player = entity;
             initialPlayerPosX = object.position.x;
-            game_.setPlayer(current_player_);
+            game.setPlayer(current_player);
         }
-        game_.getAudioSystem()->initializeCurrentAudio(current_level_->audioFile, initialPlayerPosX);
-        audio_config_ = game_.getAudioSystem()->getConfig();
+        game.getAudioSystem()->initializeCurrentAudio(current_level->audioFile, initialPlayerPosX);
+        audio_config = game.getAudioSystem()->getConfig();
         //Ensures, that every unit is synced to the beat
-        current_level_->currentLevelSpeed = current_level_->velocityMultiplier / audio_config_->seconds_per_beat;
-        current_level_->levelLength = audio_config_->current_audio_length * current_level_->currentLevelSpeed;
+        current_level->currentLevelSpeed = current_level->velocityMultiplier / audio_config->seconds_per_beat;
+        current_level->levelLength = audio_config->current_audio_length * current_level->currentLevelSpeed;
         //TODO visualisieren!(Editor)
-        current_level_->finalBeatIndex = audio_config_->current_audio_length / audio_config_->seconds_per_beat;
+        current_level->finalBeatIndex = audio_config->current_audio_length / audio_config->seconds_per_beat;
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::LevelLengthComputed{
-            current_level_->levelLength, current_level_->currentLevelSpeed, current_level_->finalBeatIndex
+            current_level->levelLength, current_level->currentLevelSpeed, current_level->finalBeatIndex
         });
 
-        game_.getContext().setClearColor(current_level_->clearColor);
+        game.getContext().setClearColor(current_level->clearColor);
 
-        level_instantiated_ = true;
-        instruction_ui_->setEditMode(edit_mode_);
-        instruction_ui_->pauseTimer(edit_mode_); //pause timer if in edit mode
+        level_instantiated = true;
+        menu_ui->setEditMode(edit_mode);
+        instruction_ui->setEditMode(edit_mode);
+        instruction_ui->pauseTimer(edit_mode); //pause timer if in edit mode
 
-        if (!edit_mode_)
+        if (!edit_mode)
         {
             //start level directly if not in edit mode
-            game_.getAudioSystem()->playCurrentAudio();
+            game.getAudioSystem()->playCurrentAudio();
             pauseOrStartLevel(false);
             return;
         }
@@ -168,16 +169,16 @@ namespace gl3::game::state
      */
     void LevelPlayState::moveObjects(const bool move) const
     {
-        for (const auto view = game_.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
+        for (const auto view = game.getRegistry().view<engine::ecs::TagComponent, engine::ecs::PhysicsComponent>();
              auto& entity : view)
         {
-            if (!game_.getRegistry().valid(entity) || entity == entt::null)return;
+            if (!game.getRegistry().valid(entity) || entity == entt::null)return;
             const auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
             if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
             {
                 if (move)
                 {
-                    b2Body_SetLinearVelocity(physics_comp.body, {current_level_->currentLevelSpeed * -1, 0.0f});
+                    b2Body_SetLinearVelocity(physics_comp.body, {current_level->currentLevelSpeed * -1, 0.0f});
                 }
                 else
                 {
@@ -197,14 +198,14 @@ namespace gl3::game::state
         paused = pause;
         setSystemsActive(!pause);
         moveObjects(!pause);
-        audio_config_->audio.setPause(audio_config_->currentAudioHandle, pause);
-        instruction_ui_->pauseTimer(pause);
+        audio_config->audio.setPause(audio_config->currentAudioHandle, pause);
+        instruction_ui->pauseTimer(pause);
     }
 
     void LevelPlayState::setSystemsActive(const bool setActive) const
     {
-        game_.getPhysicsSystem()->setActive(setActive);
-        dynamic_cast<Game&>(game_).getPlayerInputSystem()->setActive(setActive);
+        game.getPhysicsSystem()->setActive(setActive);
+        dynamic_cast<Game&>(game).getPlayerInputSystem()->setActive(setActive);
     }
 
     /**
@@ -222,7 +223,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::onPlayerDeath(const engine::ecs::PlayerDeath& event)
     {
-        game_.getAudioSystem()->playOneShot("crash");
+        game.getAudioSystem()->playOneShot("crash");
         onRestartLevel(engine::ui::RestartLevelEvent{true});
     }
 
@@ -243,7 +244,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::startLevel()
     {
-        game_.getAudioSystem()->playCurrentAudio();
+        game.getAudioSystem()->playCurrentAudio();
         pauseOrStartLevel(false);
     }
 
@@ -252,20 +253,19 @@ namespace gl3::game::state
 */
     void LevelPlayState::reloadLevel()
     {
-        std::cout << "reload";
         setSystemsActive(false);
-        menu_ui_->setActive(true);
-        instruction_ui_->setActive(level_index_ == 0);
-        finish_ui_->setActive(false);
+        menu_ui->setActive(true);
+        instruction_ui->setActive(level_index == 0);
+        finish_ui->setActive(false);
 
-        game_.getAudioSystem()->stopCurrentAudio();
+        game.getAudioSystem()->stopCurrentAudio();
 
-        timer_ = 1.f;
-        transition_triggered_ = false;
-        timer_active_ = false;
+        timer = 1.f;
+        transition_triggered = false;
+        timer_active = false;
 
 
-        auto& registry = game_.getRegistry();
+        auto& registry = game.getRegistry();
         const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
                                         engine::ecs::PhysicsComponent>();
 
@@ -292,27 +292,27 @@ namespace gl3::game::state
      */
     void LevelPlayState::delayLevelEnd(const float deltaTime)
     {
-        const auto currentAudioTime = static_cast<float>(audio_config_->audio.getStreamTime(
-            audio_config_->currentAudioHandle));
+        const auto currentAudioTime = static_cast<float>(audio_config->audio.getStreamTime(
+            audio_config->currentAudioHandle));
 
-        if (!timer_active_ && currentAudioTime >= audio_config_->current_audio_length - 1) //slight margin
+        if (!timer_active && currentAudioTime >= audio_config->current_audio_length - 1) //slight margin
         {
-            timer_active_ = true;
+            timer_active = true;
         }
 
-        if (timer_active_)
+        if (timer_active)
         {
-            timer_ -= deltaTime;
+            timer -= deltaTime;
 
-            if (timer_ <= 0.0f && !transition_triggered_)
+            if (timer <= 0.0f && !transition_triggered)
             {
-                transition_triggered_ = true;
+                transition_triggered = true;
 
-                menu_ui_->setActive(false);
-                instruction_ui_->setActive(false);
-                finish_ui_->setActive(true);
+                menu_ui->setActive(false);
+                instruction_ui->setActive(false);
+                finish_ui->setActive(true);
 
-                game_.getAudioSystem()->playOneShot("win");
+                game.getAudioSystem()->playOneShot("win");
 
                 pauseOrStartLevel(true);
             }
@@ -325,32 +325,32 @@ namespace gl3::game::state
      */
     void LevelPlayState::unloadLevel()
     {
-        level_instantiated_ = false;
-        game_.getAudioSystem()->stopCurrentAudio();
-        game_.getAudioSystem()->stopAllOneShots();
-        menu_ui_->setActive(false);
-        instruction_ui_->setActive(false);
-        finish_ui_->setActive(false);
-        menu_ui_ = nullptr;
-        instruction_ui_ = nullptr;
-        finish_ui_ = nullptr;
+        level_instantiated = false;
+        game.getAudioSystem()->stopCurrentAudio();
+        game.getAudioSystem()->stopAllOneShots();
+        menu_ui->setActive(false);
+        instruction_ui->setActive(false);
+        finish_ui->setActive(false);
+        menu_ui = nullptr;
+        instruction_ui = nullptr;
+        finish_ui = nullptr;
 
-        engine::ecs::EntityFactory::clearRegistry(game_.getRegistry());
-        level_index_ = -1;
-        current_level_ = nullptr;
-        current_player_ = entt::null;
+        engine::ecs::EntityFactory::clearRegistry(game.getRegistry());
+        level_index = -1;
+        current_level = nullptr;
+        current_player = entt::null;
     }
 
     void LevelPlayState::update(const float deltaTime)
     {
-        if (!level_instantiated_)
+        if (!level_instantiated)
         {
             return;
         }
         if (!paused)
         {
             engine::visual_effects::Parallax::moveBgObjectsParallax( //TODO über UVs
-                game_.getRegistry(), deltaTime, current_level_->currentLevelSpeed);
+                game.getRegistry(), deltaTime, current_level->currentLevelSpeed);
             delayLevelEnd(deltaTime);
         }
     }

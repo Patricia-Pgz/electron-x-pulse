@@ -12,7 +12,7 @@ namespace gl3::game::state
         explicit EditorState(engine::Game& game)
             : GameState(game)
         {
-            editor_ui_system_ = game_.getUISystem()->getSubsystem<engine::editor::EditorUISystem>();
+            editor_ui_system_ = game.getUISystem()->getSubsystem<engine::editor::EditorUISystem>();
         };
 
         ~EditorState() override = default;
@@ -27,7 +27,7 @@ namespace gl3::game::state
             enter_pressed_ = false;
             play_test_ = false;
             editor_ui_system_->setActive(false);
-            game_.getContext().setCameraPosAndCenter({0.0f, 0.0f, 1.0f}, {0.f, 0.f, 0.f});
+            game.getContext().setCameraPosAndCenter({0.0f, 0.0f, 1.0f}, {0.f, 0.f, 0.f});
         }
 
         void update(float deltaTime) override;

@@ -17,6 +17,15 @@ namespace gl3::engine::physics
                 PhysicsSystem::onPlayerJump>(this);
         };
 
+        ~PhysicsSystem() override
+        {
+            ecs::EventDispatcher::dispatcher.sink<ecs::PlayerJump>().disconnect<&
+                PhysicsSystem::onPlayerJump>(this);
+        }
+
+        /**
+         * Runs the physics step, checks for player collisions/contacts, and moves entities based on their physics bodies, if they did not move out of the left border of the window.
+         */
         void runPhysicsStep()
         {
             if (!game_.getRegistry().valid(game_.getPlayer()) || !is_active) return;
@@ -26,11 +35,10 @@ namespace gl3::engine::physics
                 const b2WorldId world = game_.getPhysicsWorld();
                 b2World_Step(world, fixedTimeStep, subStepCount);
                 PlayerContactListener::checkForPlayerCollision(game_.getRegistry(), game_.getPlayer(),
-                                                               game_.getPhysicsWorld());
+                                                               world);
 
-                if (game_.currentGameState == GameState::PreviewWithScrolling) return;
-
-                // Update entities based on physics step
+                updateGroupObjects();
+                //update entities based on physics step
                 const auto& entities = game_.getRegistry().view<
                     ecs::TagComponent, ecs::TransformComponent,
                     ecs::PhysicsComponent>();
@@ -46,13 +54,13 @@ namespace gl3::engine::physics
                     auto& transformComp = entities.get<ecs::TransformComponent>(entity);
 
                     //Check if most right point of object is still in window
-                    /*if (game_.getContext().getScreenPosObjBounds({x, y}, {transformComp.scale.x, transformComp.scale.y})
-                        [1].x <=)
+                    if (transformComp.position.x + transformComp.scale.x * 0.5f < game_.getContext().
+                        getWorldWindowBounds()[0])
                     {
                         b2Body_SetAwake(physics_comp.body, false);
                         physics_comp.isActive = false;
                     }
-                    else*/
+                    else
                     {
                         auto [p, q] = b2Body_GetTransform(physics_comp.body);
                         transformComp.position.x = p.x;
@@ -70,6 +78,29 @@ namespace gl3::engine::physics
                 accumulator -= fixedTimeStep;
             }
         };
+
+        void updateGroupObjects() const
+        {
+            //update grouped objects based on parent physics body
+            auto& registry = game_.getRegistry();
+            auto groupObjs = registry.view<ecs::TransformComponent, ecs::Parent>();
+
+            for (auto obj : groupObjs)
+            {
+                auto& parentComp = groupObjs.get<ecs::Parent>(obj);
+                if (!registry.valid(parentComp.parentObject)) return;
+
+                //TODO parent entity iwie anders finden? Existiert zu diesem Zeitpunkt nicht
+                auto parentBody = registry.get<ecs::PhysicsComponent>(parentComp.parentObject).
+                                           body;
+                auto parentPos = b2Body_GetPosition(parentBody);
+
+                auto& transform = groupObjs.get<ecs::TransformComponent>(obj);
+                transform.position = {
+                    parentPos.x + parentComp.localOffset.x, parentPos.y + parentComp.localOffset.y, 0.f
+                };
+            }
+        }
 
         void markBodyForDeletion(const b2BodyId body)
         {

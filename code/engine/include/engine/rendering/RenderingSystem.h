@@ -23,6 +23,9 @@ namespace gl3::engine::rendering
             return projection * view * model;
         }
 
+        /**
+         *Render entities from the registry with active render component, until they leave the screen to the left
+         */
         void draw() const
         {
             if (!is_active) { return; }
@@ -32,10 +35,16 @@ namespace gl3::engine::rendering
             for (const auto& entities = registry.view<ecs::TransformComponent, ecs::RenderComponent>(); const auto&
                  entity : entities)
             {
-                //TODO sort back-front + render then
                 auto& transform = entities.get<ecs::TransformComponent>(entity);
                 auto& renderComp = entities.get<ecs::RenderComponent>(entity);
 
+
+                //turn object's renderer off, if it moved out of the left border of the screen
+                if (transform.position.x + transform.scale.x * 0.5f < context.getWorldWindowBounds()[0])
+                    renderComp.
+                        isActive = false;
+
+                //render object if in view
                 if (context.isInVisibleWindow(transform.position, transform.scale) && renderComp.isActive)
                 {
                     const auto mvpMatrix = calculateMvpMatrix(transform.position, transform.zRotation, transform.scale,

@@ -4,7 +4,7 @@ namespace gl3::engine::state
     class GameState
     {
     public:
-        explicit GameState(Game& game) : game_(game){}
+        explicit GameState(Game& game) : game(game){}
         virtual ~GameState() = default;
         virtual void update(float deltaTime) = 0;
 
@@ -17,6 +17,6 @@ namespace gl3::engine::state
         };
 
     protected:
-        Game& game_;
+        Game& game;
     };
 }

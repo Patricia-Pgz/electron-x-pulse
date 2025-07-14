@@ -10,10 +10,11 @@ namespace gl3::game::ui
 {
     void styleWindow(const ImVec2 windowSize)
     {
-        ImGuiStyle& style = ImGui::GetStyle();
-        style.WindowBorderSize = 0.f;
-        style.WindowPadding = ImVec2(windowSize.x * 0.08, windowSize.y * 0.14);
-        ImGui::GetStyle().FrameRounding = 5.0;
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(windowSize.x * 0.08, windowSize.y * 0.14));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(40, 40));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
         ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UINeonColors::pastelNeonViolet2);
         ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet);
@@ -22,9 +23,11 @@ namespace gl3::game::ui
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
         ImGui::PushStyleColor(ImGuiCol_SliderGrab, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
+    }
 
-        style.ItemSpacing = ImVec2(40, 40);
-        style.FramePadding = ImVec2(10, 10);
+    void InGameMenuUI::onPlayModeChange(const engine::ecs::EditorPlayModeChange& event)
+    {
+        is_play_mode = event.isPlayMode;
     }
 
     void InGameMenuUI::DrawInGameUI(const ImGuiViewport* viewport, ImFont* font)
@@ -35,7 +38,7 @@ namespace gl3::game::ui
         ImGui::SetNextWindowSize({viewportSize.x, viewportSize.y});
         ImGui::PushFont(font);
 
-        ImGui::Begin("Menu", nullptr, flags_);
+        ImGui::Begin("Menu", nullptr, flags);
         const auto windowSize = ImGui::GetWindowSize();
         const auto windowPos = ImGui::GetWindowPos();
         styleWindow(windowSize);
@@ -53,9 +56,9 @@ namespace gl3::game::ui
         const auto sliderWidth = textSize.x * 1.7f;
         ImGui::PushItemWidth(sliderWidth);
         ImGui::SetCursorPosX((windowSize.x - sliderWidth) * 0.5f);
-        if (ImGui::SliderFloat("##Volume", &volume_, 0.0f, 1.0f, "%.2f"))
+        if (ImGui::SliderFloat("##Volume", &volume, 0.0f, 1.0f, "%.2f"))
         {
-            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::VolumeChangeEvent(volume_));
+            engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::VolumeChangeEvent(volume));
         }
 
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3 * padding.y);
@@ -84,7 +87,7 @@ namespace gl3::game::ui
             {1.f, 0.f}
         );
 
-        ImGui::PopStyleVar();
+        ImGui::PopStyleVar(6);
         ImGui::PopStyleColor(8);
         ImGui::PopFont();
         ImGui::End();
@@ -92,7 +95,7 @@ namespace gl3::game::ui
 
 
     /**
-     * @brief Shows or hides the in-game menu.
+     * @brief Shows or hides the in-game menu on Enter press.
      * @pre ImGui needs to be set up already. E.g. by calling @ref gl3::engine::ui::UISystem::renderUI on a UISystem instance (or inherited ones) each game UI-Update frame @ref gl3::engine::Game::updateUI.
     * @pre ImGui Frame needs to be running already.
  */
@@ -101,16 +104,20 @@ namespace gl3::game::ui
         if (!is_active) return;
         if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
-            if (!escape_pressed_)
+            if (!escape_pressed)
             {
-                escape_pressed_ = true;
+                escape_pressed = true;
                 show_ui = !show_ui;
-                engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{show_ui});
+                //Don't pause/restart lvl if in editor and currently not play testing
+                if (!is_edit_mode || is_play_mode)
+                {
+                    engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{show_ui});
+                }
             }
         }
         else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
         {
-            escape_pressed_ = false;
+            escape_pressed = false;
         }
 
         if (!show_ui) return;

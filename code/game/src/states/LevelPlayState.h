@@ -29,12 +29,12 @@ namespace gl3::game::state
     {
     public:
         explicit LevelPlayState(engine::Game& game, const int levelIndex, const bool editMode)
-            : GameState(game), edit_mode_(editMode), level_index_(levelIndex)
+            : GameState(game), edit_mode(editMode), level_index(levelIndex)
         {
-            const auto& topLvlUI = game_.getUISystem();
-            menu_ui_ = topLvlUI->getSubsystem<ui::InGameMenuUI>();
-            instruction_ui_ = topLvlUI->getSubsystem<ui::InstructionUI>();
-            finish_ui_ = topLvlUI->getSubsystem<ui::FinishUI>();
+            const auto& topLvlUI = game.getUISystem();
+            menu_ui = topLvlUI->getSubsystem<ui::InGameMenuUI>();
+            instruction_ui = topLvlUI->getSubsystem<ui::InstructionUI>();
+            finish_ui = topLvlUI->getSubsystem<ui::FinishUI>();
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::PlayerDeath>().connect<&
                 LevelPlayState::onPlayerDeath>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::RestartLevelEvent>().connect<&
@@ -59,10 +59,10 @@ namespace gl3::game::state
 
         void onEnter() override
         {
-            menu_ui_->setActive(true);
-            if (level_index_ == 0) //Tutorial
+            menu_ui->setActive(true);
+            if (level_index == 0) //Tutorial
             {
-                instruction_ui_->setActive(true); //deactivates itself after timer
+                instruction_ui->setActive(true); //deactivates itself after timer
             }
             loadLevel();
         }
@@ -90,18 +90,18 @@ namespace gl3::game::state
         void startLevel();
         void onPauseEvent(const engine::ui::PauseLevelEvent& event);
 
-        ui::InGameMenuUI* menu_ui_ = nullptr;
-        ui::FinishUI* finish_ui_ = nullptr;
-        ui::InstructionUI* instruction_ui_ = nullptr;
-        engine::audio::AudioConfig* audio_config_ = nullptr;
-        bool edit_mode_ = false;
+        ui::InGameMenuUI* menu_ui = nullptr;
+        ui::FinishUI* finish_ui = nullptr;
+        ui::InstructionUI* instruction_ui = nullptr;
+        engine::audio::AudioConfig* audio_config = nullptr;
+        bool edit_mode = false;
         bool paused = true;
-        bool level_instantiated_ = false;
-        bool timer_active_ = false;
-        bool transition_triggered_ = false;
-        float timer_ = 1.;
-        int level_index_ = -1;
-        Level* current_level_ = nullptr;
-        entt::entity current_player_ = entt::null;
+        bool level_instantiated = false;
+        bool timer_active = false;
+        bool transition_triggered = false;
+        float timer = 1.;
+        int level_index = -1;
+        Level* current_level = nullptr;
+        entt::entity current_player = entt::null;
     };
 }
