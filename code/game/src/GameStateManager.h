@@ -22,7 +22,7 @@ namespace gl3::game
 
     private:
         void onUiInitialized() const;
-        void onEditModeChange(const engine::ui::EditeModeButtonPress& event);
+        void onEditModeChange(const engine::ui::EditModeButtonPress& event);
         void onGameStateChange(const engine::ecs::GameStateChange& newState);
 
         Game& game;

@@ -31,6 +31,10 @@ namespace gl3::game::state
         explicit LevelPlayState(engine::Game& game, const int levelIndex, const bool editMode)
             : GameState(game), edit_mode(editMode), level_index(levelIndex)
         {
+            afterPhysicsStepHandle = game.onBeforeUpdate.addListener([&](engine::Game& game_)
+            {
+                onPhysicsStepDone();
+            });
             const auto& topLvlUI = game.getUISystem();
             menu_ui = topLvlUI->getSubsystem<ui::InGameMenuUI>();
             instruction_ui = topLvlUI->getSubsystem<ui::InstructionUI>();
@@ -55,6 +59,7 @@ namespace gl3::game::state
                 LevelPlayState::onPauseEvent>(this);
             engine::ecs::EventDispatcher::dispatcher.sink<engine::context::WindowBoundsRecomputeEvent>().disconnect<&
                 LevelPlayState::onWindowSizeChange>(this);
+            game.onBeforeUpdate.removeListener(afterPhysicsStepHandle);
         }
 
         void onEnter() override
@@ -85,21 +90,25 @@ namespace gl3::game::state
 
         void onPlayerDeath(const engine::ecs::PlayerDeath& event);
         void onWindowSizeChange(const engine::context::WindowBoundsRecomputeEvent& event) const;
-        LevelBackgroundConfig updateBackgrounds(const std::vector<float>& windowBounds) const;
+        [[nodiscard]] LevelBackgroundConfig updateBackgrounds(const std::vector<float>& windowBounds) const;
         void onRestartLevel(const engine::ui::RestartLevelEvent& event);
-        void startLevel();
         void onPauseEvent(const engine::ui::PauseLevelEvent& event);
+        void onPhysicsStepDone();
+        void startLevel();
 
+        float levelTime = 0.f;
+        std::list<std::function<void(engine::Game&)>>::iterator afterPhysicsStepHandle;
         ui::InGameMenuUI* menu_ui = nullptr;
         ui::FinishUI* finish_ui = nullptr;
         ui::InstructionUI* instruction_ui = nullptr;
         engine::audio::AudioConfig* audio_config = nullptr;
+        bool reset_level = false;
         bool edit_mode = false;
         bool paused = true;
         bool level_instantiated = false;
         bool timer_active = false;
         bool transition_triggered = false;
-        float timer = 1.;
+        float timer = 2.f;
         int level_index = -1;
         Level* current_level = nullptr;
         entt::entity current_player = entt::null;

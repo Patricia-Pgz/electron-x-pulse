@@ -101,27 +101,42 @@ namespace gl3::game::state
                 object, registry, physicsWorld);
         }
 
-        for (auto& objGroup : current_level->groups)
-        {
-            //compute AABB if it is still on standard values
-            if (objGroup.colliderAABB.scale.x <= 1.f || objGroup.colliderAABB.scale.y <= 1.f)
-            {
-                objGroup.colliderAABB = engine::physics::PhysicsSystem::computeGroupAABB(objGroup.children);
-                objGroup.colliderAABB.tag = "platform";
-            }
-            objGroup.colliderAABB.generateRenderComp = false;
-            entt::entity groupAABBEntity = engine::ecs::EntityFactory::createDefaultEntity(
-                objGroup.colliderAABB, registry, physicsWorld);
 
-            for (auto& obj : objGroup.children)
+        auto& objGroup = current_level->groups;
+        for (auto group = objGroup.begin(); group != objGroup.end();)
+        {
+            if (group->children.empty())
             {
-                obj.generatePhysicsComp = false;
-                glm::vec2 localOffset = {
-                    obj.position.x - objGroup.colliderAABB.position.x, obj.position.y - objGroup.colliderAABB.position.y
-                };
-                const entt::entity entity = engine::ecs::EntityFactory::createDefaultEntity(
-                    obj, registry, physicsWorld);
-                registry.emplace<engine::ecs::Parent>(entity, groupAABBEntity, localOffset);
+                group = objGroup.erase(group); // erase empty groups
+            }
+            else
+            {
+                //compute AABB if it is still on standard values
+                if (group->colliderAABB.scale.x <= 1.f || group->colliderAABB.scale.y <= 1.f)
+                {
+                    group->colliderAABB = engine::physics::PhysicsSystem::computeGroupAABB(group->children);
+                    group->colliderAABB.tag = "platform";
+                }
+                group->colliderAABB.generateRenderComp = false;
+                entt::entity groupAABBEntity = engine::ecs::EntityFactory::createDefaultEntity(
+                    group->colliderAABB, registry, physicsWorld);
+                std::vector<entt::entity> childEntities;
+
+                for (auto& obj : group->children)
+                {
+                    obj.generatePhysicsComp = false;
+                    glm::vec2 localOffset = {
+                        obj.position.x - group->colliderAABB.position.x, obj.position.y - group->colliderAABB.position.y
+                    };
+                    const entt::entity entity = engine::ecs::EntityFactory::createDefaultEntity(
+                        obj, registry, physicsWorld);
+                    registry.emplace<engine::ecs::ParentComponent>(entity, groupAABBEntity, localOffset);
+                    childEntities.push_back(entity);
+                }
+
+                registry.emplace<engine::ecs::GroupComponent>(groupAABBEntity, childEntities);
+
+                ++group;
             }
         }
 
@@ -196,6 +211,7 @@ namespace gl3::game::state
     void LevelPlayState::pauseOrStartLevel(const bool pause)
     {
         paused = pause;
+        dynamic_cast<Game&>(game).setPaused(pause);
         setSystemsActive(!pause);
         moveObjects(!pause);
         audio_config->audio.setPause(audio_config->currentAudioHandle, pause);
@@ -235,9 +251,72 @@ namespace gl3::game::state
     {
         //game will be reset and stopped if player restarts level and then presses enter in edit mode
         reloadLevel();
-        if (!event.startLevel) return;
+        if (!event.startLevel || edit_mode) return;
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::EditorPlayModeChange{true});
         startLevel();
     }
+
+    void LevelPlayState::onPhysicsStepDone()
+    {
+        if (!reset_level) return;
+        reset_level = false;
+        auto& registry = game.getRegistry();
+        const auto singleEntities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
+                                                  engine::ecs::PhysicsComponent, engine::ecs::RenderComponent>();
+
+        //go through ungrouped entities, reset and activate components
+        for (auto& entity : singleEntities)
+        {
+            if (auto tag = singleEntities.get<engine::ecs::TagComponent>(entity).tag; !registry.valid(entity) || tag ==
+                "ground"
+                || tag == "background")
+                continue;
+            engine::ecs::EntityFactory::setPosition(registry, entity,
+                                                    singleEntities.get<engine::ecs::TransformComponent>(entity).
+                                                                   initialPosition);
+            engine::ecs::EntityFactory::setScale(registry, entity,
+                                                 singleEntities.get<engine::ecs::TransformComponent>(entity).
+                                                                initialScale);
+            engine::ecs::EntityFactory::SetRotation(registry, entity,
+                                                    singleEntities.get<engine::ecs::TransformComponent>(entity).
+                                                                   initialZRotation);
+            singleEntities.get<engine::ecs::PhysicsComponent>(entity).isActive = true;
+            singleEntities.get<engine::ecs::RenderComponent>(entity).isActive = true;
+        }
+
+        //go through group parent entities, reset and activate, and later same for group child entities
+
+        for (const auto groupParents = registry.view<
+                 engine::ecs::GroupComponent, engine::ecs::TransformComponent, engine::ecs::PhysicsComponent>(); auto
+             & entity : groupParents)
+        {
+            engine::ecs::EntityFactory::setPosition(registry, entity,
+                                                    groupParents.get<engine::ecs::TransformComponent>(entity).
+                                                                 initialPosition);
+            engine::ecs::EntityFactory::setScale(registry, entity,
+                                                 groupParents.get<engine::ecs::TransformComponent>(entity).
+                                                              initialScale);
+            engine::ecs::EntityFactory::SetRotation(registry, entity,
+                                                    groupParents.get<engine::ecs::TransformComponent>(entity).
+                                                                 initialZRotation);
+            //only activate physics, has no renderer
+            groupParents.get<engine::ecs::PhysicsComponent>(entity).isActive = true;
+        }
+
+        const auto groupChildEntities = registry.view<engine::ecs::ParentComponent, engine::ecs::TransformComponent,
+                                                      engine::ecs::RenderComponent>();
+        for (auto& entity : groupChildEntities)
+        {
+            if (!registry.valid(entity))continue;
+            auto& transform = groupChildEntities.get<engine::ecs::TransformComponent>(entity);
+            transform.position = transform.initialPosition;
+            transform.scale = transform.initialScale;
+            transform.zRotation = transform.initialZRotation;
+            //only activate renderer, has no physics -> follows parent
+            groupChildEntities.get<engine::ecs::RenderComponent>(entity).isActive = true;
+        }
+    }
+
 
     /**
      * Freshly starts the (already reset) level and audio.
@@ -253,36 +332,19 @@ namespace gl3::game::state
 */
     void LevelPlayState::reloadLevel()
     {
+        if (levelTime <= 0.f) return;
+        paused = true;
+        dynamic_cast<Game&>(game).setPaused(true);
+        reset_level = true;
         setSystemsActive(false);
         menu_ui->setActive(true);
         instruction_ui->setActive(level_index == 0);
         finish_ui->setActive(false);
-
         game.getAudioSystem()->stopCurrentAudio();
-
-        timer = 1.f;
+        levelTime = 0.f;
+        timer = 2.f;
         transition_triggered = false;
         timer_active = false;
-
-
-        auto& registry = game.getRegistry();
-        const auto view = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
-                                        engine::ecs::PhysicsComponent>();
-
-        for (auto& entity : view)
-        {
-            auto tag = view.get<engine::ecs::TagComponent>(entity).tag;
-            if (!registry.valid(entity) || tag == "ground" || tag == "background") continue;
-            engine::ecs::EntityFactory::setPosition(registry, entity,
-                                                    registry.get<engine::ecs::TransformComponent>(entity).
-                                                             initialPosition);
-            engine::ecs::EntityFactory::setScale(registry, entity,
-                                                 registry.get<engine::ecs::TransformComponent>(entity).
-                                                          initialScale);
-            engine::ecs::EntityFactory::SetRotation(registry, entity,
-                                                    registry.get<engine::ecs::TransformComponent>(entity).
-                                                             initialZRotation);
-        }
     }
 
     /**
@@ -325,6 +387,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::unloadLevel()
     {
+        levelTime = 0.f;
         level_instantiated = false;
         game.getAudioSystem()->stopCurrentAudio();
         game.getAudioSystem()->stopAllOneShots();
@@ -349,6 +412,7 @@ namespace gl3::game::state
         }
         if (!paused)
         {
+            levelTime += deltaTime;
             engine::visual_effects::Parallax::moveBgObjectsParallax( //TODO über UVs
                 game.getRegistry(), deltaTime, current_level->currentLevelSpeed);
             delayLevelEnd(deltaTime);

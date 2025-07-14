@@ -38,22 +38,11 @@ namespace gl3::engine::editor
         void setActive(const bool setActive) override
         {
             is_active = setActive;
-            if (is_active)
-            {
-                ecs::EventDispatcher::dispatcher.sink<ecs::EditorPlayModeChange>().connect<&
-                    EditorUISystem::onPlayModeChange>(this);
-            }
-            else
-            {
-                ecs::EventDispatcher::dispatcher.sink<ecs::EditorPlayModeChange>().disconnect<&
-                    EditorUISystem::onPlayModeChange>(this);
-            }
         }
 
         void update() override;
 
     private:
-        void onPlayModeChange(const ecs::EditorPlayModeChange& event);
         void onLvlComputed(ecs::LevelLengthComputed& event);
         void deleteAllAtSelectedPosition() const;
 
@@ -73,7 +62,6 @@ namespace gl3::engine::editor
 
         void highlightSelectedButton(const std::vector<std::string>& buttonIDs);
 
-        bool is_in_play_mode_ = false;
         bool is_mouse_in_edit = true;
         ImVec2 grid_center = {0.f, 0.f};
         float grid_offset = 0.5f;
@@ -82,13 +70,13 @@ namespace gl3::engine::editor
         char tag_input_buffer[128] = "";
         std::string selected_tag = "platform";
         bool is_triangle = false;
-        float selected_z_rotation_ = 0.f;
+        float selected_z_rotation = 0.f;
         bool generate_physics_comp = true;
-        bool use_color_ = false;
-        glm::vec4 selected_color_ = {1.0f, 1.0f, 1.0f, 1.0f};
+        bool use_color = false;
+        glm::vec4 selected_color = {1.0f, 1.0f, 1.0f, 1.0f};
         EditorSystem* editor_system;
-        float* finalBeatPosition;
-        static constexpr ImGuiWindowFlags flags_ =
+        float final_beat_position = 0.f;
+        static constexpr ImGuiWindowFlags flags =
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoResize;
     };

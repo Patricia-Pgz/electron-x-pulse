@@ -64,6 +64,14 @@ namespace gl3::engine
         [[nodiscard]] state::StateManagementSystem* getStateManagement() const { return state_management_system_; };
         [[nodiscard]] entt::entity getPlayer() const { return player_; }
         void setPlayer(const entt::entity player) { player_ = player; }
+        void setPaused(const bool isPaused)
+        {
+            is_paused = isPaused;
+        }
+        [[nodiscard]] bool isPaused() const
+        {
+            return is_paused;
+        }
 
         using event_t = events::Event<Game, Game&>;
 
@@ -113,6 +121,8 @@ namespace gl3::engine
 
         entt::registry registry_;
         entt::entity player_;
+
+        bool is_paused = true;
 
     private:
         float lastFrameTime_ = 1.0f / 60;

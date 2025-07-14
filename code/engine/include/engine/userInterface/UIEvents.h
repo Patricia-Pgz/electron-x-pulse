@@ -11,7 +11,7 @@ namespace gl3::engine::ui
     /**
  * Button to change to edit mode was pressed.
  */
-    struct EditeModeButtonPress
+    struct EditModeButtonPress
     {
         bool edit = true;
     };

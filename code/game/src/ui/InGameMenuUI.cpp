@@ -67,6 +67,7 @@ namespace gl3::game::ui
         if (ImGui::Button("Restart Level", {lvlSelectSize.x + 2 * padding.x, lvlSelectSize.y + 2 * padding.y}))
         {
             engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::RestartLevelEvent{true});
+            show_ui = false;
         }
 
         ImGui::SetCursorPosX((windowSize.x - lvlSelectSize.x - 2 * padding.x) * 0.5f);
@@ -75,6 +76,7 @@ namespace gl3::game::ui
             engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::GameStateChange{
                 engine::GameState::LevelSelect
             });
+            show_ui = false;
         }
 
 
@@ -109,7 +111,7 @@ namespace gl3::game::ui
                 escape_pressed = true;
                 show_ui = !show_ui;
                 //Don't pause/restart lvl if in editor and currently not play testing
-                if (!is_edit_mode || is_play_mode)
+                if (!is_edit_mode || !game_.isPaused())
                 {
                     engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{show_ui});
                 }

@@ -13,23 +13,19 @@ namespace gl3::engine::editor
 {
     void EditorUISystem::onMouseScroll(const context::MouseScrollEvent& event) const
     {
-        if (!is_active || is_in_play_mode_ || !is_mouse_in_edit) return;
+        if (!is_active || !game_.isPaused() || !is_mouse_in_edit) return;
         game_.getContext().moveCameraX(static_cast<float>(event.yOffset * 50.0f));
     }
 
-    void EditorUISystem::onPlayModeChange(const ecs::EditorPlayModeChange& event)
-    {
-        is_in_play_mode_ = event.isPlayMode;
-    }
 
     /**
-     * Saves a pointer to the current levels final beat position. (For visualization)
+     * Saves the current levels final beat position. (For visualization)
      * @param event ecs::LevelLengthComputed sends the computed final beat index of the current level's song
      */
     void EditorUISystem::onLvlComputed(ecs::LevelLengthComputed& event)
     {
         //pointer to finalBeatPosition
-        finalBeatPosition = &event.finalBeatIndex;
+        final_beat_position = event.finalBeatIndex;
     }
 
     /**
@@ -178,7 +174,7 @@ namespace gl3::engine::editor
                     },
                     glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
                     selected_tag, is_triangle,
-                    name, {selected_scale.x, selected_scale.y, 0.f}, uv, selected_z_rotation_, generate_physics_comp
+                    name, {selected_scale.x, selected_scale.y, 0.f}, uv, selected_z_rotation, generate_physics_comp
                 };
                 levelLoading::LevelManager::addObjectToCurrentLevel(object);
                 ecs::EventDispatcher::dispatcher.trigger(
@@ -210,7 +206,7 @@ namespace gl3::engine::editor
                 },
                 glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
                 selected_tag, is_triangle,
-                name, {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, selected_z_rotation_,
+                name, {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, selected_z_rotation,
                 generate_physics_comp
             };
             levelLoading::LevelManager::addObjectToCurrentLevel(object);
@@ -294,7 +290,7 @@ namespace gl3::engine::editor
         styleWindow();
         ImGui::PushStyleColor(ImGuiCol_Text, UINeonColors::windowBgColor);
         ImGui::PushFont(ui::FontManager::getFont("PixeloidSans-Bold"));
-        ImGui::Begin("Tile Panel", nullptr, flags_);
+        ImGui::Begin("Tile Panel", nullptr, flags);
         if (ImGui::IsWindowHovered())
         {
             is_mouse_in_edit = false;
@@ -366,10 +362,10 @@ namespace gl3::engine::editor
         ImGui::Text("5.) Z-Rotation:");
         const auto nextItemWidth = ImGui::GetContentRegionAvail().x * 0.4f;
         ImGui::SetNextItemWidth(nextItemWidth);
-        ImGui::InputFloat("##zRot", &selected_z_rotation_, 0.1f, 1.0f, "%.2f");
-        selected_z_rotation_ = fmod(selected_z_rotation_, 360.0f);
-        if (selected_z_rotation_ < 0.0f)
-            selected_z_rotation_ += 360.0f;
+        ImGui::InputFloat("##zRot", &selected_z_rotation, 0.1f, 1.0f, "%.2f");
+        selected_z_rotation = fmod(selected_z_rotation, 360.0f);
+        if (selected_z_rotation < 0.0f)
+            selected_z_rotation += 360.0f;
 
         ImGui::Text("6.) Generate PhysicsComponent");
         ImGui::Checkbox("##PhysicsComp", &generate_physics_comp);
@@ -381,17 +377,17 @@ namespace gl3::engine::editor
         ImGui::Separator();
         ImGui::Text("7.) Select Visual:");
 
-        if (ImGui::RadioButton("##Color", use_color_))
+        if (ImGui::RadioButton("##Color", use_color))
         {
-            use_color_ = true;
+            use_color = true;
         }
         ImGui::SameLine();
 
-        if (use_color_)
+        if (use_color)
         {
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y);
             ImGui::ColorButton("##ColorPreview",
-                               {selected_color_.x, selected_color_.y, selected_color_.z, selected_color_.w},
+                               {selected_color.x, selected_color.y, selected_color.z, selected_color.w},
                                0,
                                ImVec2(20, 20));
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetStyle().FramePadding.y * 0.5f);
@@ -406,12 +402,12 @@ namespace gl3::engine::editor
         ImGui::Text("Color");
         ImGui::SameLine();
 
-        if (ImGui::RadioButton("Texture", !use_color_))
+        if (ImGui::RadioButton("Texture", !use_color))
         {
-            use_color_ = false;
+            use_color = false;
         }
 
-        if (use_color_)
+        if (use_color)
         {
             static bool pickerWasOpen = false;
 
@@ -419,7 +415,7 @@ namespace gl3::engine::editor
             {
                 pickerWasOpen = true;
 
-                ImGui::ColorPicker4("##picker", reinterpret_cast<float*>(&selected_color_));
+                ImGui::ColorPicker4("##picker", reinterpret_cast<float*>(&selected_color));
 
                 ImGui::EndPopup();
             }
@@ -431,9 +427,9 @@ namespace gl3::engine::editor
                     {
                         selected_grid_cell->x, selected_grid_cell->y, 0.f
                     },
-                    selected_color_,
+                    selected_color,
                     selected_tag, is_triangle,
-                    "", {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, selected_z_rotation_,
+                    "", {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, selected_z_rotation,
                     generate_physics_comp
                 };
                 levelLoading::LevelManager::addObjectToCurrentLevel(object);
@@ -474,7 +470,7 @@ namespace gl3::engine::editor
 
     void EditorUISystem::update()
     {
-        if (!is_active || is_in_play_mode_) return;
+        if (!is_active || !game_.isPaused()) return;
         createCustomUI();
     }
 }

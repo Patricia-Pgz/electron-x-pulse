@@ -11,7 +11,7 @@ namespace gl3::game
     {
     public:
         Game(int width, int height, const std::string& title, const glm::vec3& camPos, float camZoom);
-        [[nodiscard]] input::PlayerInputSystem* getPlayerInputSystem() const {return player_input_system_;}
+        [[nodiscard]] input::PlayerInputSystem* getPlayerInputSystem() const { return player_input_system_; }
 
     private:
         void start() override;
@@ -23,6 +23,5 @@ namespace gl3::game
         input::PlayerInputSystem* player_input_system_;
 
         float unit = 1.f;
-        bool loadLevelFromFile = true;
     };
 }

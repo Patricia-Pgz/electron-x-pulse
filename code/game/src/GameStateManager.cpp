@@ -14,7 +14,7 @@ namespace gl3::game
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::GameStateChange>().connect<&
             GameStateManager::onGameStateChange>(this);
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::EditeModeButtonPress>().connect<&
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::EditModeButtonPress>().connect<&
             GameStateManager::onEditModeChange>(this);
         onUIInitHandle = game.getUISystem()->onInitialized.addListener([this]()
         {
@@ -26,7 +26,7 @@ namespace gl3::game
     {
         engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::GameStateChange>().disconnect<&
             GameStateManager::onGameStateChange>(this);
-        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::EditeModeButtonPress>().disconnect<&
+        engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::EditModeButtonPress>().disconnect<&
             GameStateManager::onEditModeChange>(this);
         game.getUISystem()->onInitialized.removeListener(onUIInitHandle);
     }
@@ -39,7 +39,7 @@ namespace gl3::game
         game.getAudioSystem()->loadOneShot("crash", "crash.wav");
     }
 
-    void GameStateManager::onEditModeChange(const engine::ui::EditeModeButtonPress& event)
+    void GameStateManager::onEditModeChange(const engine::ui::EditModeButtonPress& event)
     {
         is_edit_mode = event.edit;
     }

@@ -13,14 +13,20 @@ namespace gl3::engine::ecs
     static constexpr auto GROUND_SENSOR_TAG = "bottomCollider";
     static constexpr auto RIGHT_SENSOR_TAG = "rightCollider";
 
-    ///parent for grouping objects, includes parent entity and the child's local offset to it.
-    struct Parent
+    ///Component for grouping objects, includes parent entity and the child's local offset to it. @note Add this to child entities
+    struct ParentComponent
     {
-        entt::entity parentObject;
+        entt::entity parentEntity;
         glm::vec2 localOffset;
     };
 
-    ///transform properties for entity, later used for rendering
+    ///Parent component for grouped objects. Has a vector of child entities.
+    struct GroupComponent
+    {
+        std::vector<entt::entity> childEntities;
+    };
+
+    ///Transform properties for entity, later used for rendering
     struct TransformComponent
     {
         explicit TransformComponent(const glm::vec3 position = {0.0f, 0.0f, 0.0f},

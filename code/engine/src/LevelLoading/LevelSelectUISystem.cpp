@@ -164,7 +164,7 @@ namespace gl3::engine::levelLoading
         if (ImGui::Button("Edit Mode", editButtonSize))
         {
             editModeActive = !editModeActive;
-            ecs::EventDispatcher::dispatcher.trigger(ui::EditeModeButtonPress{editModeActive});
+            ecs::EventDispatcher::dispatcher.trigger(ui::EditModeButtonPress{editModeActive});
         }
         if (pushedStyle)
         {

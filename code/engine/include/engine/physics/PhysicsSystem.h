@@ -1,6 +1,5 @@
 #pragma once
 #include "PlayerContactListener.h"
-#include "engine/Constants.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/ecs/System.h"
 #include "engine/Game.h"
@@ -23,6 +22,10 @@ namespace gl3::engine::physics
                 PhysicsSystem::onPlayerJump>(this);
         }
 
+
+        using event_t = events::Event<PhysicsSystem>;
+        event_t onAfterPhysicsStep;
+
         /**
          * Runs the physics step, checks for player collisions/contacts, and moves entities based on their physics bodies, if they did not move out of the left border of the window.
          */
@@ -30,10 +33,10 @@ namespace gl3::engine::physics
         {
             if (!game_.getRegistry().valid(game_.getPlayer()) || !is_active) return;
             accumulator += game_.getDeltaTime();
-            if (accumulator >= fixedTimeStep)
+            if (accumulator >= fixed_time_step)
             {
                 const b2WorldId world = game_.getPhysicsWorld();
-                b2World_Step(world, fixedTimeStep, subStepCount);
+                b2World_Step(world, fixed_time_step, sub_step_count);
                 PlayerContactListener::checkForPlayerCollision(game_.getRegistry(), game_.getPlayer(),
                                                                world);
 
@@ -50,7 +53,6 @@ namespace gl3::engine::physics
                     {
                         continue;
                     }
-                    auto [x, y] = b2Body_GetPosition(physics_comp.body);
                     auto& transformComp = entities.get<ecs::TransformComponent>(entity);
 
                     //Check if most right point of object is still in window
@@ -68,31 +70,34 @@ namespace gl3::engine::physics
                     }
                 }
 
-                //Wait for physics step, before setting player grounded from other classes/events
+                onAfterPhysicsStep.invoke();
+
+                //wait for physics step, before setting player grounded from other classes/events
                 if (player_jump_this_frame)
                 {
                     PlayerContactListener::playerGrounded = !player_jump_this_frame;
                     player_jump_this_frame = false;
                 }
+
                 processDeletions();
-                accumulator -= fixedTimeStep;
+                accumulator -= fixed_time_step;
             }
         };
 
+        /**
+         * Updates grouped objects safely after the physics step, to not interfere with registry changes.
+         */
         void updateGroupObjects() const
         {
             //update grouped objects based on parent physics body
             auto& registry = game_.getRegistry();
-            auto groupObjs = registry.view<ecs::TransformComponent, ecs::Parent>();
+            auto groupObjs = registry.view<ecs::TransformComponent, ecs::ParentComponent>();
 
             for (auto obj : groupObjs)
             {
-                auto& parentComp = groupObjs.get<ecs::Parent>(obj);
-                if (!registry.valid(parentComp.parentObject)) return;
-
-                //TODO parent entity iwie anders finden? Existiert zu diesem Zeitpunkt nicht
-                auto parentBody = registry.get<ecs::PhysicsComponent>(parentComp.parentObject).
-                                           body;
+                auto& parentComp = groupObjs.get<ecs::ParentComponent>(obj);
+                if (!registry.valid(parentComp.parentEntity)) return;
+                auto parentBody = registry.get<ecs::PhysicsComponent>(parentComp.parentEntity).body;
                 auto parentPos = b2Body_GetPosition(parentBody);
 
                 auto& transform = groupObjs.get<ecs::TransformComponent>(obj);
@@ -106,10 +111,15 @@ namespace gl3::engine::physics
         {
             if (b2Body_IsValid(body))
             {
-                bodiesToDelete.push_back(body);
+                bodies_to_delete.push_back(body);
             }
         }
 
+        /**
+         *Generates the GameObject (position & scale) for an AABB for grouped objects. For later use to instantiate a parent entity as Physics body for all its children.
+         * @param objects Objects to group under one placeholder parent.
+         * @return An AABB parent GameObject to generate an entity from to add as part of a ParentComponent to the grouped objects.
+         */
         static GameObject computeGroupAABB(const std::vector<GameObject>& objects)
         {
             if (objects.empty())
@@ -160,23 +170,26 @@ namespace gl3::engine::physics
         }
 
     private:
-        const float fixedTimeStep = 1.0f / 60.0f;
-        const int subStepCount = 4;
+        const float fixed_time_step = 1.0f / 60.0f;
+        const int sub_step_count = 4;
         float accumulator = 0.f;
         bool player_jump_this_frame = false;
 
-        std::vector<b2BodyId> bodiesToDelete;
+        std::vector<b2BodyId> bodies_to_delete;
 
+        /**
+         *Safely deletes the marked physics bodies and shapes after finishing the physics step.
+         */
         void processDeletions()
         {
-            for (const auto body : bodiesToDelete)
+            for (const auto body : bodies_to_delete)
             {
                 if (b2Body_IsValid(body))
                 {
                     b2DestroyBody(body);
                 }
             }
-            bodiesToDelete.clear();
+            bodies_to_delete.clear();
         }
 
         void onPlayerJump(const ecs::PlayerJump& event)
