@@ -8,6 +8,7 @@
 #include "../../../extern/box2d/src/body.h"
 
 #include "Game.h"
+#include "engine/Constants.h"
 #include "engine/physics/PhysicsSystem.h"
 
 namespace gl3::game::state
@@ -83,7 +84,18 @@ namespace gl3::game::state
         auto& registry = game.getRegistry();
         const auto physicsWorld = game.getPhysicsWorld();
         current_level = engine::levelLoading::LevelManager::loadLevelByID(level_index);
-
+        int width, height;
+        glfwGetWindowSize(game.getWindow(), &width, &height);
+        GameObject sky = {};
+        sky.tag = "sky";
+        sky.generatePhysicsComp = false;
+        sky.vertexShaderPath = "shaders/gradient.vert";
+        sky.fragmentShaderPath = "shaders/gradient.frag";
+        sky.gradientBottomColor = current_level->gradientBottomColor;
+        sky.gradientTopColor = current_level->gradientTopColor;
+        sky.scale.x = static_cast<float>(width) / pixelsPerMeter;
+        sky.scale.y = static_cast<float>(height) / pixelsPerMeter;
+        engine::ecs::EntityFactory::createDefaultEntity(sky, registry, physicsWorld);
         for (auto& object : current_level->backgrounds)
         {
             const auto bgConfig = updateBackgrounds(game.getContext().getWorldWindowBounds());
@@ -411,8 +423,6 @@ namespace gl3::game::state
         if (!paused)
         {
             levelTime += deltaTime;
-            engine::visual_effects::Parallax::moveBgObjectsParallax( //TODO über UVs
-                game.getRegistry(), deltaTime, current_level->currentLevelSpeed);
             delayLevelEnd(deltaTime);
         }
     }

@@ -9,40 +9,19 @@
     0.439,
     1
   ],
+  "gradientTopColor": [
+    0.098,
+    0.125,
+    0.290,
+    0.5
+  ],
+  "gradientBottomColor": [
+    1.0,
+    0.549,
+    0.353,
+    0.5
+  ],
   "backgrounds": [
-    {
-      "position": [
-        0,
-        1.55,
-        0
-      ],
-      "scale": [
-        12.8,
-        4.1,
-        1
-      ],
-      "rotation": 0,
-      "color": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "tag": "background",
-      "isTriangle": false,
-      "textureName": "1",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": false,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "parallaxFactor": 0.1
-    },
     {
       "position": [
         0,
@@ -74,7 +53,7 @@
       "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
-      "parallaxFactor": 0.3
+      "parallaxFactor": 0.05
     },
     {
       "position": [
@@ -107,7 +86,7 @@
       "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
-      "parallaxFactor": 0.5
+      "parallaxFactor": 0.2
     },
     {
       "position": [
@@ -140,7 +119,7 @@
       "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
-      "parallaxFactor": 0.7
+      "parallaxFactor": 0.5
     },
     {
       "position": [
@@ -173,7 +152,7 @@
       "generateRenderComp": true,
       "vertexShaderPath": "",
       "fragmentShaderPath": "",
-      "parallaxFactor": 0.9
+      "parallaxFactor": 0.7
     },
     {
       "position": [

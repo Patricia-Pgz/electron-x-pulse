@@ -21,6 +21,13 @@ namespace gl3::engine::levelLoading
         {
             return loaded_levels_;
         }
+        static Level* getMostRecentLoadedLevel()
+        {
+            if (auto it = loaded_levels_.find(most_recent_loaded_lvl_ID); it != loaded_levels_.end()) {
+                return it->second.get();
+            }
+            return nullptr; // not loaded
+        }
 
     private:
         static std::vector<LevelMeta> meta_data_;

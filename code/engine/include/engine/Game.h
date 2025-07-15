@@ -6,8 +6,6 @@
 #include "box2d/box2d.h"
 #include <entt/entity/registry.hpp>
 
-#include "VisualEffects.h"
-
 
 namespace gl3::engine
 {

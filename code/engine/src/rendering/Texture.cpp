@@ -40,8 +40,8 @@ namespace gl3::engine::rendering
         glGenerateMipmap(GL_TEXTURE_2D);
         std::string filename = std::filesystem::path(path).filename().string();
         std::ranges::transform(filename, filename.begin(), ::tolower);
-        is_tileset_ = filename.find("tileset") != std::string::npos;
-        tile_uvs_ = isTileSet() ? generateTileUVs(tilesX, tilesY) : tile_uvs_;
+        is_tileset = filename.find("tileset") != std::string::npos;
+        tile_uvs = isTileSet() ? generateTileUVs(tilesX, tilesY) : tile_uvs;
         stbi_image_free(data);
     }
 

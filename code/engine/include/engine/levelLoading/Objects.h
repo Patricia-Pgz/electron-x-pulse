@@ -18,6 +18,8 @@ struct GameObject
     float parallaxFactor = 0.f;
     std::string vertexShaderPath;
     std::string fragmentShaderPath;
+    glm::vec4 gradientTopColor = {1, 1, 1, 1};
+    glm::vec4 gradientBottomColor = {1, 1, 1, 1};
 };
 
 struct GameObjectGroup
@@ -41,6 +43,8 @@ struct Level
     float playerStartPosX = 0.f;
     float groundLevel = 0.f;
     glm::vec4 clearColor = {1, 1, 1, 1};
+    glm::vec4 gradientTopColor = {1, 1, 1, 1};
+    glm::vec4 gradientBottomColor = {1, 1, 1, 1};
     std::vector<GameObject> backgrounds;
     std::vector<GameObjectGroup> groups;
     std::vector<GameObject> objects;

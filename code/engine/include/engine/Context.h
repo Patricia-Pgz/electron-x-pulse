@@ -32,8 +32,6 @@ namespace gl3::engine::context
                          glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 0.0f), float camZoom = 1.0f);
         ~Context();
         void run(const Callback& update);
-        void calculateWorldWindowBounds();
-
         void setCameraPosAndCenter(const glm::vec3 position, const glm::vec3 center)
         {
             cameraPosition = position;
@@ -54,11 +52,11 @@ namespace gl3::engine::context
         [[nodiscard]] float getCurrentZoom() const { return zoom; }
         void setClearColor(const glm::vec4& color) { clearColor = color; }
 
+        void calculateWorldWindowBounds();
         [[nodiscard]] std::vector<float>& getWorldWindowBounds()
         {
             return windowBounds;
         }
-
         [[nodiscard]] bool isInVisibleWindow(const glm::vec2& position, glm::vec2 scale,
                                              float margin = 0.f) const;
 

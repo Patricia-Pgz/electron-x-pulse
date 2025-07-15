@@ -79,6 +79,12 @@ namespace gl3::engine::rendering
         glUniform1fv(location, count, values);
     }
 
+    void Shader::setVec2(const std::string& uniformName, const glm::vec2& value) const
+    {
+        const GLint location = glGetUniformLocation(shaderProgram, uniformName.c_str());
+        glUniform2fv(location, 1, glm::value_ptr(value));
+    }
+
     void Shader::setVec3(const std::string& uniformName, const glm::vec3& value) const
     {
         const GLint location = glGetUniformLocation(shaderProgram, uniformName.c_str());

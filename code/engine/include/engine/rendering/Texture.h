@@ -24,19 +24,19 @@ namespace gl3::engine::rendering
         [[nodiscard]] GLuint getID() const { return ID; }
         [[nodiscard]] int getWidth() const { return width; }
         [[nodiscard]] int getHeight() const { return height; }
-        [[nodiscard]] bool isTileSet() const { return is_tileset_; }
+        [[nodiscard]] bool isTileSet() const { return is_tileset; }
 
         // For tile-based UVs
         [[nodiscard]] static glm::vec4 getTileUV(int tileX, int tileY, int tilesX, int tilesY);
         [[nodiscard]] static std::vector<glm::vec4> generateTileUVs(int tilesX = 8, int tilesY = 8);
-        [[nodiscard]] const std::vector<glm::vec4>& getTileUVs() const { return tile_uvs_; }
+        [[nodiscard]] const std::vector<glm::vec4>& getTileUVs() const { return tile_uvs; }
 
     private:
         GLuint ID = 0;
         int width = 0;
         int height = 0;
-        bool is_tileset_ = false;
-        std::vector<glm::vec4> tile_uvs_;
+        bool is_tileset = false;
+        std::vector<glm::vec4> tile_uvs;
         std::string file_name;
     };
 }

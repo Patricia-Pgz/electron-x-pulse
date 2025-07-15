@@ -54,8 +54,11 @@ namespace gl3::engine::ecs
         rendering::Shader shader;
         rendering::Mesh mesh;
         glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Default red
+        glm::vec4 gradientTopColor = {1, 1, 1, 1}; //can be used for gradient color
+        glm::vec4 gradientBottomColor = {1, 1, 1, 1};
         const rendering::Texture* texture = nullptr;
         glm::vec4 uv;
+        glm::vec2 uvOffset = {0.0f, 0.0f};
         bool isActive = true;
     };
 
@@ -319,8 +322,11 @@ namespace gl3::engine::ecs
                 rendering::Shader(vertexPath, fragmentPath),
                 rendering::Mesh(vertices, indices),
                 object.color,
+                object.gradientTopColor,
+                object.gradientBottomColor,
                 texture,
-                object.uv);
+                object.uv
+            );
         }
 
         /**

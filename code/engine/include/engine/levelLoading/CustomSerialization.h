@@ -46,6 +46,8 @@ struct glz::meta<GameObject>
         "generateRenderComp", &T::generateRenderComp,
         "vertexShaderPath", &T::vertexShaderPath,
         "fragmentShaderPath", &T::fragmentShaderPath,
+        "gradientTopColor", &T::gradientTopColor,
+"gradientBottomColor", &T::gradientBottomColor,
         "parallaxFactor", &T::parallaxFactor
     );
 };
@@ -71,6 +73,8 @@ struct glz::meta<Level>
         "playerStartPosX", &T::playerStartPosX,
         "groundLevel", &T::groundLevel,
         "clearColor", &T::clearColor,
+        "gradientTopColor", &T::gradientTopColor,
+        "gradientBottomColor", &T::gradientBottomColor,
         "backgrounds", &T::backgrounds,
         "groups", &T::groups,
         "objects", &T::objects
