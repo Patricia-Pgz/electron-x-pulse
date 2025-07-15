@@ -11,15 +11,7 @@ namespace gl3::game::ui
     public:
         explicit InGameMenuUI(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game)
         {
-            engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::EditorPlayModeChange>().connect<&
-                InGameMenuUI::onPlayModeChange>(this);
         };
-
-        ~InGameMenuUI() override
-        {
-            engine::ecs::EventDispatcher::dispatcher.sink<engine::ecs::EditorPlayModeChange>().disconnect<&
-                InGameMenuUI::onPlayModeChange>(this);
-        }
 
         void update() override;
 
@@ -28,11 +20,8 @@ namespace gl3::game::ui
             is_active = setActive;
             show_ui = false;
             escape_pressed = false;
-        }
-
-        void setEditMode(bool editMode)
-        {
-            is_edit_mode = editMode;
+            play_mode_before_pause = false;
+            play_mode_saved = false;
         }
 
         void showUI(const bool showUI)
@@ -41,10 +30,9 @@ namespace gl3::game::ui
         }
 
     private:
-        void onPlayModeChange(const engine::ecs::EditorPlayModeChange& event);
         void DrawInGameUI(const ImGuiViewport* viewport, ImFont* font);
-        bool is_edit_mode = false;
-        bool is_play_mode = false;
+        bool play_mode_before_pause = false;
+        bool play_mode_saved = false;
         bool escape_pressed = false;
         bool show_ui = false;
         float volume = 1.0f;

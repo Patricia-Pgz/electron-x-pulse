@@ -25,11 +25,6 @@ namespace gl3::game::ui
         ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
     }
 
-    void InGameMenuUI::onPlayModeChange(const engine::ecs::EditorPlayModeChange& event)
-    {
-        is_play_mode = event.isPlayMode;
-    }
-
     void InGameMenuUI::DrawInGameUI(const ImGuiViewport* viewport, ImFont* font)
     {
         const auto viewportSize = viewport->Size;
@@ -108,13 +103,20 @@ namespace gl3::game::ui
         {
             if (!escape_pressed)
             {
+                if (!play_mode_saved)
+                {
+                    play_mode_before_pause = game_.isPaused(); //save play mode before toggling
+                    play_mode_saved = true; //mark as saved
+                    engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{true});
+                }
+                else
+                {
+                    engine::ecs::EventDispatcher::dispatcher.trigger(
+                        engine::ui::PauseLevelEvent{play_mode_before_pause});
+                    play_mode_saved = false;
+                }
                 escape_pressed = true;
                 show_ui = !show_ui;
-                //Don't pause/restart lvl if in editor and currently not play testing
-                if (!is_edit_mode || !game_.isPaused())
-                {
-                    engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{show_ui});
-                }
             }
         }
         else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)

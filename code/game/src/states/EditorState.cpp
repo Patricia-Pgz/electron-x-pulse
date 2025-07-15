@@ -1,5 +1,6 @@
 #include "EditorState.h"
 
+#include "Game.h"
 #include "engine/userInterface/UIEvents.h"
 
 namespace gl3::game::state
@@ -12,9 +13,8 @@ namespace gl3::game::state
             if (!enter_pressed)
             {
                 enter_pressed = true;
-                play_test = !play_test;
-                editor_ui_system->setActive(!play_test);
-                engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::RestartLevelEvent{play_test});
+                //if level was paused, start it and vice versa
+                engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::RestartLevelEvent{game.isPaused()});
                 game.getContext().setCameraPosAndCenter({0.0f, 0.0f, 1.0f}, {0.f, 0.f, 0.f});
             }
         }

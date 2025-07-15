@@ -23,7 +23,6 @@ namespace gl3::game::state
         void onExit() override
         {
             enter_pressed = false;
-            play_test = false;
             editor_ui_system->setActive(false);
             game.getContext().setCameraPosAndCenter({0.0f, 0.0f, 1.0f}, {0.f, 0.f, 0.f});
         }
@@ -33,6 +32,5 @@ namespace gl3::game::state
     private:
         engine::editor::EditorUISystem* editor_ui_system;
         bool enter_pressed = false;
-        bool play_test = false;
     };
 }

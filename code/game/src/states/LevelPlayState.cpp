@@ -163,7 +163,6 @@ namespace gl3::game::state
         game.getContext().setClearColor(current_level->clearColor);
 
         level_instantiated = true;
-        menu_ui->setEditMode(edit_mode);
         instruction_ui->setEditMode(edit_mode);
         instruction_ui->pauseTimer(edit_mode); //pause timer if in edit mode
 
@@ -251,8 +250,7 @@ namespace gl3::game::state
     {
         //game will be reset and stopped if player restarts level and then presses enter in edit mode
         reloadLevel();
-        if (!event.startLevel || edit_mode) return;
-        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::EditorPlayModeChange{true});
+        if (!event.startLevel) return;
         startLevel();
     }
 
