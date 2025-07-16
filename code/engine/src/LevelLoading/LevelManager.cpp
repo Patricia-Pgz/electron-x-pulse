@@ -123,6 +123,18 @@ namespace gl3::engine::levelLoading
                       });
     }
 
+    void LevelManager::addGroupToCurrentLevel(const GameObjectGroup& group)
+    {
+        auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
+        if (it == loaded_levels_.end() || !it->second)
+        {
+            throw std::runtime_error("No current level loaded to add group.");
+        }
+
+        Level* level = it->second.get();
+        level->groups.push_back(group);
+    }
+
 
     void LevelManager::saveCurrentLevel()
     {

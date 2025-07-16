@@ -4,16 +4,32 @@
  * For game events, @see GameEvents.h
  */
 #pragma once
+#include "engine/levelloading/Objects.h"
 
 namespace gl3::engine::ui
 {
-
     /**
  * Button to change to edit mode was pressed.
  */
     struct EditModeButtonPress
     {
         bool edit = true;
+    };
+
+    /**
+     * Tile was selected in editor. This signals to place it in game.
+     */
+    struct EditorTileSelectedEvent
+    {
+        GameObject object;
+        bool group = false;
+    };
+
+    /**
+     * Signals to generate a group from (previously saved) tile selection.
+     */
+    struct EditorGenerateGroup
+    {
     };
 
 

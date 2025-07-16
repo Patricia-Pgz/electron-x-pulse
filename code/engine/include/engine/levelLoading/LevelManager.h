@@ -15,6 +15,7 @@ namespace gl3::engine::levelLoading
         static Level* loadLevelByID(int ID);
         static void addObjectToCurrentLevel(const GameObject& object);
         static void removeObjectAtPosition(glm::vec2 position);
+        static void addGroupToCurrentLevel(const GameObjectGroup& group);
         static void saveCurrentLevel();
 
         static const std::unordered_map<int, std::unique_ptr<Level>>& getLevels()

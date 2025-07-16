@@ -10,11 +10,6 @@ namespace gl3::engine::editor
 {
     constexpr int tilesPerRow = 4;
 
-    struct TileSelectedEvent //TODO evtl in UIEvent header
-    {
-        GameObject object;
-    };
-
     class EditorUISystem final : public ui::IUISubsystem
     {
     public:
@@ -55,17 +50,19 @@ namespace gl3::engine::editor
         void createCustomUI();
 
         void visualizeTileSetUI(const rendering::Texture& texture, const std::string& name,
-                                float tileSize) const;
+                                float tileSize);
 
         void visualizeSingleTextureUI(const rendering::Texture& texture, const std::string& name,
-                                      float tileSize) const;
+                                      float tileSize);
 
         void highlightSelectedButton(const std::vector<std::string>& buttonIDs);
 
         bool is_mouse_in_edit = true;
+        bool multi_select_enabled = false;
+        bool compute_group_AABB = false;
         ImVec2 grid_center = {0.f, 0.f};
         float grid_offset = 0.5f;
-        std::unique_ptr<ImVec2> selected_grid_cell = std::make_unique<ImVec2>(0.0f, 0.0f);
+        std::vector<ImVec2> selected_grid_cells;
         glm::vec2 selected_scale = {1.f, 1.f};
         char tag_input_buffer[128] = "";
         std::string selected_tag = "platform";

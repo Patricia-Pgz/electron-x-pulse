@@ -38,12 +38,22 @@ namespace gl3::engine::editor
         for (auto& entity : view)
         {
             const auto transform = view.get<ecs::TransformComponent>(entity);
-            if (transform.position.x == selected_grid_cell->x && transform.position.y == selected_grid_cell->y)
+
+            for (const auto& cell : selected_grid_cells)
             {
-                ecs::EntityFactory::markEntityForDeletion(entity);
+                if (transform.position.x == cell.x && transform.position.y == cell.y)
+                {
+                    ecs::EntityFactory::markEntityForDeletion(entity);
+                    break; // This entity matched → no need to check other cells.
+                }
             }
         }
-        levelLoading::LevelManager::removeObjectAtPosition({selected_grid_cell->x, selected_grid_cell->y});
+
+        // Also remove any level objects at these positions:
+        for (const auto& cell : selected_grid_cells)
+        {
+            levelLoading::LevelManager::removeObjectAtPosition({cell.x, cell.y});
+        }
     }
 
 
@@ -86,16 +96,37 @@ namespace gl3::engine::editor
             const int cellX = static_cast<int>(std::round(worldPos.x));
             const int cellY = static_cast<int>(std::round(worldPos.y));
 
-            if (const ImVec2 clickedCell(static_cast<float>(cellX), static_cast<float>(cellY));
-                selected_grid_cell &&
-                selected_grid_cell->x == clickedCell.x && selected_grid_cell->y == clickedCell.y)
+            ImVec2 clickedCell(static_cast<float>(cellX), static_cast<float>(cellY));
+
+            if (multi_select_enabled)
             {
-                selected_grid_cell.reset();
+                auto it = std::find_if(selected_grid_cells.begin(), selected_grid_cells.end(),
+                                       [&](const ImVec2& cell)
+                                       {
+                                           return cell.x == clickedCell.x && cell.y == clickedCell.y;
+                                       });
+
+                if (it != selected_grid_cells.end())
+                {
+                    selected_grid_cells.erase(it); // Deselect if already selected
+                }
+                else
+                {
+                    selected_grid_cells.push_back(clickedCell);
+                }
             }
             else
             {
-                // Store selected grid cell in world coords
-                selected_grid_cell = std::make_unique<ImVec2>(static_cast<float>(cellX), static_cast<float>(cellY));
+                if (!selected_grid_cells.empty() &&
+                    selected_grid_cells[0].x == clickedCell.x && selected_grid_cells[0].y == clickedCell.y)
+                {
+                    selected_grid_cells.clear();
+                }
+                else
+                {
+                    selected_grid_cells.clear();
+                    selected_grid_cells.push_back(clickedCell);
+                }
             }
         }
 
@@ -130,22 +161,20 @@ namespace gl3::engine::editor
             ImGui::EndTooltip();
         }
 
-        if (selected_grid_cell)
+        for (const auto& cell : selected_grid_cells)
         {
-            // Convert cell (world grid pos) to ImGui screen space for drawing
-            const auto screenPos = rendering::MVPMatrixHelper::toScreen(game_.getContext(), selected_grid_cell->x,
-                                                                        selected_grid_cell->y);
+            const auto screenPos = rendering::MVPMatrixHelper::toScreen(
+                game_.getContext(), cell.x, cell.y);
 
-            // Calculate top-left and bottom-right in screen space for the cell rect
-            const ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
-            const ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
+            ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
+            ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
 
             drawList->AddRect(topLeft, bottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
         }
     }
 
     void EditorUISystem::visualizeTileSetUI(const rendering::Texture& texture, const std::string& name,
-                                            const float tileSize) const
+                                            const float tileSize)
     {
         ImGui::Text(name.c_str());
         const auto& uvs = texture.getTileUVs();
@@ -166,19 +195,22 @@ namespace gl3::engine::editor
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
 
             if (ImGui::ImageButton(buttonId.c_str(), texture.getID(),
-                                   ImVec2(tileSize, tileSize), uv0, uv1) && selected_grid_cell)
+                                   ImVec2(tileSize, tileSize), uv0, uv1) && !selected_grid_cells.empty())
             {
-                const GameObject object = {
-                    {
-                        selected_grid_cell->x, selected_grid_cell->y, 0.f
-                    },
-                    glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                    selected_tag, is_triangle,
-                    name, {selected_scale.x, selected_scale.y, 0.f}, uv, selected_z_rotation, generate_physics_comp
-                };
-                levelLoading::LevelManager::addObjectToCurrentLevel(object);
-                ecs::EventDispatcher::dispatcher.trigger(
-                    TileSelectedEvent{object});
+                for (const auto& cell : selected_grid_cells)
+                {
+                    const GameObject object = {
+                        {
+                            cell.x, cell.y, 0.f
+                        },
+                        glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                        selected_tag, is_triangle,
+                        name, {selected_scale.x, selected_scale.y, 0.f}, uv, selected_z_rotation, generate_physics_comp
+                    };
+                    ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, compute_group_AABB});
+                }
+                if (compute_group_AABB)ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
+                selected_grid_cells.clear();
             }
             if (ImGui::IsItemHovered())
             {
@@ -191,28 +223,33 @@ namespace gl3::engine::editor
     }
 
     void EditorUISystem::visualizeSingleTextureUI(const rendering::Texture& texture, const std::string& name,
-                                                  const float tileSize) const
+                                                  const float tileSize)
     {
         std::string btnID = name + "_full";
         ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet); // normal
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2); // hovered
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
         if (ImGui::ImageButton(btnID.c_str(), texture.getID(),
-                               ImVec2(tileSize, tileSize), ImVec2(0, 0), ImVec2(1, -1)) && selected_grid_cell)
+                               ImVec2(tileSize, tileSize), ImVec2(0, 0), ImVec2(1, -1))
+            && !selected_grid_cells.empty())
         {
-            const GameObject object = {
-                {
-                    selected_grid_cell->x, selected_grid_cell->y, 0.f
-                },
-                glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                selected_tag, is_triangle,
-                name, {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, selected_z_rotation,
-                generate_physics_comp
-            };
-            levelLoading::LevelManager::addObjectToCurrentLevel(object);
-
-            ecs::EventDispatcher::dispatcher.trigger(
-                TileSelectedEvent{object});
+            for (const auto& cell : selected_grid_cells)
+            {
+                const GameObject object = {
+                    {
+                        cell.x, cell.y, 0.f
+                    },
+                    glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                    selected_tag, is_triangle,
+                    name, {selected_scale.x, selected_scale.y, 0.f},
+                    {0, 0, 1, 1}, selected_z_rotation,
+                    generate_physics_comp
+                };
+                ecs::EventDispatcher::dispatcher.trigger(
+                    ui::EditorTileSelectedEvent{object, compute_group_AABB});
+            }
+            if (compute_group_AABB)ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
+            selected_grid_cells.clear();
         }
         if (ImGui::IsItemHovered())
         {
@@ -310,13 +347,36 @@ namespace gl3::engine::editor
             levelLoading::LevelManager::saveCurrentLevel();
         }
 
-        if (selected_grid_cell)
+        if (!selected_grid_cells.empty())
         {
             if (ImGui::Button("Delete Selected Element"))
             {
                 deleteAllAtSelectedPosition();
             }
         }
+        if (ImGui::Button(multi_select_enabled ? "Multi Select" : "Single Select"))
+        {
+            multi_select_enabled = !multi_select_enabled;
+            if (!multi_select_enabled)selected_grid_cells.clear();
+        }
+        if (multi_select_enabled)
+        {
+            if (ImGui::RadioButton("Generate Group Physics Collider", compute_group_AABB))
+            {
+                compute_group_AABB = !compute_group_AABB;
+                selected_grid_cells.clear();
+            }
+            if (compute_group_AABB)
+            {
+                if (ImGui::Button("Generate Group"))
+                {
+                    if (selected_grid_cells.empty())return;
+                    ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
+                    selected_grid_cells.clear();
+                }
+            }
+        }
+
         ImGui::Text("1.) Click on grid to select position");
 
         ImGui::Text("2.) Select shape:");
@@ -419,23 +479,25 @@ namespace gl3::engine::editor
 
                 ImGui::EndPopup();
             }
-            else if (pickerWasOpen)
+            else if (pickerWasOpen && !selected_grid_cells.empty())
             {
                 pickerWasOpen = false;
 
-                const GameObject object = {
-                    {
-                        selected_grid_cell->x, selected_grid_cell->y, 0.f
-                    },
-                    selected_color,
-                    selected_tag, is_triangle,
-                    "", {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, selected_z_rotation,
-                    generate_physics_comp
-                };
-                levelLoading::LevelManager::addObjectToCurrentLevel(object);
-
-                ecs::EventDispatcher::dispatcher.trigger(
-                    TileSelectedEvent{object});
+                for (const auto& cell : selected_grid_cells)
+                {
+                    const GameObject object = {
+                        {
+                            cell.x, cell.y, 0.f
+                        },
+                        selected_color,
+                        selected_tag, is_triangle,
+                        "", {selected_scale.x, selected_scale.y, 0.f}, {0, 0, 1, 1}, selected_z_rotation,
+                        generate_physics_comp
+                    };
+                    ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, compute_group_AABB});
+                }
+                if (compute_group_AABB)ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
+                selected_grid_cells.clear();
             }
         }
         else
