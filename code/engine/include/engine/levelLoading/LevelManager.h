@@ -14,8 +14,9 @@ namespace gl3::engine::levelLoading
         static const std::vector<LevelMeta>& getMetaData() { return meta_data_; }
         static Level* loadLevelByID(int ID);
         static void addObjectToCurrentLevel(const GameObject& object);
-        static void removeObjectAtPosition(glm::vec2 position);
+        static void removeAllObjectsAtPosition(glm::vec2 position);
         static void addGroupToCurrentLevel(const GameObjectGroup& group);
+        static void removeGroupByName(const std::string& groupName);
         static void saveCurrentLevel();
 
         static const std::unordered_map<int, std::unique_ptr<Level>>& getLevels()

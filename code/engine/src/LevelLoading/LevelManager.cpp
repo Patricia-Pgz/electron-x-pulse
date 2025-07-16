@@ -104,7 +104,7 @@ namespace gl3::engine::levelLoading
         level->objects.push_back(object);
     }
 
-    void LevelManager::removeObjectAtPosition(glm::vec2 position)
+    void LevelManager::removeAllObjectsAtPosition(glm::vec2 position)
     {
         auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
         if (it == loaded_levels_.end() || !it->second)
@@ -119,8 +119,30 @@ namespace gl3::engine::levelLoading
         std::erase_if(objects,
                       [&](const GameObject& obj)
                       {
-                          return distance(glm::vec2(obj.position), position) < 0.01f;
+                          return obj.position.x == position.x && obj.position.y == position.y && obj.tag != "background"
+                              && obj.tag != "ground" && obj.tag != "sky";
                       });
+        std::vector<std::string> groupsToRemove;
+
+        for (auto& group : level->groups)
+        {
+            auto& groupObjs = group.children;
+            std::erase_if(groupObjs, [&](const GameObject& obj)
+            {
+                return obj.position.x == position.x && obj.position.y == position.y;
+            });
+
+            if (group.children.empty())
+            {
+                groupsToRemove.push_back(group.name);
+            }
+        }
+
+        // erase emptied groups
+        for (const auto& name : groupsToRemove)
+        {
+            removeGroupByName(name);
+        }
     }
 
     void LevelManager::addGroupToCurrentLevel(const GameObjectGroup& group)
@@ -133,6 +155,23 @@ namespace gl3::engine::levelLoading
 
         Level* level = it->second.get();
         level->groups.push_back(group);
+    }
+
+    void LevelManager::removeGroupByName(const std::string& groupName)
+    {
+        auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
+        if (it == loaded_levels_.end() || !it->second)
+        {
+            throw std::runtime_error("No current level loaded to remove group.");
+        }
+
+        Level* level = it->second.get();
+        auto& groups = level->groups;
+
+        std::erase_if(groups, [&](const GameObjectGroup& group)
+        {
+            return group.name == groupName;
+        });
     }
 
 

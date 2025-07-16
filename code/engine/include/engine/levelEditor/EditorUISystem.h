@@ -63,6 +63,7 @@ namespace gl3::engine::editor
         ImVec2 grid_center = {0.f, 0.f};
         float grid_offset = 0.5f;
         std::vector<ImVec2> selected_grid_cells;
+        std::vector<ImVec2> selected_group_cells;
         glm::vec2 selected_scale = {1.f, 1.f};
         char tag_input_buffer[128] = "";
         std::string selected_tag = "platform";

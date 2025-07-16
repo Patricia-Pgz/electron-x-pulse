@@ -33,18 +33,18 @@ namespace gl3::engine::editor
      */
     void EditorUISystem::deleteAllAtSelectedPosition() const
     {
-        const auto view = game_.getRegistry().view<ecs::TransformComponent>();
+        const auto view = game_.getRegistry().view<ecs::TransformComponent, ecs::TagComponent>();
 
         for (auto& entity : view)
         {
             const auto transform = view.get<ecs::TransformComponent>(entity);
-
+            const auto tag = view.get<ecs::TagComponent>(entity).tag;
+            if (tag == "background" || tag == "ground" || tag == "sky") continue;
             for (const auto& cell : selected_grid_cells)
             {
                 if (transform.position.x == cell.x && transform.position.y == cell.y)
                 {
                     ecs::EntityFactory::markEntityForDeletion(entity);
-                    break; // This entity matched → no need to check other cells.
                 }
             }
         }
@@ -52,7 +52,7 @@ namespace gl3::engine::editor
         // Also remove any level objects at these positions:
         for (const auto& cell : selected_grid_cells)
         {
-            levelLoading::LevelManager::removeObjectAtPosition({cell.x, cell.y});
+            levelLoading::LevelManager::removeAllObjectsAtPosition({cell.x, cell.y});
         }
     }
 
@@ -171,6 +171,16 @@ namespace gl3::engine::editor
 
             drawList->AddRect(topLeft, bottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
         }
+        for (auto& cell : selected_group_cells)
+        {
+            const auto screenPos = rendering::MVPMatrixHelper::toScreen(
+                game_.getContext(), cell.x, cell.y);
+
+            ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
+            ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
+
+            drawList->AddRect(topLeft, bottomRight, IM_COL32(0, 0, 255, 255), 0.0f, 0, 2.0f);
+        }
     }
 
     void EditorUISystem::visualizeTileSetUI(const rendering::Texture& texture, const std::string& name,
@@ -208,8 +218,11 @@ namespace gl3::engine::editor
                         name, {selected_scale.x, selected_scale.y, 0.f}, uv, selected_z_rotation, generate_physics_comp
                     };
                     ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, compute_group_AABB});
+                    if (compute_group_AABB)
+                    {
+                        selected_group_cells.push_back(cell);
+                    }
                 }
-                if (compute_group_AABB)ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
                 selected_grid_cells.clear();
             }
             if (ImGui::IsItemHovered())
@@ -247,8 +260,11 @@ namespace gl3::engine::editor
                 };
                 ecs::EventDispatcher::dispatcher.trigger(
                     ui::EditorTileSelectedEvent{object, compute_group_AABB});
+                if (compute_group_AABB)
+                {
+                    selected_group_cells.push_back(cell);
+                }
             }
-            if (compute_group_AABB)ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
             selected_grid_cells.clear();
         }
         if (ImGui::IsItemHovered())
@@ -347,6 +363,8 @@ namespace gl3::engine::editor
             levelLoading::LevelManager::saveCurrentLevel();
         }
 
+        ImGui::SameLine();
+
         if (!selected_grid_cells.empty())
         {
             if (ImGui::Button("Delete Selected Element"))
@@ -354,6 +372,7 @@ namespace gl3::engine::editor
                 deleteAllAtSelectedPosition();
             }
         }
+        ImGui::Separator();
         if (ImGui::Button(multi_select_enabled ? "Multi Select" : "Single Select"))
         {
             multi_select_enabled = !multi_select_enabled;
@@ -365,17 +384,26 @@ namespace gl3::engine::editor
             {
                 compute_group_AABB = !compute_group_AABB;
                 selected_grid_cells.clear();
+                selected_group_cells.clear();
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Tracks all Tiles placed until Generate Group");
             }
             if (compute_group_AABB)
             {
                 if (ImGui::Button("Generate Group"))
                 {
-                    if (selected_grid_cells.empty())return;
-                    ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
-                    selected_grid_cells.clear();
+                    if (!selected_group_cells.empty())
+                    {
+                        ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
+                        selected_grid_cells.clear();
+                        selected_group_cells.clear();
+                    }
                 }
             }
         }
+        ImGui::Separator();
 
         ImGui::Text("1.) Click on grid to select position");
 
@@ -407,7 +435,7 @@ namespace gl3::engine::editor
         highlightSelectedButton(tagButtonIDs);
         ImGui::Text("Custom tag:");
         ImGui::SameLine();
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.5f);
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.2f);
         ImGui::PushStyleColor(ImGuiCol_FrameBg,
                               tag_input_buffer[0] == '\0'
                                   ? UINeonColors::pastelNeonViolet
@@ -428,7 +456,7 @@ namespace gl3::engine::editor
             selected_z_rotation += 360.0f;
 
         ImGui::Text("6.) Generate PhysicsComponent");
-        ImGui::Checkbox("##PhysicsComp", &generate_physics_comp);
+        if (!compute_group_AABB)ImGui::Checkbox("##PhysicsComp", &generate_physics_comp);
 
         const float availableWidth = ImGui::GetContentRegionAvail().x;
         const float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
@@ -495,8 +523,11 @@ namespace gl3::engine::editor
                         generate_physics_comp
                     };
                     ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, compute_group_AABB});
+                    if (compute_group_AABB)
+                    {
+                        selected_group_cells.push_back(cell);
+                    }
                 }
-                if (compute_group_AABB)ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
                 selected_grid_cells.clear();
             }
         }

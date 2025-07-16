@@ -31,6 +31,7 @@ namespace gl3::engine::editor
      */
     void EditorSystem::onGenerateGroup(ui::EditorGenerateGroup& event)
     {
+        if (grouped_child_entities.empty() || grouped_child_objects.empty())return;
         auto& registry = game.getRegistry();
 
         //generate parent physics AABB
