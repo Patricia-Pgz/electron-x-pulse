@@ -34,6 +34,7 @@ struct LevelMeta
     int id = -1.0;
     std::string name;
     std::string fileName;
+    std::string previewImageName;
 };
 
 struct Level

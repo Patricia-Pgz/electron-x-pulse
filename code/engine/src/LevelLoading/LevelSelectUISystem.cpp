@@ -43,12 +43,6 @@ namespace gl3::engine::levelLoading
         {
             return a.id < b.id;
         });
-        std::vector<std::string> levelNames;
-        levelNames.reserve(metaData.size());
-        for (const auto& meta : metaData)
-        {
-            levelNames.push_back(meta.name);
-        }
 
         constexpr float columns = 4.f;
         const float spacing = ImGui::GetStyle().ItemSpacing.x;
@@ -56,9 +50,9 @@ namespace gl3::engine::levelLoading
         const float buttonWidth = (contentWidth - spacing * (columns)) / columns;
 
         float buttonsOnRow = 0.f;
-        for (int i = 0; i < levelNames.size(); ++i)
+        for (int i = 0; i < metaData.size(); ++i)
         {
-            if (ImGui::ImageButton(levelNames[i].c_str(),
+            if (ImGui::ImageButton(metaData[i].name.c_str(),
                                    rendering::TextureManager::getUITexture("LevelButton1")->getID(),
                                    ImVec2(buttonWidth, buttonWidth))) //TODO (www.freepik.com)
             {
@@ -73,30 +67,32 @@ namespace gl3::engine::levelLoading
                 buttonMin.y + buttonSize.y * 0.5f
             );
 
-            const ImVec2 overlaySize(buttonWidth * 0.7f, buttonWidth * 0.7f);
+            if (!metaData[i].previewImageName.empty())
+            {
+                const ImVec2 overlaySize(buttonWidth * 0.6f, buttonWidth * 0.6f);
 
-            const auto overlayMin = ImVec2(
-                buttonCenter.x - overlaySize.x * 0.5f,
-                buttonCenter.y - overlaySize.y * 0.5f
-            );
-            const auto overlayMax = ImVec2(
-                overlayMin.x + overlaySize.x,
-                overlayMin.y + overlaySize.y
-            );
-
-            const auto overlayTex = rendering::TextureManager::getTileOrSingleTex("geometry-dash")->getID();
-            ImGui::GetWindowDrawList()->AddImage(overlayTex, overlayMin, overlayMax, {0.f, 1.f}, {1.f, 0.f});
-
-            const auto textSize = ImGui::CalcTextSize(levelNames[i].c_str());
+                const auto overlayMin = ImVec2(
+                    buttonCenter.x - overlaySize.x * 0.5f,
+                    buttonCenter.y - overlaySize.y * 0.5f
+                );
+                const auto overlayMax = ImVec2(
+                    overlayMin.x + overlaySize.x,
+                    overlayMin.y + overlaySize.y
+                );
+                const auto overlayTex = rendering::TextureManager::getUITexture(metaData[i].previewImageName.c_str())->
+                    getID();
+                ImGui::GetWindowDrawList()->AddImage(overlayTex, overlayMin, overlayMax, {0.f, 1.f}, {1.f, 0.f});
+            }
+            const auto textSize = ImGui::CalcTextSize(metaData[i].name.c_str());
             const auto textPos = ImVec2(
                 buttonMin.x + (buttonSize.x - textSize.x) * 0.5f,
                 buttonMin.y + (buttonSize.y - textSize.y) * 0.95f
             );
 
-            ImGui::GetWindowDrawList()->AddText(textPos, IM_COL32(255, 255, 255, 255), levelNames[i].c_str());
+            ImGui::GetWindowDrawList()->AddText(textPos, IM_COL32(255, 255, 255, 255), metaData[i].name.c_str());
 
             buttonsOnRow++;
-            if (buttonsOnRow < columns && i < levelNames.size() - 1)
+            if (buttonsOnRow < columns && i < metaData.size() - 1)
                 ImGui::SameLine();
             else
                 buttonsOnRow = 0;
@@ -106,7 +102,7 @@ namespace gl3::engine::levelLoading
 
     void LevelSelectUISystem::DrawLevelSelect(const ImGuiViewport* viewport, ImFont* font)
     {
-        ImGui::GetStyle() = ImGuiStyle(); //TODO
+        ImGui::GetStyle() = ImGuiStyle();
         ImGui::PushFont(font);
         ImGui::SetNextWindowPos(viewport->Pos);
         const auto viewportSize = viewport->Size;

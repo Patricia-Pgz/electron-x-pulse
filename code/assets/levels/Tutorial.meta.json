@@ -1,5 +1,6 @@
 {
   "id": 0,
   "name": "Tutorial",
-  "levelFile": "Tutorial.json"
+  "levelFile": "Tutorial.json",
+  "previewImg": "tutorial"
 }

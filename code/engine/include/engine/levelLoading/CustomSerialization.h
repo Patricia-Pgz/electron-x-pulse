@@ -59,7 +59,8 @@ struct glz::meta<LevelMeta>
     static constexpr auto value = object(
         "id", &T::id,
         "name", &T::name,
-        "levelFile", &T::fileName
+        "levelFile", &T::fileName,
+        "previewImg", &T::previewImageName
     );
 };
 
