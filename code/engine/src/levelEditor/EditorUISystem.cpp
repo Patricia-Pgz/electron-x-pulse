@@ -558,7 +558,7 @@ namespace gl3::engine::editor
     void EditorUISystem::createCustomUI()
     {
         DrawTileSelectionPanel();
-        drawGrid(1.f * pixelsPerMeter);
+        drawGrid(pixelsPerMeter);
     }
 
     void EditorUISystem::update()

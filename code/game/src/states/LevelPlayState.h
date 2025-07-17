@@ -86,6 +86,14 @@ namespace gl3::game::state
         void onPlayerDeath(const engine::ecs::PlayerDeath& event);
         void onWindowSizeChange(const engine::context::WindowBoundsRecomputeEvent& event) const;
         [[nodiscard]] LevelBackgroundConfig getBackgroundSizes(const std::vector<float>& windowBounds) const;
+        void createSkyGradientEntity(const LevelBackgroundConfig& bgConfig, entt::registry& registry,
+                                     b2WorldId physicsWorld) const;
+        void createBackgroundEntities(const LevelBackgroundConfig& bgConfig, entt::registry& registry,
+                                      b2WorldId physicsWorld) const;
+        void createGroupedEntities(entt::registry& registry, b2WorldId physicsWorld) const;
+        void createSingleEntities(entt::registry& registry, b2WorldId physicsWorld);
+        void createEntities(const LevelBackgroundConfig& bgConfig, entt::registry& registry, b2WorldId physicsWorld);
+        void initializeAudio();
         void onRestartLevel(const engine::ui::RestartLevelEvent& event);
         void onPauseEvent(const engine::ui::PauseLevelEvent& event);
         void resetEntities();

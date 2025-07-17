@@ -1,7 +1,5 @@
 #pragma once
 #include "engine/Game.h"
-#include "engine/ecs/EventDispatcher.h"
-#include "engine/ecs/GameEvents.h"
 #include "engine/userInterface/IUISubSystem.h"
 
 namespace gl3::game::ui

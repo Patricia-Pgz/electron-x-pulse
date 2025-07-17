@@ -8,8 +8,9 @@
 #include "../../../extern/box2d/src/body.h"
 
 #include "Game.h"
-#include "engine/Constants.h"
 #include "engine/physics/PhysicsSystem.h"
+#include "glm/gtc/epsilon.hpp"
+#include "ui/UIEvents.h"
 
 namespace gl3::game::state
 {
@@ -73,19 +74,13 @@ namespace gl3::game::state
         return {center_x, windowWidth, groundCenterY, groundHeight, skyCenterY, skyHeight};
     }
 
-    /**
-     * Loads the selected level via LevelManager, instantiates all entities from the loaded data structure (GameObject/Level),
-     * calls on AudioSystem to instantiate the current config = analyse audio, creates AABB for grouped objects,
-     * calculates levelLength, speed and final beat, and sends the current player to Game.
-     * Then sets up ui and internal properties for starting the level/edit mode.
+    /**create sky entity with color gradient.
      */
-    void LevelPlayState::loadLevel()
+    void LevelPlayState::createSkyGradientEntity(const LevelBackgroundConfig& bgConfig, entt::registry& registry,
+                                                 const b2WorldId physicsWorld) const
     {
-        auto& registry = game.getRegistry();
-        const auto physicsWorld = game.getPhysicsWorld();
-        current_level = engine::levelLoading::LevelManager::loadLevelByID(level_index);
-        int width, height;
-        glfwGetWindowSize(game.getWindow(), &width, &height);
+        //no need to make a gradient if both colors are the same
+        if (all(epsilonEqual(current_level->gradientBottomColor, current_level->gradientTopColor, 0.001f))) return;
         GameObject sky = {};
         sky.tag = "sky";
         sky.generatePhysicsComp = false;
@@ -93,10 +88,20 @@ namespace gl3::game::state
         sky.fragmentShaderPath = "shaders/gradient.frag";
         sky.gradientBottomColor = current_level->gradientBottomColor;
         sky.gradientTopColor = current_level->gradientTopColor;
-        const auto bgConfig = getBackgroundSizes(game.getContext().getWorldWindowBounds());
         sky.position = {bgConfig.centerX, bgConfig.skyCenterY, 0.f};
         sky.scale = {bgConfig.windowWidth, bgConfig.skyHeight, 0.f};
         engine::ecs::EntityFactory::createDefaultEntity(sky, registry, physicsWorld);
+    }
+
+    /**
+     * Creates background entities for level.
+     * @param bgConfig The config with the background sizes
+     * @param registry The current enTT registry
+     * @param physicsWorld The current Box2D physics world
+     */
+    void LevelPlayState::createBackgroundEntities(const LevelBackgroundConfig& bgConfig, entt::registry& registry,
+                                                  const b2WorldId physicsWorld) const
+    {
         for (auto& object : current_level->backgrounds)
         {
             if (object.tag == "ground")
@@ -112,8 +117,15 @@ namespace gl3::game::state
             engine::ecs::EntityFactory::createDefaultEntity(
                 object, registry, physicsWorld);
         }
+    }
 
-
+    /**
+     * Creates grouped entities and their physics parent.
+     * @param registry The current enTT registry
+     * @param physicsWorld The current Box2D physics world
+     */
+    void LevelPlayState::createGroupedEntities(entt::registry& registry, const b2WorldId physicsWorld) const
+    {
         auto& objGroup = current_level->groups;
         for (auto group = objGroup.begin(); group != objGroup.end();)
         {
@@ -151,17 +163,39 @@ namespace gl3::game::state
                 ++group;
             }
         }
+    }
 
-        float initialPlayerPosX = 0.f;
+    /**
+     * Creates all single entities.
+     * @param registry The current enTT registry
+     * @param physicsWorld The current Box2D physics world
+     */
+    void LevelPlayState::createSingleEntities(entt::registry& registry, const b2WorldId physicsWorld)
+    {
         for (auto& object : current_level->objects)
         {
             const auto& entity = engine::ecs::EntityFactory::createDefaultEntity(
                 object, registry, physicsWorld);
             if (object.tag == "player") current_player = entity;
-            initialPlayerPosX = object.position.x;
             game.setPlayer(current_player);
         }
-        game.getAudioSystem()->initializeCurrentAudio(current_level->audioFile, initialPlayerPosX);
+    }
+
+    void LevelPlayState::createEntities(const LevelBackgroundConfig& bgConfig, entt::registry& registry,
+                                        const b2WorldId physicsWorld)
+    {
+        createSkyGradientEntity(bgConfig, registry, physicsWorld);
+        createBackgroundEntities(bgConfig, registry, physicsWorld);
+        createGroupedEntities(registry, physicsWorld);
+        createSingleEntities(registry, physicsWorld);
+    }
+
+    /**
+     * Initializes current level audio.
+     */
+    void LevelPlayState::initializeAudio()
+    {
+        game.getAudioSystem()->initializeCurrentAudio(current_level->audioFile, current_level->playerStartPosX);
         audio_config = game.getAudioSystem()->getConfig();
         //Ensures, that every unit is synced to the beat
         current_level->currentLevelSpeed = current_level->velocityMultiplier / audio_config->seconds_per_beat;
@@ -171,6 +205,22 @@ namespace gl3::game::state
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::LevelLengthComputed{
             current_level->levelLength, current_level->currentLevelSpeed, current_level->finalBeatIndex
         });
+    }
+
+    /**
+     * Loads the selected level via LevelManager, instantiates all entities from the loaded data structure (GameObject/Level),
+     * calls on AudioSystem to instantiate the current config = analyse audio, creates AABB for grouped objects,
+     * calculates levelLength, speed and final beat, and sends the current player to Game.
+     * Then sets up ui and internal properties for starting the level/edit mode.
+     */
+    void LevelPlayState::loadLevel()
+    {
+        auto& registry = game.getRegistry();
+        const auto physicsWorld = game.getPhysicsWorld();
+        current_level = engine::levelLoading::LevelManager::loadLevelByID(level_index);
+        const auto bgConfig = getBackgroundSizes(game.getContext().getWorldWindowBounds());
+        createEntities(bgConfig, registry, physicsWorld);
+        initializeAudio();
 
         game.getContext().setClearColor(current_level->clearColor);
 
@@ -352,6 +402,7 @@ namespace gl3::game::state
                 menu_ui->setActive(false);
                 instruction_ui->setActive(false);
                 finish_ui->setActive(true);
+                engine::ecs::EventDispatcher::dispatcher.trigger(events::ShowFinishScreen{true});
 
                 game.getAudioSystem()->playOneShot("win");
 

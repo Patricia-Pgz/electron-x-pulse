@@ -1,4 +1,6 @@
 #include "InGameMenuUI.h"
+
+#include "UIEvents.h"
 #include "engine/userInterface/FontManager.h"
 #include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
@@ -117,6 +119,7 @@ namespace gl3::game::ui
                 }
                 escape_pressed = true;
                 show_ui = !show_ui;
+                engine::ecs::EventDispatcher::dispatcher.trigger(events::ShowGameMenu{show_ui});
             }
         }
         else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)

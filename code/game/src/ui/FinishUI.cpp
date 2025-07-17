@@ -1,4 +1,6 @@
 #include "FinishUI.h"
+
+#include "UIEvents.h"
 #include "engine/userInterface/FontManager.h"
 #include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
@@ -52,6 +54,7 @@ namespace gl3::game::ui
         ImGui::SetCursorPosX((windowSizeCur.x - lvlSelectSize.x - 2 * padding.x) * 0.5f);
         if (ImGui::Button("Restart Level", {lvlSelectSize.x + 2 * padding.x, lvlSelectSize.y + 2 * padding.y}))
         {
+            engine::ecs::EventDispatcher::dispatcher.trigger(events::ShowFinishScreen{false});
             engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::RestartLevelEvent{true});
         }
 
