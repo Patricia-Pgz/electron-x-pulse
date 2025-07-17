@@ -21,7 +21,7 @@ namespace gl3::game::state
     {
         if (!level_instantiated)return;
         const auto windowBounds = *event.windowBounds;
-        const auto bgConfig = updateBackgrounds(windowBounds);
+        const auto bgConfig = getBackgroundSizes(windowBounds);
         auto& registry = game.getRegistry();
         const auto entities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>();
 
@@ -36,7 +36,7 @@ namespace gl3::game::state
                                                          bgConfig.windowWidth, bgConfig.groundHeight, 1.f
                                                      });
             }
-            else if (tag == "background")
+            else if (tag == "background" || tag == "sky")
             {
                 auto& transform = registry.get<engine::ecs::TransformComponent>(entity);
                 transform.position = {bgConfig.centerX, bgConfig.skyCenterY, 0.f};
@@ -52,7 +52,7 @@ namespace gl3::game::state
 *Same for the bottom part, which layers objects tagged as "ground".
 *@warning This does not keep aspect ratios of textures, it just fits the object sizes and positions to the screen. May stretch textures!
 */
-    LevelBackgroundConfig LevelPlayState::updateBackgrounds(const std::vector<float>& windowBounds) const
+    LevelBackgroundConfig LevelPlayState::getBackgroundSizes(const std::vector<float>& windowBounds) const
     {
         const auto windowLeftWorld = windowBounds[0];
         const auto windowRightWorld = windowBounds[1];
@@ -93,12 +93,12 @@ namespace gl3::game::state
         sky.fragmentShaderPath = "shaders/gradient.frag";
         sky.gradientBottomColor = current_level->gradientBottomColor;
         sky.gradientTopColor = current_level->gradientTopColor;
-        sky.scale.x = static_cast<float>(width) / pixelsPerMeter;
-        sky.scale.y = static_cast<float>(height) / pixelsPerMeter;
+        const auto bgConfig = getBackgroundSizes(game.getContext().getWorldWindowBounds());
+        sky.position = {bgConfig.centerX, bgConfig.skyCenterY, 0.f};
+        sky.scale = {bgConfig.windowWidth, bgConfig.skyHeight, 0.f};
         engine::ecs::EntityFactory::createDefaultEntity(sky, registry, physicsWorld);
         for (auto& object : current_level->backgrounds)
         {
-            const auto bgConfig = updateBackgrounds(game.getContext().getWorldWindowBounds());
             if (object.tag == "ground")
             {
                 object.position = {bgConfig.centerX, bgConfig.groundCenterY, 0.f};
@@ -246,7 +246,7 @@ namespace gl3::game::state
 
     /**
      *
-     * @param event Resarts the level on player death event, plays a crash sound.
+     * @param event Restarts the level on player death event, plays a crash sound.
      */
     void LevelPlayState::onPlayerDeath(const engine::ecs::PlayerDeath& event)
     {
@@ -266,64 +266,32 @@ namespace gl3::game::state
         startLevel();
     }
 
-    void LevelPlayState::onPhysicsStepDone()
+    void LevelPlayState::resetEntities()
     {
         if (!reset_level) return;
         reset_level = false;
         auto& registry = game.getRegistry();
-        const auto singleEntities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent,
-                                                  engine::ecs::PhysicsComponent, engine::ecs::RenderComponent>();
 
-        //go through ungrouped entities, reset and activate components
-        for (auto& entity : singleEntities)
+        for (auto& entity : registry.view<entt::entity>())
         {
-            if (auto tag = singleEntities.get<engine::ecs::TagComponent>(entity).tag; !registry.valid(entity) || tag ==
-                "ground"
-                || tag == "background")
-                continue;
-            engine::ecs::EntityFactory::setPosition(registry, entity,
-                                                    singleEntities.get<engine::ecs::TransformComponent>(entity).
-                                                                   initialPosition);
-            engine::ecs::EntityFactory::setScale(registry, entity,
-                                                 singleEntities.get<engine::ecs::TransformComponent>(entity).
-                                                                initialScale);
-            engine::ecs::EntityFactory::SetRotation(registry, entity,
-                                                    singleEntities.get<engine::ecs::TransformComponent>(entity).
-                                                                   initialZRotation);
-            singleEntities.get<engine::ecs::PhysicsComponent>(entity).isActive = true;
-            singleEntities.get<engine::ecs::RenderComponent>(entity).isActive = true;
-        }
+            if (!registry.valid(entity)) continue;
 
-        //go through group parent entities, reset and activate, and later same for group child entities
-
-        for (const auto groupParents = registry.view<
-                 engine::ecs::GroupComponent, engine::ecs::TransformComponent, engine::ecs::PhysicsComponent>(); auto
-             & entity : groupParents)
-        {
-            engine::ecs::EntityFactory::setPosition(registry, entity,
-                                                    groupParents.get<engine::ecs::TransformComponent>(entity).
-                                                                 initialPosition);
-            engine::ecs::EntityFactory::setScale(registry, entity,
-                                                 groupParents.get<engine::ecs::TransformComponent>(entity).
-                                                              initialScale);
-            engine::ecs::EntityFactory::SetRotation(registry, entity,
-                                                    groupParents.get<engine::ecs::TransformComponent>(entity).
-                                                                 initialZRotation);
-            //only activate physics, has no renderer
-            groupParents.get<engine::ecs::PhysicsComponent>(entity).isActive = true;
-        }
-
-        const auto groupChildEntities = registry.view<engine::ecs::ParentComponent, engine::ecs::TransformComponent,
-                                                      engine::ecs::RenderComponent>();
-        for (auto& entity : groupChildEntities)
-        {
-            if (!registry.valid(entity))continue;
-            auto& transform = groupChildEntities.get<engine::ecs::TransformComponent>(entity);
+            auto& transform = registry.get<engine::ecs::TransformComponent>(entity);
             transform.position = transform.initialPosition;
             transform.scale = transform.initialScale;
             transform.zRotation = transform.initialZRotation;
-            //only activate renderer, has no physics -> follows parent
-            groupChildEntities.get<engine::ecs::RenderComponent>(entity).isActive = true;
+
+            if (registry.any_of<engine::ecs::PhysicsComponent>(entity))
+            {
+                engine::ecs::EntityFactory::setPosition(registry, entity, transform.initialPosition);
+                engine::ecs::EntityFactory::setScale(registry, entity, transform.initialScale);
+                engine::ecs::EntityFactory::SetRotation(registry, entity, transform.initialZRotation);
+            }
+
+            if (registry.any_of<engine::ecs::RenderComponent>(entity))
+            {
+                registry.get<engine::ecs::RenderComponent>(entity).uvOffset = {0.f, 0.f};
+            }
         }
     }
 
@@ -355,6 +323,7 @@ namespace gl3::game::state
         timer = 2.f;
         transition_triggered = false;
         timer_active = false;
+        resetEntities();
     }
 
     /**
@@ -367,7 +336,7 @@ namespace gl3::game::state
         const auto currentAudioTime = static_cast<float>(audio_config->audio.getStreamTime(
             audio_config->currentAudioHandle));
 
-        if (!timer_active && currentAudioTime >= audio_config->current_audio_length - 1) //slight margin
+        if (!timer_active && currentAudioTime >= audio_config->current_audio_length - 0.1f) //slight margin
         {
             timer_active = true;
         }

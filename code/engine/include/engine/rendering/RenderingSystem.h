@@ -41,10 +41,6 @@ namespace gl3::engine::rendering
                 auto& renderComp = entities.get<ecs::RenderComponent>(entity);
                 auto tag = entities.get<ecs::TagComponent>(entity).tag;
 
-                //turn object's renderer off, if it moved out of the left border of the screen
-                if (transform.position.x + transform.scale.x * 0.5f < context.getWorldWindowBounds()[0])
-                    renderComp.isActive = false;
-
                 //render object if in view
                 if (context.isInVisibleWindow(transform.position, transform.scale) && renderComp.isActive)
                 {

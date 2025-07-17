@@ -60,10 +60,10 @@ namespace gl3::engine::physics
                         getWorldWindowBounds()[0])
                     {
                         b2Body_SetAwake(physics_comp.body, false);
-                        physics_comp.isActive = false;
                     }
                     else
                     {
+                        b2Body_SetAwake(physics_comp.body, true);
                         auto [p, q] = b2Body_GetTransform(physics_comp.body);
                         transformComp.position.x = p.x;
                         transformComp.position.y = p.y;
