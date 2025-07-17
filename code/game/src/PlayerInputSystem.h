@@ -31,7 +31,7 @@ namespace gl3::game::input
         bool canJump = true;
         float desiredJumpHeight = 1.f;
         float jumpHeightFactor = 1.f;
-        float landingUnitsAhead = 1.f;
+        float landingBeatsAhead = 1.f;
         entt::entity player_ = entt::null;
         float rotationSpeed = -270.f;
     };

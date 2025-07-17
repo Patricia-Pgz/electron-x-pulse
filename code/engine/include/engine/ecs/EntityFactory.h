@@ -420,8 +420,8 @@ namespace gl3::engine::ecs
             groundSensorDef.userData = const_cast<void*>(static_cast<const void*>(GROUND_SENSOR_TAG));
 
             b2Polygon groundBox;
-            groundBox = b2MakeOffsetBox(halfWidth * 0.8f, 0.15f,
-                                        {0.f, 0.f - halfHeight - 0.15f},
+            groundBox = b2MakeOffsetBox(halfWidth * 0.8f, 0.05f,
+                                        {0.f, 0.f - halfHeight - 0.05f},
                                         b2MakeRot(0.0f));
             b2ShapeId groundSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &groundBox);
 
@@ -431,8 +431,8 @@ namespace gl3::engine::ecs
             rightSensorDef.userData = const_cast<void*>(static_cast<const void*>(GROUND_SENSOR_TAG));
 
             b2Polygon rightBox;
-            rightBox = b2MakeOffsetBox(0.15f, halfHeight * 0.8f,
-                                       {0.f + halfWidth + 0.15f, 0.f},
+            rightBox = b2MakeOffsetBox(0.05f, halfHeight * 0.8f,
+                                       {0.f + halfWidth + 0.05f, 0.f},
                                        b2MakeRot(0.0f));
             b2ShapeId rightSensor = b2CreatePolygonShape(playerBody, &rightSensorDef, &rightBox);
             return {groundSensor, rightSensor};

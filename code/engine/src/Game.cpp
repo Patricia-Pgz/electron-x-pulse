@@ -29,7 +29,7 @@ namespace gl3::engine
         // Create the physics world
         b2WorldDef worldDef = b2DefaultWorldDef();
         // We use worldDef to define our physics world
-        worldDef.gravity = b2Vec2{0.f, -9.81f};
+        worldDef.gravity = b2Vec2{0.f, -10.f};
         physics_world_ = b2CreateWorld(&worldDef);
         ui_system_->initUI();
     }
