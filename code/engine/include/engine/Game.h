@@ -193,6 +193,6 @@ namespace gl3::engine
         bool is_paused = true;
 
     private:
-        float lastFrameTime_ = 1.0f / 60; ///< Last frame time for delta calculation.
+        float lastFrameTime = 1.0f / 60; ///< Last frame time for delta calculation.
     };
 } // namespace gl3::engine

@@ -21,16 +21,16 @@ namespace gl3::engine::levelLoading
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
         ImGui::PushStyleColor(ImGuiCol_SliderGrab, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
-        ImGuiStyle& style = ImGui::GetStyle();
-        style.FrameRounding = 5.0;
-        style.WindowBorderSize = 0.f;
-        style.WindowPadding = {windowSize.x * 0.075f, windowSize.y * 0.145f};
-        style.ItemSpacing = ImVec2(20, 20);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {windowSize.x * 0.075f, windowSize.y * 0.145f});
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(20, 20));
     }
 
     void popStyle()
     {
         ImGui::PopStyleColor(8);
+        ImGui::PopStyleVar(4);
     }
 
     void LevelSelectUISystem::DrawLevelButtons()
@@ -102,7 +102,6 @@ namespace gl3::engine::levelLoading
 
     void LevelSelectUISystem::DrawLevelSelect(const ImGuiViewport* viewport, ImFont* font)
     {
-        ImGui::GetStyle() = ImGuiStyle();
         ImGui::PushFont(font);
         ImGui::SetNextWindowPos(viewport->Pos);
         const auto viewportSize = viewport->Size;

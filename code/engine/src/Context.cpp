@@ -1,14 +1,14 @@
+/**
+* @file Context.cpp
+ * @brief Implementation of the core OpenGL context and window management.
+ */
 #include <stdexcept>
 #include "engine/Context.h"
-
-#include <GL/gl.h>
-
 #include "engine/Constants.h"
 #include "engine/Game.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
 #include "engine/rendering/MVPMatrixHelper.h"
-
 
 namespace gl3::engine::context
 {
@@ -32,10 +32,12 @@ namespace gl3::engine::context
             throw std::runtime_error("Failed to initialize glfw");
         }
 
+        // Request OpenGL 4.6 Core profile.
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        // Color buffer bit depth.
         glfwWindowHint(GLFW_RED_BITS, 8);
         glfwWindowHint(GLFW_GREEN_BITS, 8);
         glfwWindowHint(GLFW_BLUE_BITS, 8);

@@ -38,8 +38,11 @@ namespace gl3::engine
     {
         onStartup.invoke(*this);
         start();
+        //register ui subsystems in time to be able to update them
         registerUiSystems();
+        //preload all textures
         rendering::TextureManager::loadTextures();
+        //preload all level metadata files for preview
         levelLoading::LevelManager::loadAllMetaData();
         onAfterStartup.invoke(*this);
         context.run([&](Context& ctx)
@@ -51,6 +54,7 @@ namespace gl3::engine
             draw();
             updateUI();
             updateDeltaTime();
+            //delete entities safely after updates
             ecs::EntityFactory::deleteMarkedEntities(registry);
             onAfterUpdate.invoke(*this);
         });
@@ -61,8 +65,8 @@ namespace gl3::engine
     void Game::updateDeltaTime()
     {
         const auto frameTime = static_cast<float>(glfwGetTime());
-        delta_time = frameTime - lastFrameTime_;
-        lastFrameTime_ = frameTime;
+        delta_time = frameTime - lastFrameTime;
+        lastFrameTime = frameTime;
     }
 
     Game::~Game()

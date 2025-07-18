@@ -27,6 +27,7 @@ namespace gl3::engine::editor
         const auto entity = ecs::EntityFactory::createDefaultEntity(event.object, game.getRegistry(),
                                                                     game.getPhysicsWorld());
 
+        //save children for later grouping
         if (event.group)
         {
             grouped_child_entities.push_back(entity);

@@ -72,10 +72,10 @@ namespace gl3::engine::editor
         void onMouseScroll(const context::MouseScrollEvent& event) const;
 
         /**
-         * @brief Handles the level length computed event.
+         * @brief Handles the level length computed event, saves the final beat position for visualization.
          * @param event The level length computed event data.
          */
-        void onLvlComputed(ecs::LevelLengthComputed& event);
+        void onLvlComputed(const ecs::LevelLengthComputed& event);
 
         /**
          * @brief Draws a grid visualization with specified spacing.

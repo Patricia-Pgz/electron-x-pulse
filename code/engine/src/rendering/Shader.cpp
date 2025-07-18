@@ -1,3 +1,7 @@
+/**
+* @file Shader.cpp
+ * @brief Implements the Shader class for compiling and linking GLSL shaders.
+ */
 #include "engine/rendering/Shader.h"
 #include <fstream>
 #include <iostream>
@@ -8,6 +12,9 @@
 
 namespace gl3::engine::rendering
 {
+    /**
+     * @brief Helper struct to store OpenGL shader status and log output.
+     */
     struct glStatusData
     {
         int success;
@@ -17,24 +24,31 @@ namespace gl3::engine::rendering
 
     Shader::Shader(const fs::path& vertexShaderPath, const fs::path& fragmentShaderPath)
     {
+        // Compile the vertex and fragment shaders
         vertex_shader = loadAndCompileShader(GL_VERTEX_SHADER, vertexShaderPath);
         fragment_shader = loadAndCompileShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
+        // Create the shader program and attach shaders.
         shader_program = glCreateProgram();
         glAttachShader(shader_program, vertex_shader);
         glAttachShader(shader_program, fragment_shader);
+        // Link the program.
         glLinkProgram(shader_program);
+        // Shaders can be detached after linking.
         glDetachShader(shader_program, vertex_shader);
         glDetachShader(shader_program, fragment_shader);
     }
 
-    unsigned int Shader::loadAndCompileShader(GLuint shaderType, const fs::path& shaderPath)
+    unsigned int Shader::loadAndCompileShader(const GLuint shaderType, const fs::path& shaderPath)
     {
+        // Read shader source from file.
         const auto shaderSource = readText(shaderPath);
         const auto source = shaderSource.c_str();
+        // Create and compile shader.
         const auto shaderID = glCreateShader(shaderType);
         glShaderSource(shaderID, 1, &source, nullptr);
         glCompileShader(shaderID);
 
+        // Check compilation status and log if error
         glStatusData compilationStatus{};
         compilationStatus.shaderName = shaderType == GL_VERTEX_SHADER ? "Vertex" : "Fragment";
         glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compilationStatus.success);
@@ -69,7 +83,7 @@ namespace gl3::engine::rendering
         glUniform1f(location, value);
     }
 
-    void Shader::setFloatArray(const std::string& name, const float* values, int count) const
+    void Shader::setFloatArray(const std::string& name, const float* values, const int count) const
     {
         const GLint location = glGetUniformLocation(shader_program, name.c_str());
         if (location == -1)

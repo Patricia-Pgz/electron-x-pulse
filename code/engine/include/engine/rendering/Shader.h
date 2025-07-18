@@ -107,7 +107,7 @@ namespace gl3::engine::rendering
          * @param shaderPath Path to the shader source file.
          * @return OpenGL shader ID.
          */
-        unsigned int loadAndCompileShader(GLuint shaderType, const fs::path& shaderPath);
+        static unsigned int loadAndCompileShader(GLuint shaderType, const fs::path& shaderPath);
 
         /**
          * @brief Read a text file into a string.

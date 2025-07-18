@@ -36,7 +36,7 @@ namespace gl3::engine::ui {
         /**
          * @brief Internal font cache mapping font names to ImGui font pointers.
          */
-        static std::unordered_map<std::string, ImFont*> fonts_;
+        static std::unordered_map<std::string, ImFont*> fonts;
     };
 
 }

@@ -1,18 +1,40 @@
 #include "engine/rendering/TextureManager.h"
+#include "engine/Assets.h"
 
 #include <iostream>
 #include <regex>
 #include <stdexcept>
 #include <unordered_set>
 
-#include "engine/Assets.h"
-
 namespace gl3::engine::rendering
 {
+    /**
+     * @brief Cache storing loaded textures.
+     *
+     * Maps texture names to their unique Texture instances.
+     */
     std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::texture_cache;
+
+    /**
+     * @brief Cache for loaded tile set textures.
+     */
     std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::tile_set_cache;
+
+    /**
+     * @brief Cache for loaded UI textures.
+     */
     std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::ui_texture_cache;
+
+    /**
+     * @brief Cache for loaded background textures.
+     */
     std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::bg_texture_cache;
+
+    /**
+     * @brief Valid file extensions for texture loading.
+     *
+     * Only files with these extensions are considered valid textures.
+     */
     static const std::unordered_set<std::string> validExtensions = {".png", ".jpg", ".jpeg"};
 
     void TextureManager::add(const std::string& key, const std::filesystem::path& path, int tilesX, int tilesY)

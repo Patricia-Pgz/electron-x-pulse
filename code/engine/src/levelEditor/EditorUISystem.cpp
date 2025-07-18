@@ -18,19 +18,13 @@ namespace gl3::engine::editor
     }
 
 
-    /**
-     * Saves the current levels final beat position. (For visualization)
-     * @param event ecs::LevelLengthComputed sends the computed final beat index of the current level's song
-     */
-    void EditorUISystem::onLvlComputed(ecs::LevelLengthComputed& event)
+    /// Saves the current levels final beat position. (For visualization)
+    void EditorUISystem::onLvlComputed(const ecs::LevelLengthComputed& event)
     {
-        //pointer to finalBeatPosition
         final_beat_position = event.finalBeatIndex;
     }
 
-    /**
-     * Deleted all entities from the registry, that have their TransformComponent position at the currently selected cell's position.
-     */
+    ///Delete all entities from the registry, that have their TransformComponent position at the currently selected cell's position.
     void EditorUISystem::deleteAllAtSelectedPosition() const
     {
         const auto view = game.getRegistry().view<ecs::TransformComponent, ecs::TagComponent>();
@@ -57,10 +51,7 @@ namespace gl3::engine::editor
     }
 
 
-    /**
-     * Draws the Editor grid overlay for selecting cells and placing tiles.
-     * @param gridSpacing defines how big the grid cells are.
-     */
+    /// Draws the Editor grid overlay for selecting cells and placing tiles.
     void EditorUISystem::drawGrid(const float gridSpacing)
     {
         const ImVec2 screenSize = imgui_io->DisplaySize;
@@ -148,7 +139,7 @@ namespace gl3::engine::editor
                 game.getContext(), static_cast<float>(cellX), static_cast<float>(cellY));
             const float cellSize = gridSpacing;
 
-            // Define cell rectangle (centered at cellScreenPos)
+            // Define cell rectangle (centered at cellScreenPos) where hovered
             const ImVec2 cellTopLeft(cellScreenPos.x - cellSize * 0.5f, cellScreenPos.y - cellSize * 0.5f);
             const ImVec2 cellBottomRight(cellScreenPos.x + cellSize * 0.5f, cellScreenPos.y + cellSize * 0.5f);
 
@@ -161,6 +152,7 @@ namespace gl3::engine::editor
             ImGui::EndTooltip();
         }
 
+        //highlight selected grid cells
         for (const auto& cell : selected_grid_cells)
         {
             const auto screenPos = rendering::MVPMatrixHelper::toScreen(
@@ -171,6 +163,7 @@ namespace gl3::engine::editor
 
             drawList->AddRect(topLeft, bottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
         }
+        //highlight group selection
         for (const auto& cell : selected_group_cells)
         {
             const auto screenPos = rendering::MVPMatrixHelper::toScreen(
@@ -199,7 +192,7 @@ namespace gl3::engine::editor
             ImVec2 uv0(uv.x, uv.w);
             ImVec2 uv1(uv.z, uv.y);
 
-            ImGui::GetStyle().FrameRounding = 1.0;
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1.0f);
             ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
@@ -231,6 +224,7 @@ namespace gl3::engine::editor
             }
 
             ImGui::PopStyleColor(3);
+            ImGui::PopStyleVar();
         }
         ImGui::Separator();
     }
@@ -315,12 +309,8 @@ namespace gl3::engine::editor
 
     void styleWindow()
     {
-        ImGuiStyle& style = ImGui::GetStyle();
-
-        style.WindowPadding = ImVec2(10, 10);
-        style.WindowRounding = 3.0f;
-        ImGui::GetStyle().FrameRounding = 5.0;
-
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 10));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
         ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_TitleBg, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_TitleBgActive, UINeonColors::pastelNeonViolet);
@@ -331,8 +321,7 @@ namespace gl3::engine::editor
         ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
-
-        style.ItemSpacing = ImVec2(10, 10);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
     }
 
     void EditorUISystem::DrawTileSelectionPanel()
@@ -352,6 +341,7 @@ namespace gl3::engine::editor
         {
             is_mouse_in_grid = true;
         }
+        ImGui::PopStyleVar();
         ImGui::PopStyleColor();
         ImGui::PopFont();
 
@@ -551,6 +541,7 @@ namespace gl3::engine::editor
         }
 
         ImGui::PopStyleColor(11);
+        ImGui::PopStyleVar(2);
         ImGui::PopFont();
         ImGui::End();
     }
