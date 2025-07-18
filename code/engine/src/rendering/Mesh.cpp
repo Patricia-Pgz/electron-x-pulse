@@ -14,7 +14,7 @@ namespace gl3::engine::rendering
     }
 
     Mesh::Mesh(const std::vector<float>& vertices, const std::vector<unsigned int>& indices):
-        numberOfIndices(indices.size()),
+        number_of_indices(indices.size()),
         VBO(createBuffer(GL_ARRAY_BUFFER, vertices)),
         EBO(createBuffer(GL_ELEMENT_ARRAY_BUFFER, indices))
     {
@@ -38,8 +38,20 @@ namespace gl3::engine::rendering
     void Mesh::draw() const
     {
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, numberOfIndices, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, number_of_indices, GL_UNSIGNED_INT, nullptr);
         glBindVertexArray(0);
     }
+
+    void Mesh::release()
+    {
+        if (VAO)
+            glDeleteVertexArrays(1, &VAO);
+        if (VBO)
+            glDeleteBuffers(1, &VBO);
+        if (EBO)
+            glDeleteBuffers(1, &EBO);
+        VAO = VBO = EBO = 0;
+    }
+
 
 }

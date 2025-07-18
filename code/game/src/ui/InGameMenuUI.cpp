@@ -100,14 +100,13 @@ namespace gl3::game::ui
  */
     void InGameMenuUI::update()
     {
-        if (!is_active) return;
-        if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if (glfwGetKey(game.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {
             if (!escape_pressed)
             {
                 if (!play_mode_saved)
                 {
-                    play_mode_before_pause = game_.isPaused(); //save play mode before toggling
+                    play_mode_before_pause = game.isPaused(); //save play mode before toggling
                     play_mode_saved = true; //mark as saved
                     engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::PauseLevelEvent{true});
                 }
@@ -122,7 +121,7 @@ namespace gl3::game::ui
                 engine::ecs::EventDispatcher::dispatcher.trigger(events::ShowGameMenu{show_ui});
             }
         }
-        else if (glfwGetKey(game_.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
+        else if (glfwGetKey(game.getWindow(), GLFW_KEY_ESCAPE) == GLFW_RELEASE)
         {
             escape_pressed = false;
         }

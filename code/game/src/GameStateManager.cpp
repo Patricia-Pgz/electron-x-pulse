@@ -3,7 +3,7 @@
 #include "engine/ecs/EntityFactory.h"
 #include "engine/physics/PhysicsSystem.h"
 #include "states/LevelSelectState.h"
-#include "engine/stateManagement/StateManagerSystem.h"
+#include "engine/stateManagement/StateManagementSystem.h"
 #include "engine/userInterface/UISystem.h"
 #include "states/EditorState.h"
 #include "states/LevelPlayState.h"
@@ -52,7 +52,7 @@ namespace gl3::game
 
         if (current_game_state == engine::GameState::LevelSelect)
         {
-            if (dynamic_cast<state::EditorState*>(stateSystem->getCurrentState()) != nullptr)
+            if (dynamic_cast<state::EditorState*>(stateSystem->getTopStateFromStack()) != nullptr)
             {
                 //was in edit mode until just now
                 stateSystem->popState(false);

@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <typeindex>
 #include <ranges>
 #include "engine/ecs/System.h"
@@ -12,11 +13,15 @@
 
 namespace gl3::engine::ui
 {
-    ///summary
-    ///Parent class for high level UI system.
-    ///Initializes ImGui and updates itself as well as UI subsystems each UI frame.
-    ///@note Only add one high level UI System per game.
-    ///summary
+    /**
+     * @class UISystem
+     * @brief High level UI system for Game. Can register multiple custom IUISubsystem
+     *
+     * Initializes ImGui, loads fonts, and updates itself as well as all registered UI subsystems
+     * each UI frame.
+     *
+     * @note Only one high-level UI system should be existing per game. This is already added to Game.
+     */
     class UISystem final : public ecs::System
     {
     public:
@@ -53,7 +58,7 @@ namespace gl3::engine::ui
             FontManager::loadFonts(resolveAssetPath("fonts"));
             imgui_io->Fonts->Build();
 
-            ImGui_ImplGlfw_InitForOpenGL(game_.getWindow(), true);
+            ImGui_ImplGlfw_InitForOpenGL(game.getWindow(), true);
             ImGui_ImplOpenGL3_Init("#version 460");
         }
 
@@ -71,7 +76,7 @@ namespace gl3::engine::ui
                 onInitialized.invoke();
             }
 
-            updateSubSystems();
+            updateSubSystems(); //update Subsystems inside frame
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -101,7 +106,7 @@ namespace gl3::engine::ui
                 typeid(T),
                 [this]()
                 {
-                    return std::make_unique<T>(imgui_io, game_);
+                    return std::make_unique<T>(imgui_io, game);
                 }
             );
         }
@@ -127,12 +132,23 @@ namespace gl3::engine::ui
             isInitializingSystems = false;
         }
 
-    protected:
+    private:
+        /// ImGui IO pointer.
         ImGuiIO* imgui_io = nullptr;
+
+        /// List of subsystems waiting to be initialized.
         std::vector<std::pair<std::type_index, std::function<std::unique_ptr<IUISubsystem>()>>> pendingSubsystems;
+
+        /// Map of initialized subsystems.
         std::unordered_map<std::type_index, std::unique_ptr<IUISubsystem>> subsystems;
+
+        /// Whether subsystems are currently being initialized.
         bool isInitializingSystems = false;
 
+        /**
+         * @brief Update all active UI subsystems.
+         * @note Called each UI frame during @ref renderUI.
+         */
         void updateSubSystems() const
         {
             if (!(ImGui::GetCurrentContext() && ImGui::GetCurrentContext()->WithinFrameScope))
@@ -142,9 +158,10 @@ namespace gl3::engine::ui
             }
             if (subsystems.empty()) return;
 
-            for (const auto& val : subsystems | std::views::values)
+            for (const auto& sys : subsystems | std::views::values)
             {
-                val->update();
+                if (!sys->isActive()) continue;
+                sys->update();
             }
         }
     };

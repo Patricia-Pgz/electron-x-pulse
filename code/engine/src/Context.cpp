@@ -14,7 +14,7 @@ namespace gl3::engine::context
 {
     void Context::framebuffer_size_callback(GLFWwindow* window, int width, int height)
     {
-        auto contextInstance = static_cast<Context*>(glfwGetWindowUserPointer(window));
+        const auto contextInstance = static_cast<Context*>(glfwGetWindowUserPointer(window));
         glViewport(0, 0, width, height);
         contextInstance->calculateWorldWindowBounds();
     }
@@ -51,7 +51,7 @@ namespace gl3::engine::context
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetScrollCallback(window, scroll_callback);
-        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+        gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -76,6 +76,21 @@ namespace gl3::engine::context
             glfwSwapBuffers(window);
         }
     }
+
+    void Context::setCameraPosAndCenter(glm::vec3 position, glm::vec3 center)
+    {
+        cameraPosition = position;
+        cameraCenter = center;
+        calculateWorldWindowBounds();
+    }
+
+    void Context::moveCameraX(const float dx)
+    {
+        cameraPosition.x += dx * 1.0f;
+        cameraCenter.x += dx * 1.0f;
+        calculateWorldWindowBounds();
+    }
+
 
     void Context::calculateWorldWindowBounds()
     {

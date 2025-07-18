@@ -5,11 +5,22 @@
 
 namespace gl3::engine::editor
 {
-    /**
-     * Creates the actual entity from the tile, selected in editor, and adds it to the current level.
-     * Saves children to group for later.
-     * @param event The EditorTileSelectedEvent sent by EditorUISystem, once a tile was selected to be placed
-     */
+    EditorSystem::EditorSystem(Game& game): game(game)
+    {
+        ecs::EventDispatcher::dispatcher.sink<ui::EditorTileSelectedEvent>().connect<&
+            EditorSystem::onTileSelected>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::EditorGenerateGroup>().connect<&
+            EditorSystem::onGenerateGroup>(this);
+    }
+
+    EditorSystem::~EditorSystem()
+    {
+        ecs::EventDispatcher::dispatcher.sink<ui::EditorTileSelectedEvent>().disconnect<&
+                EditorSystem::onTileSelected>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::EditorGenerateGroup>().disconnect<&
+            EditorSystem::onGenerateGroup>(this);
+    }
+
     void EditorSystem::onTileSelected(ui::EditorTileSelectedEvent& event)
     {
         event.object.generatePhysicsComp = event.group ? false : event.object.generatePhysicsComp;
@@ -25,10 +36,6 @@ namespace gl3::engine::editor
         levelLoading::LevelManager::addObjectToCurrentLevel(event.object);
     }
 
-    /**
-     * Generates an AABB physics Component for previously grouped objects/entities and adds ParentComponent and GroupComponent. Adds new group to current level.
-     * @param event The EditorGenerateGroup sent by EditorUISystem, once the button to generate a group was pressed.
-     */
     void EditorSystem::onGenerateGroup(ui::EditorGenerateGroup& event)
     {
         if (grouped_child_entities.empty() || grouped_child_objects.empty())return;
@@ -53,7 +60,7 @@ namespace gl3::engine::editor
         registry.emplace<ecs::GroupComponent>(parentAABBEntity, grouped_child_entities);
 
         //add group to currentLvl (for saving)
-        int groupCount = levelLoading::LevelManager::getMostRecentLoadedLevel()->groups.size() + 1;
+        int groupCount = static_cast<int>(levelLoading::LevelManager::getMostRecentLoadedLevel()->groups.size()) + 1;
         GameObjectGroup group;
         group.name = std::to_string(groupCount);
         group.children = grouped_child_objects;

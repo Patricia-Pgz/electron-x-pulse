@@ -1,5 +1,7 @@
 #include "engine/audio/AudioSystem.h"
 
+#include <iostream>
+
 #include "engine/audio/AudioAnalysis.h"
 #include "engine/Assets.h"
 #include "engine/ecs/EventDispatcher.h"
@@ -11,10 +13,11 @@ namespace gl3::engine::audio
     {
         ecs::EventDispatcher::dispatcher.sink<ui::VolumeChangeEvent>().connect<&
             AudioSystem::onGlobalVolumeChanged>(this);
-        if(!config_) {
-            config_ = std::make_unique<AudioConfig>();
-            config_->audio.init();
-            config_->audio.setGlobalVolume(config_->global_volume_);
+        if (!config)
+        {
+            config = std::make_unique<AudioConfig>();
+            config->audio.init();
+            config->audio.setGlobalVolume(config->global_volume);
         }
     }
 
@@ -22,19 +25,21 @@ namespace gl3::engine::audio
     {
         ecs::EventDispatcher::dispatcher.sink<ui::VolumeChangeEvent>().disconnect<&
             AudioSystem::onGlobalVolumeChanged>(this);
-        if(config_) {
-            config_->audio.deinit();
+        if (config)
+        {
+            config->audio.deinit();
         }
     }
 
     void AudioSystem::update()
     {
-        activeHandles.erase(
-    std::ranges::remove_if(activeHandles,
-                           [this](const SoLoud::handle h) {
-                               return !config_->audio.isValidVoiceHandle(h);
-                           }).begin(),
-    activeHandles.end());
+        active_handles.erase(
+            std::ranges::remove_if(active_handles,
+                                   [this](const SoLoud::handle h)
+                                   {
+                                       return !config->audio.isValidVoiceHandle(h);
+                                   }).begin(),
+            active_handles.end());
     }
 
     void AudioSystem::loadOneShot(const std::string& sfxName, const std::string& fileName)
@@ -47,14 +52,14 @@ namespace gl3::engine::audio
             return;
         }
 
-        oneShotSounds_[sfxName] = std::move(wav);
+        one_shot_sounds[sfxName] = std::move(wav);
     }
 
     void AudioSystem::playOneShot(const std::string& sfxName)
     {
-        if (const auto wav = oneShotSounds_.find(sfxName); wav != oneShotSounds_.end())
+        if (const auto wav = one_shot_sounds.find(sfxName); wav != one_shot_sounds.end())
         {
-            activeHandles.push_back(config_->audio.play(*wav->second));
+            active_handles.push_back(config->audio.play(*wav->second));
         }
         else
         {
@@ -64,66 +69,69 @@ namespace gl3::engine::audio
 
     void AudioSystem::unloadOneShot(const std::string& sfxName)
     {
-        if (const auto wav = oneShotSounds_.find(sfxName); wav != oneShotSounds_.end())
+        if (const auto wav = one_shot_sounds.find(sfxName); wav != one_shot_sounds.end())
         {
-            oneShotSounds_.erase(wav);
+            one_shot_sounds.erase(wav);
         }
     }
 
     void AudioSystem::stopAllOneShots()
     {
-        for (const auto handle : activeHandles)
+        for (const auto handle : active_handles)
         {
-            if (config_->audio.isValidVoiceHandle(handle))
+            if (config->audio.isValidVoiceHandle(handle))
             {
-                config_->audio.stop(handle);
+                config->audio.stop(handle);
             }
         }
-        activeHandles.clear();
+        active_handles.clear();
     }
 
-    void AudioSystem::resetConfig() {
-        config_ = nullptr;
+    void AudioSystem::resetConfig()
+    {
+        config = nullptr;
     }
 
     void AudioSystem::initializeCurrentAudio(const std::string& fileName, const float positionOffsetX)
     {
         const auto path = "audio/" + fileName;
-        if(!config_) {
-            config_ = std::make_unique<AudioConfig>();
-            config_->audio.init();
+        if (!config)
+        {
+            config = std::make_unique<AudioConfig>();
+            config->audio.init();
         }
-        config_->backgroundMusic = std::make_unique<SoLoud::Wav>();
-        config_->backgroundMusic->load(resolveAssetPath(path).c_str());
-        config_->backgroundMusic->setLooping(false);
-        config_->current_audio_length = static_cast<float>(config_->backgroundMusic->getLength());
+        config->backgroundMusic = std::make_unique<SoLoud::Wav>();
+        config->backgroundMusic->load(resolveAssetPath(path).c_str());
+        config->backgroundMusic->setLooping(false);
+        config->current_audio_length = static_cast<float>(config->backgroundMusic->getLength());
 
         const std::string audio_file = resolveAssetPath(path);
-        config_->bpm = AudioAnalysis::analyzeAudioTempo(audio_file, config_->hopSize, config_->bufferSize);
-        config_->seconds_per_beat = 60 / config_->bpm;
-        config_->beatPositions = AudioAnalysis::generateBeatTimestamps(
-            config_->current_audio_length,
-            config_->seconds_per_beat,
+        config->bpm = AudioAnalysis::analyzeAudioTempo(audio_file, config->hopSize, config->bufferSize);
+        config->seconds_per_beat = 60 / config->bpm;
+        config->beatPositions = AudioAnalysis::generateBeatTimestamps(
+            config->current_audio_length,
+            config->seconds_per_beat,
             positionOffsetX);
     }
 
-    AudioConfig *AudioSystem::getConfig() {
-        return config_.get();
+    AudioConfig* AudioSystem::getConfig() const
+    {
+        return config.get();
     }
 
-    void AudioSystem::playCurrentAudio()
+    void AudioSystem::playCurrentAudio() const
     {
-        config_->currentAudioHandle = config_->audio.playBackground(*config_->backgroundMusic);
+        config->currentAudioHandle = config->audio.playBackground(*config->backgroundMusic);
     }
 
-    void AudioSystem::stopCurrentAudio()
+    void AudioSystem::stopCurrentAudio() const
     {
-        config_->audio.stopAudioSource(*config_->backgroundMusic);
+        config->audio.stopAudioSource(*config->backgroundMusic);
     }
 
-    void AudioSystem::onGlobalVolumeChanged(const ui::VolumeChangeEvent& event)
+    void AudioSystem::onGlobalVolumeChanged(const ui::VolumeChangeEvent& event) const
     {
-        config_->global_volume_ = event.newVolume;
-        config_->audio.setGlobalVolume(config_->global_volume_);
+        config->global_volume = event.newVolume;
+        config->audio.setGlobalVolume(config->global_volume);
     }
 }

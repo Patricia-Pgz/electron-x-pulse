@@ -1,6 +1,13 @@
 #pragma once
 #include <imgui.h>
 
+/**
+ * @struct UINeonColors
+ * @brief Defines a palette of custom neon and pastel colors for the game's ImGui UI.
+ *
+ * Provides consistent color values for windows, text, highlights, or any other
+ * ImGui elements. Use these constants to keep the UI visually cohesive.
+ */
 struct UINeonColors
 {
     static constexpr auto windowBgColor = ImVec4(0.36f, 0.09f, 0.45f, 0.9f);

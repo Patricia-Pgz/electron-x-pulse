@@ -5,7 +5,7 @@ namespace gl3::game::ui
 {
     void InstructionUI::drawHints(const ImGuiViewport* viewport, ImFont* font)
     {
-        if (!pause_timer_) { timer_ -= game_.getDeltaTime(); }
+        if (!pause_timer_) { timer_ -= game.getDeltaTime(); }
 
         const auto viewportSize = viewport->Size;
         const auto viewportPos = viewport->Pos;
@@ -32,7 +32,7 @@ namespace gl3::game::ui
 
     void InstructionUI::update()
     {
-        if (!is_active || timer_ <= 0.f) return;
+        if (timer_ <= 0.f) return;
         drawHints(ImGui::GetMainViewport(), engine::ui::FontManager::getFont("PixeloidSans"));
     }
 

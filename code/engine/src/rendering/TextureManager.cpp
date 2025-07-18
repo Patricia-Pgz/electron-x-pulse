@@ -1,5 +1,6 @@
 #include "engine/rendering/TextureManager.h"
 
+#include <iostream>
 #include <regex>
 #include <stdexcept>
 #include <unordered_set>
@@ -8,14 +9,13 @@
 
 namespace gl3::engine::rendering
 {
-    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::texture_cache_;
-    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::tile_set_cache_;
-    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::ui_texture_cache_;
-    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::bg_texture_cache_;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::texture_cache;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::tile_set_cache;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::ui_texture_cache;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> TextureManager::bg_texture_cache;
     static const std::unordered_set<std::string> validExtensions = {".png", ".jpg", ".jpeg"};
 
-    void TextureManager::add(const std::string& key, const std::filesystem::path& path, int tilesX,
-                             int tilesY)
+    void TextureManager::add(const std::string& key, const std::filesystem::path& path, int tilesX, int tilesY)
     {
         if (!exists(path) || !is_regular_file(path) || !validExtensions.contains(path.extension().string()))
         {
@@ -23,51 +23,49 @@ namespace gl3::engine::rendering
             return;
         }
 
-        if (!texture_cache_.contains(key))
+        if (texture_cache.contains(key) || tile_set_cache.contains(key) ||
+            ui_texture_cache.contains(key) || bg_texture_cache.contains(key))
         {
-            std::string filename = path.filename().string();
-            std::ranges::transform(filename, filename.begin(), ::tolower);
-            if (path.parent_path().filename().string().find("ui") != std::string::npos)
-            {
-                ui_texture_cache_.emplace(
-                    key,
-                    std::make_unique<Texture>(path.string())
-                );
-                return;
-            }
-            if (path.parent_path().filename().string().find("background") != std::string::npos)
-            {
-                bg_texture_cache_.emplace(
-                    key,
-                    std::make_unique<Texture>(path.string())
-                );
-                return;
-            }
-            if (filename.find("tileset") != std::string::npos)
-            {
-                std::smatch match;
-                std::regex tileSizePattern(R"(_(\d+)x(\d+))");
+            return;
+        }
 
-                if (std::regex_search(filename, match, tileSizePattern) && match.size() == 3)
-                {
-                    tilesX = std::stoi(match[1].str());
-                    tilesY = std::stoi(match[2].str());
-                }
+        std::string filename = path.filename().string();
+        std::ranges::transform(filename, filename.begin(), ::tolower);
 
-                tile_set_cache_.emplace(
-                    key,
-                    std::make_unique<Texture>(path.string(), tilesX, tilesY)
-                );
-            }
-            else
+        auto parent = path.parent_path().filename().string();
+        std::ranges::transform(parent, parent.begin(), ::tolower);
+
+        if (parent.find("ui") != std::string::npos)
+        {
+            ui_texture_cache.emplace(key, std::make_unique<Texture>(path.string()));
+            return;
+        }
+
+        if (parent.find("background") != std::string::npos)
+        {
+            bg_texture_cache.emplace(key, std::make_unique<Texture>(path.string()));
+            return;
+        }
+
+        if (filename.find("tileset") != std::string::npos)
+        {
+            std::smatch match;
+
+            if (const std::regex tileSizePattern(R"(_(\d+)x(\d+))"); std::regex_search(filename, match, tileSizePattern)
+                && match.size() == 3)
             {
-                texture_cache_.emplace(
-                    key,
-                    std::make_unique<Texture>(path.string())
-                );
+                tilesX = std::stoi(match[1].str());
+                tilesY = std::stoi(match[2].str());
             }
+
+            tile_set_cache.emplace(key, std::make_unique<Texture>(path.string(), tilesX, tilesY));
+        }
+        else
+        {
+            texture_cache.emplace(key, std::make_unique<Texture>(path.string()));
         }
     }
+
 
     void TextureManager::loadTextures()
     {
@@ -99,14 +97,14 @@ namespace gl3::engine::rendering
 
     const Texture* TextureManager::getTileOrSingleTex(const std::string& key)
     {
-        auto tex = texture_cache_.find(key);
-        if (tex == texture_cache_.end())
+        auto tex = texture_cache.find(key);
+        if (tex == texture_cache.end())
         {
-            tex = tile_set_cache_.find((key));
-            if (tex == tile_set_cache_.end())
+            tex = tile_set_cache.find((key));
+            if (tex == tile_set_cache.end())
             {
-                tex = bg_texture_cache_.find((key));
-                if (tex == bg_texture_cache_.end())
+                tex = bg_texture_cache.find((key));
+                if (tex == bg_texture_cache.end())
                 {
                     throw std::runtime_error("TextureManager: Texture key not found: " + key);
                 }
@@ -117,8 +115,8 @@ namespace gl3::engine::rendering
 
     const Texture* TextureManager::getUITexture(const std::string& key)
     {
-        const auto tex = ui_texture_cache_.find(key);
-        if (tex == ui_texture_cache_.end())
+        const auto tex = ui_texture_cache.find(key);
+        if (tex == ui_texture_cache.end())
         {
             throw std::runtime_error("TextureManager: UI-Texture key not found: " + key);
         }
@@ -127,8 +125,8 @@ namespace gl3::engine::rendering
 
     const Texture* TextureManager::getBgTexture(const std::string& key)
     {
-        const auto tex = bg_texture_cache_.find(key);
-        if (tex == bg_texture_cache_.end())
+        const auto tex = bg_texture_cache.find(key);
+        if (tex == bg_texture_cache.end())
         {
             throw std::runtime_error("TextureManager: Bg-Texture key not found: " + key);
         }
@@ -143,6 +141,9 @@ namespace gl3::engine::rendering
 
     void TextureManager::clear()
     {
-        texture_cache_.clear();
+        texture_cache.clear();
+        tile_set_cache.clear();
+        ui_texture_cache.clear();
+        bg_texture_cache.clear();
     }
 }

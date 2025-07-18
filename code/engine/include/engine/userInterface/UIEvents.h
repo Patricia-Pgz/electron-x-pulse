@@ -64,7 +64,7 @@ namespace gl3::engine::ui
 
 
     /**
-   * Call this event to Change the volume of "audio_" in @ref Game.h
+   * Call this event to Change the global audio volume in @ref AudioSystem
    * Game already listens to it and applies the change.
    */
     struct VolumeChangeEvent

@@ -195,7 +195,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::initializeAudio()
     {
-        game.getAudioSystem()->initializeCurrentAudio(current_level->audioFile, current_level->playerStartPosX);
+        game.getAudioSystem()->initializeCurrentAudio(current_level->audioFileName, current_level->playerStartPosX);
         audio_config = game.getAudioSystem()->getConfig();
         //Ensures, that every unit is synced to the beat
         current_level->currentLevelSpeed = current_level->velocityMultiplier / audio_config->seconds_per_beat;

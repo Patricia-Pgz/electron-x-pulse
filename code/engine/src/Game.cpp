@@ -5,7 +5,7 @@
 #include "engine/userInterface/UISystem.h"
 #include "engine/audio/AudioSystem.h"
 #include "engine/levelloading/LevelManager.h"
-#include "engine/stateManagement/StateManagerSystem.h"
+#include "engine/stateManagement/StateManagementSystem.h"
 
 
 namespace gl3::engine
@@ -13,13 +13,13 @@ namespace gl3::engine
     using Context = context::Context;
 
     Game::Game(const int width, const int height, const std::string& title, const glm::vec3 camPos,
-               const float camZoom): context_(width, height, title, camPos, camZoom), physics_world_(b2_nullWorldId),
-                                     physics_system_(new physics::PhysicsSystem(*this)),
-                                     rendering_system_((new rendering::RenderingSystem(*this))),
-                                     ui_system_(new ui::UISystem(*this)),
-                                     audio_system_(new audio::AudioSystem(*this)),
-                                     state_management_system_(new state::StateManagementSystem(*this)),
-                                     player_(entt::null)
+               const float camZoom): context(width, height, title, camPos, camZoom), physics_world(b2_nullWorldId),
+                                     physics_system(new physics::PhysicsSystem(*this)),
+                                     rendering_system((new rendering::RenderingSystem(*this))),
+                                     ui_system(new ui::UISystem(*this)),
+                                     audio_system(new audio::AudioSystem(*this)),
+                                     state_management_system(new state::StateManagementSystem(*this)),
+                                     player(entt::null)
     {
         if (!glfwInit())
         {
@@ -30,8 +30,8 @@ namespace gl3::engine
         b2WorldDef worldDef = b2DefaultWorldDef();
         // We use worldDef to define our physics world
         worldDef.gravity = b2Vec2{0.f, -10.f};
-        physics_world_ = b2CreateWorld(&worldDef);
-        ui_system_->initUI();
+        physics_world = b2CreateWorld(&worldDef);
+        ui_system->initUI();
     }
 
     void Game::run()
@@ -42,7 +42,7 @@ namespace gl3::engine
         rendering::TextureManager::loadTextures();
         levelLoading::LevelManager::loadAllMetaData();
         onAfterStartup.invoke(*this);
-        context_.run([&](Context& ctx)
+        context.run([&](Context& ctx)
         {
             onBeforeUpdate.invoke(*this);
             update(getWindow());
@@ -51,7 +51,7 @@ namespace gl3::engine
             draw();
             updateUI();
             updateDeltaTime();
-            ecs::EntityFactory::deleteMarkedEntities(registry_);
+            ecs::EntityFactory::deleteMarkedEntities(registry);
             onAfterUpdate.invoke(*this);
         });
         onBeforeShutdown.invoke(*this);
@@ -61,7 +61,7 @@ namespace gl3::engine
     void Game::updateDeltaTime()
     {
         const auto frameTime = static_cast<float>(glfwGetTime());
-        delta_time_ = frameTime - lastFrameTime_;
+        delta_time = frameTime - lastFrameTime_;
         lastFrameTime_ = frameTime;
     }
 
@@ -72,22 +72,22 @@ namespace gl3::engine
 
     void Game::updatePhysics()
     {
-        physics_system_->runPhysicsStep();
+        physics_system->runPhysicsStep();
     }
 
     void Game::draw()
     {
-        rendering_system_->draw();
+        rendering_system->draw();
     }
 
     void Game::updateUI()
     {
-        ui_system_->renderUI();
+        ui_system->renderUI();
     }
 
     void Game::updateState()
     {
-        state_management_system_->update();
-        audio_system_->update();
+        state_management_system->update(delta_time);
+        audio_system->update();
     }
 } // gl3

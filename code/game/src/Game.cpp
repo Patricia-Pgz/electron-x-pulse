@@ -34,10 +34,10 @@ namespace gl3::game
 
     void Game::registerUiSystems()
     {
-        ui_system_->registerSubsystem<engine::levelLoading::LevelSelectUISystem>();
-        ui_system_->registerSubsystem<ui::InGameMenuUI>();
-        ui_system_->registerSubsystem<ui::InstructionUI>();
-        ui_system_->registerSubsystem<ui::FinishUI>();
-        ui_system_->registerSubsystem<engine::editor::EditorUISystem>();
+        ui_system->registerSubsystem<engine::levelLoading::LevelSelectUISystem>();
+        ui_system->registerSubsystem<ui::InGameMenuUI>();
+        ui_system->registerSubsystem<ui::InstructionUI>();
+        ui_system->registerSubsystem<ui::FinishUI>();
+        ui_system->registerSubsystem<engine::editor::EditorUISystem>();
     }
 }

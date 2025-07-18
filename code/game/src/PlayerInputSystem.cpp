@@ -9,10 +9,10 @@ namespace gl3::game::input
 {
     void PlayerInputSystem::update()
     {
-        if (!game_.getRegistry().valid(game_.getPlayer()) || !is_active) return;
-        const auto window = game_.getWindow();
-        const auto body = game_.getRegistry().get<engine::ecs::PhysicsComponent>(game_.getPlayer()).body;
-        auto& transform = game_.getRegistry().get<engine::ecs::TransformComponent>(game_.getPlayer());
+        if (!game.getRegistry().valid(game.getPlayer()) || !is_active) return;
+        const auto window = game.getWindow();
+        const auto body = game.getRegistry().get<engine::ecs::PhysicsComponent>(game.getPlayer()).body;
+        auto& transform = game.getRegistry().get<engine::ecs::TransformComponent>(game.getPlayer());
         b2Vec2 velocity = b2Body_GetLinearVelocity(body);
 
         if (engine::physics::PlayerContactListener::playerGrounded)
@@ -30,12 +30,12 @@ namespace gl3::game::input
                 canJump = false;
             }
         }
-        else if (glfwGetKey(game_.getWindow(), GLFW_KEY_SPACE) == GLFW_RELEASE)
+        else if (glfwGetKey(game.getWindow(), GLFW_KEY_SPACE) == GLFW_RELEASE)
         {
             enter_pressed_ = false;
         }
 
-        const float fixedX = game_.getRegistry().get<engine::ecs::TransformComponent>(game_.getPlayer()).initialPosition
+        const float fixedX = game.getRegistry().get<engine::ecs::TransformComponent>(game.getPlayer()).initialPosition
                                   .x;
         b2Vec2 pos = b2Body_GetPosition(body);
         pos.x = fixedX;
@@ -47,7 +47,7 @@ namespace gl3::game::input
         if (!engine::physics::PlayerContactListener::playerGrounded)
         {
             //player animation
-            transform.zRotation += rotationSpeed * game_.getDeltaTime();
+            transform.zRotation += rotationSpeed * game.getDeltaTime();
         }
         else
         {
@@ -55,7 +55,7 @@ namespace gl3::game::input
             {
                 //smoothly stop rotation
                 float& angle = transform.zRotation;
-                angle = glm::mix(angle, 0.0f, game_.getDeltaTime() * 15); // smooth angle
+                angle = glm::mix(angle, 0.0f, game.getDeltaTime() * 15); // smooth angle
                 angle = glm::mod(angle, glm::two_pi<float>());
                 if (std::abs(angle) < 0.01f)
                 {
@@ -69,10 +69,10 @@ namespace gl3::game::input
     void PlayerInputSystem::applyJumpImpulse(const b2BodyId body)
     {
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayerJump{true});
-        const float gravityY = std::abs(b2World_GetGravity(game_.getPhysicsWorld()).y);
+        const float gravityY = std::abs(b2World_GetGravity(game.getPhysicsWorld()).y);
         const float mass = b2Body_GetMass(body);
 
-        const float timeToLand = game_.getAudioSystem()->getConfig()->seconds_per_beat;
+        const float timeToLand = game.getAudioSystem()->getConfig()->seconds_per_beat;
 
 
         // Time to apex: total time / 2

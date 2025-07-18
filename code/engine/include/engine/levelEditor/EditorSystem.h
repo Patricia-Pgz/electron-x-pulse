@@ -6,31 +6,47 @@
 
 namespace gl3::engine::editor
 {
-    class EditorSystem
-    {
-    public:
-        explicit EditorSystem(Game& game): game(game)
-        {
-            ecs::EventDispatcher::dispatcher.sink<ui::EditorTileSelectedEvent>().connect<&
-                EditorSystem::onTileSelected>(this);
-            ecs::EventDispatcher::dispatcher.sink<ui::EditorGenerateGroup>().connect<&
-                EditorSystem::onGenerateGroup>(this);
-        }
-        ;
+ /**
+* @class EditorSystem
+* @brief Manages editor logic and responds to editor UI events.
+*
+* The EditorSystem handles interactions such as tile selection and group generation
+* by listening to editor-related UI events. It maintains collections of child entities and objects to group on event.
+*/
+ class EditorSystem
+ {
+ public:
+  /**
+   * @brief Constructs an EditorSystem instance.
+   * @param game Reference to the main game engine.
+   *
+   * Connects event handlers for tile selection and group generation events.
+   */
+  explicit EditorSystem(Game& game);
 
-        ~EditorSystem()
-        {
-            ecs::EventDispatcher::dispatcher.sink<ui::EditorTileSelectedEvent>().disconnect<&
-                EditorSystem::onTileSelected>(this);
-            ecs::EventDispatcher::dispatcher.sink<ui::EditorGenerateGroup>().disconnect<&
-                EditorSystem::onGenerateGroup>(this);
-        };
+  /**
+   * @brief Destructor.
+   *
+   * Disconnects the event handlers to avoid dangling connections.
+   */
+  ~EditorSystem();
 
-    private:
-        Game& game;
-        std::vector<entt::entity> grouped_child_entities;
-        std::vector<GameObject> grouped_child_objects;
-        void onTileSelected(ui::EditorTileSelectedEvent& event);
-        void onGenerateGroup(ui::EditorGenerateGroup& event);
-    };
+ private:
+  Game& game; /**< Reference to the game instance. */
+  std::vector<entt::entity> grouped_child_entities; /**< Entities grouped together in the editor. */
+  std::vector<GameObject> grouped_child_objects; /**< GameObjects grouped together in the editor. */
+
+  /**
+   * Creates the actual entity from the tile, selected in editor, and adds it to the current level.
+   * Saves children to group for later.
+   * @param event The EditorTileSelectedEvent sent by EditorUISystem, once a tile was selected to be placed
+   */
+  void onTileSelected(ui::EditorTileSelectedEvent& event);
+
+  /**
+   * Generates an AABB physics Component for previously grouped objects/entities and adds ParentComponent and GroupComponent. Adds new group to current level.
+   * @param event The EditorGenerateGroup sent by EditorUISystem, once the button to generate a group was pressed.
+   */
+  void onGenerateGroup(ui::EditorGenerateGroup& event);
+ };
 } // gl3

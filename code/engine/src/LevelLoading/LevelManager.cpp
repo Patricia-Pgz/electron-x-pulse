@@ -1,5 +1,6 @@
 #include "engine/levelloading/LevelManager.h"
 #include <filesystem>
+#include <iostream>
 #include <glaze/json/read.hpp>
 
 namespace gl3::engine::levelLoading
@@ -11,9 +12,8 @@ namespace gl3::engine::levelLoading
 
     namespace fs = std::filesystem;
 
-    /**
-* Load a single level from a json file in assets/levles, if the level is already loaded, just return it.
-*/
+    // Load a single level from a json file in assets/levels, if the level is already loaded, just return it.
+
     Level* LevelManager::loadLevel(const int ID, const std::string& filename)
     {
         if (const auto existingLevel = loaded_levels_.find(ID); existingLevel != loaded_levels_.end())
@@ -41,9 +41,7 @@ namespace gl3::engine::levelLoading
         return it->second.get();
     }
 
-    /**
-* Resolves the levelID to a path and returns a pointer to the level.
-*/
+    // Resolves the levelID to a path and returns a pointer to the level.
     Level* LevelManager::loadLevelByID(const int ID)
     {
         const auto levelFileName = idToFilename_.find(ID);
@@ -55,9 +53,7 @@ namespace gl3::engine::levelLoading
         return loadLevel(levelFileName->first, levelFileName->second);
     }
 
-    /**
-    * Load metadata for all levels from all meda data files in assets/levles folder
-    */
+    //Load metadata for all levels from all meda data files in assets/levels folder
     void LevelManager::loadAllMetaData(
         const std::filesystem::path& levelDir)
     {
@@ -92,9 +88,19 @@ namespace gl3::engine::levelLoading
         }
     }
 
+    Level* LevelManager::getMostRecentLoadedLevel()
+    {
+        if (const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID); it != loaded_levels_.end())
+        {
+            return it->second.get();
+        }
+        return nullptr; // not loaded
+    }
+
+
     void LevelManager::addObjectToCurrentLevel(const GameObject& object)
     {
-        auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
+        const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
         if (it == loaded_levels_.end() || !it->second)
         {
             throw std::runtime_error("No current level loaded to add object.");
@@ -106,7 +112,7 @@ namespace gl3::engine::levelLoading
 
     void LevelManager::removeAllObjectsAtPosition(glm::vec2 position)
     {
-        auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
+        const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
         if (it == loaded_levels_.end() || !it->second)
         {
             throw std::runtime_error("No current level loaded to remove object.");
@@ -147,7 +153,7 @@ namespace gl3::engine::levelLoading
 
     void LevelManager::addGroupToCurrentLevel(const GameObjectGroup& group)
     {
-        auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
+        const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
         if (it == loaded_levels_.end() || !it->second)
         {
             throw std::runtime_error("No current level loaded to add group.");
@@ -159,7 +165,7 @@ namespace gl3::engine::levelLoading
 
     void LevelManager::removeGroupByName(const std::string& groupName)
     {
-        auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
+        const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
         if (it == loaded_levels_.end() || !it->second)
         {
             throw std::runtime_error("No current level loaded to remove group.");
@@ -177,7 +183,7 @@ namespace gl3::engine::levelLoading
 
     void LevelManager::saveCurrentLevel()
     {
-        auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
+        const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
         if (it == loaded_levels_.end())
         {
             throw std::runtime_error("Level with ID " + std::to_string(most_recent_loaded_lvl_ID) + " is not loaded.");
@@ -185,13 +191,13 @@ namespace gl3::engine::levelLoading
 
         Level* level = it->second.get();
 
-        auto result = glz::write_json(*level); // returns expected<string, error_ctx>
+        const auto result = glz::write_json(*level); // returns expected<string, error_ctx>
         if (!result)
         {
             throw std::runtime_error("Failed to serialize level: " + std::to_string(most_recent_loaded_lvl_ID));
         }
 
-        auto filenameIt = idToFilename_.find(most_recent_loaded_lvl_ID);
+        const auto filenameIt = idToFilename_.find(most_recent_loaded_lvl_ID);
         if (filenameIt == idToFilename_.end())
         {
             throw std::runtime_error("No filename mapped for level ID " + std::to_string(most_recent_loaded_lvl_ID));

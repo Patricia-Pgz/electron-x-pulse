@@ -6,31 +6,60 @@
 namespace gl3::engine::ui
 {
     /**
-     * IUISubsystems is an interface to create actual game user interfaces from.
-     * @note Every custom UI needs to be registered to the ui system via @ref gl3::engine::ui::UISystem::registerSubsystem() in the game's @ref Game::registerUiSystems()
+     * @class IUISubsystem
+     * @brief Interface for all in-game UI systems.
+     *
+     * Derive from this interface to implement custom UI panels, overlays,
+     * editors, or any ImGui-based UI elements in the game. Use it for minimal UIs.
+     *
+     * @note Every custom UI must be registered with the main UI system via
+     * @ref gl3::engine::ui::UISystem::registerSubsystem in your game's
+     * @ref gl3::engine::Game::registerUiSystems implementation.
      */
     class IUISubsystem
     {
     public:
-        explicit IUISubsystem(ImGuiIO* imguiIO, Game& game): imgui_io_(imguiIO), game_(game)
+        /**
+         * @brief Constructor for a UI subsystem.
+         * @param imguiIO Pointer to the ImGuiIO context.
+         * @param game Reference to the game instance.
+         */
+        explicit IUISubsystem(ImGuiIO* imguiIO, Game& game): imgui_io(imguiIO), game(game)
         {
         };
 
         /**
- * update is called each frame.
- * @pre ImGui needs to be set up already. E.g. by calling @ref gl3::engine::ui::UISystem::renderUI on a UISystem instance each game UI-Update frame @ref gl3::engine::Game::updateUI() .
-* @pre ImGui Frame needs to be running already.
-*/
+         * @brief Called once per frame to update the UI.
+         *
+         * Override this to define your UI rendering logic.
+         *
+         * @pre ImGui must already be initialized.
+         * For example, call @ref gl3::engine::ui::UISystem::renderUI in your
+         * game loop's UI pass (e.g. @ref gl3::engine::Game::updateUI).
+         * @pre An ImGui frame must already be started.
+         */
         virtual void update()
         {
         };
+
+        /**
+         * @brief Virtual destructor.
+         */
         virtual ~IUISubsystem() = default;
 
+        /**
+         * @brief Enable or disable this UI subsystem.
+         * @param setActive True to activate, false to deactivate.
+         */
         virtual void setActive(const bool setActive)
         {
             is_active = setActive;
         }
 
+        /**
+         * @brief Check if this UI subsystem is active.
+         * @return True if active, false otherwise.
+         */
         virtual bool isActive()
         {
             return is_active;
@@ -38,7 +67,7 @@ namespace gl3::engine::ui
 
     protected:
         bool is_active = false;
-        ImGuiIO* imgui_io_ = nullptr;
-        Game& game_;
+        ImGuiIO* imgui_io = nullptr;
+        Game& game;
     };
 }

@@ -1,5 +1,4 @@
 #include "FinishUI.h"
-
 #include "UIEvents.h"
 #include "engine/userInterface/FontManager.h"
 #include "engine/userInterface/UIConstants.h"
@@ -88,8 +87,6 @@ namespace gl3::game::ui
  */
     void FinishUI::update()
     {
-        if (!is_active) return;
-
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         DrawFinishScreen(viewport, engine::ui::FontManager::getFont("pixeloid-bold-30"),
                          engine::ui::FontManager::getFont("pixeloid-bold-26"));

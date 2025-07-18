@@ -198,7 +198,6 @@ namespace gl3::engine::levelLoading
 
     void LevelSelectUISystem::update()
     {
-        if (!is_active) return;
         createLevelSelection();
     }
 }

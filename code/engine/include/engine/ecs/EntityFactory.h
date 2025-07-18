@@ -13,22 +13,43 @@ namespace gl3::engine::ecs
     static constexpr auto GROUND_SENSOR_TAG = "bottomCollider";
     static constexpr auto RIGHT_SENSOR_TAG = "rightCollider";
 
-    ///Component for grouping objects, includes parent entity and the child's local offset to it. @note Add this to child entities
+    /**
+     * @brief Component for grouping child entities under a parent.
+     *
+     * Holds a reference to the parent entity and the child's local offset relative to the parent.
+     * @note Add this component to child entities that belong to a group.
+     */
     struct ParentComponent
     {
         entt::entity parentEntity;
         glm::vec2 localOffset;
     };
 
-    ///Parent component for grouped objects. Has a vector of child entities.
+    /**
+     * @brief Component for parent entities that group multiple child entities.
+     *
+     * Contains a vector of child entities that belong to this group.
+     */
     struct GroupComponent
     {
         std::vector<entt::entity> childEntities;
     };
 
-    ///Transform properties for entity, later used for rendering
+    /**
+     * @brief Stores transform properties for an entity, used during rendering.
+     *
+     * Holds initial and current position, scale, rotation, and parallax factor.
+     * Supports (2D & 3D) position and scale with rotation around the Z axis.
+     */
     struct TransformComponent
     {
+        /**
+         * @brief Construct a new TransformComponent with optional initial values.
+         * @param position Initial position in world space.
+         * @param scale Initial scale factors.
+         * @param zRotation Initial rotation around Z axis in degrees.
+         * @param parallax Parallax factor for uv parallax effect.
+         */
         explicit TransformComponent(const glm::vec3 position = {0.0f, 0.0f, 0.0f},
                                     const glm::vec3 scale = {1.0f, 1.0f, 1.0f},
                                     const float zRotation = 0.0f,
@@ -48,30 +69,40 @@ namespace gl3::engine::ecs
         float parallaxFactor = 0.f;
     };
 
-    ///RenderComponent for entities, used in rendering system.
+    /**
+     * @brief Component storing rendering data for an entity.
+     *
+     * Includes shader, mesh, colors, texture, UV mapping, and active state.
+     * Used by the rendering system to draw the entity.
+     */
     struct RenderComponent
     {
         rendering::Shader shader;
         rendering::Mesh mesh;
-        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; // Default red
-        glm::vec4 gradientTopColor = {1, 1, 1, 1}; //can be used for gradient color
-        glm::vec4 gradientBottomColor = {1, 1, 1, 1};
+        glm::vec4 color = {1.0f, 0.0f, 0.0f, 1.0f}; /**< Base color tint (default red), used if not using texture. */
+        glm::vec4 gradientTopColor = {1, 1, 1, 1}; /**< Top color for gradient effects. */
+        glm::vec4 gradientBottomColor = {1, 1, 1, 1}; /**< Bottom color for gradient effects. */
         const rendering::Texture* texture = nullptr;
-        glm::vec4 uv;
-        glm::vec2 uvOffset = {0.0f, 0.0f};
+        glm::vec4 uv; /**< UV coordinates for texture mapping. */
+        glm::vec2 uvOffset = {0.0f, 0.0f}; /**< Offset applied to UV mapping. */
         bool isActive = true;
     };
 
-    ///PhysicsComponent for entity. Used in physics system with Box2D body and shape.
+    /**
+     * @brief Component representing physics properties of an entity.
+     *
+     * Wraps Box2D physics objects: world, body, shapes, and optional sensors.
+     * Used in the physics system to simulate physical behavior and collisions.
+     */
     struct PhysicsComponent
     {
         /**
-         *
-         * @param physicsWorld The current Box2D world, in which the entity exists.
-         * @param body The entity's Box2D physics body.
-         * @param shape The entity's Box2D physics shape.
-         * @param groundSensor An additional Sensor for the player to check if they are grounded.
-         * @param rightSensor An additional Sensor for the player to check if they hit something from the left.
+         * @brief Construct a new PhysicsComponent.
+         * @param physicsWorld The Box2D physics world containing this entity.
+         * @param body The Box2D body representing the entity.
+         * @param shape The main Box2D shape (fixture) for collisions.
+         * @param groundSensor Optional sensor shape to detect if entity is on the ground.
+         * @param rightSensor Optional sensor shape to detect collisions on the right side.
          */
         PhysicsComponent(const b2WorldId physicsWorld, const b2BodyId body, const b2ShapeId shape,
                          const b2ShapeId groundSensor = b2_nullShapeId,
@@ -92,7 +123,12 @@ namespace gl3::engine::ecs
         bool isActive = true;
     };
 
-    ///TagComponent for an entity, that needs to be identified by a string tag.
+    /**
+     * @brief Component to assign a string tag to an entity.
+     *
+     * Used to identify or categorize entities by a human-readable tag.
+     * The default tag value is "undefined".
+     */
     struct TagComponent
     {
         std::string tag = "undefined";
@@ -120,7 +156,7 @@ namespace gl3::engine::ecs
             const entt::entity entity = registry.create();
             // Add initial components
             registry.emplace<TransformComponent>(
-                entity, object.position, object.scale, object.rotation, object.parallaxFactor
+                entity, object.position, object.scale, object.zRotation, object.parallaxFactor
             );
             registry.emplace<TagComponent>(entity, object.tag);
             if (object.generatePhysicsComp)
@@ -181,12 +217,28 @@ namespace gl3::engine::ecs
             registry.remove<PhysicsComponent>(entity);
         }
 
-
+        /**
+         * @brief Mark an entity to be deleted later.
+         *
+         * Adds the given entity to a static deletion queue.
+         * Use this to safely defer deletion until later.
+         *
+         * @param entity The entity to mark for deletion.
+         */
         static void markEntityForDeletion(entt::entity entity)
         {
             entitiesMarkedForDeletion_.emplace(entity);
         }
 
+        /**
+         * @brief Delete all entities previously marked for deletion.
+         *
+         * Iterates over the deletion queue, destroys any valid entities,
+         * and removes their physics components if present.
+         * Clears the deletion queue afterward.
+         *
+         * @param registry The EnTT registry containing the entities.
+         */
         static void deleteMarkedEntities(entt::registry& registry)
         {
             for (const entt::entity& entity : entitiesMarkedForDeletion_)
@@ -200,7 +252,15 @@ namespace gl3::engine::ecs
             entitiesMarkedForDeletion_.clear();
         }
 
-        ///Deletes an entity and its components, that was created with the createDefaultEntity method.
+        /**
+         * @brief Immediately delete an entity and its components.
+         *
+         * Destroys an entity created with createDefaultEntity, including
+         * removing its physics component if it has one.
+         *
+         * @param registry The EnTT registry containing the entity.
+         * @param entity The entity to delete.
+         */
         static void deleteDefaultEntity(entt::registry& registry, const entt::entity entity)
         {
             destroyPhysicsComponent(registry, entity);
@@ -238,6 +298,12 @@ namespace gl3::engine::ecs
                                 b2Body_GetRotation(physics_comp.body));
         }
 
+        /**
+         * Changes the z rotation of an entities Transform and PhysicsComponent. @note This is only meant for entities with both Transform and Physics Component.
+         * @param registry The current enTT registry
+         * @param entity The entity to rotate
+         * @param newZRot The new rotation to apply on z
+         */
         static void SetRotation(entt::registry& registry, const entt::entity& entity, const float newZRot)
         {
             auto& transform = registry.get<TransformComponent>(entity);
@@ -343,7 +409,7 @@ namespace gl3::engine::ecs
             b2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = object.tag == "player" ? b2_dynamicBody : b2_kinematicBody;
             bodyDef.position = {object.position.x, object.position.y};
-            bodyDef.rotation = b2MakeRot(glm::radians(object.rotation));
+            bodyDef.rotation = b2MakeRot(glm::radians(object.zRotation));
             bodyDef.fixedRotation = true;
             bodyDef.linearDamping = 0.0f;
             bodyDef.userData = reinterpret_cast<void*>(static_cast<uintptr_t>(entity));

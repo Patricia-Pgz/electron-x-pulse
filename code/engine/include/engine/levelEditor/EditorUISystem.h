@@ -1,3 +1,7 @@
+/**
+* @file EditorUISystem.h
+ * @brief Defines the EditorUISystem, a UI subsystem for the level editor using ImGui.
+ */
 #pragma once
 #include "EditorSystem.h"
 #include "engine/rendering/Texture.h"
@@ -8,11 +12,31 @@
 
 namespace gl3::engine::editor
 {
+    /**
+     * @brief Number of tiles per row used in tile selection UI.
+     */
     constexpr int tilesPerRow = 4;
 
+    /**
+     * @class EditorUISystem
+     * @brief UI subsystem managing editor interface elements and interactions.
+     *
+     * This system handles rendering of editor panels, tile selection,
+     * grid visualization, input handling such as mouse scroll, and integration
+     * with the EditorSystem for editing game levels and objects.
+     *
+     * It subscribes to mouse scroll and level computation events to update UI accordingly.
+     */
     class EditorUISystem final : public ui::IUISubsystem
     {
     public:
+        /**
+         * @brief Constructs the EditorUISystem.
+         * @param imguiIO Pointer to ImGui IO for input handling.
+         * @param game Reference to the game engine.
+         *
+         * Subscribes to mouse scroll and level length computed events.
+         */
         explicit EditorUISystem(ImGuiIO* imguiIO, Game& game) : IUISubsystem(imguiIO, game),
                                                                 editor_system(new EditorSystem(game))
         {
@@ -30,51 +54,89 @@ namespace gl3::engine::editor
                 EditorUISystem::onLvlComputed>(this);
         }
 
-        void setActive(const bool setActive) override
-        {
-            is_active = setActive;
-        }
-
+        /**
+         * @brief Updates the UI elements each frame, if is_active.
+         * Overrides the base IUISubsystem update method.
+         */
         void update() override;
 
-    private:
-        void onLvlComputed(ecs::LevelLengthComputed& event);
+    /**
+         * @brief Deletes all objects at the currently selected grid positions.
+         */
         void deleteAllAtSelectedPosition() const;
 
+        /**
+         * @brief Handles mouse scroll input event.
+         * @param event The mouse scroll event data.
+         */
         void onMouseScroll(const context::MouseScrollEvent& event) const;
 
+        /**
+         * @brief Handles the level length computed event.
+         * @param event The level length computed event data.
+         */
+        void onLvlComputed(ecs::LevelLengthComputed& event);
+
+        /**
+         * @brief Draws a grid visualization with specified spacing.
+         * @param gridSpacing Distance between grid lines.
+         */
         void drawGrid(float gridSpacing);
 
+        /**
+         * @brief Draws the tile selection panel UI.
+         */
         void DrawTileSelectionPanel();
 
+        /**
+         * @brief Creates additional custom UI elements.
+         */
         void createCustomUI();
 
+        /**
+         * @brief Visualizes a tileset texture in the UI.
+         * @param texture The texture representing the tileset.
+         * @param name Name/title of the tileset.
+         * @param tileSize Size of each tile in the UI.
+         */
         void visualizeTileSetUI(const rendering::Texture& texture, const std::string& name,
                                 float tileSize);
 
+        /**
+         * @brief Visualizes a single texture in the UI.
+         * @param texture The texture to display.
+         * @param name Name of the texture.
+         * @param tileSize Display size for the texture.
+         */
         void visualizeSingleTextureUI(const rendering::Texture& texture, const std::string& name,
                                       float tileSize);
 
+        /**
+         * @brief Highlights selected buttons given their IDs.
+         * @param buttonIDs Vector of button identifier strings.
+         */
         void highlightSelectedButton(const std::vector<std::string>& buttonIDs);
 
-        bool is_mouse_in_edit = true;
-        bool multi_select_enabled = false;
-        bool compute_group_AABB = false;
+    private:
+        bool is_mouse_in_grid = true;                    /**< Whether the mouse is currently interacting with the grid vs. with the imgui ui. */
+        bool multi_select_enabled = false;                /**< Enables multi-selection mode. */
+        bool compute_group_AABB = false;                   /**< Flag to compute axis-aligned bounding box for groups. */
         ImVec2 grid_center = {0.f, 0.f};
-        float grid_offset = 0.5f;
-        std::vector<ImVec2> selected_grid_cells;
-        std::vector<ImVec2> selected_group_cells;
+        float grid_offset = 0.5f;                           /**< Offset value for grid alignment. */
+        std::vector<ImVec2> selected_grid_cells;           /**< Currently selected grid cells in the editor. */
+        std::vector<ImVec2> selected_group_cells;          /**< Selected cells to group. */
         glm::vec2 selected_scale = {1.f, 1.f};
-        char tag_input_buffer[128] = "";
-        std::string selected_tag = "platform";
-        bool is_triangle = false;
-        float selected_z_rotation = 0.f;
-        bool generate_physics_comp = true;
-        bool use_color = false;
-        glm::vec4 selected_color = {1.0f, 1.0f, 1.0f, 1.0f};
-        EditorSystem* editor_system;
-        float final_beat_position = 0.f;
-        static constexpr ImGuiWindowFlags flags =
+        char tag_input_buffer[128] = "";                    /**< Input buffer for tag text selection. */
+        std::string selected_tag = "platform";             /**< Tag assigned to entities to create. */
+        bool is_triangle = false;                            /**< Whether selected shape is a triangle. */
+        float selected_z_rotation = 0.f;                     /**< Rotation angle around Z-axis for entity creation. */
+        bool generate_physics_comp = true;                   /**< Whether to generate physics component when creating the object(s). */
+        bool use_color = false;                               /**< Whether to apply custom coloring or texture to entity creation. */
+        glm::vec4 selected_color = {1.0f, 1.0f, 1.0f, 1.0f}; /**< Color used for entity creation. */
+        EditorSystem* editor_system;                          /**< Pointer to the main editor system instance. */
+        float final_beat_position = 0.f;                      /**< Position of final beat for timing music-synced editing. */
+
+        static constexpr ImGuiWindowFlags flags =            /**< ImGui window flags for the editor UI window. */
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoResize;
     };

@@ -7,9 +7,21 @@
 
 namespace gl3::engine::physics
 {
+    /**
+     * @class PhysicsSystem
+     * @brief Handles the physics simulation step using Box2D and integrates physics updates into the ECS (enTT).
+     *
+     * This system runs fixed-timestep physics simulation, updates entity transforms based on physics bodies,
+     * manages player collision detection, and handles grouping of objects with parent-child relationships.
+     * It also listens to player jump events to correctly update grounded state.
+     */
     class PhysicsSystem final : public ecs::System
     {
     public:
+        /**
+         * @brief Constructs the PhysicsSystem and subscribes to player jump events.
+         * @param game Reference to the main game instance.
+         */
         explicit PhysicsSystem(Game& game) : System(game)
         {
             ecs::EventDispatcher::dispatcher.sink<ecs::PlayerJump>().connect<&
@@ -22,27 +34,33 @@ namespace gl3::engine::physics
                 PhysicsSystem::onPlayerJump>(this);
         }
 
-
+        /// Event triggered after the physics step completes
         using event_t = events::Event<PhysicsSystem>;
         event_t onAfterPhysicsStep;
 
         /**
-         * Runs the physics step, checks for player collisions/contacts, and moves entities based on their physics bodies, if they did not move out of the left border of the window.
+         * @brief Advances the physics simulation by the fixed timestep if enough time has elapsed.
+         *
+         * - Steps the Box2D world simulation.
+         * - Checks for player collisions and contacts.
+         * - Updates transforms of entities with physics bodies.
+         * - Deactivates bodies that move outside the left window boundary.
+         * - Invokes after-step event and processes deletions of marked physics bodies.
          */
         void runPhysicsStep()
         {
-            if (!game_.getRegistry().valid(game_.getPlayer()) || !is_active) return;
-            accumulator += game_.getDeltaTime();
+            if (!game.getRegistry().valid(game.getPlayer()) || !is_active) return;
+            accumulator += game.getDeltaTime();
             if (accumulator >= fixed_time_step)
             {
-                const b2WorldId world = game_.getPhysicsWorld();
+                const b2WorldId world = game.getPhysicsWorld();
                 b2World_Step(world, fixed_time_step, sub_step_count);
-                PlayerContactListener::checkForPlayerCollision(game_.getRegistry(), game_.getPlayer(),
+                PlayerContactListener::checkForPlayerCollision(game.getRegistry(), game.getPlayer(),
                                                                world);
 
                 updateGroupObjects();
                 //update entities based on physics step
-                const auto& entities = game_.getRegistry().view<
+                const auto& entities = game.getRegistry().view<
                     ecs::TagComponent, ecs::TransformComponent,
                     ecs::PhysicsComponent>();
 
@@ -56,7 +74,7 @@ namespace gl3::engine::physics
                     auto& transformComp = entities.get<ecs::TransformComponent>(entity);
 
                     //Check if most right point of object is still in window
-                    if (transformComp.position.x + transformComp.scale.x * 0.5f < game_.getContext().
+                    if (transformComp.position.x + transformComp.scale.x * 0.5f < game.getContext().
                         getWorldWindowBounds()[0])
                     {
                         b2Body_SetAwake(physics_comp.body, false);
@@ -85,12 +103,14 @@ namespace gl3::engine::physics
         };
 
         /**
-         * Updates grouped objects safely after the physics step, to not interfere with registry changes.
+         * @brief Updates positions of grouped child objects based on their parent physics body.
+         *
+         * Ensures that child transforms follow their parent's physics body with an offset.
          */
         void updateGroupObjects() const
         {
             //update grouped objects based on parent physics body
-            auto& registry = game_.getRegistry();
+            auto& registry = game.getRegistry();
             auto groupObjs = registry.view<ecs::TransformComponent, ecs::ParentComponent>();
 
             for (auto obj : groupObjs)
@@ -107,6 +127,10 @@ namespace gl3::engine::physics
             }
         }
 
+        /**
+         * @brief Marks a Box2D body for safe deletion after the physics step.
+         * @param body The Box2D body to delete.
+         */
         void markBodyForDeletion(const b2BodyId body)
         {
             if (b2Body_IsValid(body))
@@ -116,9 +140,11 @@ namespace gl3::engine::physics
         }
 
         /**
-         *Generates the GameObject (position & scale) for an AABB for grouped objects. For later use to instantiate a parent entity as Physics body for all its children.
-         * @param objects Objects to group under one placeholder parent.
-         * @return An AABB parent GameObject to generate an entity from to add as part of a ParentComponent to the grouped objects.
+         * @brief Computes an axis-aligned bounding box (AABB) GameObject that contains all given objects for physics grouping.
+         *
+         * Used to generate a parent GameObject encapsulating multiple child objects for physics grouping.
+         * @param objects Vector of GameObjects to group.
+         * @return A GameObject representing the combined AABB.
          */
         static GameObject computeGroupAABB(const std::vector<GameObject>& objects)
         {
@@ -170,15 +196,16 @@ namespace gl3::engine::physics
         }
 
     private:
-        const float fixed_time_step = 1.0f / 60.0f;
-        const int sub_step_count = 4;
-        float accumulator = 0.f;
-        bool player_jump_this_frame = false;
+        const float fixed_time_step = 1.0f / 60.0f; ///< Fixed physics timestep (60Hz)
+        const int sub_step_count = 4; ///< Number of Box2D sub-steps per physics step
+        float accumulator = 0.f; ///< Accumulates elapsed time to run fixed timestep
 
-        std::vector<b2BodyId> bodies_to_delete;
+        bool player_jump_this_frame = false; ///< Tracks if player jumped this frame to update grounded state
+
+        std::vector<b2BodyId> bodies_to_delete; ///< Bodies scheduled for deletion after physics step
 
         /**
-         *Safely deletes the marked physics bodies and shapes after finishing the physics step.
+         * @brief Safely deletes all bodies marked for deletion after the physics step.
          */
         void processDeletions()
         {
@@ -192,6 +219,10 @@ namespace gl3::engine::physics
             bodies_to_delete.clear();
         }
 
+        /**
+        * @brief Event handler called when player jump event is received.
+        * @param event The player jump event containing grounded state.
+        */
         void onPlayerJump(const ecs::PlayerJump& event)
         {
             player_jump_this_frame = event.grounded;

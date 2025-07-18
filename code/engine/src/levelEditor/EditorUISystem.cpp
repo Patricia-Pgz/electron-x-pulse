@@ -13,8 +13,8 @@ namespace gl3::engine::editor
 {
     void EditorUISystem::onMouseScroll(const context::MouseScrollEvent& event) const
     {
-        if (!is_active || !game_.isPaused() || !is_mouse_in_edit) return;
-        game_.getContext().moveCameraX(static_cast<float>(event.yOffset * 50.0f));
+        if (!is_active || !game.isPaused() || !is_mouse_in_grid) return;
+        game.getContext().moveCameraX(static_cast<float>(event.yOffset * 50.0f));
     }
 
 
@@ -33,7 +33,7 @@ namespace gl3::engine::editor
      */
     void EditorUISystem::deleteAllAtSelectedPosition() const
     {
-        const auto view = game_.getRegistry().view<ecs::TransformComponent, ecs::TagComponent>();
+        const auto view = game.getRegistry().view<ecs::TransformComponent, ecs::TagComponent>();
 
         for (auto& entity : view)
         {
@@ -63,7 +63,7 @@ namespace gl3::engine::editor
      */
     void EditorUISystem::drawGrid(const float gridSpacing)
     {
-        const ImVec2 screenSize = imgui_io_->DisplaySize;
+        const ImVec2 screenSize = imgui_io->DisplaySize;
         grid_center = ImVec2(screenSize.x * 0.5f, screenSize.y * 0.5f);
         ImDrawList* drawList = ImGui::GetBackgroundDrawList();
 
@@ -90,21 +90,21 @@ namespace gl3::engine::editor
         {
             const ImVec2 mousePos = ImGui::GetMousePos();
             const glm::vec2 worldPos = rendering::MVPMatrixHelper::screenToWorld(
-                game_.getContext(), mousePos.x, mousePos.y);
+                game.getContext(), mousePos.x, mousePos.y);
 
             // Snap click to grid cell
             const int cellX = static_cast<int>(std::round(worldPos.x));
             const int cellY = static_cast<int>(std::round(worldPos.y));
 
-            ImVec2 clickedCell(static_cast<float>(cellX), static_cast<float>(cellY));
+            const ImVec2 clickedCell(static_cast<float>(cellX), static_cast<float>(cellY));
 
             if (multi_select_enabled)
             {
-                auto it = std::find_if(selected_grid_cells.begin(), selected_grid_cells.end(),
-                                       [&](const ImVec2& cell)
-                                       {
-                                           return cell.x == clickedCell.x && cell.y == clickedCell.y;
-                                       });
+                const auto it = std::find_if(selected_grid_cells.begin(), selected_grid_cells.end(),
+                                             [&](const ImVec2& cell)
+                                             {
+                                                 return cell.x == clickedCell.x && cell.y == clickedCell.y;
+                                             });
 
                 if (it != selected_grid_cells.end())
                 {
@@ -130,14 +130,14 @@ namespace gl3::engine::editor
             }
         }
 
-        if (is_mouse_in_edit)
+        if (is_mouse_in_grid)
         {
             // Get mouse position in screen space
             const ImVec2 mousePosScreen = ImGui::GetMousePos();
 
             // Convert to world coordinates
             const glm::vec2 mousePosWorld = rendering::MVPMatrixHelper::screenToWorld(
-                game_.getContext(), mousePosScreen.x, mousePosScreen.y);
+                game.getContext(), mousePosScreen.x, mousePosScreen.y);
 
             // Snap to grid (round world coords)
             const int cellX = static_cast<int>(std::round(mousePosWorld.x));
@@ -145,12 +145,12 @@ namespace gl3::engine::editor
 
             // Convert snapped cell back to screen space for drawing
             const glm::vec2 cellScreenPos = rendering::MVPMatrixHelper::toScreen(
-                game_.getContext(), static_cast<float>(cellX), static_cast<float>(cellY));
+                game.getContext(), static_cast<float>(cellX), static_cast<float>(cellY));
             const float cellSize = gridSpacing;
 
             // Define cell rectangle (centered at cellScreenPos)
-            ImVec2 cellTopLeft(cellScreenPos.x - cellSize * 0.5f, cellScreenPos.y - cellSize * 0.5f);
-            ImVec2 cellBottomRight(cellScreenPos.x + cellSize * 0.5f, cellScreenPos.y + cellSize * 0.5f);
+            const ImVec2 cellTopLeft(cellScreenPos.x - cellSize * 0.5f, cellScreenPos.y - cellSize * 0.5f);
+            const ImVec2 cellBottomRight(cellScreenPos.x + cellSize * 0.5f, cellScreenPos.y + cellSize * 0.5f);
 
             // Draw highlight
             drawList->AddRectFilled(cellTopLeft, cellBottomRight, IM_COL32(100, 100, 255, 100));
@@ -164,17 +164,17 @@ namespace gl3::engine::editor
         for (const auto& cell : selected_grid_cells)
         {
             const auto screenPos = rendering::MVPMatrixHelper::toScreen(
-                game_.getContext(), cell.x, cell.y);
+                game.getContext(), cell.x, cell.y);
 
             ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
             ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
 
             drawList->AddRect(topLeft, bottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
         }
-        for (auto& cell : selected_group_cells)
+        for (const auto& cell : selected_group_cells)
         {
             const auto screenPos = rendering::MVPMatrixHelper::toScreen(
-                game_.getContext(), cell.x, cell.y);
+                game.getContext(), cell.x, cell.y);
 
             ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
             ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
@@ -238,7 +238,7 @@ namespace gl3::engine::editor
     void EditorUISystem::visualizeSingleTextureUI(const rendering::Texture& texture, const std::string& name,
                                                   const float tileSize)
     {
-        std::string btnID = name + "_full";
+        const std::string btnID = name + "_full";
         ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet); // normal
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2); // hovered
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
@@ -337,7 +337,7 @@ namespace gl3::engine::editor
 
     void EditorUISystem::DrawTileSelectionPanel()
     {
-        const ImVec2 screenSize = imgui_io_->DisplaySize;
+        const ImVec2 screenSize = imgui_io->DisplaySize;
         ImGui::SetNextWindowPos(ImVec2(screenSize.x * 0.7f, 0.f));
         ImGui::SetNextWindowSize(ImVec2(screenSize.x * 0.3f, screenSize.y));
         styleWindow();
@@ -346,11 +346,11 @@ namespace gl3::engine::editor
         ImGui::Begin("Tile Panel", nullptr, flags);
         if (ImGui::IsWindowHovered())
         {
-            is_mouse_in_edit = false;
+            is_mouse_in_grid = false;
         }
         else
         {
-            is_mouse_in_edit = true;
+            is_mouse_in_grid = true;
         }
         ImGui::PopStyleColor();
         ImGui::PopFont();
@@ -563,7 +563,7 @@ namespace gl3::engine::editor
 
     void EditorUISystem::update()
     {
-        if (!is_active || !game_.isPaused()) return;
+        if (!game.isPaused()) return;
         createCustomUI();
     }
 }
