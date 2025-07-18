@@ -43,13 +43,16 @@ RepositoryRoot/
 ### Quick Start: ElectronXPulse
 
 This is a simple quick start guide how to clone my project and get it running.
-Prequisits: C++20 Compiler (MSVC) & Windows11 SDK installed
+**Prequisits:** C++20 Compiler (MSVC) & Windows11 SDK installed. 
+(e.g. Windows 11 SDK (10.0.26100.0) MSVC v143 - VS 2022 C++-x64/x86-Buildtools)
 
 1. You can clone the code with this command:
 
-*```bash
+```bash
 git clone --recursive --depth 1 https://gitlab2.informatik.uni-wuerzburg.de/GE/Teaching/gl3/projects/2024/29-gl3-pongratz.git
-*```
+```
+
+(This clones the project with all needed external submodules. See the [External Libraries section](#external-libraries-git-submodules) for details.)
 
 2. Once cloned, you can open the root folder in CLion. And load the `CMAKEList.txt` file from the "code" folder.
 
@@ -81,3 +84,20 @@ Include headers in your .cpp files:
 ```cpp
 #include <Electrine/SomeHeader.h>
 ```
+
+## 📂 External Libraries (Git Submodules)
+
+This project uses external libraries as Git submodules:
+
+- [`extern/aubio`](https://github.com/aubio/aubio) — Audio analysis (e.g. beat, onset detection)
+- [`extern/box2d`](https://github.com/erincatto/box2d) — 2D physics engine
+- [`extern/entt`](https://github.com/skypjack/entt) — Entity Component System (ECS) framework
+- [`extern/glad`](https://github.com/Dav1dde/glad) — OpenGL function loader
+- [`extern/glfw`](https://github.com/glfw/glfw) — OpenGL window and input handling
+- [`extern/glm`](https://github.com/g-truc/glm) — OpenGL Mathematics
+- [`extern/glaze`](https://github.com/stephenberry/glaze) — de-/serialization library, used for level saving/loading
+- [`extern/json`](https://github.com/nlohmann/json) — JSON library for level saving/loading
+- [`extern/imgui`](https://github.com/ocornut/imgui) — create minimal game/editor GUI
+- [`extern/soloud`](https://github.com/jarikomppa/soloud) — Audio playback
+- [`extern/stb`](https://github.com/nothings/stb) —  used stb image for texture loading
+
