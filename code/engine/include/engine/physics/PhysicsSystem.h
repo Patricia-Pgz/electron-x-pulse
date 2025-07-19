@@ -66,7 +66,7 @@ namespace gl3::engine::physics
 
                 for (auto& entity : entities)
                 {
-                    auto& physics_comp = entities.get<ecs::PhysicsComponent>(entity);
+                    const auto& physics_comp = entities.get<ecs::PhysicsComponent>(entity);
                     if (!b2Body_IsValid(physics_comp.body) || !physics_comp.isActive)
                     {
                         continue;
@@ -111,14 +111,14 @@ namespace gl3::engine::physics
         {
             //update grouped objects based on parent physics body
             auto& registry = game.getRegistry();
-            auto groupObjs = registry.view<ecs::TransformComponent, ecs::ParentComponent>();
+            const auto groupObjs = registry.view<ecs::TransformComponent, ecs::ParentComponent>();
 
-            for (auto obj : groupObjs)
+            for (const auto obj : groupObjs)
             {
-                auto& parentComp = groupObjs.get<ecs::ParentComponent>(obj);
+                const auto& parentComp = groupObjs.get<ecs::ParentComponent>(obj);
                 if (!registry.valid(parentComp.parentEntity)) return;
-                auto parentBody = registry.get<ecs::PhysicsComponent>(parentComp.parentEntity).body;
-                auto parentPos = b2Body_GetPosition(parentBody);
+                const auto parentBody = registry.get<ecs::PhysicsComponent>(parentComp.parentEntity).body;
+                const auto parentPos = b2Body_GetPosition(parentBody);
 
                 auto& transform = groupObjs.get<ecs::TransformComponent>(obj);
                 transform.position = {

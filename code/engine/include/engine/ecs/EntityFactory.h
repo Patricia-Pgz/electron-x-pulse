@@ -268,7 +268,7 @@ namespace gl3::engine::ecs
         }
 
         /**
-         * Changes the Scale in an entities Transform and Physics Component. @not This is meant for entities that actually have both a Transform and Physics Component.
+         * Changes the Scale in an entities Transform and Physics Component. @note This is meant for entities that actually have both a Transform and Physics Component.
          * @param registry The current enTT registry
          * @param entity The entity that should be scales
          * @param newScale The scale to apply to the entity's Transform and PhysicsComponent.
