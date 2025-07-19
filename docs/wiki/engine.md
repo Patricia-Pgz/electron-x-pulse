@@ -41,6 +41,8 @@ Then:
 - Then setup everything in your Game class as you need! E.g. generate entities with the EntityFactory and don't forget
   to save your player entity in your Game class for the engine systems to use (e.g. for automatic collision checking)!
 
+> **Note:** Also refer to ElectronXPulse API or game code as example game, built with Electrine.
+
 ```cpp
 //Create the main game instance with window size, title, camera position, and zoom level. (Zooming after initialization not implemented in context, leave it at 1/100)
        

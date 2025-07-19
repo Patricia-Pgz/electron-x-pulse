@@ -6,15 +6,18 @@ game with the engine, see [How to create a Game with Electrine](wiki/engine.md),
 **Prerequisites:** C++20 Compiler (MSVC) & Windows11 SDK installed.  
 (e.g. Windows 11 SDK (10.0.26100.0) MSVC v143 - VS 2022 C++-x64/x86-Buildtools)
 
-1. You can clone the code with this command:
+1. You can clone the code with this command:  
+   <span style="font-size: 90%; color: gray;">Note: This clones the project with all needed external submodules.
+   See the External Libraries section for details.</span>
    ```bash
    git clone --recursive --depth 1 https://gitlab2.informatik.uni-wuerzburg.de/GE/Teaching/gl3/projects/2024/29-gl3-pongratz.git
    ```
 2. Once cloned, you can open the root folder in CLion. And load the `CMAKEList.txt` file from the "code" folder.
 
-3. In CLion go to Settings->Build,Execution,Deployment->Toolchains add the Microsoft Visual Studio Compiler (2019 or 2022) and hit Apply
+3. In CLion go to Settings->Build,Execution,Deployment->Toolchains add the Microsoft Visual Studio Compiler (2019 or
+    2022) and hit Apply
 
-4. You should now have a running configuration -> compile the code and play ElectronXPulse with integrated Level Editor!
+4. You should now have a running configuration -> compile the code and play ElectronXPulse with integrated level editor!
 
 ### Example Usage of Electrine in your game:
 
@@ -45,7 +48,7 @@ Include headers in your .cpp files:
 #include <Electrine/SomeHeader.h>
 ```
 
-## 📂 External Libraries (Git Submodules)
+## External Libraries (Git Submodules)
 
 This project uses external libraries as Git submodules:
 

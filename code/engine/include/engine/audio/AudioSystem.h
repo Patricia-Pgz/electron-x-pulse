@@ -92,7 +92,7 @@ namespace gl3::engine::audio
          * @brief Get a pointer to the current AudioConfig.
          * @return Pointer to the AudioConfig.
          */
-        AudioConfig* getConfig() const;
+        [[nodiscard]] AudioConfig* getConfig() const;
 
         /**
          * @brief Start playback of the current background audio track.
