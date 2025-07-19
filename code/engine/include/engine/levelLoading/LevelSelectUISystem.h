@@ -28,7 +28,7 @@ namespace gl3::engine::levelLoading
          *
          * Called every frame to draw and handle interactions with the level selection interface.
          */
-        void update() override;
+        void update(float deltaTime) override;
 
     private:
         /**

@@ -58,7 +58,7 @@ namespace gl3::engine::editor
          * @brief Updates the UI elements each frame, if is_active.
          * Overrides the base IUISubsystem update method.
          */
-        void update() override;
+        void update(float deltaTime) override;
 
     /**
          * @brief Deletes all objects at the currently selected grid positions.

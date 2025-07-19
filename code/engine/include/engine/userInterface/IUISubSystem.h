@@ -38,7 +38,7 @@ namespace gl3::engine::ui
          * game loop's UI pass (e.g. @ref gl3::engine::Game::updateUI).
          * @pre An ImGui frame must already be started.
          */
-        virtual void update()
+        virtual void update(float deltaTime)
         {
         };
 

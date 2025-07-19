@@ -1,6 +1,7 @@
 #include "engine/levelEditor/EditorUISystem.h"
 #include "../../../game/src/Game.h"
 #include "engine/Constants.h"
+#include "engine/ecs/EntityFactory.h"
 #include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/levelloading/LevelManager.h"
@@ -552,7 +553,7 @@ namespace gl3::engine::editor
         drawGrid(pixelsPerMeter);
     }
 
-    void EditorUISystem::update()
+    void EditorUISystem::update(const float deltaTime)
     {
         if (!game.isPaused()) return;
         createCustomUI();

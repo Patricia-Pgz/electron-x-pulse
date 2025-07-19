@@ -62,7 +62,7 @@ namespace gl3::engine::ui
             ImGui_ImplOpenGL3_Init("#version 460");
         }
 
-        void renderUI()
+        void renderUI(const float deltaTime)
         {
             if (!is_active) { return; }
             // Start the frame
@@ -76,7 +76,7 @@ namespace gl3::engine::ui
                 onInitialized.invoke();
             }
 
-            updateSubSystems(); //update Subsystems inside frame
+            updateSubSystems(deltaTime); //update Subsystems inside frame
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -149,7 +149,7 @@ namespace gl3::engine::ui
          * @brief Update all active UI subsystems.
          * @note Called each UI frame during @ref renderUI.
          */
-        void updateSubSystems() const
+        void updateSubSystems(const float deltaTime) const
         {
             if (!(ImGui::GetCurrentContext() && ImGui::GetCurrentContext()->WithinFrameScope))
             {
@@ -161,7 +161,7 @@ namespace gl3::engine::ui
             for (const auto& sys : subsystems | std::views::values)
             {
                 if (!sys->isActive()) continue;
-                sys->update();
+                sys->update(deltaTime);
             }
         }
     };

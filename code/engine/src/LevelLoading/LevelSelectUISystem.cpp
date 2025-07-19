@@ -195,7 +195,7 @@ namespace gl3::engine::levelLoading
     }
 
 
-    void LevelSelectUISystem::update()
+    void LevelSelectUISystem::update(const float deltaTime)
     {
         createLevelSelection();
     }

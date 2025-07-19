@@ -86,7 +86,7 @@ namespace gl3::engine
 
     void Game::updateUI()
     {
-        ui_system->renderUI();
+        ui_system->renderUI(delta_time);
     }
 
     void Game::updateState()

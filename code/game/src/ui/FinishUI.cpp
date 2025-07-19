@@ -11,11 +11,12 @@ namespace gl3::game::ui
 {
     void FinishUI::styleWindow(const ImVec2 windowSize)
     {
-        ImGuiStyle& style = ImGui::GetStyle();
-        style.WindowBorderSize = 0.f;
-        style.WindowPadding = ImVec2(windowSize.x * 0.08, windowSize.y * 0.14);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(windowSize.x * 0.08f, windowSize.y * 0.14f));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(40, 40));
 
-        style.FrameRounding = 5.0;
         ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UINeonColors::pastelNeonViolet2);
         ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet);
@@ -24,9 +25,6 @@ namespace gl3::game::ui
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
         ImGui::PushStyleColor(ImGuiCol_SliderGrab, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
-
-        style.ItemSpacing = ImVec2(40, 40);
-        style.FramePadding = ImVec2(10, 10);
     }
 
     void FinishUI::DrawFinishScreen(const ImGuiViewport* viewport, ImFont* heading, ImFont* font)
@@ -38,7 +36,7 @@ namespace gl3::game::ui
         ImGui::SetNextWindowPos({(viewportSize.x - windowSize.x) * 0.5f, viewportPos.y});
         ImGui::PushFont(heading);
 
-        ImGui::Begin("Menu", nullptr, flags_);
+        ImGui::Begin("Menu", nullptr, flags);
         const auto windowSizeCur = ImGui::GetWindowSize();
         const auto windowPos = ImGui::GetWindowPos();
         styleWindow(windowSizeCur);
@@ -74,6 +72,7 @@ namespace gl3::game::ui
             {1.f, 0.f}
         );
 
+        ImGui::PopStyleVar(5);
         ImGui::PopStyleColor(8);
         ImGui::PopFont();
         ImGui::End();
@@ -81,11 +80,9 @@ namespace gl3::game::ui
 
 
     /**
-     * @brief Shows or hides the in-game menu.
-     * @pre ImGui needs to be set up already. E.g. by calling @ref gl3::engine::ui::UISystem::renderUI on a UISystem instance (or inherited ones) each game UI-Update frame @ref gl3::engine::Game::updateUI.
-    * @pre ImGui Frame needs to be running already.
+     * @brief Draws the Victory screen. (update only gets called, if is_active)
  */
-    void FinishUI::update()
+    void FinishUI::update(const float deltaTime)
     {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         DrawFinishScreen(viewport, engine::ui::FontManager::getFont("pixeloid-bold-30"),

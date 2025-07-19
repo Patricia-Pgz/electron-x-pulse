@@ -1,5 +1,4 @@
 #include "PlayerInputSystem.h"
-
 #include "engine/audio/AudioSystem.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/physics/PlayerContactListener.h"
@@ -18,25 +17,26 @@ namespace gl3::game::input
         if (engine::physics::PlayerContactListener::playerGrounded)
         {
             canJump = true;
-            enter_pressed_ = false;
+            enter_pressed = false;
         }
 
         if (velocity.y < 0.01f && velocity.y >= 0.f && canJump && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
-            if (!enter_pressed_)
+            if (!enter_pressed)
             {
-                enter_pressed_ = true;
+                enter_pressed = true;
                 applyJumpImpulse(body);
                 canJump = false;
             }
         }
         else if (glfwGetKey(game.getWindow(), GLFW_KEY_SPACE) == GLFW_RELEASE)
         {
-            enter_pressed_ = false;
+            //reset when key released
+            enter_pressed = false;
         }
 
         const float fixedX = game.getRegistry().get<engine::ecs::TransformComponent>(game.getPlayer()).initialPosition
-                                  .x;
+                                 .x;
         b2Vec2 pos = b2Body_GetPosition(body);
         pos.x = fixedX;
         b2Body_SetTransform(body, pos, b2Body_GetRotation(body));
@@ -53,7 +53,7 @@ namespace gl3::game::input
         {
             if (engine::physics::PlayerContactListener::playerGrounded)
             {
-                //smoothly stop rotation
+                //smoothly stop rotation on ground contact
                 float& angle = transform.zRotation;
                 angle = glm::mix(angle, 0.0f, game.getDeltaTime() * 15); // smooth angle
                 angle = glm::mod(angle, glm::two_pi<float>());
@@ -66,25 +66,26 @@ namespace gl3::game::input
     }
 
 
-    void PlayerInputSystem::applyJumpImpulse(const b2BodyId body)
+    void PlayerInputSystem::applyJumpImpulse(const b2BodyId body) const
     {
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayerJump{true});
-        const float gravityY = std::abs(b2World_GetGravity(game.getPhysicsWorld()).y);
+
+        const float desiredTimeToLand = game.getAudioSystem()->getConfig()->seconds_per_beat * landingBeatsAhead;
+        const float t = desiredTimeToLand * 0.5f; // time to apex
+
+        const float gravityY = (2.0f * desiredJumpHeight) / (t * t);
+        // custom gravity to be able to choose jump height and jump length in time
+        const float jumpVelocity = gravityY * t; // Initial vertical velocity
         const float mass = b2Body_GetMass(body);
-
-        const float timeToLand = game.getAudioSystem()->getConfig()->seconds_per_beat;
-
-
-        // Time to apex: total time / 2
-        const float t = timeToLand * 0.5f;
-
-        // The required initial velocity to reach that height in t
-        const float jumpVelocity = (desiredJumpHeight * jumpHeightFactor + 0.5f * gravityY * t * t) / t;
 
         const float impulse = mass * jumpVelocity;
 
+        // Set the world's gravity:
+        b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, -gravityY));
+
         b2Body_ApplyLinearImpulseToCenter(body, b2Vec2(0.0f, impulse), true);
     }
+
 
     void PlayerInputSystem::onLvlLengthCompute(const engine::ecs::LevelLengthComputed& event)
     {

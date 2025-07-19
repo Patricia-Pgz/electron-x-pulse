@@ -24,9 +24,9 @@ namespace gl3::game::state
         const auto windowBounds = *event.windowBounds;
         const auto bgConfig = getBackgroundSizes(windowBounds);
         auto& registry = game.getRegistry();
-        const auto entities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>();
 
-        for (auto entity : entities)
+        for (const auto entities = registry.view<engine::ecs::TransformComponent, engine::ecs::TagComponent>(); auto
+             entity : entities)
         {
             if (auto tag = entities.get<engine::ecs::TagComponent>(entity).tag; tag == "ground")
             {
@@ -226,21 +226,21 @@ namespace gl3::game::state
 
         level_instantiated = true;
         instruction_ui->setEditMode(edit_mode);
-        instruction_ui->pauseTimer(edit_mode); //pause timer if in edit mode
 
         if (!edit_mode)
         {
             //start level directly if not in edit mode
             game.getAudioSystem()->playCurrentAudio();
-            pauseOrStartLevel(false);
+            pauseOrResumeLevel(false);
             return;
         }
         //is in edit mode -> deactivate physics and player input
         setSystemsActive(false);
+        dynamic_cast<Game&>(game).setPaused(true);
     }
 
     /**
-     * Starts movement of objects towards the player.
+     * Starts/stops movement of objects towards the player.
      * @param move determines if the objects should start or stop moving towards the player.
      */
     void LevelPlayState::moveObjects(const bool move) const
@@ -269,16 +269,19 @@ namespace gl3::game::state
      * Pauses or resumes the level. @note This does not reset entities, audio, etc. it just stops/resumes audio, movement, and timers.
      * @param pause Bool that determines if the level should be paused or resumed.
      */
-    void LevelPlayState::pauseOrStartLevel(const bool pause)
+    void LevelPlayState::pauseOrResumeLevel(const bool pause)
     {
         paused = pause;
         dynamic_cast<Game&>(game).setPaused(pause);
         setSystemsActive(!pause);
         moveObjects(!pause);
         audio_config->audio.setPause(audio_config->currentAudioHandle, pause);
-        instruction_ui->pauseTimer(pause);
     }
 
+    /**
+     * De-/activates physics and player input
+     * @param setActive true = activates systems, false deactivates them
+     */
     void LevelPlayState::setSystemsActive(const bool setActive) const
     {
         game.getPhysicsSystem()->setActive(setActive);
@@ -291,11 +294,11 @@ namespace gl3::game::state
      */
     void LevelPlayState::onPauseEvent(const engine::ui::PauseLevelEvent& event)
     {
-        pauseOrStartLevel(event.pauseLevel);
+        pauseOrResumeLevel(event.pauseLevel);
     }
 
     /**
-     *
+     * Reacts to PlayerDeath event.
      * @param event Restarts the level on player death event, plays a crash sound.
      */
     void LevelPlayState::onPlayerDeath(const engine::ecs::PlayerDeath& event)
@@ -305,7 +308,7 @@ namespace gl3::game::state
     }
 
     /**
-     * Resets all entities to their initial state and starts the level if
+     * Resets all entities to their initial state and starts the level if event.startLevel == true
      * @param event Determines if the game should start after resetting all entities
      */
     void LevelPlayState::onRestartLevel(const engine::ui::RestartLevelEvent& event)
@@ -316,13 +319,12 @@ namespace gl3::game::state
         startLevel();
     }
 
-    void LevelPlayState::resetEntities()
+    /**
+     * Reset all entities to their initial state.
+     */
+    void LevelPlayState::resetEntities() const
     {
-        if (!reset_level) return;
-        reset_level = false;
-        auto& registry = game.getRegistry();
-
-        for (auto& entity : registry.view<entt::entity>())
+        for (auto& registry = game.getRegistry(); auto& entity : registry.view<entt::entity>())
         {
             if (!registry.valid(entity)) continue;
 
@@ -331,6 +333,7 @@ namespace gl3::game::state
             transform.scale = transform.initialScale;
             transform.zRotation = transform.initialZRotation;
 
+            //Some entities don't have a Physics Component
             if (registry.any_of<engine::ecs::PhysicsComponent>(entity))
             {
                 engine::ecs::EntityFactory::setPosition(registry, entity, transform.initialPosition);
@@ -338,6 +341,7 @@ namespace gl3::game::state
                 engine::ecs::EntityFactory::SetRotation(registry, entity, transform.initialZRotation);
             }
 
+            //Some entities don't have a RenderComponent
             if (registry.any_of<engine::ecs::RenderComponent>(entity))
             {
                 registry.get<engine::ecs::RenderComponent>(entity).uvOffset = {0.f, 0.f};
@@ -352,7 +356,7 @@ namespace gl3::game::state
     void LevelPlayState::startLevel()
     {
         game.getAudioSystem()->playCurrentAudio();
-        pauseOrStartLevel(false);
+        pauseOrResumeLevel(false);
     }
 
     /**
@@ -360,17 +364,16 @@ namespace gl3::game::state
 */
     void LevelPlayState::reloadLevel()
     {
-        if (levelTime <= 0.f) return;
+        if (level_time <= 0.f) return;
         paused = true;
         dynamic_cast<Game&>(game).setPaused(true);
-        reset_level = true;
         setSystemsActive(false);
         menu_ui->setActive(true);
         instruction_ui->setActive(level_index == 0);
         finish_ui->setActive(false);
         game.getAudioSystem()->stopCurrentAudio();
-        levelTime = 0.f;
-        timer = 2.f;
+        level_time = 0.f;
+        timer = 1.f;
         transition_triggered = false;
         timer_active = false;
         resetEntities();
@@ -406,7 +409,7 @@ namespace gl3::game::state
 
                 game.getAudioSystem()->playOneShot("win");
 
-                pauseOrStartLevel(true);
+                pauseOrResumeLevel(true);
             }
         }
     }
@@ -417,7 +420,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::unloadLevel()
     {
-        levelTime = 0.f;
+        level_time = 0.f;
         level_instantiated = false;
         game.getAudioSystem()->stopCurrentAudio();
         game.getAudioSystem()->stopAllOneShots();
@@ -442,7 +445,7 @@ namespace gl3::game::state
         }
         if (!paused)
         {
-            levelTime += deltaTime;
+            level_time += deltaTime;
             delayLevelEnd(deltaTime);
         }
     }

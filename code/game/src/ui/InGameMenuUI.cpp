@@ -1,5 +1,4 @@
 #include "InGameMenuUI.h"
-
 #include "UIEvents.h"
 #include "engine/userInterface/FontManager.h"
 #include "engine/userInterface/UIConstants.h"
@@ -98,7 +97,7 @@ namespace gl3::game::ui
      * @pre ImGui needs to be set up already. E.g. by calling @ref gl3::engine::ui::UISystem::renderUI on a UISystem instance (or inherited ones) each game UI-Update frame @ref gl3::engine::Game::updateUI.
     * @pre ImGui Frame needs to be running already.
  */
-    void InGameMenuUI::update()
+    void InGameMenuUI::update(const float deltaTime)
     {
         if (glfwGetKey(game.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         {

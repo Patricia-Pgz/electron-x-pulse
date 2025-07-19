@@ -410,7 +410,7 @@ namespace gl3::engine::ecs
             bodyDef.type = object.tag == "player" ? b2_dynamicBody : b2_kinematicBody;
             bodyDef.position = {object.position.x, object.position.y};
             bodyDef.rotation = b2MakeRot(glm::radians(object.zRotation));
-            bodyDef.fixedRotation = true;
+            bodyDef.fixedRotation = object.tag == "player";
             bodyDef.linearDamping = 0.0f;
             bodyDef.userData = reinterpret_cast<void*>(static_cast<uintptr_t>(entity));
             const auto body = b2CreateBody(physicsWorld, &bodyDef);

@@ -9,14 +9,17 @@ namespace gl3::game::ui
     public:
         explicit FinishUI(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game)
         {
-        };
+        }
 
-        void update() override;
+        void update(float deltaTime) override;
 
     private:
+        ///sets the ImGui Style consistently with UINeonColors
         static void styleWindow(ImVec2 windowSize);
+        ///Draw the winning screen
         static void DrawFinishScreen(const ImGuiViewport* viewport, ImFont* heading, ImFont* font);
-        static constexpr ImGuiWindowFlags flags_ =
+        ///ImGui flags for window
+        static constexpr ImGuiWindowFlags flags =
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |
             ImGuiWindowFlags_NoTitleBar |
