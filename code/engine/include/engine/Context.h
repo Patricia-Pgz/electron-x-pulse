@@ -49,7 +49,7 @@ namespace gl3::engine::context
    * @param camPos Initial camera position.
    * @param camZoom Initial camera zoom.
    */
-  explicit Context(int width = 800, int height = 600, const std::string& title = "Game",
+  explicit Context(int width = 0, int height = 0, const std::string& title = "Game",
                    glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 0.0f), float camZoom = 1.0f);
 
   /**

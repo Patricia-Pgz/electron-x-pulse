@@ -1,16 +1,20 @@
 # How to play ElectronXPulse
 
-Describe your game here, especially the goal, the mechanics and the input.
+Leap through vibrant 2D worlds perfectly synced to the rhythm of high-energy EDM tracks! With dynamic visuals and
+music-driven gameplay, each level challenges your timing and reflexes.  
+ElectronXPulse is an auto-scrolling 2D platformer where you jump to the beat and master each song’s rhythm to reach the
+end. All you need is one simple input: press **Space** to jump — and the fun can begin! Each level features a unique
+soundtrack, design and difficulty for you to conquer.
 
-1. Input
+## How to use the in-game Level Editor
 
-- You need the follwing buttons to play my game and I will explain what they do here ^^
+![Gameplay screenshot](../images/EditButton.png)
+![Gameplay screenshot](../images/Editor.png)
+![Gameplay screenshot](../images/Color.png)
+![Gameplay screenshot](../images/MultiSelect.png)
+![Gameplay screenshot](../images/Group.png)
 
-2. Core Mechanics
 
-- The core mechanic behind my game is the following ...
-  add another markdown file called engine.md under wiki with the following content
 
-### How to play my game
 
-For how to play my game look into [this](wiki/game.md)
+

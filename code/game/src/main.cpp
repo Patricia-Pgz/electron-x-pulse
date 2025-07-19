@@ -11,8 +11,8 @@ int main()
     {
         /// Create the main game instance with window size, title, camera position, and zoom level. (Zooming after initialization not implemented in context, leave it at 1/100)
         gl3::game::Game ElectronXPulse(
-            1280, // Window width
-            720, // Window height
+            0, // Window width -> 0 for default fullscreen
+            0, // Window height
             "ElectronXPulse", // Window title
             glm::vec3(0.0f, 0.0f, 1.0f), // Initial camera position
             1.0 / 100.f // Camera zoom standard value

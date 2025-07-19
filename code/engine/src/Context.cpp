@@ -24,12 +24,20 @@ namespace gl3::engine::context
         ecs::EventDispatcher::dispatcher.trigger(MouseScrollEvent{xoffset, yoffset});
     }
 
-    Context::Context(const int width, const int height, const std::string& title, const glm::vec3 camPos,
+    Context::Context(int width, int height, const std::string& title, const glm::vec3 camPos,
                      const float camZoom) : zoom(camZoom), cameraPosition(camPos)
     {
         if (!glfwInit())
         {
             throw std::runtime_error("Failed to initialize glfw");
+        }
+
+        if(width == 0 || height == 0)
+        {
+            GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+            const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+            width = mode->width;
+            height = mode->height;
         }
 
         // Request OpenGL 4.6 Core profile.
@@ -43,6 +51,8 @@ namespace gl3::engine::context
         glfwWindowHint(GLFW_BLUE_BITS, 8);
         glfwWindowHint(GLFW_ALPHA_BITS, 8);
 
+
+        glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
         if (window == nullptr)
         {
