@@ -59,6 +59,7 @@ namespace gl3::engine::context
         }
 
         glfwMakeContextCurrent(window);
+        glfwSwapInterval(1);
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetScrollCallback(window, scroll_callback);

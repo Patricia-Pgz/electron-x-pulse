@@ -343,24 +343,21 @@ namespace gl3::engine::ecs
             return triangleData;
         }
 
-        static glData getBoxVertices(const float& width, const float& height, const glm::vec4& uv)
+        static glData getBoxVertices(float width, float height, glm::vec4 uv, float repeatX)
         {
             glData boxData;
 
-            // Rectangle vertices (x, y, z)
             boxData.vertices = {
-                -width / 2, height / 2, 0.0f, uv.x, uv.w, // Top-left
-                -width / 2, -height / 2, 0.0f, uv.x, uv.y, // Bottom-left
-                width / 2, -height / 2, 0.0f, uv.z, uv.y, // Bottom-right
-                width / 2, height / 2, 0.0f, uv.z, uv.w // Top-right
+                -width / 2, height / 2, 0.0f, uv.x, uv.w,
+                -width / 2, -height / 2, 0.0f, uv.x, uv.y,
+                width / 2, -height / 2, 0.0f, uv.x + repeatX, uv.y, //repeat texture on x
+                width / 2, height / 2, 0.0f, uv.x + repeatX, uv.w
             };
 
-            // Indices for two triangles
             boxData.indices = {
-                0, 1, 2, // First triangle
-                0, 2, 3 // Second triangle
+                0, 1, 2,
+                0, 2, 3
             };
-
             return boxData;
         }
 
@@ -373,9 +370,15 @@ namespace gl3::engine::ecs
         static RenderComponent createRenderComponent(const GameObject& object,
                                                      const rendering::Texture* texture)
         {
+            float repeatX = 1.f;
+            if(texture)
+            {
+                float texAspect = static_cast<float>(texture->getWidth()) / texture->getHeight();
+                repeatX = object.scale.x / (object.scale.y * texAspect); //repeat texture on x to keep textures aspect ratio
+            }
             auto data = object.isTriangle
                             ? getTriangleVertices(1.f, 1.f, object.uv)
-                            : getBoxVertices(1.f, 1.f, object.uv);
+                            : getBoxVertices(1.f, 1.f, object.uv, repeatX);
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
             const std::string vertexPath = !object.vertexShaderPath.empty()
@@ -486,7 +489,7 @@ namespace gl3::engine::ecs
             groundSensorDef.userData = const_cast<void*>(static_cast<const void*>(GROUND_SENSOR_TAG));
 
             b2Polygon groundBox;
-            groundBox = b2MakeOffsetBox(halfWidth * 0.8f, 0.05f,
+            groundBox = b2MakeOffsetBox(halfWidth * 0.6f, 0.05f,
                                         {0.f, 0.f - halfHeight - 0.05f},
                                         b2MakeRot(0.0f));
             b2ShapeId groundSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &groundBox);
@@ -497,7 +500,7 @@ namespace gl3::engine::ecs
             rightSensorDef.userData = const_cast<void*>(static_cast<const void*>(RIGHT_SENSOR_TAG));
 
             b2Polygon rightBox;
-            rightBox = b2MakeOffsetBox(0.05f, halfHeight * 0.6f,
+            rightBox = b2MakeOffsetBox(0.05f, halfHeight * 0.5f,
                                        {0.f + halfWidth + 0.05f, 0.f},
                                        b2MakeRot(0.0f));
             b2ShapeId rightSensor = b2CreatePolygonShape(playerBody, &rightSensorDef, &rightBox);

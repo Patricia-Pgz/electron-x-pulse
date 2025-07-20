@@ -9,61 +9,81 @@
     0.439,
     1.0
   ],
+
+  "gradientTopColor": [
+    0.098,
+    0.125,
+    0.29,
+    0.5
+  ],
+  "gradientBottomColor": [
+    1,
+    0.549,
+    0.353,
+    0.5
+  ],
   "backgrounds": [
     {
+      "position": [
+        -9.536743E-7,
+        1.7525,
+        0
+      ],
+      "scale": [
+        19.2,
+        6.505,
+        0
+      ],
+      "rotation": 0,
       "color": [
-        0.0,
-        0.0,
-        1.0,
-        1.0
+        0,
+        0,
+        1,
+        1
       ],
       "tag": "background",
-      "textureName": "1",
-      "generatePhysicsComp": false
+      "isTriangle": false,
+      "textureName": "geometry5",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": false,
+      "generateRenderComp": true,
+      "parallaxFactor": 0.05
     },
     {
+      "position": [
+        -9.536743E-7,
+        1.7525,
+        0
+      ],
+      "scale": [
+        19.2,
+        6.505,
+        0
+      ],
+      "rotation": 0,
       "color": [
-        0.0,
-        0.0,
-        1.0,
-        1.0
+        0,
+        0,
+        1,
+        1
       ],
       "tag": "background",
-      "textureName": "2",
-      "generatePhysicsComp": false
-    },
-    {
-      "color": [
-        0.0,
-        0.0,
-        1.0,
-        1.0
+      "isTriangle": false,
+      "textureName": "geometry4",
+      "uv": [
+        0,
+        0,
+        1,
+        1
       ],
-      "tag": "background",
-      "textureName": "3",
-      "generatePhysicsComp": false
-    },
-    {
-      "color": [
-        0.0,
-        0.0,
-        1.0,
-        1.0
-      ],
-      "tag": "background",
-      "textureName": "4",
-      "generatePhysicsComp": false
-    },
-    {
-      "color": [
-        0.0,
-        0.0,
-        1.0,
-        1.0
-      ],
-      "tag": "background",
-      "textureName": "5",
-      "generatePhysicsComp": false
+      "generatePhysicsComp": false,
+      "generateRenderComp": true,
+      "parallaxFactor": 0.5
     },
     {
       "color": [

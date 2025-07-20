@@ -47,13 +47,14 @@ namespace gl3::engine
         onAfterStartup.invoke(*this);
         context.run([&](Context& ctx)
         {
+            updateDeltaTime();
+
             onBeforeUpdate.invoke(*this);
             update(getWindow());
             updateState();
             updatePhysics();
             draw();
             updateUI();
-            updateDeltaTime();
             //delete entities safely after updates
             ecs::EntityFactory::deleteMarkedEntities(registry);
             onAfterUpdate.invoke(*this);

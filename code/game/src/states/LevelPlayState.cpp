@@ -303,6 +303,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::onPlayerDeath(const engine::ecs::PlayerDeath& event)
     {
+        if(reloading_level) return;
         game.getAudioSystem()->playOneShot("crash");
         onRestartLevel(engine::ui::RestartLevelEvent{true});
     }
@@ -313,6 +314,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::onRestartLevel(const engine::ui::RestartLevelEvent& event)
     {
+        if(reloading_level) return;
         //game will be reset and stopped if player restarts level and then presses enter in edit mode
         reloadLevel();
         if (!event.startLevel) return;
@@ -328,6 +330,16 @@ namespace gl3::game::state
         {
             if (!registry.valid(entity)) continue;
 
+            //Some entities don't have a RenderComponent, update the ones that do
+            if (registry.any_of<engine::ecs::RenderComponent>(entity))
+            {
+                registry.get<engine::ecs::RenderComponent>(entity).uvOffset = {0.f, 0.f};
+            }
+
+            auto& tag = registry.get<engine::ecs::TagComponent>(entity).tag;
+            if(tag == "background" || tag == "sky" || tag == "ground") return;
+
+            //reset all transforms to initial state
             auto& transform = registry.get<engine::ecs::TransformComponent>(entity);
             transform.position = transform.initialPosition;
             transform.scale = transform.initialScale;
@@ -339,12 +351,6 @@ namespace gl3::game::state
                 engine::ecs::EntityFactory::setPosition(registry, entity, transform.initialPosition);
                 engine::ecs::EntityFactory::setScale(registry, entity, transform.initialScale);
                 engine::ecs::EntityFactory::SetRotation(registry, entity, transform.initialZRotation);
-            }
-
-            //Some entities don't have a RenderComponent
-            if (registry.any_of<engine::ecs::RenderComponent>(entity))
-            {
-                registry.get<engine::ecs::RenderComponent>(entity).uvOffset = {0.f, 0.f};
             }
         }
     }
@@ -365,6 +371,7 @@ namespace gl3::game::state
     void LevelPlayState::reloadLevel()
     {
         if (level_time <= 0.f) return;
+        reloading_level = true;
         paused = true;
         dynamic_cast<Game&>(game).setPaused(true);
         setSystemsActive(false);
@@ -377,6 +384,7 @@ namespace gl3::game::state
         transition_triggered = false;
         timer_active = false;
         resetEntities();
+        reloading_level = false;
     }
 
     /**

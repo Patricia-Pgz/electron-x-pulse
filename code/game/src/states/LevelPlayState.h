@@ -236,6 +236,7 @@ namespace gl3::game::state
   bool level_instantiated = false;
   bool timer_active = false; ///< Has the timer to end the level been triggered
   bool transition_triggered = false; ///< Has level end transition already been triggered
+  bool reloading_level = false; ///< Is the level already restarting
 
   float timer = 1.f;
   int level_index = -1;

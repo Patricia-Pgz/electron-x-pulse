@@ -88,6 +88,7 @@ namespace gl3::engine::physics
 
                 if (tagA == "obstacle" || tagB == "obstacle" || (contactData[i].manifold.normal.x == 0.f && rightSensorHit))
                 {
+                    std::cout << contactData[i].manifold.normal.x;
                     ecs::EventDispatcher::dispatcher.trigger(ecs::PlayerDeath{player});
                     rightSensorHit = false;
                 }

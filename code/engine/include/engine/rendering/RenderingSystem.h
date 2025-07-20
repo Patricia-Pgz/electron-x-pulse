@@ -81,6 +81,7 @@ namespace gl3::engine::rendering
 
                             renderComp.uvOffset.x += transform.parallaxFactor * uvPerSecond * game.getDeltaTime();
                             renderComp.uvOffset.x = std::fmod(renderComp.uvOffset.x, 1.0f);
+                            if (renderComp.uvOffset.x < 0) renderComp.uvOffset.x += 1.0f;
 
                             renderComp.shader.setVec2("uvOffset", renderComp.uvOffset);
                         }
