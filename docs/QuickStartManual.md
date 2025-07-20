@@ -1,7 +1,7 @@
 ### Quick Start: ElectronXPulse
 
-This is a simple quick start guide how to clone my project and get it running. For further information on creating a
-game with the engine, see [How to create a Game with Electrine](wiki/engine.md), after following QuickStart.
+This is a simple quick start guide how to clone my project and get it running. 
+For further information on playing my game look into [this](wiki/game.md), or using the engine to develop a game, see [this](wiki/engine.md).
 
 **Prerequisites:** C++20 Compiler (MSVC) & Windows11 SDK installed.  
 (e.g. Windows 11 SDK (10.0.26100.0) & MSVC v143 - VS 2022 C++-x64/x86-Buildtools)

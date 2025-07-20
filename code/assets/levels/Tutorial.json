@@ -636,7 +636,7 @@
       ],
       "tag": "player",
       "isTriangle": false,
-      "textureName": "geometry-dash",
+      "textureName": "geometry",
       "uv": [
         0,
         0,
