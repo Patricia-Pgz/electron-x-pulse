@@ -38,6 +38,7 @@ namespace gl3::engine::context
             const GLFWvidmode* mode = glfwGetVideoMode(monitor);
             width = mode->width;
             height = mode->height;
+            glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         }
 
         // Request OpenGL 4.6 Core profile.
@@ -51,8 +52,6 @@ namespace gl3::engine::context
         glfwWindowHint(GLFW_BLUE_BITS, 8);
         glfwWindowHint(GLFW_ALPHA_BITS, 8);
 
-
-        glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
         if (window == nullptr)
         {

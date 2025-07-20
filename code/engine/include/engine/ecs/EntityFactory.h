@@ -494,10 +494,10 @@ namespace gl3::engine::ecs
             // Right Side Sensor
             rightSensorDef.isSensor = true;
             rightSensorDef.enableContactEvents = true;
-            rightSensorDef.userData = const_cast<void*>(static_cast<const void*>(GROUND_SENSOR_TAG));
+            rightSensorDef.userData = const_cast<void*>(static_cast<const void*>(RIGHT_SENSOR_TAG));
 
             b2Polygon rightBox;
-            rightBox = b2MakeOffsetBox(0.05f, halfHeight * 0.8f,
+            rightBox = b2MakeOffsetBox(0.05f, halfHeight * 0.6f,
                                        {0.f + halfWidth + 0.05f, 0.f},
                                        b2MakeRot(0.0f));
             b2ShapeId rightSensor = b2CreatePolygonShape(playerBody, &rightSensorDef, &rightBox);

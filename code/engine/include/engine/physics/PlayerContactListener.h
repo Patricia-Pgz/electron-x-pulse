@@ -47,6 +47,7 @@ namespace gl3::engine::physics
 
             const b2ShapeId playerGroundSensor = physics_comp.groundSensorShape;
             const b2ShapeId playerRightSensor = physics_comp.rightWallSensorShape;
+            bool rightSensorHit = false;
 
             for (int i = 0; i < sensorEvents.beginCount; ++i)
             {
@@ -55,10 +56,9 @@ namespace gl3::engine::physics
                 {
                     playerGrounded = true;
                 }
-                else if (B2_ID_EQUALS(event.sensorShapeId, playerRightSensor))
+                if (B2_ID_EQUALS(event.sensorShapeId, playerRightSensor))
                 {
-                    ecs::EventDispatcher::dispatcher.trigger(ecs::PlayerDeath{player});
-                    return;
+                    rightSensorHit = true;
                 }
             }
 
@@ -86,9 +86,10 @@ namespace gl3::engine::physics
                 const auto tagA = registry.get<ecs::TagComponent>(entityA).tag;
                 const auto tagB = registry.get<ecs::TagComponent>(entityB).tag;
 
-                if (tagA == "obstacle" || tagB == "obstacle")
+                if (tagA == "obstacle" || tagB == "obstacle" || (contactData[i].manifold.normal.x == 0.f && rightSensorHit))
                 {
                     ecs::EventDispatcher::dispatcher.trigger(ecs::PlayerDeath{player});
+                    rightSensorHit = false;
                 }
             }
         }
