@@ -4,6 +4,7 @@
 #include "engine/ecs/System.h"
 #include "engine/levelloading/LevelManager.h"
 #include "engine/rendering/MVPMatrixHelper.h"
+#include "glm/gtc/epsilon.hpp"
 
 namespace gl3::engine::rendering
 {
@@ -56,8 +57,8 @@ namespace gl3::engine::rendering
                     renderComp.shader.setMat4("mvp", mvpMatrix);
                     renderComp.shader.setVector4("color", renderComp.color);
 
-                    // Optional: handle gradient background for skies
-                    if (tag == "sky")
+                    // If gradient top and bottom are not the same color -> Handle color gradient
+                    if (!all(epsilonEqual(renderComp.gradientTopColor, renderComp.gradientBottomColor, 0.001f)))
                     {
                         renderComp.shader.setVector4("topColor", renderComp.gradientTopColor);
                         renderComp.shader.setVector4("bottomColor", renderComp.gradientBottomColor);

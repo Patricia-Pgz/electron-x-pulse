@@ -23,16 +23,16 @@ struct GameObject
     std::string tag = "undefined"; /**< Tag string used for identification */
     bool isTriangle = false; /**< Whether the object is rendered as a triangle or quad*/
     std::string textureName; /**< Texture resource file name @note Needs to be in assets/textures! */
-    glm::vec3 scale = {1.f, 1.f, 0.f}; /**< Scale in x, y, z directions */
-    glm::vec4 uv = {0, 0, 1, 1}; /**< UV coordinates for texturing */
+    glm::vec3 scale = {1.f, 1.f, 0.1f}; /**< Scale in x, y, z directions */
+    glm::vec4 uv = {0.0f, 0.f, 1.f, 1.f}; /**< UV coordinates for texturing */
     float zRotation = 0.f; /**< Z Rotation in degrees */
     bool generatePhysicsComp = true; /**< Flag to generate physics component */
     bool generateRenderComp = true; /**< Flag to generate render component */
     float parallaxFactor = 0.f; /**< Parallax scrolling factor */
     std::string vertexShaderPath; /**< Path to vertex shader */
     std::string fragmentShaderPath; /**< Path to fragment shader */
-    glm::vec4 gradientTopColor = {1, 1, 1, 1}; /**< Top gradient color @note no engine implementation yet, what to do with this*/
-    glm::vec4 gradientBottomColor = {1, 1, 1, 1}; /**< Bottom gradient color @note no engine implementation yet, what to do with this*/
+    glm::vec4 gradientTopColor = {1.f, 1.f, 1.f, 1.f}; /**< Top gradient color @note no engine implementation yet, what to do with this*/
+    glm::vec4 gradientBottomColor = {1.f, 1.f, 1.f, 1.f}; /**< Bottom gradient color @note no engine implementation yet, what to do with this*/
 };
 
 /**
@@ -65,9 +65,9 @@ struct Level
     float velocityMultiplier = 1.f; /**< Speed multiplier for level progression */
     float playerStartPosX = 0.f; /**< Player's starting X position */
     float groundLevel = 0.f; /**< Y border of the ground */
-    glm::vec4 clearColor = {1, 1, 1, 1}; /**< Background clear color */
-    glm::vec4 gradientTopColor = {1, 1, 1, 1}; /**< Top color for background gradient for custom implementation in game*/
-    glm::vec4 gradientBottomColor = {1, 1, 1, 1}; /**< Bottom color for background gradient for custom implementation in game*/
+    glm::vec4 clearColor = {1.f, 1.f, 1.f, 1.f}; /**< Background clear color */
+    glm::vec4 gradientTopColor = {1.f, 1.f, 1.f, 1.f}; /**< Top color for background gradient for custom implementation in game*/
+    glm::vec4 gradientBottomColor = {1.f, 1.f, 1.f, 1.f}; /**< Bottom color for background gradient for custom implementation in game*/
     std::vector<GameObject> backgrounds; /**< Background objects */
     std::vector<GameObjectGroup> groups; /**< Groups of objects */
     std::vector<GameObject> objects; /**< Individual game objects */

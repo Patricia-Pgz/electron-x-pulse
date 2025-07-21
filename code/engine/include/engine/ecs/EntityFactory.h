@@ -7,6 +7,7 @@
 #include "engine/rendering/Texture.h"
 #include "engine/levelLoading/Objects.h"
 #include "engine/rendering/TextureManager.h"
+#include "glm/gtc/epsilon.hpp"
 
 namespace gl3::engine::ecs
 {
@@ -284,7 +285,7 @@ namespace gl3::engine::ecs
         static void setPosition(entt::registry& registry, const entt::entity& entity, const glm::vec3& newPos)
         {
             auto& transform = registry.get<TransformComponent>(entity);
-            auto& physics_comp = registry.get<PhysicsComponent>(entity);
+            const auto& physics_comp = registry.get<PhysicsComponent>(entity);
             transform.position = newPos;
             b2Body_SetTransform(physics_comp.body, b2Vec2(transform.position.x, transform.position.y),
                                 b2Body_GetRotation(physics_comp.body));
@@ -299,7 +300,7 @@ namespace gl3::engine::ecs
         static void SetRotation(entt::registry& registry, const entt::entity& entity, const float newZRot)
         {
             auto& transform = registry.get<TransformComponent>(entity);
-            auto& physics_comp = registry.get<PhysicsComponent>(entity);
+            const auto& physics_comp = registry.get<PhysicsComponent>(entity);
             transform.zRotation = newZRot;
             b2Body_SetTransform(physics_comp.body, b2Body_GetPosition(physics_comp.body),
                                 b2MakeRot(glm::radians(newZRot)));
@@ -359,18 +360,26 @@ namespace gl3::engine::ecs
          * @param texture A pointer to a texture, is null_ptr if a color should be used instead
          * @return The newly created RenderComponent for an entity.
          */
-        static RenderComponent createRenderComponent(const GameObject& object,
+        static RenderComponent createRenderComponent(GameObject& object,
                                                      const rendering::Texture* texture)
         {
             float repeatX = 1.f;
-            if(texture)
+            if (texture)
             {
-                float texAspect = static_cast<float>(texture->getWidth()) / texture->getHeight();
-                repeatX = object.scale.x / (object.scale.y * texAspect); //repeat texture on x to keep textures aspect ratio
+                const float texAspect = static_cast<float>(texture->getWidth()) / static_cast<float>(texture->
+                    getHeight());
+                repeatX = object.scale.x / (object.scale.y * texAspect);
+                //repeat texture on x to keep textures aspect ratio
             }
-            auto data = object.isTriangle
-                            ? getTriangleVertices(1.f, 1.f, object.uv)
-                            : getBoxVertices(1.f, 1.f, object.uv, repeatX);
+            //use gradient shader
+            if (!all(epsilonEqual(object.gradientTopColor, object.gradientBottomColor, 0.001f)))
+            {
+                object.vertexShaderPath = "shaders/gradient.vert";
+                object.fragmentShaderPath = "shaders/gradient.frag";
+            }
+            const auto data = object.isTriangle
+                                  ? getTriangleVertices(1.f, 1.f, object.uv)
+                                  : getBoxVertices(1.f, 1.f, object.uv, repeatX);
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
             const std::string vertexPath = !object.vertexShaderPath.empty()
@@ -494,7 +503,8 @@ namespace gl3::engine::ecs
                                        {0.f + halfWidth + 0.05f, 0.f},
                                        b2MakeRot(0.0f));
             b2ShapeId rightSensor = b2CreatePolygonShape(playerBody, &rightSensorDef, &rightBox);
-            b2ShapeId bottomRightCornerSen = createBottomRightCornerSensor(player, playerBody); //for collision with corners of objects
+            b2ShapeId bottomRightCornerSen = createBottomRightCornerSensor(player, playerBody);
+            //for collision with corners of objects
             return {groundSensor, rightSensor, bottomRightCornerSen};
         }
 
@@ -510,13 +520,16 @@ namespace gl3::engine::ecs
             const float halfHeight = player.scale.y * 0.5f;
             b2ShapeDef cornerSensorDef = b2DefaultShapeDef();
             // Define square first (half extents)
-            const float s = 0.1f;
+            constexpr float cornerSensorHalfExtent = 0.1f;
             cornerSensorDef.isSensor = true;
             cornerSensorDef.enableContactEvents = true;
 
             b2Polygon groundBox;
-            groundBox = b2MakeOffsetBox(s, s,
-                                        {halfWidth - s, -halfHeight + s},// push inside the corner
+            groundBox = b2MakeOffsetBox(cornerSensorHalfExtent, cornerSensorHalfExtent,
+                                        {
+                                            halfWidth - cornerSensorHalfExtent - 0.1f,
+                                            -halfHeight + cornerSensorHalfExtent + 0.1f
+                                        }, // push inside the corner
                                         b2MakeRot(glm::radians(-45.f)));
             return b2CreatePolygonShape(playerBody, &cornerSensorDef, &groundBox);
         }

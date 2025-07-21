@@ -89,7 +89,7 @@ namespace gl3::game::state
         sky.gradientBottomColor = current_level->gradientBottomColor;
         sky.gradientTopColor = current_level->gradientTopColor;
         sky.position = {bgConfig.centerX, bgConfig.skyCenterY, 0.f};
-        sky.scale = {bgConfig.windowWidth, bgConfig.skyHeight, 0.f};
+        sky.scale = {bgConfig.windowWidth, bgConfig.skyHeight, 0.1f};
         engine::ecs::EntityFactory::createDefaultEntity(sky, registry, physicsWorld);
     }
 
@@ -107,12 +107,12 @@ namespace gl3::game::state
             if (object.tag == "ground")
             {
                 object.position = {bgConfig.centerX, bgConfig.groundCenterY, 0.f};
-                object.scale = {bgConfig.windowWidth, bgConfig.groundHeight, 0.f};
+                object.scale = {bgConfig.windowWidth, bgConfig.groundHeight, 0.1f};
             }
             else
             {
                 object.position = {bgConfig.centerX, bgConfig.skyCenterY, 0.f};
-                object.scale = {bgConfig.windowWidth, bgConfig.skyHeight, 0.f};
+                object.scale = {bgConfig.windowWidth, bgConfig.skyHeight, 0.1f};
             }
             engine::ecs::EntityFactory::createDefaultEntity(
                 object, registry, physicsWorld);

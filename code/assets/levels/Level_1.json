@@ -3,31 +3,43 @@
   "velocityMultiplier": 1,
   "playerStartPosX": -2,
   "groundLevel": -1.5,
-  "clearColor": [
-    0.098,
-    0.098,
-    0.439,
-    1.0
-  ],
-
-  "gradientTopColor": [
-    0.098,
-    0.125,
-    0.29,
-    0.5
-  ],
-  "gradientBottomColor": [
-    1,
-    0.549,
-    0.353,
-    0.5
-  ],
   "backgrounds": [
     {
       "position": [
         -9.536743E-7,
         1.7525,
-        0
+        -1
+      ],
+      "scale": [
+        19.2,
+        6.505,
+        0.1
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "tag": "background",
+      "isTriangle": false,
+      "textureName": "geometry1",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": false,
+      "generateRenderComp": true,
+      "parallaxFactor": 0.05
+    },
+    {
+      "position": [
+        -9.536743E-7,
+        1.7525,
+        -0.5
       ],
       "scale": [
         19.2,
@@ -52,55 +64,25 @@
       ],
       "generatePhysicsComp": false,
       "generateRenderComp": true,
-      "parallaxFactor": 0.05
-    },
-    {
-      "position": [
-        -9.536743E-7,
-        1.7525,
-        0
-      ],
-      "scale": [
-        19.2,
-        6.505,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "tag": "background",
-      "isTriangle": false,
-      "textureName": "geometry4",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": false,
-      "generateRenderComp": true,
       "parallaxFactor": 0.5
     },
     {
-      "color": [
-        0.337,
-        0.306,
-        0.478,
-        1.0
-      ],
-      "tag": "ground"
+      "tag": "ground",
+      "textureName": "groundlvl1",
+      "parallaxFactor": 1
     }
   ],
   "objects": [
     {
       "position": [
         -2.0,
-        -1,
+        -1.1,
         0.0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0
       ],
       "color": [
         1.0,
