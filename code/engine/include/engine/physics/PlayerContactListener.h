@@ -47,9 +47,7 @@ namespace gl3::engine::physics
 
             const b2ShapeId playerGroundSensor = physics_comp.sensorShapes[0];
             const b2ShapeId playerRightSensor = physics_comp.sensorShapes[1];
-            const b2ShapeId playerBottomRightCornerSen = physics_comp.sensorShapes[2];
             bool rightSensorHit = false;
-            bool cornerSensorHit = false;
 
             for (int i = 0; i < sensorEvents.beginCount; ++i)
             {
@@ -61,10 +59,6 @@ namespace gl3::engine::physics
                 if (B2_ID_EQUALS(event.sensorShapeId, playerRightSensor))
                 {
                     rightSensorHit = true;
-                }
-                if (B2_ID_EQUALS(event.sensorShapeId, playerBottomRightCornerSen))
-                {
-                    cornerSensorHit = true;
                 }
             }
 
@@ -92,7 +86,7 @@ namespace gl3::engine::physics
                 const auto tagA = registry.get<ecs::TagComponent>(entityA).tag;
                 const auto tagB = registry.get<ecs::TagComponent>(entityB).tag;
 
-                if (tagA == "obstacle" || tagB == "obstacle" || (contactData[i].manifold.normal.x != 0.f && (rightSensorHit || cornerSensorHit)))
+                if (tagA == "obstacle" || tagB == "obstacle" || ((contactData[i].manifold.normal.x == 0.f && rightSensorHit)))
                 {
                     ecs::EventDispatcher::dispatcher.trigger(ecs::PlayerDeath{player});
                     rightSensorHit = false;

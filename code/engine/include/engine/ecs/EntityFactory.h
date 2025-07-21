@@ -498,13 +498,19 @@ namespace gl3::engine::ecs
             return {groundSensor, rightSensor, bottomRightCornerSen};
         }
 
+        /**
+         * @brief Create a sensor/collider to stop the player from glitching through corners of objects
+         * @param player The player GameObject to calculate the sensor from.
+         * @param playerBody The player physics body to add the sensor to.
+         * @return The box2D shape ID to the new bottom right corner sensor.
+         */
         static b2ShapeId createBottomRightCornerSensor(const GameObject& player, const b2BodyId playerBody)
         {
             const float halfWidth = player.scale.x * 0.5f;
             const float halfHeight = player.scale.y * 0.5f;
             b2ShapeDef cornerSensorDef = b2DefaultShapeDef();
             // Define square first (half extents)
-            float s = 0.1f;
+            const float s = 0.1f;
             cornerSensorDef.isSensor = true;
             cornerSensorDef.enableContactEvents = true;
 
