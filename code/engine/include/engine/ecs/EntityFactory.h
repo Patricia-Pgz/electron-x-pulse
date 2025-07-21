@@ -10,9 +10,6 @@
 
 namespace gl3::engine::ecs
 {
-    static constexpr auto GROUND_SENSOR_TAG = "bottomCollider";
-    static constexpr auto RIGHT_SENSOR_TAG = "rightCollider";
-
     /**
      * @brief Component for grouping child entities under a parent.
      *
@@ -101,15 +98,11 @@ namespace gl3::engine::ecs
          * @param physicsWorld The Box2D physics world containing this entity.
          * @param body The Box2D body representing the entity.
          * @param shape The main Box2D shape (fixture) for collisions.
-         * @param groundSensor Optional sensor shape to detect if entity is on the ground.
-         * @param rightSensor Optional sensor shape to detect collisions on the right side.
+         * @param sensors Additional custom Box2D sensor shapes for custom contact event handling
          */
         PhysicsComponent(const b2WorldId physicsWorld, const b2BodyId body, const b2ShapeId shape,
-                         const b2ShapeId groundSensor = b2_nullShapeId,
-                         const b2ShapeId rightSensor = b2_nullShapeId): physicsWorld(physicsWorld), body(body),
-                                                                        shape(shape),
-                                                                        groundSensorShape(groundSensor),
-                                                                        rightWallSensorShape(rightSensor)
+                         const std::vector<b2ShapeId>& sensors = {}): physicsWorld(physicsWorld), body(body),
+                                                                      shape(shape), sensorShapes(sensors)
         {
         }
 
@@ -117,9 +110,8 @@ namespace gl3::engine::ecs
         b2BodyId body = b2_nullBodyId;
         b2ShapeId shape = b2_nullShapeId;
 
-        // Only used for player
-        b2ShapeId groundSensorShape = b2_nullShapeId;
-        b2ShapeId rightWallSensorShape = b2_nullShapeId;
+        // Sensor for custom sensor events
+        std::vector<b2ShapeId> sensorShapes; //e.g. player has: ground, right, bottom right corner sensors
         bool isActive = true;
     };
 
@@ -437,7 +429,7 @@ namespace gl3::engine::ecs
             const b2ShapeId shape = b2CreatePolygonShape(body, &shapeDef, &polygon);
 
             return object.tag == "player"
-                       ? PhysicsComponent(physicsWorld, body, shape, sensors[0], sensors[1])
+                       ? PhysicsComponent(physicsWorld, body, shape, sensors)
                        : PhysicsComponent(physicsWorld, body, shape);
         };
 
@@ -486,7 +478,6 @@ namespace gl3::engine::ecs
             // ground sensor
             groundSensorDef.isSensor = true;
             groundSensorDef.enableContactEvents = true;
-            groundSensorDef.userData = const_cast<void*>(static_cast<const void*>(GROUND_SENSOR_TAG));
 
             b2Polygon groundBox;
             groundBox = b2MakeOffsetBox(halfWidth * 0.6f, 0.05f,
@@ -497,14 +488,31 @@ namespace gl3::engine::ecs
             // Right Side Sensor
             rightSensorDef.isSensor = true;
             rightSensorDef.enableContactEvents = true;
-            rightSensorDef.userData = const_cast<void*>(static_cast<const void*>(RIGHT_SENSOR_TAG));
 
             b2Polygon rightBox;
             rightBox = b2MakeOffsetBox(0.05f, halfHeight * 0.5f,
                                        {0.f + halfWidth + 0.05f, 0.f},
                                        b2MakeRot(0.0f));
             b2ShapeId rightSensor = b2CreatePolygonShape(playerBody, &rightSensorDef, &rightBox);
-            return {groundSensor, rightSensor};
+            b2ShapeId bottomRightCornerSen = createBottomRightCornerSensor(player, playerBody); //for collision with corners of objects
+            return {groundSensor, rightSensor, bottomRightCornerSen};
+        }
+
+        static b2ShapeId createBottomRightCornerSensor(const GameObject& player, const b2BodyId playerBody)
+        {
+            const float halfWidth = player.scale.x * 0.5f;
+            const float halfHeight = player.scale.y * 0.5f;
+            b2ShapeDef cornerSensorDef = b2DefaultShapeDef();
+            // Define square first (half extents)
+            float s = 0.1f;
+            cornerSensorDef.isSensor = true;
+            cornerSensorDef.enableContactEvents = true;
+
+            b2Polygon groundBox;
+            groundBox = b2MakeOffsetBox(s, s,
+                                        {halfWidth - s, -halfHeight + s},// push inside the corner
+                                        b2MakeRot(glm::radians(-45.f)));
+            return b2CreatePolygonShape(playerBody, &cornerSensorDef, &groundBox);
         }
     };
 } // engine
