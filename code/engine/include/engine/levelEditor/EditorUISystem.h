@@ -125,7 +125,9 @@ namespace gl3::engine::editor
         float grid_offset = 0.5f;                           /**< Offset value for grid alignment. */
         std::vector<ImVec2> selected_grid_cells;           /**< Currently selected grid cells in the editor. */
         std::vector<ImVec2> selected_group_cells;          /**< Selected cells to group. */
+        glm::vec2 selected_position_offset = {0.f, 0.f};  /**< Offset from cell center. */
         glm::vec2 selected_scale = {1.f, 1.f};
+        float selected_layer = 0.f;                        /**< Selected layer for rendering*/
         char tag_input_buffer[128] = "";                    /**< Input buffer for tag text selection. */
         std::string selected_tag = "platform";             /**< Tag assigned to entities to create. */
         bool is_triangle = false;                            /**< Whether selected shape is a triangle. */
