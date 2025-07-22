@@ -64,7 +64,7 @@ namespace gl3::engine::context
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         glfwSetScrollCallback(window, scroll_callback);
         gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-        glEnable(GL_DEPTH_TEST);
+        //glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         if (glGetError() != GL_NO_ERROR)
@@ -82,7 +82,7 @@ namespace gl3::engine::context
         while (!glfwWindowShouldClose(window))
         {
             glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT);
             update(*this);
             glfwPollEvents();
             glfwSwapBuffers(window);

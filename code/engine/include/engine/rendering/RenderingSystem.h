@@ -18,6 +18,7 @@ namespace gl3::engine::rendering
     class RenderingSystem final : public ecs::System
     {
     public:
+        std::vector<entt::entity> renderQueue;
         /**
          * @brief Construct a new RenderingSystem.
          * @param game Reference to the main game instance.
@@ -26,6 +27,31 @@ namespace gl3::engine::rendering
         {
         };
 
+        void sortBackToFront()
+        {
+            renderQueue.clear();
+            auto& registry = game.getRegistry();
+            const auto& context = game.getContext();
+            const auto entities = registry.view<
+                                 ecs::TransformComponent, ecs::RenderComponent, ecs::TagComponent>();
+
+            for (auto& entity : entities) {
+                renderQueue.push_back(entity);
+            }
+
+            std::ranges::sort(renderQueue,
+                              [&](const entt::entity a, const entt::entity b) {
+                                  const auto& ra = registry.get<ecs::TransformComponent>(a).position;
+                                  const auto& rb = registry.get<ecs::TransformComponent>(b).position;
+                                  return ra.z < rb.z; // sort back to front
+                              });
+            std::ranges::reverse(renderQueue);
+            for (auto entity : renderQueue)
+            {
+                std::cout << (registry.get<ecs::TagComponent>(entity)).tag << std::endl;
+            }
+        }
+
         /**
          * @brief Render all visible entities with active RenderComponents.
          *
@@ -33,21 +59,20 @@ namespace gl3::engine::rendering
          * Applies parallax UV offset if enabled. Skips rendering if the entity
          * is outside the visible window.
          */
-        void draw() const
+        void draw()
         {
             if (!is_active) { return; }
 
+            sortBackToFront();
             auto& registry = game.getRegistry();
             const auto& context = game.getContext();
+            const auto& entities = registry.view<
+                                 ecs::TransformComponent, ecs::RenderComponent, ecs::TagComponent>();
 
-            for (const auto& entities = registry.view<
-                     ecs::TransformComponent, ecs::RenderComponent, ecs::TagComponent>(); const auto&
-                 entity : entities)
-            {
+            for (const auto& entity : renderQueue) {
                 auto& transform = entities.get<ecs::TransformComponent>(entity);
                 auto& renderComp = entities.get<ecs::RenderComponent>(entity);
                 auto tag = entities.get<ecs::TagComponent>(entity).tag;
-
                 // Render object if in view
                 if (context.isInVisibleWindow(transform.position, transform.scale) && renderComp.isActive)
                 {

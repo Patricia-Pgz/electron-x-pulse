@@ -15,9 +15,7 @@ void main() {
         vec2 offsetUV = TexCoord + uvOffset;
         vec4 texColor = texture(texture1, offsetUV);
 
-        // Discard transparent fragments
-        if (texColor.a < 0.65)
-        discard;
+
 
         finalColor = texColor;
     } else {
