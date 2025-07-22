@@ -26,7 +26,6 @@ namespace gl3::engine::editor
         event.object.generatePhysicsComp = event.group ? false : event.object.generatePhysicsComp;
         const auto entity = ecs::EntityFactory::createDefaultEntity(event.object, game.getRegistry(),
                                                                     game.getPhysicsWorld());
-
         //save children for later grouping
         if (event.group)
         {
@@ -35,6 +34,7 @@ namespace gl3::engine::editor
             return;
         }
         levelLoading::LevelManager::addObjectToCurrentLevel(event.object);
+        ecs::EventDispatcher::dispatcher.trigger(ecs::RenderComponentContainerChange{});
     }
 
     void EditorSystem::onGenerateGroup(ui::EditorGenerateGroup& event)
@@ -44,6 +44,8 @@ namespace gl3::engine::editor
 
         //generate parent physics AABB
         auto parentAABB = physics::PhysicsSystem::computeGroupAABB(grouped_child_objects);
+        std::cout << parentAABB.scale.x << std::endl;
+        parentAABB.zLayer = -1;
         parentAABB.generateRenderComp = false;
         parentAABB.tag = grouped_child_objects[0].tag;
         entt::entity parentAABBEntity = ecs::EntityFactory::createDefaultEntity(
@@ -67,6 +69,7 @@ namespace gl3::engine::editor
         group.children = grouped_child_objects;
         group.colliderAABB = parentAABB;
         levelLoading::LevelManager::addGroupToCurrentLevel(group);
+        ecs::EventDispatcher::dispatcher.trigger(ecs::RenderComponentContainerChange{});
 
         grouped_child_entities.clear();
         grouped_child_objects.clear();

@@ -24,14 +24,14 @@
   "backgrounds": [
     {
       "position": [
-        -9.536743E-7,
-        1.7525,
-        -5
+        0,
+        1.05,
+        0
       ],
       "scale": [
-        19.2,
-        6.505,
-        0
+        12.8,
+        5.1,
+        0.1
       ],
       "rotation": 0,
       "color": [
@@ -65,18 +65,19 @@
         1,
         1
       ],
-      "parallaxFactor": 0.05
+      "parallaxFactor": 0.05,
+      "zLayer": -5
     },
     {
       "position": [
-        -9.536743E-7,
-        1.7525,
-        -4
+        0,
+        1.05,
+        0
       ],
       "scale": [
-        19.2,
-        6.505,
-        0
+        12.8,
+        5.1,
+        0.1
       ],
       "rotation": 0,
       "color": [
@@ -110,18 +111,19 @@
         1,
         1
       ],
-      "parallaxFactor": 0.2
+      "parallaxFactor": 0.2,
+      "zLayer": -4
     },
     {
       "position": [
-        -9.536743E-7,
-        1.7525,
-        -3
+        0,
+        1.05,
+        0
       ],
       "scale": [
-        19.2,
-        6.505,
-        0
+        12.8,
+        5.1,
+        0.1
       ],
       "rotation": 0,
       "color": [
@@ -155,18 +157,19 @@
         1,
         1
       ],
-      "parallaxFactor": 0.5
+      "parallaxFactor": 0.5,
+      "zLayer": -3
     },
     {
       "position": [
-        -9.536743E-7,
-        1.7525,
-        -2
+        0,
+        1.05,
+        0
       ],
       "scale": [
-        19.2,
-        6.505,
-        0
+        12.8,
+        5.1,
+        0.1
       ],
       "rotation": 0,
       "color": [
@@ -200,18 +203,19 @@
         1,
         1
       ],
-      "parallaxFactor": 0.7
+      "parallaxFactor": 0.7,
+      "zLayer": -2
     },
     {
       "position": [
-        -9.536743E-7,
-        -3.2525,
+        0,
+        -2.55,
         0
       ],
       "scale": [
-        19.2,
-        3.505,
-        0
+        12.8,
+        2.1,
+        0.1
       ],
       "rotation": 0,
       "color": [
@@ -245,103 +249,14 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     }
   ],
   "groups": [
     {
       "name": "1",
       "children": [
-        {
-          "position": [
-            7,
-            -1,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            0
-          ],
-          "rotation": 0,
-          "color": [
-            0.5019608,
-            0,
-            0.5019608,
-            1
-          ],
-          "tag": "platform",
-          "isTriangle": false,
-          "textureName": "",
-          "uv": [
-            0,
-            0,
-            1,
-            1
-          ],
-          "generatePhysicsComp": false,
-          "generateRenderComp": true,
-          "vertexShaderPath": "",
-          "fragmentShaderPath": "",
-          "gradientTopColor": [
-            1,
-            1,
-            1,
-            1
-          ],
-          "gradientBottomColor": [
-            1,
-            1,
-            1,
-            1
-          ],
-          "parallaxFactor": 0
-        },
-        {
-          "position": [
-            8,
-            -1,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            0
-          ],
-          "rotation": 0,
-          "color": [
-            0.5019608,
-            0,
-            0.5019608,
-            1
-          ],
-          "tag": "platform",
-          "isTriangle": false,
-          "textureName": "",
-          "uv": [
-            0,
-            0,
-            1,
-            1
-          ],
-          "generatePhysicsComp": false,
-          "generateRenderComp": true,
-          "vertexShaderPath": "",
-          "fragmentShaderPath": "",
-          "gradientTopColor": [
-            1,
-            1,
-            1,
-            1
-          ],
-          "gradientBottomColor": [
-            1,
-            1,
-            1,
-            1
-          ],
-          "parallaxFactor": 0
-        },
         {
           "position": [
             9,
@@ -355,14 +270,14 @@
           ],
           "rotation": 0,
           "color": [
-            0.5019608,
+            1,
             0,
-            0.5019608,
+            0,
             1
           ],
           "tag": "platform",
           "isTriangle": false,
-          "textureName": "",
+          "textureName": "geometry",
           "uv": [
             0,
             0,
@@ -385,7 +300,8 @@
             1,
             1
           ],
-          "parallaxFactor": 0
+          "parallaxFactor": 0,
+          "zLayer": 0
         },
         {
           "position": [
@@ -400,14 +316,14 @@
           ],
           "rotation": 0,
           "color": [
-            0.5019608,
+            1,
             0,
-            0.5019608,
+            0,
             1
           ],
           "tag": "platform",
           "isTriangle": false,
-          "textureName": "",
+          "textureName": "geometry",
           "uv": [
             0,
             0,
@@ -430,7 +346,8 @@
             1,
             1
           ],
-          "parallaxFactor": 0
+          "parallaxFactor": 0,
+          "zLayer": 0
         },
         {
           "position": [
@@ -445,14 +362,14 @@
           ],
           "rotation": 0,
           "color": [
-            0.5019608,
+            1,
             0,
-            0.5019608,
+            0,
             1
           ],
           "tag": "platform",
           "isTriangle": false,
-          "textureName": "",
+          "textureName": "geometry",
           "uv": [
             0,
             0,
@@ -475,97 +392,8 @@
             1,
             1
           ],
-          "parallaxFactor": 0
-        },
-        {
-          "position": [
-            12,
-            -1,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            0
-          ],
-          "rotation": 0,
-          "color": [
-            0.5019608,
-            0,
-            0.5019608,
-            1
-          ],
-          "tag": "platform",
-          "isTriangle": false,
-          "textureName": "",
-          "uv": [
-            0,
-            0,
-            1,
-            1
-          ],
-          "generatePhysicsComp": false,
-          "generateRenderComp": true,
-          "vertexShaderPath": "",
-          "fragmentShaderPath": "",
-          "gradientTopColor": [
-            1,
-            1,
-            1,
-            1
-          ],
-          "gradientBottomColor": [
-            1,
-            1,
-            1,
-            1
-          ],
-          "parallaxFactor": 0
-        },
-        {
-          "position": [
-            13,
-            -1,
-            0
-          ],
-          "scale": [
-            1,
-            1,
-            0
-          ],
-          "rotation": 0,
-          "color": [
-            0.5019608,
-            0,
-            0.5019608,
-            1
-          ],
-          "tag": "platform",
-          "isTriangle": false,
-          "textureName": "",
-          "uv": [
-            0,
-            0,
-            1,
-            1
-          ],
-          "generatePhysicsComp": false,
-          "generateRenderComp": true,
-          "vertexShaderPath": "",
-          "fragmentShaderPath": "",
-          "gradientTopColor": [
-            1,
-            1,
-            1,
-            1
-          ],
-          "gradientBottomColor": [
-            1,
-            1,
-            1,
-            1
-          ],
-          "parallaxFactor": 0
+          "parallaxFactor": 0,
+          "zLayer": 0
         }
       ],
       "colliderAABB": {
@@ -575,7 +403,7 @@
           0
         ],
         "scale": [
-          7,
+          3,
           1,
           0
         ],
@@ -611,7 +439,8 @@
           1,
           1
         ],
-        "parallaxFactor": 0
+        "parallaxFactor": 0,
+        "zLayer": -1
       }
     }
   ],
@@ -659,7 +488,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -704,7 +534,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -749,7 +580,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -794,7 +626,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -839,7 +672,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -884,7 +718,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -929,7 +764,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -974,7 +810,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1019,7 +856,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1064,7 +902,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1109,7 +948,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1154,7 +994,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1199,7 +1040,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1244,7 +1086,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1289,7 +1132,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1334,7 +1178,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1379,7 +1224,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1424,7 +1270,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1469,7 +1316,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1514,7 +1362,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1559,277 +1408,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
-    },
-    {
-      "position": [
-        9,
-        0,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        0.47058824,
-        0.039215688,
-        0.8509804,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0
-    },
-    {
-      "position": [
-        11,
-        0,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        0.47058824,
-        0.039215688,
-        0.8509804,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0
-    },
-    {
-      "position": [
-        10,
-        0,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        0.47058824,
-        0.039215688,
-        0.8509804,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0
-    },
-    {
-      "position": [
-        11,
-        1,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        0.47058824,
-        0.039215688,
-        0.8509804,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0
-    },
-    {
-      "position": [
-        12,
-        1,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        0.47058824,
-        0.039215688,
-        0.8509804,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0
-    },
-    {
-      "position": [
-        26,
-        -1,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        0.039215706,
-        0.6143217,
-        0.8509804,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1874,7 +1454,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1919,7 +1500,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     },
     {
       "position": [
@@ -1964,52 +1546,8 @@
         1,
         1
       ],
-      "parallaxFactor": 0
-    },
-    {
-      "position": [
-        23,
-        0,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        0.0732304,
-        0.5747309,
-        0.86520374,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0
+      "parallaxFactor": 0,
+      "zLayer": 0
     }
   ]
 }

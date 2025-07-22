@@ -17,14 +17,14 @@ namespace gl3::engine::levelLoading
     class LevelManager
     {
     public:
-       /**
-        * @brief Loads metadata for all levels from the specified directory.
-        *
-        * This method scans the given directory for level metadata files and loads them into
-        * the internal metadata cache.
-        *
-        * @param levelDir Directory path to load level metadata from. Defaults to "levels" asset path.
-        */
+        /**
+         * @brief Loads metadata for all levels from the specified directory.
+         *
+         * This method scans the given directory for level metadata files and loads them into
+         * the internal metadata cache.
+         *
+         * @param levelDir Directory path to load level metadata from. Defaults to "levels" asset path.
+         */
         static void loadAllMetaData(const std::filesystem::path& levelDir = resolveAssetPath("levels"));
 
         /**
@@ -32,7 +32,7 @@ namespace gl3::engine::levelLoading
          *
          * @return Const reference to a vector containing metadata of all available levels.
          */
-        static const std::vector<LevelMeta>& getMetaData() { return meta_data_; }
+        static const std::vector<LevelMeta>& getMetaData() { return meta_data; }
 
         /**
          * @brief Loads and returns a level by its ID.
@@ -73,8 +73,8 @@ namespace gl3::engine::levelLoading
         static void removeGroupByName(const std::string& groupName);
 
         /**
-         * @brief Saves the current level's data back to disk.
-         */
+          * @brief Saves the current level's data back to disk.
+          */
         static void saveCurrentLevel();
 
         /**
@@ -82,7 +82,7 @@ namespace gl3::engine::levelLoading
          *
          * @return Const reference to a map of loaded levels.
          */
-        static const std::unordered_map<int, std::unique_ptr<Level>>& getLevels() { return loaded_levels_; }
+        static const std::unordered_map<int, std::unique_ptr<Level>>& getLevels() { return loaded_levels; }
 
         /**
          * @brief Returns the most recently loaded level.
@@ -92,10 +92,19 @@ namespace gl3::engine::levelLoading
         static Level* getMostRecentLoadedLevel();
 
     private:
-        static std::vector<LevelMeta> meta_data_; ///< Cache of all level metadata loaded @note metadata files need to lie in assets/levels as .meta.json
-        static std::unordered_map<int, std::unique_ptr<Level>> loaded_levels_; ///< Map of loaded levels by ID  @note Put your level json files in assets/levels
-        static std::unordered_map<int, std::string> idToFilename_; ///< Mapping of level IDs to filenames.
-        static Level* loadLevel(int ID, const std::string& filename); ///< Internal helper to load level from file. @note Put your level json files in assets/levels
+        /**
+         * @brief Rounds specific object data float to two decimals
+         * @param object The object, for which to round the data
+         */
+        static void roundObjectData(GameObject& object);
+
+        static std::vector<LevelMeta> meta_data;
+        ///< Cache of all level metadata loaded @note metadata files need to lie in assets/levels as .meta.json
+        static std::unordered_map<int, std::unique_ptr<Level>> loaded_levels;
+        ///< Map of loaded levels by ID  @note Put your level json files in assets/levels
+        static std::unordered_map<int, std::string> idToFilename; ///< Mapping of level IDs to filenames.
+        static Level* loadLevel(int ID, const std::string& filename);
+        ///< Internal helper to load level from file. @note Put your level json files in assets/levels
         static int most_recent_loaded_lvl_ID; ///< ID of the last loaded level.
     };
 }

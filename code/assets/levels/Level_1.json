@@ -8,7 +8,7 @@
       "position": [
         -9.536743E-7,
         1.7525,
-        -2
+        0
       ],
       "scale": [
         19.2,
@@ -33,13 +33,14 @@
       ],
       "generatePhysicsComp": false,
       "generateRenderComp": true,
-      "parallaxFactor": 0.05
+      "parallaxFactor": 0.05,
+      "zLayer": -2
     },
     {
       "position": [
         -9.536743E-7,
         1.7525,
-        -1
+        0
       ],
       "scale": [
         19.2,
@@ -64,7 +65,8 @@
       ],
       "generatePhysicsComp": false,
       "generateRenderComp": true,
-      "parallaxFactor": 0.5
+      "parallaxFactor": 0.5,
+      "zLayer": -1
     },
     {
       "tag": "ground",

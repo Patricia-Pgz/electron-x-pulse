@@ -61,7 +61,7 @@ namespace gl3::engine::rendering
             for (const auto& entity : entities)
             {
                 auto& transform = entities.get<ecs::TransformComponent>(entity);
-                if (!game.getRegistry().any_of<ecs::RenderComponent>(entity)) return;
+                if (!game.getRegistry().any_of<ecs::RenderComponent>(entity)) continue;
                 auto& renderComp = game.getRegistry().get<ecs::RenderComponent>(entity);
                 auto tag = entities.get<ecs::TagComponent>(entity).tag;
                 // Render object if in view

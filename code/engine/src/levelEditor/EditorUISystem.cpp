@@ -92,11 +92,11 @@ namespace gl3::engine::editor
 
             if (multi_select_enabled)
             {
-                const auto it = std::find_if(selected_grid_cells.begin(), selected_grid_cells.end(),
-                                             [&](const ImVec2& cell)
-                                             {
-                                                 return cell.x == clickedCell.x && cell.y == clickedCell.y;
-                                             });
+                const auto it = std::ranges::find_if(selected_grid_cells,
+                                                     [&](const ImVec2& cell)
+                                                     {
+                                                         return cell.x == clickedCell.x && cell.y == clickedCell.y;
+                                                     });
 
                 if (it != selected_grid_cells.end())
                 {
@@ -356,7 +356,7 @@ namespace gl3::engine::editor
 
         ImGui::SameLine();
 
-        if (!selected_grid_cells.empty())
+        if (!selected_grid_cells.empty() && selected_group_cells.empty()) //don't allow deleting during active grouping
         {
             if (ImGui::Button("Delete Selected Element"))
             {
@@ -367,7 +367,12 @@ namespace gl3::engine::editor
         if (ImGui::Button(multi_select_enabled ? "Multi Select" : "Single Select"))
         {
             multi_select_enabled = !multi_select_enabled;
-            if (!multi_select_enabled)selected_grid_cells.clear();
+            if (!multi_select_enabled)
+            {
+                if(!selected_group_cells.empty())ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{}); //generate group, if active group selection already exists, but multi select is exited without hitting generate group
+                selected_group_cells.clear();
+                selected_grid_cells.clear();
+            }
         }
         if (multi_select_enabled)
         {
@@ -420,6 +425,8 @@ namespace gl3::engine::editor
             if (selected_scale.x < 0.0f)
                 selected_scale.x = 0.1f;
         }
+
+        //TODO layer
 
         ImGui::Text("4.) Select tag:");
         const std::vector<std::string> tagButtonIDs{"platform", "obstacle"};
@@ -504,6 +511,10 @@ namespace gl3::engine::editor
 
                 for (const auto& cell : selected_grid_cells)
                 {
+                    selected_color.r = std::round(selected_color.r * 100.0f) / 100.0f;
+                    selected_color.g = std::round(selected_color.g * 100.0f) / 100.0f;
+                    selected_color.b = std::round(selected_color.b * 100.0f) / 100.0f;
+
                     const GameObject object = {
                         {
                             cell.x, cell.y, 0.f

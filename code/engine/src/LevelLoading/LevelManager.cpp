@@ -6,9 +6,9 @@
 namespace gl3::engine::levelLoading
 {
     int LevelManager::most_recent_loaded_lvl_ID = 0;
-    std::vector<LevelMeta> LevelManager::meta_data_;
-    std::unordered_map<int, std::unique_ptr<Level>> LevelManager::loaded_levels_;
-    std::unordered_map<int, std::string> LevelManager::idToFilename_;
+    std::vector<LevelMeta> LevelManager::meta_data;
+    std::unordered_map<int, std::unique_ptr<Level>> LevelManager::loaded_levels;
+    std::unordered_map<int, std::string> LevelManager::idToFilename;
 
     namespace fs = std::filesystem;
 
@@ -16,7 +16,7 @@ namespace gl3::engine::levelLoading
 
     Level* LevelManager::loadLevel(const int ID, const std::string& filename)
     {
-        if (const auto existingLevel = loaded_levels_.find(ID); existingLevel != loaded_levels_.end())
+        if (const auto existingLevel = loaded_levels.find(ID); existingLevel != loaded_levels.end())
         {
             return existingLevel->second.get();
         }
@@ -36,7 +36,7 @@ namespace gl3::engine::levelLoading
             throw std::runtime_error("Failed to parse level JSON: " + std::to_string(static_cast<float>(err.ec)));
         }
 
-        auto [it, _] = loaded_levels_.emplace(ID, std::move(level));
+        auto [it, _] = loaded_levels.emplace(ID, std::move(level));
         most_recent_loaded_lvl_ID = it->first;
         return it->second.get();
     }
@@ -44,8 +44,8 @@ namespace gl3::engine::levelLoading
     // Resolves the levelID to a path and returns a pointer to the level.
     Level* LevelManager::loadLevelByID(const int ID)
     {
-        const auto levelFileName = idToFilename_.find(ID);
-        if (levelFileName == idToFilename_.end())
+        const auto levelFileName = idToFilename.find(ID);
+        if (levelFileName == idToFilename.end())
         {
             throw std::runtime_error("No level filename for id " + std::to_string(ID));
         }
@@ -78,8 +78,8 @@ namespace gl3::engine::levelLoading
                     std::cerr << err;
                 }
 
-                idToFilename_[meta.id] = meta.fileName;
-                meta_data_.emplace_back(std::move(meta));
+                idToFilename[meta.id] = meta.fileName;
+                meta_data.emplace_back(std::move(meta));
             }
             catch (const std::exception& e)
             {
@@ -90,7 +90,7 @@ namespace gl3::engine::levelLoading
 
     Level* LevelManager::getMostRecentLoadedLevel()
     {
-        if (const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID); it != loaded_levels_.end())
+        if (const auto it = loaded_levels.find(most_recent_loaded_lvl_ID); it != loaded_levels.end())
         {
             return it->second.get();
         }
@@ -100,8 +100,8 @@ namespace gl3::engine::levelLoading
 
     void LevelManager::addObjectToCurrentLevel(const GameObject& object)
     {
-        const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
-        if (it == loaded_levels_.end() || !it->second)
+        const auto it = loaded_levels.find(most_recent_loaded_lvl_ID);
+        if (it == loaded_levels.end() || !it->second)
         {
             throw std::runtime_error("No current level loaded to add object.");
         }
@@ -112,8 +112,8 @@ namespace gl3::engine::levelLoading
 
     void LevelManager::removeAllObjectsAtPosition(glm::vec2 position)
     {
-        const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
-        if (it == loaded_levels_.end() || !it->second)
+        const auto it = loaded_levels.find(most_recent_loaded_lvl_ID);
+        if (it == loaded_levels.end() || !it->second)
         {
             throw std::runtime_error("No current level loaded to remove object.");
         }
@@ -153,8 +153,8 @@ namespace gl3::engine::levelLoading
 
     void LevelManager::addGroupToCurrentLevel(const GameObjectGroup& group)
     {
-        const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
-        if (it == loaded_levels_.end() || !it->second)
+        const auto it = loaded_levels.find(most_recent_loaded_lvl_ID);
+        if (it == loaded_levels.end() || !it->second)
         {
             throw std::runtime_error("No current level loaded to add group.");
         }
@@ -165,8 +165,8 @@ namespace gl3::engine::levelLoading
 
     void LevelManager::removeGroupByName(const std::string& groupName)
     {
-        const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
-        if (it == loaded_levels_.end() || !it->second)
+        const auto it = loaded_levels.find(most_recent_loaded_lvl_ID);
+        if (it == loaded_levels.end() || !it->second)
         {
             throw std::runtime_error("No current level loaded to remove group.");
         }
@@ -180,16 +180,42 @@ namespace gl3::engine::levelLoading
         });
     }
 
+    void LevelManager::roundObjectData(GameObject& object)
+    {
+        object.position.x = std::round(object.position.x * 100.0f) / 100.0f;
+        object.position.y = std::round(object.position.y * 100.0f) / 100.0f;
+        object.position.z = std::round(object.position.z * 100.0f) / 100.0f;
+
+        object.scale.x = std::round(object.scale.x * 100.0f) / 100.0f;
+        object.scale.y = std::round(object.scale.y * 100.0f) / 100.0f;
+        object.scale.z = std::round(object.scale.z * 100.0f) / 100.0f;
+    }
 
     void LevelManager::saveCurrentLevel()
     {
-        const auto it = loaded_levels_.find(most_recent_loaded_lvl_ID);
-        if (it == loaded_levels_.end())
+        const auto it = loaded_levels.find(most_recent_loaded_lvl_ID);
+        if (it == loaded_levels.end())
         {
             throw std::runtime_error("Level with ID " + std::to_string(most_recent_loaded_lvl_ID) + " is not loaded.");
         }
 
         Level* level = it->second.get();
+        for (auto& element : level->backgrounds)
+        {
+            roundObjectData(element);
+        }
+        for (auto& group : level->groups)
+        {
+            for (auto& element : group.children)
+            {
+                roundObjectData(element);
+            }
+            roundObjectData(group.colliderAABB);
+        }
+        for (auto& element : level->objects)
+        {
+            roundObjectData(element);
+        }
 
         const auto result = glz::write_json(*level); // returns expected<string, error_ctx>
         if (!result)
@@ -197,8 +223,8 @@ namespace gl3::engine::levelLoading
             throw std::runtime_error("Failed to serialize level: " + std::to_string(most_recent_loaded_lvl_ID));
         }
 
-        const auto filenameIt = idToFilename_.find(most_recent_loaded_lvl_ID);
-        if (filenameIt == idToFilename_.end())
+        const auto filenameIt = idToFilename.find(most_recent_loaded_lvl_ID);
+        if (filenameIt == idToFilename.end())
         {
             throw std::runtime_error("No filename mapped for level ID " + std::to_string(most_recent_loaded_lvl_ID));
         }
