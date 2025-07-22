@@ -344,6 +344,11 @@ namespace gl3::engine::editor
         {
             is_mouse_in_grid = true;
         }
+        if(selected_grid_cells.empty())
+        {
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Click on grid to select position");
+            ImGui::Separator();
+        }
         ImGui::PopStyleVar();
         ImGui::PopStyleColor();
         ImGui::PopFont();
@@ -355,9 +360,7 @@ namespace gl3::engine::editor
         {
             levelLoading::LevelManager::saveCurrentLevel();
         }
-
         ImGui::SameLine();
-
         if (!selected_grid_cells.empty() && selected_group_cells.empty()) //don't allow deleting during active grouping
         {
             if (ImGui::Button("Delete Selected Element"))
@@ -365,10 +368,20 @@ namespace gl3::engine::editor
                 deleteAllAtSelectedPosition();
             }
         }
+
         ImGui::Separator();
+
+        //handle multiselect and grouping
+        bool pushed = false;
+        if (multi_select_enabled)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::Cyan);
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::pastelNeonViolet);
+            pushed = true;
+        }
         if (ImGui::Button(multi_select_enabled ? "Multi Select" : "Single Select"))
         {
-            //TODO button multiselect färben
             multi_select_enabled = !multi_select_enabled;
             if (!multi_select_enabled)
             {
@@ -381,6 +394,10 @@ namespace gl3::engine::editor
             {
                 compute_group_AABB = true; //generate groups on default in multi select
             }
+        }
+        if(pushed)
+        {
+            ImGui::PopStyleColor(3);
         }
         if (multi_select_enabled)
         {
@@ -409,14 +426,14 @@ namespace gl3::engine::editor
         }
         ImGui::Separator();
 
-        ImGui::TextColored(ImVec4(1, 0, 0, 1), "1.) Click on grid to select position");
-
         ImGui::Text("Position Offset from Cell Center:");
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.4f);
+        const auto xtItemWidth = ImGui::GetContentRegionAvail().x * 0.3f;
+        ImGui::SetNextItemWidth(xtItemWidth);
         ImGui::InputFloat("offsetX", &selected_position_offset.x, 0.1f, 10.f, "%.2f");
         ImGui::SameLine();
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.4f);
+        ImGui::SetNextItemWidth(xtItemWidth);
         ImGui::InputFloat("offsetY", &selected_position_offset.y, 0.1f, 10.f, "%.2f");
+        ImGui::Separator();
 
         ImGui::Text("Select shape:");
         if (ImGui::RadioButton("Rectangle", !is_triangle))
@@ -424,9 +441,10 @@ namespace gl3::engine::editor
         ImGui::SameLine();
         if (ImGui::RadioButton("Triangle", is_triangle))
             is_triangle = true;
+        ImGui::Separator();
 
         ImGui::Text("Scale:");
-        const auto itemWidth = ImGui::GetContentRegionAvail().x * 0.4f;
+        const auto itemWidth = ImGui::GetContentRegionAvail().x * 0.3f;
         ImGui::SetNextItemWidth(itemWidth);
         if (ImGui::InputFloat("X", &selected_scale.x, 0.1f, 1.0f, "%.2f"))
         {
@@ -440,6 +458,7 @@ namespace gl3::engine::editor
             if (selected_scale.x < 0.0f)
                 selected_scale.x = 0.1f;
         }
+        ImGui::Separator();
 
         ImGui::Text("Select tag:");
         const std::vector<std::string> tagButtonIDs{"platform", "obstacle"};
@@ -457,17 +476,19 @@ namespace gl3::engine::editor
         {
             selected_tag = tag_input_buffer;
         }
+        ImGui::Separator();
 
         ImGui::Text("Z-Rotation:");
-        const auto nextItemWidth = ImGui::GetContentRegionAvail().x * 0.4f;
+        const auto nextItemWidth = ImGui::GetContentRegionAvail().x * 0.3f;
         ImGui::SetNextItemWidth(nextItemWidth);
         ImGui::InputFloat("##zRot", &selected_z_rotation, 0.1f, 1.0f, "%.2f");
         selected_z_rotation = fmod(selected_z_rotation, 360.0f);
         if (selected_z_rotation < 0.0f)
             selected_z_rotation += 360.0f;
+        ImGui::Separator();
 
         ImGui::Text("Render Layer:");
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.4f);
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.3f);
         if (ImGui::InputFloat("Z-Layer", &selected_layer, 0.1f, 1.0f, "%.2f"))
         {
             if (selected_layer < -10.0f) // Constrain layer range (optional)
@@ -477,15 +498,16 @@ namespace gl3::engine::editor
         {
             ImGui::SetTooltip("Negative values are further away from the camera \n (mostly used for rendering transparent objects first)");
         }
+        ImGui::Separator();
 
         ImGui::Text("Generate PhysicsComponent");
         if (!compute_group_AABB)ImGui::Checkbox("##PhysicsComp", &generate_physics_comp);
+        ImGui::Separator();
 
         const float availableWidth = ImGui::GetContentRegionAvail().x;
         const float itemSpacing = ImGui::GetStyle().ItemSpacing.x;
         const float totalSpacing = itemSpacing * (tilesPerRow + 2);
         const float tileSize = (availableWidth - totalSpacing) / tilesPerRow;
-        ImGui::Separator();
         ImGui::Text("Select Visual");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1, 0, 0, 1), "(Final Step)");

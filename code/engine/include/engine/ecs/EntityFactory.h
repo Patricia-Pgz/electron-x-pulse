@@ -89,6 +89,7 @@ namespace gl3::engine::ecs
         glm::vec4 gradientTopColor = {1, 1, 1, 1}; /**< Top color for gradient effects. */
         glm::vec4 gradientBottomColor = {1, 1, 1, 1}; /**< Bottom color for gradient effects. */
         const rendering::Texture* texture = nullptr;
+        float repeatX = 0.f; /**< How often the texture is repeated on x */
         glm::vec4 uv; /**< UV coordinates for texture mapping. */
         glm::vec2 uvOffset = {0.0f, 0.0f}; /**< Offset applied to UV mapping. */
         bool isActive = true;
@@ -405,6 +406,7 @@ namespace gl3::engine::ecs
                 object.gradientTopColor,
                 object.gradientBottomColor,
                 texture,
+                repeatX,
                 object.uv
             );
         }

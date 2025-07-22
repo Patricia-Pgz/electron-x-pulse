@@ -62,6 +62,7 @@ namespace gl3::engine::rendering
             {
                 auto& transform = entities.get<ecs::TransformComponent>(entity);
                 if (!game.getRegistry().any_of<ecs::RenderComponent>(entity)) continue;
+
                 auto& renderComp = game.getRegistry().get<ecs::RenderComponent>(entity);
                 auto tag = entities.get<ecs::TagComponent>(entity).tag;
                 // Render object if in view
@@ -92,14 +93,12 @@ namespace gl3::engine::rendering
                         if (transform.parallaxFactor != 0 && !game.isPaused())
                         {
                             const float pixelsPerSecond = levelLoading::LevelManager::getMostRecentLoadedLevel()->
-                                currentLevelSpeed * pixelsPerMeter;
+                                currentLevelSpeed;
 
-                            const float uvPerSecond = pixelsPerSecond / static_cast<float>(renderComp.texture->
-                                getWidth());
+                            const float uvPerSecond = pixelsPerSecond * renderComp.repeatX / transform.scale.x;
 
                             renderComp.uvOffset.x += transform.parallaxFactor * uvPerSecond * game.getDeltaTime();
                             renderComp.uvOffset.x = std::fmod(renderComp.uvOffset.x, 1.0f);
-                            if (renderComp.uvOffset.x < 0) renderComp.uvOffset.x += 1.0f;
 
                             renderComp.shader.setVec2("uvOffset", renderComp.uvOffset);
                         }

@@ -65,7 +65,7 @@
         1,
         1
       ],
-      "parallaxFactor": 0.05,
+      "parallaxFactor": 0.1,
       "zLayer": -5
     },
     {
@@ -111,7 +111,7 @@
         1,
         1
       ],
-      "parallaxFactor": 0.2,
+      "parallaxFactor": 0.3,
       "zLayer": -4
     },
     {
@@ -203,7 +203,7 @@
         1,
         1
       ],
-      "parallaxFactor": 0.7,
+      "parallaxFactor": 1,
       "zLayer": -2
     },
     {
