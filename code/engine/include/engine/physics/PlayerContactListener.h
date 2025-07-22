@@ -24,7 +24,7 @@ namespace gl3::engine::physics
          * It can be reset externally after the physics step to handle jumping logic.
          */
         static inline bool playerGrounded = true;
-
+        static inline bool playerRightSensorHitLastFrame = false;
         /**
          * @brief Checks for collisions and sensor events related to the player.
          *
@@ -45,8 +45,8 @@ namespace gl3::engine::physics
             const b2SensorEvents sensorEvents = b2World_GetSensorEvents(physicsWorld);
             const ecs::PhysicsComponent& physics_comp = registry.get<ecs::PhysicsComponent>(player);
 
-            const b2ShapeId playerGroundSensor = physics_comp.sensorShapes[0];
-            const b2ShapeId playerRightSensor = physics_comp.sensorShapes[1];
+            const b2ShapeId playerGroundSensor = physics_comp.sensorShapes[0]; //sensor
+            const b2ShapeId playerRightSensor = physics_comp.sensorShapes[1]; //collider
             bool rightSensorHit = false;
 
             for (int i = 0; i < sensorEvents.beginCount; ++i)
@@ -55,10 +55,6 @@ namespace gl3::engine::physics
                 if (B2_ID_EQUALS(event.sensorShapeId, playerGroundSensor))
                 {
                     playerGrounded = true;
-                }
-                if (B2_ID_EQUALS(event.sensorShapeId, playerRightSensor))
-                {
-                    rightSensorHit = true;
                 }
             }
 
@@ -74,8 +70,10 @@ namespace gl3::engine::physics
                 const b2BodyId bodyIdA = b2Shape_GetBody(contactData[i].shapeIdA);
                 const b2BodyId bodyIdB = b2Shape_GetBody(contactData[i].shapeIdB);
 
-                const auto entityA = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Body_GetUserData(bodyIdA)));
-                const auto entityB = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(b2Body_GetUserData(bodyIdB)));
+                const auto entityA = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(
+                    b2Body_GetUserData(bodyIdA)));
+                const auto entityB = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(
+                    b2Body_GetUserData(bodyIdB)));
 
                 if (!registry.valid(entityA) || !registry.valid(entityB))
                 {
@@ -83,15 +81,23 @@ namespace gl3::engine::physics
                     continue;
                 }
 
+                if (B2_ID_EQUALS(contactData[i].shapeIdA, playerRightSensor) ||
+                    B2_ID_EQUALS(contactData[i].shapeIdB, playerRightSensor))
+                {
+                    rightSensorHit = true;
+                }
+
                 const auto tagA = registry.get<ecs::TagComponent>(entityA).tag;
                 const auto tagB = registry.get<ecs::TagComponent>(entityB).tag;
 
-                if (tagA == "obstacle" || tagB == "obstacle" || ((contactData[i].manifold.normal.x == 0.f && rightSensorHit)))
+                if (tagA == "obstacle" || tagB == "obstacle" || (rightSensorHit && playerRightSensorHitLastFrame))
                 {
                     ecs::EventDispatcher::dispatcher.trigger(ecs::PlayerDeath{player});
                     rightSensorHit = false;
+                    playerRightSensorHitLastFrame = false;
                 }
             }
+            playerRightSensorHitLastFrame = rightSensorHit; //to debounce one frame
         }
     };
 } // namespace gl3::engine::physics

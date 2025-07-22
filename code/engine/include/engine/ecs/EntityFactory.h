@@ -494,8 +494,7 @@ namespace gl3::engine::ecs
                                         b2MakeRot(0.0f));
             b2ShapeId groundSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &groundBox);
 
-            // Right Side Sensor
-            rightSensorDef.isSensor = true;
+            // Right Side collider
             rightSensorDef.enableContactEvents = true;
 
             b2Polygon rightBox;
