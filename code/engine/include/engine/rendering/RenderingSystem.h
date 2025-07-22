@@ -27,29 +27,16 @@ namespace gl3::engine::rendering
         {
         };
 
-        void sortBackToFront()
+        /**
+         * @brief Orders render-able entities back to front via z-position
+         */
+        void sortBackToFront() const
         {
-            renderQueue.clear();
-            auto& registry = game.getRegistry();
-            const auto& context = game.getContext();
-            const auto entities = registry.view<
-                                 ecs::TransformComponent, ecs::RenderComponent, ecs::TagComponent>();
-
-            for (auto& entity : entities) {
-                renderQueue.push_back(entity);
-            }
-
-            std::ranges::sort(renderQueue,
-                              [&](const entt::entity a, const entt::entity b) {
-                                  const auto& ra = registry.get<ecs::TransformComponent>(a).position;
-                                  const auto& rb = registry.get<ecs::TransformComponent>(b).position;
-                                  return ra.z < rb.z; // sort back to front
-                              });
-            std::ranges::reverse(renderQueue);
-            for (auto entity : renderQueue)
-            {
-                std::cout << (registry.get<ecs::TagComponent>(entity)).tag << std::endl;
-            }
+            game.getRegistry().sort<ecs::ZLayerComponent>(
+                [](const ecs::ZLayerComponent& lhs, const ecs::ZLayerComponent& rhs)
+                {
+                    return lhs.zLayer < rhs.zLayer;
+                });
         }
 
         /**
@@ -59,25 +46,30 @@ namespace gl3::engine::rendering
          * Applies parallax UV offset if enabled. Skips rendering if the entity
          * is outside the visible window.
          */
-        void draw()
+        void draw() const
         {
             if (!is_active) { return; }
 
             sortBackToFront();
             auto& registry = game.getRegistry();
             const auto& context = game.getContext();
+            //views use the order in which the entities are in the container with the lowest number of entities (or else first) (here ZLayerComp)
             const auto& entities = registry.view<
-                                 ecs::TransformComponent, ecs::RenderComponent, ecs::TagComponent>();
-
-            for (const auto& entity : renderQueue) {
+                ecs::ZLayerComponent,
+                //only works if ZLayerComponent store is smallest of these three -> entities view will use its order (back to front)
+                ecs::TransformComponent, ecs::TagComponent>();
+            for (const auto& entity : entities)
+            {
                 auto& transform = entities.get<ecs::TransformComponent>(entity);
-                auto& renderComp = entities.get<ecs::RenderComponent>(entity);
+                if (!game.getRegistry().any_of<ecs::RenderComponent>(entity)) return;
+                auto& renderComp = game.getRegistry().get<ecs::RenderComponent>(entity);
                 auto tag = entities.get<ecs::TagComponent>(entity).tag;
                 // Render object if in view
                 if (context.isInVisibleWindow(transform.position, transform.scale) && renderComp.isActive)
                 {
-                    const auto mvpMatrix = MVPMatrixHelper::calculateMvpMatrix(transform.position, transform.zRotation, transform.scale,
-                                                              context);
+                    const auto mvpMatrix = MVPMatrixHelper::calculateMvpMatrix(
+                        transform.position, transform.zRotation, transform.scale,
+                        context);
                     renderComp.shader.use();
                     renderComp.shader.setMat4("mvp", mvpMatrix);
                     renderComp.shader.setVector4("color", renderComp.color);
@@ -103,7 +95,7 @@ namespace gl3::engine::rendering
                                 currentLevelSpeed * pixelsPerMeter;
 
                             const float uvPerSecond = pixelsPerSecond / static_cast<float>(renderComp.texture->
-                                                                                                      getWidth());
+                                getWidth());
 
                             renderComp.uvOffset.x += transform.parallaxFactor * uvPerSecond * game.getDeltaTime();
                             renderComp.uvOffset.x = std::fmod(renderComp.uvOffset.x, 1.0f);

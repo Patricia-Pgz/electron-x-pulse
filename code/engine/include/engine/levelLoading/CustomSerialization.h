@@ -60,7 +60,8 @@ struct glz::meta<GameObject>
         "fragmentShaderPath", &T::fragmentShaderPath,
         "gradientTopColor", &T::gradientTopColor,
         "gradientBottomColor", &T::gradientBottomColor,
-        "parallaxFactor", &T::parallaxFactor
+        "parallaxFactor", &T::parallaxFactor,
+        "zLayer", &T::zLayer
     );
 };
 

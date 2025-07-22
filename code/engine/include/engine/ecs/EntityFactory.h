@@ -12,6 +12,14 @@
 namespace gl3::engine::ecs
 {
     /**
+     * @brief Component for z-sorting during rendering
+     */
+    struct ZLayerComponent
+    {
+        float zLayer = 0.f;
+    };
+
+    /**
      * @brief Component for grouping child entities under a parent.
      *
      * Holds a reference to the parent entity and the child's local offset relative to the parent.
@@ -147,6 +155,8 @@ namespace gl3::engine::ecs
         {
             // Create an entity
             const entt::entity entity = registry.create();
+            // Add a layer component for render sorting
+            registry.emplace<ZLayerComponent>(entity, object.zLayer);
             // Add initial components
             registry.emplace<TransformComponent>(
                 entity, object.position, object.scale, object.zRotation, object.parallaxFactor

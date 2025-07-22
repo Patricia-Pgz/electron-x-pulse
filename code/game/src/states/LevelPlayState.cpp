@@ -90,6 +90,7 @@ namespace gl3::game::state
         sky.gradientTopColor = current_level->gradientTopColor;
         sky.position = {bgConfig.centerX, bgConfig.skyCenterY, 0.f};
         sky.scale = {bgConfig.windowWidth, bgConfig.skyHeight, 0.1f};
+        sky.zLayer = -10;
         engine::ecs::EntityFactory::createDefaultEntity(sky, registry, physicsWorld);
     }
 
@@ -226,6 +227,7 @@ namespace gl3::game::state
 
         level_instantiated = true;
         instruction_ui->setEditMode(edit_mode);
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::RenderComponentContainerChange{}); //signal that RenderComponents were added and need sorting
 
         if (!edit_mode)
         {
