@@ -366,7 +366,6 @@ namespace gl3::engine::editor
         {
             ImGui::TextColored(ImVec4(1, 0, 0, 1), "Click on grid to select position!");
         }
-        ImGui::PopStyleVar();
         ImGui::PopStyleColor();
         ImGui::PopFont();
 
@@ -399,6 +398,7 @@ namespace gl3::engine::editor
             ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::Cyan);
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::pastelNeonViolet);
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.23f, 0.23f, 0.23f, 1.0f));
             pushed = true;
         }
         if (ImGui::Button(multi_select_enabled ? "Multi Select" : "Single Select"))
@@ -413,14 +413,14 @@ namespace gl3::engine::editor
                 compute_group_AABB = false;
             }
         }
+        if (pushed)
+        {
+            ImGui::PopStyleColor(4);
+        }
         if (ImGui::IsItemHovered())
         {
             const std::string selectType = !multi_select_enabled ? "Multi Select" : "Single Select";
             ImGui::SetTooltip(("Switch to " + selectType).c_str());
-        }
-        if (pushed)
-        {
-            ImGui::PopStyleColor(3);
         }
         if (multi_select_enabled)
         {
@@ -628,7 +628,7 @@ namespace gl3::engine::editor
         }
 
         ImGui::PopStyleColor(11);
-        ImGui::PopStyleVar(2);
+        ImGui::PopStyleVar(3);
         ImGui::PopFont();
         ImGui::End();
     }
