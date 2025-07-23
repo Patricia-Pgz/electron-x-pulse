@@ -347,7 +347,6 @@ namespace gl3::engine::editor
         if(selected_grid_cells.empty())
         {
             ImGui::TextColored(ImVec4(1, 0, 0, 1), "Click on grid to select position");
-            ImGui::Separator();
         }
         ImGui::PopStyleVar();
         ImGui::PopStyleColor();
@@ -360,9 +359,9 @@ namespace gl3::engine::editor
         {
             levelLoading::LevelManager::saveCurrentLevel();
         }
-        ImGui::SameLine();
         if (!selected_grid_cells.empty() && selected_group_cells.empty()) //don't allow deleting during active grouping
         {
+            ImGui::SameLine();
             if (ImGui::Button("Delete Selected Element"))
             {
                 deleteAllAtSelectedPosition();
@@ -394,6 +393,11 @@ namespace gl3::engine::editor
             {
                 compute_group_AABB = true; //generate groups on default in multi select
             }
+        }
+        if (ImGui::IsItemHovered())
+        {
+            const std::string selectType = !multi_select_enabled ? "Multi Select" : "Single Select";
+            ImGui::SetTooltip(("Switch to " + selectType).c_str());
         }
         if(pushed)
         {

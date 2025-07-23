@@ -25,7 +25,18 @@ namespace gl3::engine::rendering
          */
         explicit RenderingSystem(Game& game) : System(game)
         {
+            ecs::EventDispatcher::dispatcher.sink<ecs::RenderComponentContainerChange>().connect<&
+                RenderingSystem::onRenderContainerChange>(this);
         };
+
+        /**
+         * @brief Disconnect from events.
+         */
+        ~RenderingSystem() override
+        {
+            ecs::EventDispatcher::dispatcher.sink<ecs::RenderComponentContainerChange>().disconnect<&
+                RenderingSystem::onRenderContainerChange>(this);
+        }
 
         /**
          * @brief Orders render-able entities back to front via z-position
@@ -40,6 +51,16 @@ namespace gl3::engine::rendering
         }
 
         /**
+        * @brief Signal to order render-able entities back to front via z-position
+        * Trigger the corresponding event, after initializing your entities in the registry or whenever you add an entity.
+        * @note Also see @ref ecs::RenderComponentContainerChange for dispatching an event for it.
+        */
+        void onRenderContainerChange(ecs::RenderComponentContainerChange& event)
+        {
+            sortRenderEntities = true;
+        }
+
+        /**
          * @brief Render all visible entities with active RenderComponents.
          *
          * Draws each entity using its mesh, texture, shader, and transform.
@@ -50,7 +71,8 @@ namespace gl3::engine::rendering
         {
             if (!is_active) { return; }
 
-            sortBackToFront();
+            if (sortRenderEntities)sortBackToFront();
+
             auto& registry = game.getRegistry();
             const auto& context = game.getContext();
             //views use the order in which the entities are in the container with the lowest number of entities (or else first) (here ZLayerComp)
@@ -108,5 +130,8 @@ namespace gl3::engine::rendering
                 }
             }
         };
+
+    private:
+        bool sortRenderEntities = false;
     };
 } // namespace gl3::engine::rendering

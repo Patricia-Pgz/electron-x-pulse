@@ -69,7 +69,6 @@ namespace gl3::engine::editor
         group.children = grouped_child_objects;
         group.colliderAABB = parentAABB;
         levelLoading::LevelManager::addGroupToCurrentLevel(group);
-        ecs::EventDispatcher::dispatcher.trigger(ecs::RenderComponentContainerChange{});
 
         grouped_child_entities.clear();
         grouped_child_objects.clear();

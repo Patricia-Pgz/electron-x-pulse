@@ -221,13 +221,14 @@ namespace gl3::game::state
         current_level = engine::levelLoading::LevelManager::loadLevelByID(level_index);
         const auto bgConfig = getBackgroundSizes(game.getContext().getWorldWindowBounds());
         createEntities(bgConfig, registry, physicsWorld);
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::RenderComponentContainerChange{}); //signal that RenderComponents were added and need sorting
+
         initializeAudio();
 
         game.getContext().setClearColor(current_level->clearColor);
 
         level_instantiated = true;
         instruction_ui->setEditMode(edit_mode);
-        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::RenderComponentContainerChange{}); //signal that RenderComponents were added and need sorting
 
         if (!edit_mode)
         {
