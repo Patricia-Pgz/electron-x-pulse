@@ -16,17 +16,17 @@ namespace gl3::game::input
 
         if (engine::physics::PlayerContactListener::playerGrounded)
         {
-            canJump = true;
+            can_jump = true;
             enter_pressed = false;
         }
 
-        if (velocity.y < 0.01f && velocity.y >= 0.f && canJump && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        if (velocity.y < 0.01f && velocity.y >= 0.f && can_jump && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
             if (!enter_pressed)
             {
                 enter_pressed = true;
                 applyJumpImpulse(body);
-                canJump = false;
+                can_jump = false;
             }
         }
         else if (glfwGetKey(game.getWindow(), GLFW_KEY_SPACE) == GLFW_RELEASE)
@@ -47,7 +47,7 @@ namespace gl3::game::input
         if (!engine::physics::PlayerContactListener::playerGrounded)
         {
             //player animation
-            transform.zRotation += rotationSpeed * game.getDeltaTime();
+            transform.zRotation += rotation_speed * game.getDeltaTime();
         }
         else
         {
@@ -65,15 +65,21 @@ namespace gl3::game::input
         }
     }
 
+    void PlayerInputSystem::onJumpMechanicChange(engine::ecs::JumpMechanicCollider& event)
+    {
+        change_jump_mechanics = !change_jump_mechanics;
+        y_gravity_multiplier = change_jump_mechanics ? -1 : 1;
+        b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, -10 * y_gravity_multiplier));
+    }
 
     void PlayerInputSystem::applyJumpImpulse(const b2BodyId body) const
     {
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayerJump{true});
 
-        const float desiredTimeToLand = game.getAudioSystem()->getConfig()->seconds_per_beat * landingBeatsAhead;
+        const float desiredTimeToLand = game.getAudioSystem()->getConfig()->seconds_per_beat * landing_beats_ahead;
         const float t = desiredTimeToLand * 0.5f; // time to apex
 
-        const float gravityY = (2.0f * desiredJumpHeight) / (t * t);
+        const float gravityY = (2.0f * desired_jump_height) / (t * t) * y_gravity_multiplier;
         // custom gravity to be able to choose jump height and jump length in time
         const float jumpVelocity = gravityY * t; // Initial vertical velocity
         const float mass = b2Body_GetMass(body);

@@ -253,7 +253,7 @@ namespace gl3::game::state
         {
             if (!game.getRegistry().valid(entity) || entity == entt::null)return;
             const auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
-            if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle")
+            if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle" || tag == "jump")
             {
                 if (move)
                 {
@@ -377,6 +377,7 @@ namespace gl3::game::state
         reloading_level = true;
         paused = true;
         dynamic_cast<Game&>(game).setPaused(true);
+        b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, -10.f)); //reset y gravity to -10
         setSystemsActive(false);
         menu_ui->setActive(true);
         instruction_ui->setActive(level_index == 0);

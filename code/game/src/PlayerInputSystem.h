@@ -23,6 +23,9 @@ namespace gl3::game::input
             engine::ecs::EventDispatcher::dispatcher
                 .sink<engine::ecs::LevelLengthComputed>()
                 .connect<&PlayerInputSystem::onLvlLengthCompute>(this);
+            engine::ecs::EventDispatcher::dispatcher
+                .sink<engine::ecs::JumpMechanicCollider>()
+                .connect<&PlayerInputSystem::onJumpMechanicChange>(this);
         }
 
         /**
@@ -33,6 +36,9 @@ namespace gl3::game::input
             engine::ecs::EventDispatcher::dispatcher
                 .sink<engine::ecs::LevelLengthComputed>()
                 .disconnect<&PlayerInputSystem::onLvlLengthCompute>(this);
+            engine::ecs::EventDispatcher::dispatcher
+    .sink<engine::ecs::JumpMechanicCollider>()
+    .disconnect<&PlayerInputSystem::onJumpMechanicChange>(this);
         }
 
         /**
@@ -48,6 +54,12 @@ namespace gl3::game::input
         void onLvlLengthCompute(const engine::ecs::LevelLengthComputed& event);
 
         /**
+         * Changes jump mechanics when a collider triggered the corresponding event (@see PlayerContactListener)
+         * @param event a collider to change jump mechanics was hit
+         */
+        void onJumpMechanicChange(engine::ecs::JumpMechanicCollider& event);
+
+        /**
          * @brief Applies an upward impulse to the player's body to simulate a jump.
          * @param body The Box2D body ID for the player.
          */
@@ -55,10 +67,12 @@ namespace gl3::game::input
 
         float curr_lvl_speed = 1.f; ///< Current level speed.
         bool enter_pressed = false; ///< Tracks if the enter key is pressed.
-        bool canJump = true; ///< Determines if the player can jump.
-        float desiredJumpHeight = 2.f; ///< Desired jump height in units.
-        float landingBeatsAhead = 2.f; ///< Anticipation factor for landing in beats.
+        bool can_jump = true; ///< Determines if the player can jump.
+        float desired_jump_height = 2.f; ///< Desired jump height in units.
+        float landing_beats_ahead = 2.f; ///< Anticipation factor for landing in beats.
         entt::entity player = entt::null; ///< Player entity reference.
-        float rotationSpeed = -270.f; ///< Rotation speed for visual player spin.
+        float rotation_speed = -270.f; ///< Rotation speed for visual player spin.
+        bool change_jump_mechanics = false; ///< True if event to change jump mechanics was triggered.
+        float y_gravity_multiplier = 1.f; ///< Controls y gravity.
     };
 } // gl3

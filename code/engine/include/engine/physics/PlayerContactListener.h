@@ -44,6 +44,7 @@ namespace gl3::engine::physics
             // Check player sensor events (right side, ground)
             const b2SensorEvents sensorEvents = b2World_GetSensorEvents(physicsWorld);
             const ecs::PhysicsComponent& physics_comp = registry.get<ecs::PhysicsComponent>(player);
+            const auto playerBody = physics_comp.body;
 
             const b2ShapeId playerGroundSensor = physics_comp.sensorShapes[0]; //sensor
             const b2ShapeId playerRightSensor = physics_comp.sensorShapes[1]; //collider
@@ -56,14 +57,45 @@ namespace gl3::engine::physics
                 {
                     playerGrounded = true;
                 }
+
+                const auto sensorA = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(
+                    b2Body_GetUserData(b2Shape_GetBody(event.sensorShapeId))));
+                auto& tagA = registry.get<ecs::TagComponent>(sensorA).tag;
+                const auto sensorB = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(
+                    b2Body_GetUserData(b2Shape_GetBody(event.visitorShapeId))));
+                auto& tagB = registry.get<ecs::TagComponent>(sensorB).tag;
+                if (tagA != "player" && tagB != "player") continue;
+                if (tagA == "jump" && !jumpMechanicTriggered)
+                //a sensor object to set additional on jump logic (e.g. double jump)
+                {
+                    ecs::EventDispatcher::dispatcher.trigger(ecs::JumpMechanicCollider{});
+                    jumpMechanicTriggered = true;
+                }
+            }
+
+            for (int i = 0; i < sensorEvents.endCount; ++i)
+            {
+                const b2SensorEndTouchEvent& event = sensorEvents.endEvents[i];
+                const auto sensorA = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(
+                    b2Body_GetUserData(b2Shape_GetBody(event.sensorShapeId))));
+                auto& tagA = registry.get<ecs::TagComponent>(sensorA).tag;
+                const auto sensorB = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(
+                    b2Body_GetUserData(b2Shape_GetBody(event.visitorShapeId))));
+                auto& tagB = registry.get<ecs::TagComponent>(sensorB).tag;
+
+                if (tagA != "player" && tagB != "player") continue;
+
+                if (tagA == "jump")
+                {
+                    jumpMechanicTriggered = false; // ready for next time
+                }
             }
 
             // Inspect direct body contacts
-            const auto body = physics_comp.body;
-            int capacity = b2Body_GetContactCapacity(body);
+            int capacity = b2Body_GetContactCapacity(playerBody);
             capacity = b2MinInt(capacity, 4); // Cap to 4 for simplicity
             b2ContactData contactData[4];
-            const int count = b2Body_GetContactData(body, contactData, capacity);
+            const int count = b2Body_GetContactData(playerBody, contactData, capacity);
 
             for (int i = 0; i < count; ++i)
             {
@@ -99,5 +131,7 @@ namespace gl3::engine::physics
             }
             playerRightSensorHitLastFrame = rightSensorHit; //to debounce one frame
         }
+    private:
+        static inline bool jumpMechanicTriggered = false;
     };
 } // namespace gl3::engine::physics

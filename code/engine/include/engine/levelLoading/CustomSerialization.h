@@ -61,7 +61,8 @@ struct glz::meta<GameObject>
         "gradientTopColor", &T::gradientTopColor,
         "gradientBottomColor", &T::gradientBottomColor,
         "parallaxFactor", &T::parallaxFactor,
-        "zLayer", &T::zLayer
+        "zLayer", &T::zLayer,
+        "isSensor", &T::isSensor
     );
 };
 

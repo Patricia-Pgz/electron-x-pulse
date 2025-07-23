@@ -24,6 +24,134 @@
   "backgrounds": [
     {
       "position": [
+        -9.536743E-7,
+        1.7525,
+        0
+      ],
+      "scale": [
+        19.2,
+        6.505,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "tag": "background",
+      "isTriangle": false,
+      "textureName": "sky1",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": false,
+      "generateRenderComp": true,
+      "parallaxFactor": 0.1,
+      "zLayer": -5
+    },
+    {
+      "position": [
+        -9.536743E-7,
+        1.7525,
+        0
+      ],
+      "scale": [
+        19.2,
+        6.505,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "tag": "background",
+      "isTriangle": false,
+      "textureName": "sky2",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": false,
+      "generateRenderComp": true,
+      "parallaxFactor": 0.2,
+      "zLayer": -4
+    },
+    {
+      "position": [
+        -9.536743E-7,
+        1.7525,
+        0
+      ],
+      "scale": [
+        19.2,
+        6.505,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "tag": "background",
+      "isTriangle": false,
+      "textureName": "sky3",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": false,
+      "generateRenderComp": true,
+      "parallaxFactor": 0.3,
+      "zLayer": -3
+    },
+    {
+      "position": [
+        -9.536743E-7,
+        1.7525,
+        0
+      ],
+      "scale": [
+        19.2,
+        6.505,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "tag": "background",
+      "isTriangle": false,
+      "textureName": "sky4",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": false,
+      "generateRenderComp": true,
+      "parallaxFactor": 0.4,
+      "zLayer": -2
+    },
+    {
+      "position": [
         0,
         -2.55,
         0

@@ -347,17 +347,19 @@ namespace gl3::engine::ecs
             return triangleData;
         }
 
-        static glData getBoxVertices(float width, float height, glm::vec4 uv, float repeatX)
+        static glData getBoxVertices(const float width, const float height, glm::vec4 uv, const float repeatX)
         {
             glData boxData;
 
-            boxData.vertices = {
-                -width / 2, height / 2, 0.0f, uv.x, uv.w,
-                -width / 2, -height / 2, 0.0f, uv.x, uv.y,
-                width / 2, -height / 2, 0.0f, uv.x + repeatX, uv.y, //repeat texture on x
-                width / 2, height / 2, 0.0f, uv.x + repeatX, uv.w
-            };
+            float leftU = uv.x;
+            float rightU = repeatX > 0.f ? uv.x + repeatX : uv.z;
 
+            boxData.vertices = {
+                -width / 2, height / 2, 0.0f, leftU, uv.w,
+                -width / 2, -height / 2, 0.0f, leftU, uv.y,
+                width / 2, -height / 2, 0.0f, rightU, uv.y,
+                width / 2, height / 2, 0.0f, rightU, uv.w
+            };
             boxData.indices = {
                 0, 1, 2,
                 0, 2, 3
@@ -377,10 +379,15 @@ namespace gl3::engine::ecs
             float repeatX = 1.f;
             if (texture)
             {
-                const float texAspect = static_cast<float>(texture->getWidth()) / static_cast<float>(texture->
-                    getHeight());
-                repeatX = object.scale.x / (object.scale.y * texAspect);
-                //repeat texture on x to keep textures aspect ratio
+                if (!texture->isTileSet())
+                {
+                    //repeat texture on x to keep textures aspect ratio
+                    const float texAspect = static_cast<float>(texture->getWidth()) / static_cast<float>(texture->getHeight());
+                    repeatX = object.scale.x / (object.scale.y * texAspect);
+                } else
+                {
+                    repeatX = 0.f;
+                }
             }
             //use gradient shader
             if (!all(epsilonEqual(object.gradientTopColor, object.gradientBottomColor, 0.001f)))
@@ -435,12 +442,11 @@ namespace gl3::engine::ecs
             shapeDef.density = 0.f;
             shapeDef.friction = 0.0f;
             shapeDef.restitution = 0.0f;
+            shapeDef.isSensor = object.isSensor;
 
             std::vector<b2ShapeId> sensors;
             if (object.tag == "player")
             {
-                shapeDef.enableContactEvents = true;
-
                 //create additional sensors for player ground and collision checks.
                 sensors = createSensors(object, body);
             }

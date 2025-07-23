@@ -17,7 +17,7 @@ namespace gl3::engine::ecs
     };
 
     /**
-    *Use GameStateChange event to track your current game state, and react to it changing.
+    * Use GameStateChange event to track your current game state, and react to it changing.
     *@property newLevelIndex is used for GameState::Level
      */
     struct GameStateChange
@@ -27,9 +27,9 @@ namespace gl3::engine::ecs
     };
 
     /**
-*Call this event, when the level length is computed based on speed and seconds per beat. Pass in the index of the final beat.
-*
-*/
+    * Call this event, when the level length is computed based on speed and seconds per beat. Pass in the index of the final beat.
+    *
+    */
     struct LevelLengthComputed
     {
         float levelLength = 0.f;
@@ -38,18 +38,18 @@ namespace gl3::engine::ecs
     };
 
     /**
-*Call this event, when the level is loaded and ready to play.
-*
- */
+    * Call this event, when the level is loaded and ready to play.
+    *
+     */
     struct LevelStartEvent
     {
         entt::entity player;
     };
 
     /**
-*Call this event, when the level is in Edit Mode and starts to play.
-*
-*/
+    * Call this event, when the level is in Edit Mode and starts to play.
+    *
+    */
     struct EditorPlayModeChange
     {
         bool isPlayMode = false;
@@ -64,7 +64,7 @@ namespace gl3::engine::ecs
     };
 
     /**
-    *Call this when player jumps.
+    * Call this when player jumps.
     */
     struct PlayerJump
     {
@@ -72,10 +72,17 @@ namespace gl3::engine::ecs
     };
 
     /**
-    *PlayerDeath event gets called, whenever the player collides with an obstacle or hits an object from the left.
+    * PlayerDeath event gets called, whenever the player collides with an obstacle or hits an object from the left.
     */
     struct PlayerDeath
     {
         entt::entity player;
+    };
+
+    /**
+     * Signal that a collider was hit, that can change e.g. jump mechanics (@see PlayerContactListener)
+     */
+    struct JumpMechanicCollider
+    {
     };
 }

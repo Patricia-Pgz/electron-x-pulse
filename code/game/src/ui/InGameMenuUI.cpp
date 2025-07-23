@@ -64,6 +64,8 @@ namespace gl3::game::ui
         {
             engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::RestartLevelEvent{true});
             show_ui = false;
+            play_mode_saved = false;
+            escape_pressed = false;
         }
 
         ImGui::SetCursorPosX((windowSize.x - lvlSelectSize.x - 2 * padding.x) * 0.5f);
@@ -73,6 +75,8 @@ namespace gl3::game::ui
                 engine::GameState::LevelSelect
             });
             show_ui = false;
+            play_mode_saved = false;
+            escape_pressed = false;
         }
 
 
