@@ -22,14 +22,14 @@ namespace gl3::engine::editor
     /// Saves the current levels final beat position. (For visualization)
     void EditorUISystem::onLvlComputed(const ecs::LevelLengthComputed& event)
     {
-        final_beat_position = event.finalBeatIndex; //TODO
+        final_beat_position = event.finalBeatIndex;
     }
 
     ///Delete all entities from the registry, that have their TransformComponent position at the currently selected cell's position.
     void EditorUISystem::deleteAllAtSelectedPosition() const
     {
         const auto view = game.getRegistry().view<ecs::TransformComponent, ecs::TagComponent>();
-        if(selected_grid_cells.empty()) return;
+        if (selected_grid_cells.empty()) return;
         for (auto& entity : view)
         {
             const auto transform = view.get<ecs::TransformComponent>(entity);
@@ -51,7 +51,7 @@ namespace gl3::engine::editor
         }
 
         //Signal to remove items from grouping cache
-        if(!selected_group_cells.empty())
+        if (!selected_group_cells.empty())
         {
             ecs::EventDispatcher::dispatcher.trigger(ui::EditorGroupTileDeleted{selected_grid_cells});
         }
@@ -180,6 +180,18 @@ namespace gl3::engine::editor
             ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
 
             drawList->AddRect(topLeft, bottomRight, IM_COL32(0, 0, 255, 255), 0.0f, 0, 2.0f);
+        }
+
+        auto worldWindowBounds = game.getContext().getWorldWindowBounds();
+        if (final_beat_position >= worldWindowBounds[0] && final_beat_position <= worldWindowBounds[1])
+        {
+            auto finalBeatPositionScreen = rendering::MVPMatrixHelper::toScreen(game.getContext(),final_beat_position, 0.f);
+            drawList->AddLine(
+                ImVec2(finalBeatPositionScreen.x, 0.f),
+                ImVec2(finalBeatPositionScreen.x, screenSize.y),
+                IM_COL32(255, 0, 0, 255), // red
+                2.0f // thickness
+            );
         }
     }
 
@@ -350,9 +362,9 @@ namespace gl3::engine::editor
         {
             is_mouse_in_grid = true;
         }
-        if(selected_grid_cells.empty())
+        if (selected_grid_cells.empty())
         {
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Click on grid to select position");
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Click on grid to select position!");
         }
         ImGui::PopStyleVar();
         ImGui::PopStyleColor();
@@ -360,6 +372,10 @@ namespace gl3::engine::editor
 
         ImGui::PushFont(ui::FontManager::getFont("PixeloidSans"));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 1.0f, 1.0f));
+
+        ImGui::Text("Soundtrack End:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), "%d  beats", static_cast<int>(final_beat_position));
 
         if (ImGui::Button("Save Level"))
         {
@@ -402,7 +418,7 @@ namespace gl3::engine::editor
             const std::string selectType = !multi_select_enabled ? "Multi Select" : "Single Select";
             ImGui::SetTooltip(("Switch to " + selectType).c_str());
         }
-        if(pushed)
+        if (pushed)
         {
             ImGui::PopStyleColor(3);
         }
@@ -504,7 +520,8 @@ namespace gl3::engine::editor
         }
         if (ImGui::IsItemHovered())
         {
-            ImGui::SetTooltip("Negative values are further away from the camera \n (mostly used for rendering transparent objects first)");
+            ImGui::SetTooltip(
+                "Negative values are further away from the camera \n (mostly used for rendering transparent objects first)");
         }
         ImGui::Separator();
 
