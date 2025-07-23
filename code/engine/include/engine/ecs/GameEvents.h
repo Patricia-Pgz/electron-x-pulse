@@ -80,9 +80,9 @@ namespace gl3::engine::ecs
     };
 
     /**
-     * Signal that a collider was hit, that can change e.g. jump mechanics (@see PlayerContactListener)
+     * Signal that a collider was hit, that can change gravity
      */
-    struct JumpMechanicCollider
+    struct GravityChange
     {
     };
 }

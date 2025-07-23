@@ -29,7 +29,7 @@ namespace gl3::engine::editor
     void EditorUISystem::deleteAllAtSelectedPosition() const
     {
         const auto view = game.getRegistry().view<ecs::TransformComponent, ecs::TagComponent>();
-
+        if(selected_grid_cells.empty()) return;
         for (auto& entity : view)
         {
             const auto transform = view.get<ecs::TransformComponent>(entity);
@@ -48,6 +48,12 @@ namespace gl3::engine::editor
         for (const auto& cell : selected_grid_cells)
         {
             levelLoading::LevelManager::removeAllObjectsAtPosition({cell.x, cell.y});
+        }
+
+        //Signal to remove items from grouping cache
+        if(!selected_group_cells.empty())
+        {
+            ecs::EventDispatcher::dispatcher.trigger(ui::EditorGroupTileDeleted{selected_grid_cells});
         }
     }
 
@@ -384,14 +390,11 @@ namespace gl3::engine::editor
             multi_select_enabled = !multi_select_enabled;
             if (!multi_select_enabled)
             {
-                if (!selected_group_cells.empty())ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
+                if (!selected_group_cells.empty())ecs::EventDispatcher::dispatcher.trigger(ui::EditorCancelGrouping{});
                 //generate group, if active group selection already exists, but multi select is exited without hitting generate group
                 selected_group_cells.clear();
                 selected_grid_cells.clear();
                 compute_group_AABB = false;
-            } else
-            {
-                compute_group_AABB = true; //generate groups on default in multi select
             }
         }
         if (ImGui::IsItemHovered())
@@ -408,6 +411,7 @@ namespace gl3::engine::editor
             if (ImGui::RadioButton("Generate Group Physics Collider", compute_group_AABB))
             {
                 compute_group_AABB = !compute_group_AABB;
+                if (!selected_group_cells.empty())ecs::EventDispatcher::dispatcher.trigger(ui::EditorCancelGrouping{});
                 selected_grid_cells.clear();
                 selected_group_cells.clear();
             }

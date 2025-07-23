@@ -75,6 +75,7 @@ namespace gl3::engine::rendering
 
             auto& registry = game.getRegistry();
             const auto& context = game.getContext();
+
             //views use the order in which the entities are in the container with the lowest number of entities (or else first) (here ZLayerComp)
             const auto& entities = registry.view<
                 ecs::ZLayerComponent,

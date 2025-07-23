@@ -221,7 +221,8 @@ namespace gl3::game::state
         current_level = engine::levelLoading::LevelManager::loadLevelByID(level_index);
         const auto bgConfig = getBackgroundSizes(game.getContext().getWorldWindowBounds());
         createEntities(bgConfig, registry, physicsWorld);
-        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::RenderComponentContainerChange{}); //signal that RenderComponents were added and need sorting
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::RenderComponentContainerChange{});
+        //signal that RenderComponents were added and need sorting
 
         initializeAudio();
 
@@ -253,7 +254,8 @@ namespace gl3::game::state
         {
             if (!game.getRegistry().valid(entity) || entity == entt::null)return;
             const auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
-            if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle" || tag == "jump")
+            if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle" ||
+                tag == "jump")
             {
                 if (move)
                 {
@@ -306,7 +308,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::onPlayerDeath(const engine::ecs::PlayerDeath& event)
     {
-        if(reloading_level) return;
+        if (reloading_level) return;
         game.getAudioSystem()->playOneShot("crash");
         onRestartLevel(engine::ui::RestartLevelEvent{true});
     }
@@ -317,7 +319,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::onRestartLevel(const engine::ui::RestartLevelEvent& event)
     {
-        if(reloading_level) return;
+        if (reloading_level) return;
         //game will be reset and stopped if player restarts level and then presses enter in edit mode
         reloadLevel();
         if (!event.startLevel) return;
@@ -340,7 +342,7 @@ namespace gl3::game::state
             }
 
             auto& tag = registry.get<engine::ecs::TagComponent>(entity).tag;
-            if(tag == "background" || tag == "sky" || tag == "ground") return;
+            if (tag == "background" || tag == "sky" || tag == "ground") return;
 
             //reset all transforms to initial state
             auto& transform = registry.get<engine::ecs::TransformComponent>(entity);
@@ -377,7 +379,7 @@ namespace gl3::game::state
         reloading_level = true;
         paused = true;
         dynamic_cast<Game&>(game).setPaused(true);
-        b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, -10.f)); //reset y gravity to -10
+        b2Body_SetLinearVelocity(game.getRegistry().get<engine::ecs::PhysicsComponent>(current_player).body, {0.f, 0.f});
         setSystemsActive(false);
         menu_ui->setActive(true);
         instruction_ui->setActive(level_index == 0);
@@ -457,6 +459,18 @@ namespace gl3::game::state
         }
         if (!paused)
         {
+            //player death if they move out of visible view
+            if (game.getRegistry().valid(current_player))
+            {
+                const auto& playerTransform = game.getRegistry().get<engine::ecs::TransformComponent>(game.getPlayer());
+                const auto& windowBounds = game.getContext().getWorldWindowBounds();
+                //Trigger death event if player leaves window
+                if (!game.getContext().isInVisibleWindow(playerTransform.position,
+                                               playerTransform.scale) || playerTransform.position.y > windowBounds[2] || playerTransform.position.y < windowBounds[3])
+                {
+                    onPlayerDeath(engine::ecs::PlayerDeath{});
+                }
+            }
             level_time += deltaTime;
             delayLevelEnd(deltaTime);
         }

@@ -113,7 +113,7 @@ namespace gl3::engine::context
    * @param margin Optional margin.
    * @return True if the point is inside the visible area.
    */
-  [[nodiscard]] bool isInVisibleWindow(const glm::vec2& position, glm::vec2 scale,
+  [[nodiscard]] bool isInVisibleWindow(const glm::vec3& position, glm::vec3 scale,
                                        float margin = 0.f) const;
 
  private:

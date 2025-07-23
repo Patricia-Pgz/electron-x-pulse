@@ -44,32 +44,43 @@ namespace gl3::game::input
         b2Vec2 vel = b2Body_GetLinearVelocity(body);
         vel.x = 0.0f;
         b2Body_SetLinearVelocity(body, vel);
-        if (!engine::physics::PlayerContactListener::playerGrounded)
+
+        if (engine::physics::PlayerContactListener::playerGrounded)
         {
-            //player animation
-            transform.zRotation += rotation_speed * game.getDeltaTime();
+            // smoothly stop visual player rotation
+            float& angle = transform.zRotation;
+            angle = glm::mix(angle, targetRotation, game.getDeltaTime() * 15);
+            angle = glm::mod(angle, glm::two_pi<float>());
+
+            if (std::abs(angle - targetRotation) < 0.01f)
+            {
+                angle = targetRotation;
+            }
         }
         else
         {
-            if (engine::physics::PlayerContactListener::playerGrounded)
-            {
-                //smoothly stop rotation on ground contact
-                float& angle = transform.zRotation;
-                angle = glm::mix(angle, 0.0f, game.getDeltaTime() * 15); // smooth angle
-                angle = glm::mod(angle, glm::two_pi<float>());
-                if (std::abs(angle) < 0.01f)
-                {
-                    angle = 0.0f;
-                }
-            }
+            // still spin freely when in air
+            transform.zRotation += rotation_speed * game.getDeltaTime();
         }
     }
 
-    void PlayerInputSystem::onJumpMechanicChange(engine::ecs::JumpMechanicCollider& event)
+    void PlayerInputSystem::onGravityChange(engine::ecs::GravityChange& event)
     {
+        // let the player fly to the ceiling
         change_jump_mechanics = !change_jump_mechanics;
         y_gravity_multiplier = change_jump_mechanics ? -1 : 1;
         b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, -10 * y_gravity_multiplier));
+        const auto body = game.getRegistry().get<engine::ecs::PhysicsComponent>(game.getPlayer()).body;
+        auto & transform = game.getRegistry().get<engine::ecs::TransformComponent>(game.getPlayer());
+
+        b2Body_ApplyLinearImpulseToCenter(body,{0.f, 0.5f}, true);
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayerJump{true});
+
+        if (change_jump_mechanics) {
+            transform.scale.y = -std::abs(transform.scale.y); // flip vertically for moving on ceiling
+        } else {
+            transform.scale.y = std::abs(transform.scale.y);
+        }
     }
 
     void PlayerInputSystem::applyJumpImpulse(const b2BodyId body) const
@@ -96,5 +107,13 @@ namespace gl3::game::input
     void PlayerInputSystem::onLvlLengthCompute(const engine::ecs::LevelLengthComputed& event)
     {
         curr_lvl_speed = event.levelSpeed;
+    }
+
+    void PlayerInputSystem::onReloadLevel()
+    {
+        change_jump_mechanics = false;
+        y_gravity_multiplier = 1;
+
+        b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, -10.0f));
     }
 } // gl3

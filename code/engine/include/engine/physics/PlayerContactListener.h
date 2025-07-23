@@ -48,12 +48,13 @@ namespace gl3::engine::physics
 
             const b2ShapeId playerGroundSensor = physics_comp.sensorShapes[0]; //sensor
             const b2ShapeId playerRightSensor = physics_comp.sensorShapes[1]; //collider
+            const b2ShapeId playerTopSensor = physics_comp.sensorShapes[2]; //top sensor for driving on ceiling without having to rotate body
             bool rightSensorHit = false;
 
             for (int i = 0; i < sensorEvents.beginCount; ++i)
             {
                 const b2SensorBeginTouchEvent& event = sensorEvents.beginEvents[i];
-                if (B2_ID_EQUALS(event.sensorShapeId, playerGroundSensor))
+                if (B2_ID_EQUALS(event.sensorShapeId, playerGroundSensor) || B2_ID_EQUALS(event.sensorShapeId, playerTopSensor))
                 {
                     playerGrounded = true;
                 }
@@ -68,7 +69,7 @@ namespace gl3::engine::physics
                 if (tagA == "jump" && !jumpMechanicTriggered)
                 //a sensor object to set additional on jump logic (e.g. double jump)
                 {
-                    ecs::EventDispatcher::dispatcher.trigger(ecs::JumpMechanicCollider{});
+                    ecs::EventDispatcher::dispatcher.trigger(ecs::GravityChange{});
                     jumpMechanicTriggered = true;
                 }
             }

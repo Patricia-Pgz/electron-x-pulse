@@ -44,9 +44,22 @@ namespace gl3::engine::editor
   void onTileSelected(ui::EditorTileSelectedEvent& event);
 
   /**
+   * Erase the deleted tile(s) from child arrays for grouping.
+   * @param event A tile was deleted during grouping.
+   */
+  void onGroupTileDeleted(const ui::EditorGroupTileDeleted& event);
+
+
+  /**
    * Generates an AABB physics Component for previously grouped objects/entities and adds ParentComponent and GroupComponent. Adds new group to current level.
    * @param event The EditorGenerateGroup sent by EditorUISystem, once the button to generate a group was pressed.
    */
   void onGenerateGroup(ui::EditorGenerateGroup& event);
+
+  /**
+   * Grouping was canceled -> clear saved group objects
+   * @param event Grouping has been canceled
+   */
+  void onGroupCanceled(ui::EditorCancelGrouping& event);
  };
 } // gl3

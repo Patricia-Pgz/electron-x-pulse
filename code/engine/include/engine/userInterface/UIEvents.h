@@ -4,6 +4,8 @@
  * For game events, @see GameEvents.h
  */
 #pragma once
+#include <imgui.h>
+
 #include "engine/levelloading/Objects.h"
 
 namespace gl3::engine::ui
@@ -29,6 +31,21 @@ namespace gl3::engine::ui
      * Signals to generate a group from (previously saved) tile selection.
      */
     struct EditorGenerateGroup
+    {
+    };
+
+    /**
+     * Signals that a tile that was about to be grouped was deleted.
+     */
+    struct EditorGroupTileDeleted
+    {
+        std::vector<ImVec2> selectedCells;
+    };
+
+    /**
+     * Signals that grouping was canceled
+     */
+    struct EditorCancelGrouping
     {
     };
 

@@ -502,6 +502,8 @@ namespace gl3::engine::ecs
             const float halfHeight = player.scale.y * 0.5f;
             b2ShapeDef groundSensorDef = b2DefaultShapeDef();
             b2ShapeDef rightSensorDef = b2DefaultShapeDef();
+            b2ShapeDef topSensorDef = b2DefaultShapeDef();
+
             // ground sensor
             groundSensorDef.isSensor = true;
             groundSensorDef.enableContactEvents = true;
@@ -512,6 +514,16 @@ namespace gl3::engine::ecs
                                         b2MakeRot(0.0f));
             b2ShapeId groundSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &groundBox);
 
+            // ground sensor
+            groundSensorDef.isSensor = true;
+            groundSensorDef.enableContactEvents = true;
+
+            b2Polygon topBox;
+            topBox = b2MakeOffsetBox(halfWidth * 0.6f, 0.05f,
+                                        {0.f, 0.f + halfHeight + 0.05f},
+                                        b2MakeRot(0.0f));
+            b2ShapeId topSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &topBox);
+
             // Right Side collider
             rightSensorDef.enableContactEvents = true;
 
@@ -519,10 +531,12 @@ namespace gl3::engine::ecs
             rightBox = b2MakeOffsetBox(0.05f, halfHeight * 0.5f,
                                        {0.f + halfWidth + 0.05f, 0.f},
                                        b2MakeRot(0.0f));
+
             b2ShapeId rightSensor = b2CreatePolygonShape(playerBody, &rightSensorDef, &rightBox);
+
             b2ShapeId bottomRightCornerSen = createBottomRightCornerSensor(player, playerBody);
             //for collision with corners of objects
-            return {groundSensor, rightSensor, bottomRightCornerSen};
+            return {groundSensor, rightSensor, topSensor, bottomRightCornerSen};
         }
 
         /**

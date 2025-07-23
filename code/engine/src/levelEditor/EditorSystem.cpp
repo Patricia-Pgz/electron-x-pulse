@@ -11,14 +11,22 @@ namespace gl3::engine::editor
             EditorSystem::onTileSelected>(this);
         ecs::EventDispatcher::dispatcher.sink<ui::EditorGenerateGroup>().connect<&
             EditorSystem::onGenerateGroup>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::EditorGroupTileDeleted>().connect<&
+            EditorSystem::onGroupTileDeleted>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::EditorCancelGrouping>().connect<&
+    EditorSystem::onGroupCanceled>(this);
     }
 
     EditorSystem::~EditorSystem()
     {
         ecs::EventDispatcher::dispatcher.sink<ui::EditorTileSelectedEvent>().disconnect<&
-                EditorSystem::onTileSelected>(this);
+            EditorSystem::onTileSelected>(this);
         ecs::EventDispatcher::dispatcher.sink<ui::EditorGenerateGroup>().disconnect<&
             EditorSystem::onGenerateGroup>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::EditorGroupTileDeleted>().disconnect<&
+            EditorSystem::onGroupTileDeleted>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::EditorCancelGrouping>().disconnect<&
+EditorSystem::onGroupCanceled>(this);
     }
 
     void EditorSystem::onTileSelected(ui::EditorTileSelectedEvent& event)
@@ -35,6 +43,29 @@ namespace gl3::engine::editor
         }
         levelLoading::LevelManager::addObjectToCurrentLevel(event.object);
         ecs::EventDispatcher::dispatcher.trigger(ecs::RenderComponentContainerChange{});
+    }
+
+    void EditorSystem::onGroupTileDeleted(const ui::EditorGroupTileDeleted& event)
+    {
+        if (grouped_child_entities.empty() || grouped_child_objects.empty())return;
+        //Delete the child GameObjects and entities, that are at the selected positions.
+        for (const auto& cell : event.selectedCells)
+        {
+            std::erase_if(grouped_child_objects,
+                          [&](const GameObject& obj)
+                          {
+                              return obj.position.x == cell.x && obj.position.y == cell.y;
+                          });
+            std::erase_if(grouped_child_entities,
+                          [&](auto& entity)
+                          {
+                              const auto transform = game.getRegistry().get<ecs::TransformComponent>(entity);
+                              if (transform.position.x == cell.x && transform.position.y == cell.y)
+                              {
+                                  return true;
+                              }
+                          });
+        }
     }
 
     void EditorSystem::onGenerateGroup(ui::EditorGenerateGroup& event)
@@ -70,6 +101,12 @@ namespace gl3::engine::editor
         group.colliderAABB = parentAABB;
         levelLoading::LevelManager::addGroupToCurrentLevel(group);
 
+        grouped_child_entities.clear();
+        grouped_child_objects.clear();
+    }
+
+    void EditorSystem::onGroupCanceled(ui::EditorCancelGrouping& event)
+    {
         grouped_child_entities.clear();
         grouped_child_objects.clear();
     }

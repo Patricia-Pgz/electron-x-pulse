@@ -4,6 +4,7 @@
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/ecs/GameEvents.h"
 #include "engine/ecs/System.h"
+#include "engine/userInterface/UIEvents.h"
 
 namespace gl3::game::input
 {
@@ -24,8 +25,14 @@ namespace gl3::game::input
                 .sink<engine::ecs::LevelLengthComputed>()
                 .connect<&PlayerInputSystem::onLvlLengthCompute>(this);
             engine::ecs::EventDispatcher::dispatcher
-                .sink<engine::ecs::JumpMechanicCollider>()
-                .connect<&PlayerInputSystem::onJumpMechanicChange>(this);
+                .sink<engine::ecs::GravityChange>()
+                .connect<&PlayerInputSystem::onGravityChange>(this);
+            engine::ecs::EventDispatcher::dispatcher
+                .sink<engine::ui::RestartLevelEvent>()
+                .connect<&PlayerInputSystem::onReloadLevel>(this);
+            engine::ecs::EventDispatcher::dispatcher
+                .sink<engine::ecs::PlayerDeath>()
+                .connect<&PlayerInputSystem::onReloadLevel>(this);
         }
 
         /**
@@ -37,8 +44,14 @@ namespace gl3::game::input
                 .sink<engine::ecs::LevelLengthComputed>()
                 .disconnect<&PlayerInputSystem::onLvlLengthCompute>(this);
             engine::ecs::EventDispatcher::dispatcher
-    .sink<engine::ecs::JumpMechanicCollider>()
-    .disconnect<&PlayerInputSystem::onJumpMechanicChange>(this);
+                .sink<engine::ecs::GravityChange>()
+                .disconnect<&PlayerInputSystem::onGravityChange>(this);
+            engine::ecs::EventDispatcher::dispatcher
+                .sink<engine::ui::RestartLevelEvent>()
+                .disconnect<&PlayerInputSystem::onReloadLevel>(this);
+            engine::ecs::EventDispatcher::dispatcher
+                .sink<engine::ecs::PlayerDeath>()
+                .disconnect<&PlayerInputSystem::onReloadLevel>(this);
         }
 
         /**
@@ -54,10 +67,15 @@ namespace gl3::game::input
         void onLvlLengthCompute(const engine::ecs::LevelLengthComputed& event);
 
         /**
-         * Changes jump mechanics when a collider triggered the corresponding event (@see PlayerContactListener)
-         * @param event a collider to change jump mechanics was hit
+         * @brief Reset y-gravity, etc. on level reload.
          */
-        void onJumpMechanicChange(engine::ecs::JumpMechanicCollider& event);
+        void onReloadLevel();
+
+        /**
+         * Inverts gravity when a collider triggered the corresponding event (@see PlayerContactListener)
+         * @param event a collider to change gravity was hit
+         */
+        void onGravityChange(engine::ecs::GravityChange& event);
 
         /**
          * @brief Applies an upward impulse to the player's body to simulate a jump.
@@ -74,5 +92,6 @@ namespace gl3::game::input
         float rotation_speed = -270.f; ///< Rotation speed for visual player spin.
         bool change_jump_mechanics = false; ///< True if event to change jump mechanics was triggered.
         float y_gravity_multiplier = 1.f; ///< Controls y gravity.
+        float targetRotation = 0.0f; ///< The rotation the player should always come back to.
     };
 } // gl3

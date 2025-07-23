@@ -125,7 +125,7 @@ namespace gl3::engine::context
         });
     }
 
-    bool Context::isInVisibleWindow(const glm::vec2& position, const glm::vec2 scale, const float margin) const
+    bool Context::isInVisibleWindow(const glm::vec3& position, const glm::vec3 scale, const float margin) const
     {
         int width;
         int height;
