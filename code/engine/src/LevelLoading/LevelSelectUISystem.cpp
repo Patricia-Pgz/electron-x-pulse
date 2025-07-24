@@ -22,20 +22,21 @@ namespace gl3::engine::levelLoading
         ImGui::PushStyleColor(ImGuiCol_SliderGrab, UINeonColors::pastelNeonViolet);
         ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 4.f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {windowSize.x * 0.075f, windowSize.y * 0.145f});
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {windowSize.x * 0.08f, windowSize.y * 0.145f});
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(20, 20));
     }
 
     void popStyle()
     {
         ImGui::PopStyleColor(8);
-        ImGui::PopStyleVar(4);
+        ImGui::PopStyleVar(5);
     }
 
     void LevelSelectUISystem::DrawLevelButtons()
     {
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x);
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x * 2.f);
         ImGui::BeginChild("Lvl Select Buttons");
 
         auto metaData = LevelManager::getMetaData();
@@ -44,10 +45,10 @@ namespace gl3::engine::levelLoading
             return a.id < b.id;
         });
 
-        constexpr float columns = 4.f;
+        constexpr int columns = 3;
         const float spacing = ImGui::GetStyle().ItemSpacing.x;
         const float contentWidth = ImGui::GetContentRegionAvail().x;
-        const float buttonWidth = (contentWidth - spacing * (columns)) / columns;
+        const float buttonWidth = (contentWidth - 2 * spacing * (columns)) / columns;
 
         float buttonsOnRow = 0.f;
         for (int i = 0; i < metaData.size(); ++i)

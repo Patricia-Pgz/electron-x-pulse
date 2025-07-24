@@ -37,7 +37,7 @@ namespace gl3::game::ui
 
     void InstructionUI::update(const float deltaTime)
     {
-        if (timer <= 0.f) return;
+        if (timer <= 0.f || game.isPaused()) return;
         drawHints(ImGui::GetMainViewport(), engine::ui::FontManager::getFont("PixeloidSans"), deltaTime);
     }
 
