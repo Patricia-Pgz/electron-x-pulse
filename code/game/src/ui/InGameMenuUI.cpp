@@ -64,6 +64,7 @@ namespace gl3::game::ui
         {
             engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::RestartLevelEvent{true});
             show_ui = false;
+            engine::ecs::EventDispatcher::dispatcher.trigger(events::ShowGameMenu{show_ui});
             play_mode_saved = false;
             escape_pressed = false;
         }
@@ -133,5 +134,14 @@ namespace gl3::game::ui
 
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         DrawInGameUI(viewport, engine::ui::FontManager::getFont("pixeloid-bold-26"));
+    }
+
+    void InGameMenuUI::reset()
+    {
+         play_mode_before_pause = false;
+         play_mode_saved = false;
+         escape_pressed = false;
+         show_ui = false;
+        is_active = false;
     }
 }

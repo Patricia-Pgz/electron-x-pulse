@@ -10,6 +10,7 @@ namespace gl3::game::input
     void PlayerInputSystem::update()
     {
         if (!game.getRegistry().valid(game.getPlayer()) || !is_active) return;
+
         const auto window = game.getWindow();
         const auto body = game.getRegistry().get<engine::ecs::PhysicsComponent>(game.getPlayer()).body;
         auto& transform = game.getRegistry().get<engine::ecs::TransformComponent>(game.getPlayer());

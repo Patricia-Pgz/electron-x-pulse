@@ -52,4 +52,10 @@ namespace gl3::game::ui
     {
         timer = 15;
     }
+
+    void InstructionUI::reset()
+    {
+        edit_mode = false;
+         timer = 15;
+    }
 } // gl3

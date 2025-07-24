@@ -317,6 +317,10 @@ namespace gl3::game::state
     void LevelPlayState::onRestartLevel(const engine::ui::RestartLevelEvent& event)
     {
         if (reloading_level) return;
+        // Reset camera to default position and center. (In case of editor scrolling)
+        game.getContext().setCameraPosAndCenter(
+            {0.0f, 0.0f, 1.0f},
+            {0.f, 0.f, 0.f});
         //game will be reset and stopped if player restarts level and then presses enter in edit mode
         reloadLevel();
         if (!event.startLevel) return;
@@ -375,6 +379,7 @@ namespace gl3::game::state
         if (level_time <= 0.f) return;
         reloading_level = true;
         paused = true;
+
         dynamic_cast<Game&>(game).setPaused(true);
 
         b2Body_SetLinearVelocity(game.getRegistry().get<engine::ecs::PhysicsComponent>(current_player).body, {0.f, 0.f});
@@ -436,6 +441,7 @@ namespace gl3::game::state
      */
     void LevelPlayState::unloadLevel()
     {
+        engine::levelLoading::LevelManager::saveCurrentLevel();
         level_time = 0.f;
         level_instantiated = false;
         game.getAudioSystem()->stopCurrentAudio();
@@ -451,6 +457,9 @@ namespace gl3::game::state
         level_index = -1;
         current_level = nullptr;
         current_player = entt::null;
+        game.setPlayer(entt::null);
+        //signal level unload, so other systems might reset
+        engine::ecs::EventDispatcher::dispatcher.trigger(engine::ui::LevelUnload{});
     }
 
     void LevelPlayState::update(const float deltaTime)

@@ -15,6 +15,8 @@ namespace gl3::engine::editor
             EditorSystem::onGroupTileDeleted>(this);
         ecs::EventDispatcher::dispatcher.sink<ui::EditorCancelGrouping>().connect<&
     EditorSystem::onGroupCanceled>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::LevelUnload>().connect<&
+EditorSystem::onGroupCanceled>(this);
     }
 
     EditorSystem::~EditorSystem()
@@ -26,6 +28,8 @@ namespace gl3::engine::editor
         ecs::EventDispatcher::dispatcher.sink<ui::EditorGroupTileDeleted>().disconnect<&
             EditorSystem::onGroupTileDeleted>(this);
         ecs::EventDispatcher::dispatcher.sink<ui::EditorCancelGrouping>().disconnect<&
+EditorSystem::onGroupCanceled>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::LevelUnload>().disconnect<&
 EditorSystem::onGroupCanceled>(this);
     }
 
@@ -105,7 +109,7 @@ EditorSystem::onGroupCanceled>(this);
         grouped_child_objects.clear();
     }
 
-    void EditorSystem::onGroupCanceled(ui::EditorCancelGrouping& event)
+    void EditorSystem::onGroupCanceled()
     {
         grouped_child_entities.clear();
         grouped_child_objects.clear();

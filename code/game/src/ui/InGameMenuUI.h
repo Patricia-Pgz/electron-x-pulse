@@ -1,6 +1,8 @@
 #pragma once
 #include "engine/Game.h"
+#include "engine/ecs/EventDispatcher.h"
 #include "engine/userInterface/IUISubSystem.h"
+#include "engine/userInterface/UIEvents.h"
 
 namespace gl3::game::ui
 {
@@ -20,12 +22,24 @@ namespace gl3::game::ui
    * @param imguiIO Pointer to ImGui IO structure.
    * @param game Reference to the main game instance.
    */
-  explicit InGameMenuUI(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game){}
+  explicit InGameMenuUI(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game)
+  {
+   engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::LevelUnload>().connect<&
+       InGameMenuUI::reset>(this);
+  }
+
+  ~InGameMenuUI() override
+  {
+   engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::LevelUnload>().disconnect<&
+    InGameMenuUI::reset>(this);
+  }
 
   /**
    * @brief Updates the in-game menu UI once per frame. (if is_active)
    */
   void update(float deltaTime) override;
+
+
 
  private:
   /**
@@ -34,6 +48,11 @@ namespace gl3::game::ui
    * @param font Pointer to the font used for rendering.
    */
   void DrawInGameUI(const ImGuiViewport* viewport, ImFont* font);
+
+  /**
+ * Resets all properties on unloading a level (except for volume).
+ */
+  void reset();
 
   /// Stores whether the game was playing before pause.
   bool play_mode_before_pause = false;

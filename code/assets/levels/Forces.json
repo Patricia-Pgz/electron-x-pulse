@@ -25,12 +25,12 @@
     {
       "position": [
         -0,
-        1.25,
+        1.45,
         0
       ],
       "scale": [
         19.2,
-        7.51,
+        7.9,
         0.1
       ],
       "rotation": 0,
@@ -72,12 +72,12 @@
     {
       "position": [
         -0,
-        1.25,
+        1.45,
         0
       ],
       "scale": [
         19.2,
-        7.51,
+        7.9,
         0.1
       ],
       "rotation": 0,
@@ -119,12 +119,12 @@
     {
       "position": [
         -0,
-        1.25,
+        1.45,
         0
       ],
       "scale": [
         19.2,
-        7.51,
+        7.9,
         0.1
       ],
       "rotation": 0,
@@ -166,12 +166,12 @@
     {
       "position": [
         -0,
-        1.25,
+        1.45,
         0
       ],
       "scale": [
         19.2,
-        7.51,
+        7.9,
         0.1
       ],
       "rotation": 0,
@@ -213,12 +213,12 @@
     {
       "position": [
         -0,
-        -3.75,
+        -3.95,
         0
       ],
       "scale": [
         19.2,
-        2.51,
+        2.9,
         0.1
       ],
       "rotation": 0,
@@ -6270,53 +6270,6 @@
     },
     {
       "position": [
-        47,
-        0,
-        0
-      ],
-      "scale": [
-        0.9,
-        0.9,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        1,
-        0,
-        0,
-        1
-      ],
-      "tag": "jump",
-      "isTriangle": false,
-      "textureName": "arrow",
-      "uv": [
-        0,
-        0,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0,
-      "zLayer": 0,
-      "isSensor": true
-    },
-    {
-      "position": [
         49,
         3,
         0
@@ -7301,6 +7254,53 @@
       "parallaxFactor": 0,
       "zLayer": 0,
       "isSensor": false
+    },
+    {
+      "position": [
+        47,
+        -0.15,
+        0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "jump",
+      "isTriangle": false,
+      "textureName": "arrow",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": true
     }
   ]
 }

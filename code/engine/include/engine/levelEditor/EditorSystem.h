@@ -58,8 +58,7 @@ namespace gl3::engine::editor
 
   /**
    * Grouping was canceled -> clear saved group objects
-   * @param event Grouping has been canceled
    */
-  void onGroupCanceled(ui::EditorCancelGrouping& event);
+  void onGroupCanceled();
  };
 } // gl3

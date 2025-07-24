@@ -73,10 +73,15 @@ namespace gl3::engine::ui
      */
     struct RestartLevelEvent
     {
-        /** startLevel determines if the level should directly start after reload
- *
- */
+        ///startLevel determines if the level should directly start after reload
         bool startLevel;
+    };
+
+    /**
+     * Call this event, when unloading a level
+     */
+    struct LevelUnload
+    {
     };
 
 

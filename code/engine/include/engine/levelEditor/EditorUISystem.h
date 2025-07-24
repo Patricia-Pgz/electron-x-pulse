@@ -35,7 +35,7 @@ namespace gl3::engine::editor
          * @param imguiIO Pointer to ImGui IO for input handling.
          * @param game Reference to the game engine.
          *
-         * Subscribes to mouse scroll and level length computed events.
+         * Subscribes to mouse scroll, level length computed, and level unload events.
          */
         explicit EditorUISystem(ImGuiIO* imguiIO, Game& game) : IUISubsystem(imguiIO, game),
                                                                 editor_system(new EditorSystem(game))
@@ -44,6 +44,8 @@ namespace gl3::engine::editor
                 EditorUISystem::onMouseScroll>(this);
             ecs::EventDispatcher::dispatcher.sink<ecs::LevelLengthComputed>().connect<&
                 EditorUISystem::onLvlComputed>(this);
+         ecs::EventDispatcher::dispatcher.sink<ui::LevelUnload>().connect<&
+    EditorUISystem::reset>(this);
         };
 
         ~EditorUISystem() override
@@ -52,6 +54,8 @@ namespace gl3::engine::editor
                 EditorUISystem::onMouseScroll>(this);
             ecs::EventDispatcher::dispatcher.sink<ecs::LevelLengthComputed>().disconnect<&
                 EditorUISystem::onLvlComputed>(this);
+         ecs::EventDispatcher::dispatcher.sink<ui::LevelUnload>().disconnect<&
+EditorUISystem::reset>(this);
         }
 
         /**
@@ -118,6 +122,7 @@ namespace gl3::engine::editor
         void highlightSelectedButton(const std::vector<std::string>& buttonIDs);
 
     private:
+        void reset();
         bool is_mouse_in_grid = true;                    /**< Whether the mouse is currently interacting with the grid vs. with the imgui ui. */
         bool multi_select_enabled = false;                /**< Enables multi-selection mode. */
         bool compute_group_AABB = false;                   /**< Flag to compute axis-aligned bounding box for groups. */

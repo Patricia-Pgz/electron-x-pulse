@@ -88,4 +88,9 @@ namespace gl3::game::ui
         DrawFinishScreen(viewport, engine::ui::FontManager::getFont("pixeloid-bold-30"),
                          engine::ui::FontManager::getFont("pixeloid-bold-26"));
     }
+
+    void FinishUI::reset()
+    {
+        is_active = false;
+    }
 }

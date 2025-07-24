@@ -1,6 +1,8 @@
 #pragma once
 #include "engine/Game.h"
+#include "engine/ecs/EventDispatcher.h"
 #include "engine/userInterface/IUISubSystem.h"
+#include "engine/userInterface/UIEvents.h"
 
 namespace gl3::game::ui
 {
@@ -18,7 +20,20 @@ namespace gl3::game::ui
          * @param imguiIO Pointer to ImGui IO structure.
          * @param game Reference to the main game instance.
          */
-        explicit InstructionUI(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game){};
+        explicit InstructionUI(ImGuiIO* imguiIO, engine::Game& game) : IUISubsystem(imguiIO, game)
+        {
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::LevelUnload>().connect<&
+                InstructionUI::reset>(this);
+        };
+
+        /**
+         * Unsubscribes events.
+         */
+        ~InstructionUI() override
+        {
+            engine::ecs::EventDispatcher::dispatcher.sink<engine::ui::LevelUnload>().disconnect<&
+                InstructionUI::reset>(this);
+        }
 
         /**
          * @brief Updates the instruction UI each frame.
@@ -55,6 +70,12 @@ namespace gl3::game::ui
          * @brief Handles the RestartLevelEvent to reset the instruction timer.
          */
         void onRestartLevel();
+
+        /**
+         * Resets all properties on level unload.
+         */
+        void reset();
+
 
         /// Indicates if the UI is in edit mode.
         bool edit_mode = false;

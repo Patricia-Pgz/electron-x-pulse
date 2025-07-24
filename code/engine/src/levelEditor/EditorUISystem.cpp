@@ -672,4 +672,25 @@ namespace gl3::engine::editor
         if (!game.isPaused()) return;
         createCustomUI();
     }
+
+    void EditorUISystem::reset()
+    {
+        is_mouse_in_grid = true;
+        multi_select_enabled = false;
+        compute_group_AABB = false;
+        grid_offset = 0.5f;
+        selected_grid_cells.clear();
+        selected_group_cells.clear();
+        selected_position_offset = {0.f, 0.f};
+        selected_scale = {1.f, 1.f};
+        selected_layer = 0.f;
+        tag_input_buffer[0] = '\0';
+        selected_tag = "platform";
+        is_triangle = false;
+        selected_z_rotation = 0.f;
+        generate_physics_comp = true;
+        use_color = false;
+        selected_color = {1.0f, 1.0f, 1.0f, 1.0f};
+        final_beat_position = 0.f;
+    }
 }
