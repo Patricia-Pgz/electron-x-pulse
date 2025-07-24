@@ -64,6 +64,7 @@ EditorSystem::onGroupCanceled>(this);
                               {
                                   return true;
                               }
+                                  return false;
                           });
         }
     }

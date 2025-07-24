@@ -130,16 +130,15 @@ namespace gl3::game::state
         auto& objGroup = current_level->groups;
         for (auto group = objGroup.begin(); group != objGroup.end();)
         {
-            if (group->children.empty())
-            {
-                group = objGroup.erase(group); // erase empty groups
-            }
-            else
+            if (!group->children.empty())
             {
                 //compute AABB if it is still on standard values
                 if (group->colliderAABB.scale.x <= 1.f || group->colliderAABB.scale.y <= 1.f)
                 {
-                    group->colliderAABB = engine::physics::PhysicsSystem::computeGroupAABB(group->children);
+                    const auto collider = engine::physics::PhysicsSystem::computeGroupAABB(group->children);
+                    group->colliderAABB.position = collider.position;
+                    group->colliderAABB.scale = collider.scale;
+                    group->colliderAABB.tag = group->colliderAABB.tag == "undefined"? "platform" : group->children[0].tag;
                 }
                 group->colliderAABB.generateRenderComp = false;
                 entt::entity groupAABBEntity = engine::ecs::EntityFactory::createDefaultEntity(

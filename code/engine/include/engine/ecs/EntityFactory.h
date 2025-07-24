@@ -509,7 +509,7 @@ namespace gl3::engine::ecs
             groundSensorDef.enableContactEvents = true;
 
             b2Polygon groundBox;
-            groundBox = b2MakeOffsetBox(halfWidth * 0.6f, 0.05f,
+            groundBox = b2MakeOffsetBox(halfWidth * 0.5f, 0.05f,
                                         {0.f, 0.f - halfHeight - 0.05f},
                                         b2MakeRot(0.0f));
             b2ShapeId groundSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &groundBox);
@@ -519,7 +519,7 @@ namespace gl3::engine::ecs
             groundSensorDef.enableContactEvents = true;
 
             b2Polygon topBox;
-            topBox = b2MakeOffsetBox(halfWidth * 0.6f, 0.05f,
+            topBox = b2MakeOffsetBox(halfWidth * 0.5f, 0.05f,
                                         {0.f, 0.f + halfHeight + 0.05f},
                                         b2MakeRot(0.0f));
             b2ShapeId topSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &topBox);
