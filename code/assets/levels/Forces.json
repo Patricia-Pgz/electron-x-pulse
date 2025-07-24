@@ -4808,6 +4808,199 @@
         "zLayer": -1,
         "isSensor": false
       }
+    },
+    {
+      "name": "18",
+      "children": [
+        {
+          "position": [
+            44,
+            -2,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            0
+          ],
+          "rotation": 0,
+          "color": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "tag": "platform",
+          "isTriangle": false,
+          "textureName": "Tileset_9x9",
+          "uv": [
+            0.44444445,
+            0.6666667,
+            0.5555556,
+            0.7777778
+          ],
+          "generatePhysicsComp": false,
+          "generateRenderComp": true,
+          "vertexShaderPath": "",
+          "fragmentShaderPath": "",
+          "gradientTopColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "gradientBottomColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "parallaxFactor": 0,
+          "zLayer": 0,
+          "isSensor": false
+        },
+        {
+          "position": [
+            45,
+            -2,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            0
+          ],
+          "rotation": 0,
+          "color": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "tag": "platform",
+          "isTriangle": false,
+          "textureName": "Tileset_9x9",
+          "uv": [
+            0.5555556,
+            0.6666667,
+            0.6666667,
+            0.7777778
+          ],
+          "generatePhysicsComp": false,
+          "generateRenderComp": true,
+          "vertexShaderPath": "",
+          "fragmentShaderPath": "",
+          "gradientTopColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "gradientBottomColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "parallaxFactor": 0,
+          "zLayer": 0,
+          "isSensor": false
+        },
+        {
+          "position": [
+            46,
+            -2,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            0
+          ],
+          "rotation": 0,
+          "color": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "tag": "platform",
+          "isTriangle": false,
+          "textureName": "Tileset_9x9",
+          "uv": [
+            0.7777778,
+            0.6666667,
+            0.8888889,
+            0.7777778
+          ],
+          "generatePhysicsComp": false,
+          "generateRenderComp": true,
+          "vertexShaderPath": "",
+          "fragmentShaderPath": "",
+          "gradientTopColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "gradientBottomColor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "parallaxFactor": 0,
+          "zLayer": 0,
+          "isSensor": false
+        }
+      ],
+      "colliderAABB": {
+        "position": [
+          45,
+          -2,
+          0
+        ],
+        "scale": [
+          3,
+          1,
+          0
+        ],
+        "rotation": 0,
+        "color": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "tag": "platform",
+        "isTriangle": false,
+        "textureName": "",
+        "uv": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "generatePhysicsComp": true,
+        "generateRenderComp": false,
+        "vertexShaderPath": "",
+        "fragmentShaderPath": "",
+        "gradientTopColor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "gradientBottomColor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "parallaxFactor": 0,
+        "zLayer": -1,
+        "isSensor": false
+      }
     }
   ],
   "objects": [
@@ -6129,147 +6322,6 @@
     },
     {
       "position": [
-        45,
-        -2,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        1,
-        0,
-        0,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "Tileset_9x9",
-      "uv": [
-        0.8888889,
-        0.5555556,
-        1,
-        0.6666667
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0,
-      "zLayer": 0,
-      "isSensor": false
-    },
-    {
-      "position": [
-        46,
-        -1,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        1,
-        0,
-        0,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "Tileset_9x9",
-      "uv": [
-        0.8888889,
-        0.8888889,
-        1,
-        1
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0,
-      "zLayer": 0,
-      "isSensor": false
-    },
-    {
-      "position": [
-        46,
-        -2,
-        0
-      ],
-      "scale": [
-        1,
-        1,
-        0
-      ],
-      "rotation": 0,
-      "color": [
-        1,
-        0,
-        0,
-        1
-      ],
-      "tag": "platform",
-      "isTriangle": false,
-      "textureName": "Tileset_9x9",
-      "uv": [
-        0.8888889,
-        0.6666667,
-        1,
-        0.7777778
-      ],
-      "generatePhysicsComp": true,
-      "generateRenderComp": true,
-      "vertexShaderPath": "",
-      "fragmentShaderPath": "",
-      "gradientTopColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "gradientBottomColor": [
-        1,
-        1,
-        1,
-        1
-      ],
-      "parallaxFactor": 0,
-      "zLayer": 0,
-      "isSensor": false
-    },
-    {
-      "position": [
         49,
         3,
         0
@@ -7257,13 +7309,13 @@
     },
     {
       "position": [
-        47,
-        -0.15,
+        20,
+        -2,
         0
       ],
       "scale": [
-        0.7,
-        0.7,
+        1,
+        1,
         0
       ],
       "rotation": 0,
@@ -7273,9 +7325,9 @@
         0,
         1
       ],
-      "tag": "jump",
+      "tag": "obstacle",
       "isTriangle": false,
-      "textureName": "arrow",
+      "textureName": "spikes1",
       "uv": [
         0,
         0,
@@ -7300,7 +7352,336 @@
       ],
       "parallaxFactor": 0,
       "zLayer": 0,
-      "isSensor": true
+      "isSensor": false
+    },
+    {
+      "position": [
+        18,
+        -2,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": false,
+      "textureName": "spikes1",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false
+    },
+    {
+      "position": [
+        21,
+        -2,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": false,
+      "textureName": "spikes1",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false
+    },
+    {
+      "position": [
+        23,
+        -2,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": false,
+      "textureName": "spikes1",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false
+    },
+    {
+      "position": [
+        72,
+        4,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "Tileset_9x9",
+      "uv": [
+        0.8888889,
+        0.5555556,
+        1,
+        0.6666667
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false
+    },
+    {
+      "position": [
+        93.1,
+        0,
+        0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0
+      ],
+      "rotation": 90,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": false,
+      "textureName": "Spike3",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false
+    },
+    {
+      "position": [
+        88,
+        -2,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": false,
+      "textureName": "spikes1",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false
+    },
+    {
+      "position": [
+        91.1,
+        -1,
+        0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0
+      ],
+      "rotation": 90,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": false,
+      "textureName": "Spike",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false
     }
   ]
 }
