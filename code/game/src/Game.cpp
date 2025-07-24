@@ -29,7 +29,7 @@ namespace gl3::game
             const auto& windowBounds = context.getWorldWindowBounds();
             //Trigger death event if player leaves window
             if (!context.isInVisibleWindow(playerTransform.position,
-                                           playerTransform.scale, 1.f) || playerTransform.position.y > windowBounds[2] - 1.f || playerTransform.position.y < windowBounds[3] + 1.f)
+                                           playerTransform.scale, 1.5f) || playerTransform.position.y > windowBounds[2] + 1.f || playerTransform.position.y < windowBounds[3] - 1.f)
             {
                 engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayerDeath{});
             }
