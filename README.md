@@ -1,4 +1,3 @@
-`Please edit this README to fit your project and keep it up-to-date with your concept.`
 
 `All final deliverables (code, executable game, report, trailer and poster) have to be committed, tagged as final and pushed to your GitLab repository.`
 
@@ -35,13 +34,12 @@ RepositoryRoot/
     ├── builds/                 // Archives (.zip) of built executables of the game
     ├── code/
     │   ├── assets/             // Game assets: audio tracks, levels, shaders, textures, UI assets: ui textures, fonts 
-    │   ├── cmake-build-debug/  // Debug builds during development
     │   ├── engine/             // Engine code
     │   ├── extern/             // External dependencies/libraries         
     │   ├── game/               // Game code
     │   └── CMakeLists.txt      // Project root CMakeList
-    ├── docs/                   // Doxygen files  
-    ├── documentation/          // API Docs & Handbook/Manual
+    ├── docs/                   // Doxygen files
+    ├── documentation/          // API Docs & Handbook/Manual (PDF)
     ├── poster/                 // Poster (PDF)
     ├── report/                 // Report (PDF)
     └── trailer/                // Trailer (MP4)
