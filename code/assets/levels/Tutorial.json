@@ -163,9 +163,9 @@
       ],
       "rotation": 0,
       "color": [
-        0.337,
-        0.306,
-        0.478,
+        0.369,
+        0.275,
+        0.561,
         1
       ],
       "tag": "ground",
@@ -787,7 +787,7 @@
       ],
       "tag": "player",
       "isTriangle": false,
-      "textureName": "geometry",
+      "textureName": "cyanPlayer",
       "uv": [
         0,
         0,

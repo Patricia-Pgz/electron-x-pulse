@@ -1,5 +1,6 @@
 {
   "id": 1,
-  "name": "Level_1",
-  "levelFile": "Level_1.json"
+  "name": "Geometric Chaos",
+  "levelFile": "Level_1.json",
+  "previewImg": "prev2"
 }

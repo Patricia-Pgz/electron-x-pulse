@@ -54,7 +54,7 @@ namespace gl3::engine::levelLoading
         {
             if (ImGui::ImageButton(metaData[i].name.c_str(),
                                    rendering::TextureManager::getUITexture("LevelButton1")->getID(),
-                                   ImVec2(buttonWidth, buttonWidth))) //TODO (www.freepik.com)
+                                   ImVec2(buttonWidth, buttonWidth)))
             {
                 ecs::EventDispatcher::dispatcher.trigger(ecs::GameStateChange(GameState::Level, i));
             }
@@ -79,7 +79,7 @@ namespace gl3::engine::levelLoading
                     overlayMin.x + overlaySize.x,
                     overlayMin.y + overlaySize.y
                 );
-                const auto overlayTex = rendering::TextureManager::getUITexture(metaData[i].previewImageName.c_str())->
+                const auto overlayTex = rendering::TextureManager::getUITexture(metaData[i].previewImageName)->
                     getID();
                 ImGui::GetWindowDrawList()->AddImage(overlayTex, overlayMin, overlayMax, {0.f, 1.f}, {1.f, 0.f});
             }

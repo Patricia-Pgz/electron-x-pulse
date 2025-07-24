@@ -199,7 +199,6 @@ namespace gl3::game::state
         //Ensures, that every unit is synced to the beat
         current_level->currentLevelSpeed = current_level->velocityMultiplier / audio_config->seconds_per_beat;
         current_level->levelLength = audio_config->current_audio_length * current_level->currentLevelSpeed;
-        //TODO visualisieren!(Editor)
         current_level->finalBeatIndex = audio_config->current_audio_length / audio_config->seconds_per_beat;
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::LevelLengthComputed{
             current_level->levelLength, current_level->currentLevelSpeed, current_level->finalBeatIndex
