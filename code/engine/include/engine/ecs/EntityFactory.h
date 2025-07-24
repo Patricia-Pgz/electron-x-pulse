@@ -203,19 +203,27 @@ namespace gl3::engine::ecs
         {
             if (!registry.valid(entity))
                 return;
+
             if (registry.all_of<PhysicsComponent>(entity))
             {
-                auto& physics = registry.get<PhysicsComponent>(entity);
+                auto& physicsComp = registry.get<PhysicsComponent>(entity);
 
-                if (b2Body_IsValid(physics.body))
+                if (b2Body_IsValid(physicsComp.body))
                 {
-                    if (b2Shape_IsValid(physics.shape))
-                    {
-                        b2DestroyShape(physics.shape, false);
-                        physics.shape = b2_nullShapeId;
+                    //destroy all shapes
+                    for (b2ShapeId shape : physicsComp.sensorShapes) {
+                        if (b2Shape_IsValid(shape)) {
+                            b2DestroyShape(shape, false);
+                        }
                     }
-                    b2DestroyBody(physics.body);
-                    physics.body = b2_nullBodyId;
+                    physicsComp.sensorShapes.clear();
+                    if (b2Shape_IsValid(physicsComp.shape)) {
+                        b2DestroyShape(physicsComp.shape, false);
+                    }
+
+                    //destroy body
+                    b2DestroyBody(physicsComp.body);
+                    physicsComp.body = b2_nullBodyId;
                 }
             }
             registry.remove<PhysicsComponent>(entity);

@@ -44,6 +44,8 @@ namespace gl3::engine::physics
             // Check player sensor events (right side, ground)
             const b2SensorEvents sensorEvents = b2World_GetSensorEvents(physicsWorld);
             const ecs::PhysicsComponent& physics_comp = registry.get<ecs::PhysicsComponent>(player);
+            if(!b2Body_IsValid(physics_comp.body)) return;
+
             const auto playerBody = physics_comp.body;
 
             const b2ShapeId playerGroundSensor = physics_comp.sensorShapes[0]; //sensor
@@ -54,6 +56,9 @@ namespace gl3::engine::physics
             for (int i = 0; i < sensorEvents.beginCount; ++i)
             {
                 const b2SensorBeginTouchEvent& event = sensorEvents.beginEvents[i];
+                if (!b2Shape_IsValid(event.sensorShapeId) || !b2Shape_IsValid(event.sensorShapeId))
+                    continue;
+
                 if (B2_ID_EQUALS(event.sensorShapeId, playerGroundSensor) || B2_ID_EQUALS(event.sensorShapeId, playerTopSensor))
                 {
                     playerGrounded = true;
@@ -77,6 +82,9 @@ namespace gl3::engine::physics
             for (int i = 0; i < sensorEvents.endCount; ++i)
             {
                 const b2SensorEndTouchEvent& event = sensorEvents.endEvents[i];
+                if (!b2Shape_IsValid(event.sensorShapeId) || !b2Shape_IsValid(event.sensorShapeId))
+                    continue;
+
                 const auto sensorA = static_cast<entt::entity>(reinterpret_cast<uintptr_t>(
                     b2Body_GetUserData(b2Shape_GetBody(event.sensorShapeId))));
                 auto& tagA = registry.get<ecs::TagComponent>(sensorA).tag;
