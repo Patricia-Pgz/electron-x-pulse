@@ -1,6 +1,3 @@
-
-`All final deliverables (code, executable game, report, trailer and poster) have to be committed, tagged as final and pushed to your GitLab repository.`
-
 This repository includes a c++, OpenGL based 2D side scrolling platformer game with level editor, and an engine
 framework to quickly create similar sidescrollers.
 
@@ -109,4 +106,7 @@ This project uses external libraries as Git submodules:
 - [`extern/imgui`](https://github.com/ocornut/imgui) — create minimal game/editor GUI
 - [`extern/soloud`](https://github.com/jarikomppa/soloud) — Audio playback
 - [`extern/stb`](https://github.com/nothings/stb) — used stb image for texture loading
+
+Royaltyfree textures were taken from [CraftPix](https://craftpix.net/), [itch.io](https://itch.io/), and [Freepik](https://freepik.com/). 
+Royaltefree soundtrack were taken from [fesliyanSTUDIOS](https://www.fesliyanstudios.com/) and [pixabay](https://pixabay.com/).
 
