@@ -5,6 +5,7 @@
 #include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
 #include "engine/levelloading/LevelManager.h"
+#include "engine/physics/PhysicsSystem.h"
 #include "engine/rendering/MVPMatrixHelper.h"
 #include "engine/rendering/Texture.h"
 #include "engine/rendering/TextureManager.h"
@@ -28,17 +29,43 @@ namespace gl3::engine::editor
     ///Delete all entities from the registry, that have their TransformComponent position at the currently selected cell's position.
     void EditorUISystem::deleteAllAtSelectedPosition() const
     {
-        const auto view = game.getRegistry().view<ecs::TransformComponent, ecs::TagComponent>();
+        auto& registry = game.getRegistry();
+        const auto& view = registry.view<ecs::TransformComponent, ecs::TagComponent>();
         if (selected_grid_cells.empty()) return;
         for (auto& entity : view)
         {
             const auto transform = view.get<ecs::TransformComponent>(entity);
             const auto tag = view.get<ecs::TagComponent>(entity).tag;
             if (tag == "background" || tag == "ground" || tag == "sky") continue;
+
             for (const auto& cell : selected_grid_cells)
             {
                 if (transform.position.x == cell.x && transform.position.y == cell.y)
                 {
+                    //handle grouped entity
+                    if (registry.any_of<ecs::ParentComponent>(entity))
+                    {
+                        const auto parent = registry.get<ecs::ParentComponent>(entity).parentEntity;
+                        auto& groupChildren = registry.get<ecs::GroupComponent>(parent).childEntities;
+                        if (!groupChildren.empty())
+                        {
+                            //erase entity from group
+                            std::erase_if(groupChildren,
+                                          [&](const entt::entity& child)
+                                          {
+                                              return child == entity;
+                                          });
+                            // recalculate parent collider
+                            auto newAABB = physics::PhysicsSystem::computeGroupAABB(groupChildren, registry);
+                            ecs::EntityFactory::setPosition(registry, parent, newAABB.position);
+                            ecs::EntityFactory::setScale(registry, parent, newAABB.scale);
+                        }
+                        else
+                        {
+                            // delete parent if no more children
+                            ecs::EntityFactory::markEntityForDeletion(parent);
+                        }
+                    }
                     ecs::EntityFactory::markEntityForDeletion(entity);
                 }
             }
@@ -185,7 +212,8 @@ namespace gl3::engine::editor
         auto worldWindowBounds = game.getContext().getWorldWindowBounds();
         if (final_beat_position >= worldWindowBounds[0] && final_beat_position <= worldWindowBounds[1])
         {
-            auto finalBeatPositionScreen = rendering::MVPMatrixHelper::toScreen(game.getContext(),final_beat_position, 0.f);
+            auto finalBeatPositionScreen = rendering::MVPMatrixHelper::toScreen(
+                game.getContext(), final_beat_position, 0.f);
             drawList->AddLine(
                 ImVec2(finalBeatPositionScreen.x, 0.f),
                 ImVec2(finalBeatPositionScreen.x, screenSize.y),

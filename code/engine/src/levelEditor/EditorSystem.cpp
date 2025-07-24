@@ -75,7 +75,6 @@ EditorSystem::onGroupCanceled>(this);
 
         //generate parent physics AABB
         auto parentAABB = physics::PhysicsSystem::computeGroupAABB(grouped_child_objects);
-        std::cout << parentAABB.scale.x << std::endl;
         parentAABB.zLayer = -1;
         parentAABB.generateRenderComp = false;
         parentAABB.tag = grouped_child_objects[0].tag;

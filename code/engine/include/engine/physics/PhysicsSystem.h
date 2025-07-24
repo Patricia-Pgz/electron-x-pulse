@@ -195,6 +195,55 @@ namespace gl3::engine::physics
             return result;
         }
 
+        static GameObject computeGroupAABB(const std::vector<entt::entity>& entities, entt::registry& registry)
+        {
+            if (entities.empty())
+            {
+                return {};
+            }
+
+
+            // Transforms defining the bounds
+            ecs::TransformComponent& leftMost = registry.get<ecs::TransformComponent>(entities[0]);
+            ecs::TransformComponent& rightMost = leftMost;
+            ecs::TransformComponent& topMost = leftMost;
+            ecs::TransformComponent& bottomMost = leftMost;
+
+            for (const auto& entity : entities)
+            {
+                const auto& transform = registry.get<ecs::TransformComponent>(entity);
+                if (transform.position.x - transform.scale.x * 0.5f < leftMost.position.x - leftMost.scale.x * 0.5f)
+                {
+                    leftMost = transform;
+                }
+                if (transform.position.x + transform.scale.x * 0.5f > rightMost.position.x + rightMost.scale.x *
+                    0.5f)
+                {
+                    rightMost = transform;
+                }
+                if (transform.position.y + transform.scale.y * 0.5f > topMost.position.y + topMost.scale.y * 0.5f)
+                {
+                    topMost = transform;
+                }
+                if (transform.position.y - transform.scale.y * 0.5f < bottomMost.position.y - bottomMost.scale.y *
+                    0.5f)
+                {
+                    bottomMost = transform;
+                }
+            }
+
+            const float left = leftMost.position.x - leftMost.scale.x * 0.5f;
+            const float right = rightMost.position.x + rightMost.scale.x * 0.5f;
+            const float top = topMost.position.y + topMost.scale.y * 0.5f;
+            const float bottom = bottomMost.position.y - bottomMost.scale.y * 0.5f;
+
+            GameObject result;
+            result.position = {(left + right) * 0.5f, (top + bottom) * 0.5f, 0.f};
+            result.scale = {right - left, top - bottom, 0.f};
+
+            return result;
+        }
+
     private:
         const float fixed_time_step = 1.0f / 60.0f; ///< Fixed physics timestep (60Hz)
         const int sub_step_count = 4; ///< Number of Box2D sub-steps per physics step

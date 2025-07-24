@@ -140,7 +140,6 @@ namespace gl3::game::state
                 if (group->colliderAABB.scale.x <= 1.f || group->colliderAABB.scale.y <= 1.f)
                 {
                     group->colliderAABB = engine::physics::PhysicsSystem::computeGroupAABB(group->children);
-                    group->colliderAABB.tag = "platform";
                 }
                 group->colliderAABB.generateRenderComp = false;
                 entt::entity groupAABBEntity = engine::ecs::EntityFactory::createDefaultEntity(
@@ -379,17 +378,22 @@ namespace gl3::game::state
         reloading_level = true;
         paused = true;
         dynamic_cast<Game&>(game).setPaused(true);
+
         b2Body_SetLinearVelocity(game.getRegistry().get<engine::ecs::PhysicsComponent>(current_player).body, {0.f, 0.f});
+
         setSystemsActive(false);
         menu_ui->setActive(true);
         instruction_ui->setActive(level_index == 0);
         finish_ui->setActive(false);
         game.getAudioSystem()->stopCurrentAudio();
+
         level_time = 0.f;
         timer = 1.f;
         transition_triggered = false;
         timer_active = false;
+
         resetEntities();
+
         reloading_level = false;
     }
 
@@ -459,18 +463,6 @@ namespace gl3::game::state
         }
         if (!paused)
         {
-            //player death if they move out of visible view
-            if (game.getRegistry().valid(current_player))
-            {
-                const auto& playerTransform = game.getRegistry().get<engine::ecs::TransformComponent>(game.getPlayer());
-                const auto& windowBounds = game.getContext().getWorldWindowBounds();
-                //Trigger death event if player leaves window
-                if (!game.getContext().isInVisibleWindow(playerTransform.position,
-                                               playerTransform.scale) || playerTransform.position.y > windowBounds[2] || playerTransform.position.y < windowBounds[3])
-                {
-                    onPlayerDeath(engine::ecs::PlayerDeath{});
-                }
-            }
             level_time += deltaTime;
             delayLevelEnd(deltaTime);
         }

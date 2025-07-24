@@ -108,6 +108,8 @@ namespace gl3::engine::context
     {
         int width, height;
         glfwGetWindowSize(window, &width, &height);
+        if(width <= 0 || height <= 0) return;
+
         const auto fWidth = static_cast<float>(width);
         const auto fHeight = static_cast<float>(height);
         const auto BottomRightScreenCorner = rendering::MVPMatrixHelper::screenToWorld(*this, fWidth, fHeight);

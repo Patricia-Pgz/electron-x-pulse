@@ -1,6 +1,7 @@
 #include "PlayerInputSystem.h"
 #include "engine/audio/AudioSystem.h"
 #include "engine/ecs/EntityFactory.h"
+#include "engine/levelloading/LevelManager.h"
 #include "engine/physics/PlayerContactListener.h"
 #include "glm/gtc/constants.hpp"
 
@@ -87,7 +88,7 @@ namespace gl3::game::input
     {
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayerJump{true});
 
-        const float desiredTimeToLand = game.getAudioSystem()->getConfig()->seconds_per_beat * landing_beats_ahead;
+        const float desiredTimeToLand = game.getAudioSystem()->getConfig()->seconds_per_beat * landing_beats_ahead / engine::levelLoading::LevelManager::getMostRecentLoadedLevel()->velocityMultiplier;
         const float t = desiredTimeToLand * 0.5f; // time to apex
 
         const float gravityY = (2.0f * desired_jump_height) / (t * t) * y_gravity_multiplier;
