@@ -107,6 +107,6 @@ This project uses external libraries as Git submodules:
 - [`extern/soloud`](https://github.com/jarikomppa/soloud) — Audio playback
 - [`extern/stb`](https://github.com/nothings/stb) — used stb image for texture loading
 
-Royaltyfree textures were taken from [CraftPix](https://craftpix.net/), [itch.io](https://itch.io/), and [Freepik](https://freepik.com/). 
+Royaltyfree textures were taken from [CraftPix](https://craftpix.net/), [itch.io](https://itch.io/), [Freepik](https://freepik.com/), generated with [Sora](https://sora.chatgpt.com/) and adjusted by myself. 
 Royaltefree soundtrack were taken from [fesliyanSTUDIOS](https://www.fesliyanstudios.com/) and [pixabay](https://pixabay.com/).
 
