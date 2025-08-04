@@ -1,0 +1,2 @@
+version = 0x2001a00
+tools = [{'tool': 'winres', 'tooldir': None, 'funs': None}, {'tool': 'c', 'tooldir': None, 'funs': None}, {'tool': 'cxx', 'tooldir': None, 'funs': None}, {'tool': 'msvc', 'tooldir': None, 'funs': None}, {'tool': 'compiler_c', 'tooldir': None, 'funs': None}, {'tool': 'waf_unit_test', 'tooldir': None, 'funs': None}, {'tool': 'gnu_dirs', 'tooldir': None, 'funs': None}, {'tool': 'waf_gensyms', 'tooldir': ['.'], 'funs': None}]
