@@ -1,13 +1,10 @@
-This repository includes a c++, OpenGL based 2D side scrolling platformer game with level editor, and an engine
-framework to quickly create similar sidescrollers.
+This repository includes a C++, OpenGL based 2D side scrolling platformer game with level editor, and an engine framework to quickly create similar sidescrollers. Currently, this is an early prototype, and the level editor remains experimental.
 
 # GameLab Project Repository
 
 | General Info       |                                                                          |
 |--------------------|--------------------------------------------------------------------------|
 | Working Title      | ElectronXPulse                                                           |
-| Final Title        | Electrine Engine                                                         |
-| Student            | Patricia Pongratz, patricia.pongratz@stud-mail.uni-wuerzburg.de, s363344 |
 | Target Platform(s) | Windows                                                                  |
 | Start Date         | 01.11.2024                                                               |
 | Study Program      | Games Engineering B.Sc.                                                  |
@@ -16,8 +13,8 @@ framework to quickly create similar sidescrollers.
 ## Abstract
 
 Electrine Engine transforms rhythm into gameplay. Built for flexibility and creative control, it powers core systems
-like rendering, physics, audio, UI, state management and ECS.
-With its integrated level editor, level loading system and audio analysis, developers can intuitively design levels that
+like rendering, physics, audio, UI, state management, and ECS.
+With its integrated level editor, level loading system, and audio analysis, developers can intuitively design levels that
 precisely align with the beat.
 As a showcase, the included 2D platformer ElectronXPulse challenges players to jump, react, and survive in a world
 driven by high-energy EDM tracks. Designed to sharpen reflexes and timing skills, every interaction is coupled to the
@@ -36,15 +33,15 @@ RepositoryRoot/
     │   ├── game/               // Game code
     │   └── CMakeLists.txt      // Project root CMakeList
     ├── docs/                   // Doxygen files
-    ├── documentation/          // API Docs & Handbook/Manual (PDF)
-    ├── poster/                 // Poster (PDF)
-    ├── report/                 // Report (PDF)
-    └── trailer/                // Trailer (MP4)
+    ├── documentation/          // API Docs & Handbook/Manual
+    ├── poster/                 // Poster
+    ├── report/                 // Report
+    └── trailer/                // Trailer
 ```
 
 ### Quick Start: ElectronXPulse
 
-This is a simple quick start guide how to clone my project and get it running.
+This is a simple quick start guide on how to clone my project and get it running.
 
 **Prerequisites:** C++20 Compiler (MSVC) & Windows11 SDK installed.  
 (e.g. Windows 11 SDK (10.0.26100.0) MSVC v143 - VS 2022 C++-x64/x86-Buildtools)
@@ -53,7 +50,7 @@ This is a simple quick start guide how to clone my project and get it running.
    <span style="font-size: 90%; color: gray;">Note: This clones the project with all needed external submodules.
    See the [External Libraries section](#libs) for details.</span>
    ```bash
-   git clone --recursive --depth 1 https://gitlab2.informatik.uni-wuerzburg.de/GE/Teaching/gl3/projects/2024/29-gl3-pongratz.git
+   git clone --recursive --depth 1 https://github.com/Patricia-Pgz/electron-x-pulse.git
    ```
 
 2. Once cloned, you can open the root folder in CLion. And load the `CMAKEList.txt` file from the "code" folder.
