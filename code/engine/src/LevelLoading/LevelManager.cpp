@@ -89,7 +89,7 @@ namespace gl3::engine::levelLoading
         }
     }
 
-    Level* LevelManager::getMostRecentLoadedLevel()
+    Level* LevelManager::getCurrentLevel()
     {
         if (const auto it = loaded_levels.find(most_recent_loaded_lvl_ID); it != loaded_levels.end())
         {

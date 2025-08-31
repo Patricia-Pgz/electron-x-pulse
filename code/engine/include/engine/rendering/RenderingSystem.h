@@ -115,7 +115,7 @@ namespace gl3::engine::rendering
                         // Handle parallax UV offset if enabled and game is running
                         if (transform.parallaxFactor != 0 && !game.isPaused())
                         {
-                            const float pixelsPerSecond = levelLoading::LevelManager::getMostRecentLoadedLevel()->
+                            const float pixelsPerSecond = levelLoading::LevelManager::getCurrentLevel()->
                                 currentLevelSpeed;
 
                             const float uvPerSecond = pixelsPerSecond * renderComp.repeatX / transform.scale.x;

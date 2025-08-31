@@ -89,7 +89,7 @@ namespace gl3::engine::levelLoading
          *
          * @return Pointer to the most recently loaded Level object, or nullptr if none loaded.
          */
-        static Level* getMostRecentLoadedLevel();
+        static Level* getCurrentLevel();
 
     private:
         /**

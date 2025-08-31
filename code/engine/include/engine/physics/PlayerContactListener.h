@@ -74,7 +74,7 @@ namespace gl3::engine::physics
                 if (tagA == "jump" && !jumpMechanicTriggered)
                 //a sensor object to set additional on jump logic (e.g. double jump)
                 {
-                    ecs::EventDispatcher::dispatcher.trigger(ecs::GravityChange{});
+                    ecs::EventDispatcher::dispatcher.trigger(ecs::GravityChange{event.sensorShapeId});
                     jumpMechanicTriggered = true;
                 }
             }

@@ -84,5 +84,6 @@ namespace gl3::engine::ecs
      */
     struct GravityChange
     {
+        b2ShapeId gravityChangerID = b2_nullShapeId;
     };
 }

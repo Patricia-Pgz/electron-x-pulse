@@ -75,7 +75,7 @@ namespace gl3::game::input
          * Inverts gravity when a collider triggered the corresponding event (@see PlayerContactListener)
          * @param event a collider to change gravity was hit
          */
-        void onGravityChange(engine::ecs::GravityChange& event);
+        void onGravityChange(const engine::ecs::GravityChange& event);
 
         /**
          * @brief Applies an upward impulse to the player's body to simulate a jump.
@@ -84,14 +84,15 @@ namespace gl3::game::input
         void applyJumpImpulse(b2BodyId body) const;
 
         float curr_lvl_speed = 1.f; ///< Current level speed.
-        bool enter_pressed = false; ///< Tracks if the enter key is pressed.
+        bool space_pressed = false; ///< Tracks if the enter key is pressed.
         bool can_jump = true; ///< Determines if the player can jump.
         float desired_jump_height = 2.f; ///< Desired jump height in units.
         float landing_beats_ahead = 2.f; ///< Anticipation factor for landing in beats.
         entt::entity player = entt::null; ///< Player entity reference.
         float rotation_speed = -270.f; ///< Rotation speed for visual player spin.
-        bool change_jump_mechanics = false; ///< True if event to change jump mechanics was triggered.
-        float y_gravity_multiplier = 1.f; ///< Controls y gravity.
+        bool driving_on_ceiling = false; ///< True if event to change jump mechanics was triggered.
+        float y_gravity_multiplier = -1.f; ///< Controls y gravity.
         float targetRotation = 0.0f; ///< The rotation the player should always come back to.
+        b2ShapeId previousGravityChanger = b2_nullShapeId; ///< Save the shapeID of the previously hit gravity change object, to not react to it twice!
     };
 } // gl3

@@ -19,14 +19,14 @@ namespace gl3::game::input
         if (engine::physics::PlayerContactListener::playerGrounded)
         {
             can_jump = true;
-            enter_pressed = false;
+            space_pressed = false;
         }
 
         if (velocity.y < 0.01f && velocity.y >= 0.f && can_jump && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
-            if (!enter_pressed)
+            if (!space_pressed)
             {
-                enter_pressed = true;
+                space_pressed = true;
                 applyJumpImpulse(body);
                 can_jump = false;
             }
@@ -34,7 +34,7 @@ namespace gl3::game::input
         else if (glfwGetKey(game.getWindow(), GLFW_KEY_SPACE) == GLFW_RELEASE)
         {
             //reset when key released
-            enter_pressed = false;
+            space_pressed = false;
         }
 
         const float fixedX = game.getRegistry().get<engine::ecs::TransformComponent>(game.getPlayer()).initialPosition
@@ -62,24 +62,27 @@ namespace gl3::game::input
         else
         {
             // still spin freely when in air
-            transform.zRotation += rotation_speed * game.getDeltaTime();
+            transform.zRotation += rotation_speed * game.getDeltaTime() * -y_gravity_multiplier;
         }
     }
 
-    void PlayerInputSystem::onGravityChange(engine::ecs::GravityChange& event)
+    void PlayerInputSystem::onGravityChange(const engine::ecs::GravityChange& event)
     {
-        // let the player fly to the ceiling
-        change_jump_mechanics = !change_jump_mechanics;
-        y_gravity_multiplier = change_jump_mechanics ? -1 : 1;
-        b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, -10 * y_gravity_multiplier));
-        const auto body = game.getRegistry().get<engine::ecs::PhysicsComponent>(game.getPlayer()).body;
-        auto & transform = game.getRegistry().get<engine::ecs::TransformComponent>(game.getPlayer());
+        if(B2_ID_EQUALS(event.gravityChangerID, previousGravityChanger))return;
 
-        b2Body_ApplyLinearImpulseToCenter(body,{0.f, 0.5f}, true);
+        driving_on_ceiling = !driving_on_ceiling;
+        y_gravity_multiplier = !driving_on_ceiling? -1.f : 1.f;
+        b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, 10 * y_gravity_multiplier));
+
+        const auto body = game.getRegistry().get<engine::ecs::PhysicsComponent>(game.getPlayer()).body;
+        auto& transform = game.getRegistry().get<engine::ecs::TransformComponent>(game.getPlayer());
+
+        b2Body_SetLinearVelocity(body, {0.f, 0.f});
+        b2Body_ApplyLinearImpulseToCenter(body, {0.f, 0.5f * y_gravity_multiplier}, true);
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayerJump{true});
 
-        if (change_jump_mechanics) {
-            transform.scale.y = -std::abs(transform.scale.y); // flip vertically for moving on ceiling
+        if (driving_on_ceiling) {
+            transform.scale.y = -std::abs(transform.scale.y); // flip vertically
         } else {
             transform.scale.y = std::abs(transform.scale.y);
         }
@@ -89,10 +92,10 @@ namespace gl3::game::input
     {
         engine::ecs::EventDispatcher::dispatcher.trigger(engine::ecs::PlayerJump{true});
 
-        const float desiredTimeToLand = game.getAudioSystem()->getConfig()->seconds_per_beat * landing_beats_ahead / engine::levelLoading::LevelManager::getMostRecentLoadedLevel()->velocityMultiplier;
+        const float desiredTimeToLand = game.getAudioSystem()->getConfig()->seconds_per_beat * landing_beats_ahead / engine::levelLoading::LevelManager::getCurrentLevel()->velocityMultiplier;
         const float t = desiredTimeToLand * 0.5f; // time to apex
 
-        const float gravityY = (2.0f * desired_jump_height) / (t * t) * y_gravity_multiplier;
+        const float gravityY = (2.0f * desired_jump_height) / (t * t);
         // custom gravity to be able to choose jump height and jump length in time
         const float jumpVelocity = gravityY * t; // Initial vertical velocity
         const float mass = b2Body_GetMass(body);
@@ -100,9 +103,9 @@ namespace gl3::game::input
         const float impulse = mass * jumpVelocity;
 
         // Set the world's gravity:
-        b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, -gravityY));
+        b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, gravityY * y_gravity_multiplier));
 
-        b2Body_ApplyLinearImpulseToCenter(body, b2Vec2(0.0f, impulse), true);
+        b2Body_ApplyLinearImpulseToCenter(body, b2Vec2(0.0f, impulse * -y_gravity_multiplier), true);
     }
 
 
@@ -113,8 +116,11 @@ namespace gl3::game::input
 
     void PlayerInputSystem::onReloadLevel()
     {
-        change_jump_mechanics = false;
-        y_gravity_multiplier = 1;
+        driving_on_ceiling = false;
+        y_gravity_multiplier = -1;
+        previousGravityChanger = b2_nullShapeId;
+        can_jump = true;
+        space_pressed = false;
 
         b2World_SetGravity(game.getPhysicsWorld(), b2Vec2(0.0f, -10.0f));
     }

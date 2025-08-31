@@ -98,7 +98,7 @@ EditorSystem::onGroupCanceled>(this);
         registry.emplace<ecs::GroupComponent>(parentAABBEntity, grouped_child_entities);
 
         //add group to currentLvl (for saving)
-        int groupCount = static_cast<int>(levelLoading::LevelManager::getMostRecentLoadedLevel()->groups.size()) + 1;
+        int groupCount = static_cast<int>(levelLoading::LevelManager::getCurrentLevel()->groups.size()) + 1;
         GameObjectGroup group;
         group.name = std::to_string(groupCount);
         group.children = grouped_child_objects;
