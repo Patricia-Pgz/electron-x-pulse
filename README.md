@@ -1,4 +1,4 @@
-This repository includes a c++, OpenGL based 2D side scrolling platformer game with level editor, and an engine
+This repository includes a c++, OpenGL-based 2D side-scrolling platformer game with a level editor and an engine
 framework to quickly create similar sidescrollers.
 
 # GameLab Project Repository
@@ -7,7 +7,6 @@ framework to quickly create similar sidescrollers.
 |--------------------|--------------------------------------------------------------------------|
 | Working Title      | ElectronXPulse                                                           |
 | Final Title        | Electrine Engine                                                         |
-| Student            | Patricia Pongratz, patricia.pongratz@stud-mail.uni-wuerzburg.de, s363344 |
 | Target Platform(s) | Windows                                                                  |
 | Start Date         | 01.11.2024                                                               |
 | Study Program      | Games Engineering B.Sc.                                                  |
@@ -16,8 +15,8 @@ framework to quickly create similar sidescrollers.
 ## Abstract
 
 Electrine Engine transforms rhythm into gameplay. Built for flexibility and creative control, it powers core systems
-like rendering, physics, audio, UI, state management and ECS.
-With its integrated level editor, level loading system and audio analysis, developers can intuitively design levels that
+like rendering, physics, audio, UI, state management, and ECS.
+With its integrated level editor, level loading system, and audio analysis, developers can intuitively design levels that
 precisely align with the beat.
 As a showcase, the included 2D platformer ElectronXPulse challenges players to jump, react, and survive in a world
 driven by high-energy EDM tracks. Designed to sharpen reflexes and timing skills, every interaction is coupled to the
@@ -44,7 +43,7 @@ RepositoryRoot/
 
 ### Quick Start: ElectronXPulse
 
-This is a simple quick start guide how to clone my project and get it running.
+This is a simple quick start guide on how to clone my project and get it running.
 
 **Prerequisites:** C++20 Compiler (MSVC) & Windows11 SDK installed.  
 (e.g. Windows 11 SDK (10.0.26100.0) MSVC v143 - VS 2022 C++-x64/x86-Buildtools)
@@ -58,13 +57,13 @@ This is a simple quick start guide how to clone my project and get it running.
 
 2. Once cloned, you can open the root folder in CLion. And load the `CMAKEList.txt` file from the "code" folder.
 
-3. In CLion go to Settings->Build,Execution,Deployment->Toolchains add the Microsoft Visual Studio Compiler (2019 or 2022) and hit Apply
+3. In CLion, go to Settings->Build,Execution,Deployment->Toolchains add the Microsoft Visual Studio Compiler (2019 or 2022), and hit Apply
 
 4. You should now have a running configuration -> compile the code and play ElectronXPulse with integrated Level Editor!
 
 ### Example Usage of Electrine in your game:
 
-To use Electrine Engine in your own game, clone as mentioned above and add the engine as subdirectory and link your game
+To use Electrine Engine in your own game, clone as mentioned above, and add the engine as subdirectory and link your game
 executable against Electrine in your CMAKEList.
 
 In your CMakeList:
@@ -108,5 +107,5 @@ This project uses external libraries as Git submodules:
 - [`extern/stb`](https://github.com/nothings/stb) — used stb image for texture loading
 
 Royaltyfree textures were taken from [CraftPix](https://craftpix.net/), [itch.io](https://itch.io/), [Freepik](https://freepik.com/), generated with [Sora](https://sora.chatgpt.com/) and adjusted by myself. 
-Royaltefree soundtrack were taken from [fesliyanSTUDIOS](https://www.fesliyanstudios.com/) and [pixabay](https://pixabay.com/).
+Royaltefree soundtracks were taken from [fesliyanSTUDIOS](https://www.fesliyanstudios.com/) and [pixabay](https://pixabay.com/).
 
