@@ -18,6 +18,7 @@ namespace gl3::engine::levelLoading
     {
         if (const auto existingLevel = loaded_levels.find(ID); existingLevel != loaded_levels.end())
         {
+            most_recent_loaded_lvl_ID = existingLevel->first;
             return existingLevel->second.get();
         }
 
