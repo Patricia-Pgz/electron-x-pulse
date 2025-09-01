@@ -387,7 +387,7 @@ namespace gl3::engine::ecs
             float repeatX = 1.f;
             if (texture)
             {
-                if (!texture->isTileSet())
+                if (!texture->isTileSet() && object.repeatTextureX)
                 {
                     //repeat texture on x to keep textures aspect ratio
                     const float texAspect = static_cast<float>(texture->getWidth()) / static_cast<float>(texture->getHeight());
@@ -518,59 +518,32 @@ namespace gl3::engine::ecs
 
             b2Polygon groundBox;
             groundBox = b2MakeOffsetBox(halfWidth * 0.5f, 0.05f,
-                                        {0.f, 0.f - halfHeight - 0.05f},
+                                        {0.f, 0.f - halfHeight + 0.05f},
                                         b2MakeRot(0.0f));
             b2ShapeId groundSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &groundBox);
 
             // ground sensor
-            groundSensorDef.isSensor = true;
-            groundSensorDef.enableContactEvents = true;
+            topSensorDef.isSensor = true;
+            topSensorDef.enableContactEvents = true;
 
             b2Polygon topBox;
             topBox = b2MakeOffsetBox(halfWidth * 0.5f, 0.05f,
-                                        {0.f, 0.f + halfHeight + 0.05f},
+                                        {0.f, 0.f + halfHeight - 0.05f},
                                         b2MakeRot(0.0f));
-            b2ShapeId topSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &topBox);
+            b2ShapeId topSensor = b2CreatePolygonShape(playerBody, &topSensorDef, &topBox);
 
             // Right Side collider
             rightSensorDef.enableContactEvents = true;
 
             b2Polygon rightBox;
             rightBox = b2MakeOffsetBox(0.05f, halfHeight * 0.5f,
-                                       {0.f + halfWidth + 0.05f, 0.f},
+                                       {0.f + halfWidth - 0.05f, 0.f},
                                        b2MakeRot(0.0f));
 
             b2ShapeId rightSensor = b2CreatePolygonShape(playerBody, &rightSensorDef, &rightBox);
 
-            b2ShapeId bottomRightCornerSen = createBottomRightCornerSensor(player, playerBody);
             //for collision with corners of objects
-            return {groundSensor, rightSensor, topSensor, bottomRightCornerSen};
-        }
-
-        /**
-         * @brief Create a sensor/collider to stop the player from glitching through corners of objects
-         * @param player The player GameObject to calculate the sensor from.
-         * @param playerBody The player physics body to add the sensor to.
-         * @return The box2D shape ID to the new bottom right corner sensor.
-         */
-        static b2ShapeId createBottomRightCornerSensor(const GameObject& player, const b2BodyId playerBody)
-        {
-            const float halfWidth = player.scale.x * 0.5f;
-            const float halfHeight = player.scale.y * 0.5f;
-            b2ShapeDef cornerSensorDef = b2DefaultShapeDef();
-            // Define square first (half extents)
-            constexpr float cornerSensorHalfExtent = 0.1f;
-            cornerSensorDef.isSensor = true;
-            cornerSensorDef.enableContactEvents = true;
-
-            b2Polygon groundBox;
-            groundBox = b2MakeOffsetBox(cornerSensorHalfExtent, cornerSensorHalfExtent,
-                                        {
-                                            halfWidth - cornerSensorHalfExtent - 0.1f,
-                                            -halfHeight + cornerSensorHalfExtent + 0.1f
-                                        }, // push inside the corner
-                                        b2MakeRot(glm::radians(-45.f)));
-            return b2CreatePolygonShape(playerBody, &cornerSensorDef, &groundBox);
+            return {groundSensor, rightSensor, topSensor};
         }
     };
 } // engine

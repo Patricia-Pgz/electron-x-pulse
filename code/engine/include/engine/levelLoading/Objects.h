@@ -34,7 +34,8 @@ struct GameObject
     glm::vec4 gradientTopColor = {1.f, 1.f, 1.f, 1.f}; /**< Top gradient color @note no engine implementation yet, what to do with this*/
     glm::vec4 gradientBottomColor = {1.f, 1.f, 1.f, 1.f}; /**< Bottom gradient color @note no engine implementation yet, what to do with this*/
     float zLayer = 0.f;
-    bool isSensor = false;/**< Flag to generate physics component as sensor */
+    bool isSensor = false;/**< Flag to generate physics component as sensor*/
+    bool repeatTextureX = true; /**< Flag to repeat the texture on x-axis*/
 };
 
 /**

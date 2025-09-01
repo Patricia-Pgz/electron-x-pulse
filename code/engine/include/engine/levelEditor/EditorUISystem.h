@@ -130,6 +130,7 @@ EditorUISystem::reset>(this);
         float grid_offset = 0.5f;                           /**< Offset value for grid alignment. */
         std::vector<ImVec2> selected_grid_cells;           /**< Currently selected grid cells in the editor. */
         std::vector<ImVec2> selected_group_cells;          /**< Selected cells to group. */
+        bool advancedSettings = false;                     /**< Flag to toggle advanced developer settings (changes made in advanced settings might only be reverse-able by editing the level json file). */
         glm::vec2 selected_position_offset = {0.f, 0.f};  /**< Offset from cell center. */
         glm::vec2 selected_scale = {1.f, 1.f};
         float selected_layer = 0.f;                        /**< Selected layer for rendering*/
@@ -139,6 +140,7 @@ EditorUISystem::reset>(this);
         float selected_z_rotation = 0.f;                     /**< Rotation angle around Z-axis for entity creation. */
         bool generate_physics_comp = true;                   /**< Whether to generate physics component when creating the object(s). */
         bool use_color = false;                               /**< Whether to apply custom coloring or texture to entity creation. */
+        bool repeatTextureOnX = true;                        /**< Whether to repeat the texture on the x-axis. */
         glm::vec4 selected_color = {1.0f, 1.0f, 1.0f, 1.0f}; /**< Color used for entity creation. */
         EditorSystem* editor_system;                          /**< Pointer to the main editor system instance. */
         float final_beat_position = 0.f;                      /**< Position of final beat for timing music-synced editing. */

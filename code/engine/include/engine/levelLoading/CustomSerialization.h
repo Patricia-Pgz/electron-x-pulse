@@ -62,7 +62,8 @@ struct glz::meta<GameObject>
         "gradientBottomColor", &T::gradientBottomColor,
         "parallaxFactor", &T::parallaxFactor,
         "zLayer", &T::zLayer,
-        "isSensor", &T::isSensor
+        "isSensor", &T::isSensor,
+        "repeatTextureX", &T::repeatTextureX
     );
 };
 

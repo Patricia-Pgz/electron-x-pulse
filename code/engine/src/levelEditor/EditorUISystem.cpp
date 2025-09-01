@@ -213,7 +213,7 @@ namespace gl3::engine::editor
         if (final_beat_position >= worldWindowBounds[0] && final_beat_position <= worldWindowBounds[1])
         {
             auto finalBeatPositionScreen = rendering::MVPMatrixHelper::toScreen(
-                game.getContext(), final_beat_position, 0.f);
+                game.getContext(), round(final_beat_position) + grid_offset, 0.f);
             drawList->AddLine(
                 ImVec2(finalBeatPositionScreen.x, 0.f),
                 ImVec2(finalBeatPositionScreen.x, screenSize.y),
@@ -258,6 +258,7 @@ namespace gl3::engine::editor
                         name, {selected_scale.x, selected_scale.y, 0.f}, uv, selected_z_rotation, generate_physics_comp
                     };
                     object.zLayer = selected_layer;
+                    object.repeatTextureX = repeatTextureOnX;
                     ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, compute_group_AABB});
                     if (compute_group_AABB)
                     {
@@ -301,6 +302,7 @@ namespace gl3::engine::editor
                     generate_physics_comp
                 };
                 object.zLayer = selected_layer;
+                object.repeatTextureX = repeatTextureOnX;
                 ecs::EventDispatcher::dispatcher.trigger(
                     ui::EditorTileSelectedEvent{object, compute_group_AABB});
                 if (compute_group_AABB)
@@ -392,7 +394,7 @@ namespace gl3::engine::editor
         }
         if (selected_grid_cells.empty())
         {
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Click on grid to select position!");
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "!Click on grid to select position!");
         }
         ImGui::PopStyleColor();
         ImGui::PopFont();
@@ -402,7 +404,7 @@ namespace gl3::engine::editor
 
         ImGui::Text("Soundtrack End:");
         ImGui::SameLine();
-        ImGui::TextColored(ImVec4(1, 0, 0, 1), "%d  beats", static_cast<int>(final_beat_position));
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), "%dth  beat", static_cast<int>(final_beat_position));
 
         if (ImGui::Button("Save Level"))
         {
@@ -478,15 +480,6 @@ namespace gl3::engine::editor
         }
         ImGui::Separator();
 
-        ImGui::Text("Position Offset from Cell Center:");
-        const auto xtItemWidth = ImGui::GetContentRegionAvail().x * 0.3f;
-        ImGui::SetNextItemWidth(xtItemWidth);
-        ImGui::InputFloat("offsetX", &selected_position_offset.x, 0.1f, 10.f, "%.2f");
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(xtItemWidth);
-        ImGui::InputFloat("offsetY", &selected_position_offset.y, 0.1f, 10.f, "%.2f");
-        ImGui::Separator();
-
         ImGui::Text("Select shape:");
         if (ImGui::RadioButton("Rectangle", !is_triangle))
             is_triangle = false;
@@ -498,14 +491,14 @@ namespace gl3::engine::editor
         ImGui::Text("Scale:");
         const auto itemWidth = ImGui::GetContentRegionAvail().x * 0.3f;
         ImGui::SetNextItemWidth(itemWidth);
-        if (ImGui::InputFloat("X", &selected_scale.x, 0.1f, 1.0f, "%.2f"))
+        if (ImGui::InputFloat("X", &selected_scale.x, 0.1f, 1.0f, "%.3f"))
         {
             if (selected_scale.x < 0.0f)
                 selected_scale.x = 0.1f;
         }
         ImGui::SameLine();
         ImGui::SetNextItemWidth(itemWidth);
-        if (ImGui::InputFloat("Y", &selected_scale.y, 0.1f, 10.f, "%.2f"))
+        if (ImGui::InputFloat("Y", &selected_scale.y, 0.1f, 10.f, "%.3f"))
         {
             if (selected_scale.x < 0.0f)
                 selected_scale.x = 0.1f;
@@ -539,22 +532,41 @@ namespace gl3::engine::editor
             selected_z_rotation += 360.0f;
         ImGui::Separator();
 
-        ImGui::Text("Render Layer:");
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.3f);
-        if (ImGui::InputFloat("Z-Layer", &selected_layer, 0.1f, 1.0f, "%.2f"))
+        ImGui::Checkbox("Advanced Settings", &advancedSettings);
+        if(advancedSettings)
         {
-            if (selected_layer < -10.0f) // Constrain layer range (optional)
-                selected_layer = -10.f;
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip(
-                "Negative values are further away from the camera \n (mostly used for rendering transparent objects first)");
-        }
-        ImGui::Separator();
+            ImGui::Text("Render Layer:");
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.3f);
+            if (ImGui::InputFloat("Z-Layer", &selected_layer, 0.1f, 1.0f, "%.2f"))
+            {
+                if (selected_layer < -10.0f) // Constrain layer range (optional)
+                    selected_layer = -10.f;
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip(
+                    "Negative values are further away from the camera \n (mostly used for rendering transparent objects first)");
+            }
 
-        ImGui::Text("Generate PhysicsComponent");
-        if (!compute_group_AABB)ImGui::Checkbox("##PhysicsComp", &generate_physics_comp);
+            ImGui::Text("Generate PhysicsComponent");
+            if (!compute_group_AABB)ImGui::Checkbox("##PhysicsComp", &generate_physics_comp);
+
+            ImGui::Text("Position Offset from Cell Center:");
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+                ImGui::BeginTooltip();
+                ImGui::Text("!Objects with changed offset may only be deleted via the level file!");
+                ImGui::EndTooltip();
+                ImGui::PopStyleColor();
+            }
+            const auto xItemWidth = ImGui::GetContentRegionAvail().x * 0.3f;
+            ImGui::SetNextItemWidth(xItemWidth);
+            ImGui::InputFloat("offsetX", &selected_position_offset.x, 0.1f, 10.f, "%.3f");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(xItemWidth);
+            ImGui::InputFloat("offsetY", &selected_position_offset.y, 0.1f, 10.f, "%.3f");
+        }
         ImGui::Separator();
 
         const float availableWidth = ImGui::GetContentRegionAvail().x;
@@ -627,6 +639,7 @@ namespace gl3::engine::editor
                         generate_physics_comp
                     };
                     object.zLayer = selected_layer;
+                    object.repeatTextureX = repeatTextureOnX;
                     ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, compute_group_AABB});
                     if (compute_group_AABB)
                     {
@@ -639,6 +652,7 @@ namespace gl3::engine::editor
         else
         {
             ImGui::Text("Textures:");
+            ImGui::Checkbox("Repeat Texture Horizontally", &repeatTextureOnX);
             int tileIndex = 0;
             for (const auto& [name, texture] : rendering::TextureManager::getAllTextures())
             {
