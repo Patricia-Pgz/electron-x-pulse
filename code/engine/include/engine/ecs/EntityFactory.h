@@ -60,19 +60,20 @@ namespace gl3::engine::ecs
                                     const glm::vec3 scale = {1.0f, 1.0f, 1.0f},
                                     const float zRotation = 0.0f,
                                     const float parallax = 0.0f) :
-            initialPosition(position), initialScale(scale),
+            initialPosition(position), previousPosition(position), initialScale(scale),
             initialZRotation(zRotation), position(position), scale(scale), zRotation(zRotation),
             parallaxFactor(parallax)
         {
         }
 
-        glm::vec3 initialPosition = {0.0f, 0.0f, 0.0f};
-        glm::vec3 initialScale = {1.0f, 1.0f, 1.0f};
-        float initialZRotation = 0.f;
-        glm::vec3 position = {0.0f, 0.0f, 0.0f};
-        glm::vec3 scale = {1.0f, 1.0f, 1.0f};
-        float zRotation = 0.0f;
-        float parallaxFactor = 0.f;
+        glm::vec3 initialPosition;
+        glm::vec2 previousPosition;
+        glm::vec3 initialScale;
+        float initialZRotation;
+        glm::vec3 position;
+        glm::vec3 scale;
+        float zRotation;
+        float parallaxFactor;
     };
 
     /**
@@ -442,6 +443,7 @@ namespace gl3::engine::ecs
             bodyDef.position = {object.position.x, object.position.y};
             bodyDef.rotation = b2MakeRot(glm::radians(object.zRotation));
             bodyDef.fixedRotation = object.tag == "player";
+            bodyDef.isBullet = object.tag == "player"; //stop tunneling / continuously update collision detection
             bodyDef.linearDamping = 0.0f;
             bodyDef.userData = reinterpret_cast<void*>(static_cast<uintptr_t>(entity));
             const auto body = b2CreateBody(physicsWorld, &bodyDef);
@@ -517,7 +519,7 @@ namespace gl3::engine::ecs
             groundSensorDef.enableContactEvents = true;
 
             b2Polygon groundBox;
-            groundBox = b2MakeOffsetBox(halfWidth * 0.5f, 0.05f,
+            groundBox = b2MakeOffsetBox(halfWidth * 0.8f, 0.05f,
                                         {0.f, 0.f - halfHeight + 0.05f},
                                         b2MakeRot(0.0f));
             b2ShapeId groundSensor = b2CreatePolygonShape(playerBody, &groundSensorDef, &groundBox);
@@ -527,7 +529,7 @@ namespace gl3::engine::ecs
             topSensorDef.enableContactEvents = true;
 
             b2Polygon topBox;
-            topBox = b2MakeOffsetBox(halfWidth * 0.5f, 0.05f,
+            topBox = b2MakeOffsetBox(halfWidth * 0.8f, 0.05f,
                                         {0.f, 0.f + halfHeight - 0.05f},
                                         b2MakeRot(0.0f));
             b2ShapeId topSensor = b2CreatePolygonShape(playerBody, &topSensorDef, &topBox);

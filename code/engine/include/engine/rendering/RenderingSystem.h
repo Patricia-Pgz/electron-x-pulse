@@ -4,7 +4,6 @@
 #include "engine/ecs/System.h"
 #include "engine/levelloading/LevelManager.h"
 #include "engine/rendering/MVPMatrixHelper.h"
-#include "glm/gtc/epsilon.hpp"
 
 namespace gl3::engine::rendering
 {
@@ -99,7 +98,7 @@ namespace gl3::engine::rendering
                     renderComp.shader.setVector4("color", renderComp.color);
 
                     // If gradient top and bottom are not the same color -> Handle color gradient
-                    if (!all(epsilonEqual(renderComp.gradientTopColor, renderComp.gradientBottomColor, 0.001f)))
+                    if (!glm::all(glm::epsilonEqual(renderComp.gradientTopColor, renderComp.gradientBottomColor, 0.001f)))
                     {
                         renderComp.shader.setVector4("topColor", renderComp.gradientTopColor);
                         renderComp.shader.setVector4("bottomColor", renderComp.gradientBottomColor);
@@ -110,6 +109,15 @@ namespace gl3::engine::rendering
                     {
                         renderComp.shader.setInt("useTexture", 1);
                         renderComp.texture->bind(0);
+                        if(renderComp.repeatX <= 0)
+                        {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                        } else
+                        {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                        }
                         renderComp.shader.setInt("texture1", 0);
 
                         // Handle parallax UV offset if enabled and game is running
