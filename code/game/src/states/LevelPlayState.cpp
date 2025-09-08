@@ -252,7 +252,7 @@ namespace gl3::game::state
             if (!game.getRegistry().valid(entity) || entity == entt::null)return;
             const auto& physics_comp = view.get<engine::ecs::PhysicsComponent>(entity);
             if (auto& tag = view.get<engine::ecs::TagComponent>(entity).tag; tag == "platform" || tag == "obstacle" ||
-                tag == "jump")
+                tag == "gravity" || tag == "visual")
             {
                 if (move)
                 {
@@ -386,7 +386,7 @@ namespace gl3::game::state
 
         setSystemsActive(false);
         menu_ui->setActive(true);
-        instruction_ui->setActive(level_index == 0);
+        instruction_ui->setActive(level_index == 0 || edit_mode);
         finish_ui->setActive(false);
         game.getAudioSystem()->stopCurrentAudio();
 
@@ -471,17 +471,6 @@ namespace gl3::game::state
         if (!paused)
         {
             level_time += deltaTime;
-            auto entities = game.getRegistry().view<engine::ecs::TagComponent, engine::ecs::TransformComponent>();
-            for (auto& entity : entities)
-            {
-                auto tag = entities.get<engine::ecs::TagComponent>(entity).tag;
-                auto& transform = entities.get<engine::ecs::TransformComponent>(entity);
-                //Move objects that are only visual, without collider
-                if(tag == "visual")
-                {
-                    transform.position.x += current_level->currentLevelSpeed * -1 * deltaTime;
-                }
-            }
             delayLevelEnd(deltaTime);
         }
     }

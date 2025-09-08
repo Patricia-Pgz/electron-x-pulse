@@ -34,6 +34,11 @@ namespace gl3::engine::physics
                 PhysicsSystem::onPlayerJump>(this);
         }
 
+        [[nodiscard]] float getFixedTimeStep() const
+        {
+            return fixed_time_step;
+        }
+
         /// Event triggered after the physics step completes
         using event_t = events::Event<PhysicsSystem>;
         event_t onAfterPhysicsStep;

@@ -99,7 +99,7 @@ namespace gl3::game::state
   void onEnter() override
   {
    menu_ui->setActive(true);
-   if (level_index == 0) // Tutorial Level
+   if (level_index == 0 || edit_mode) // Tutorial Level / Editor
    {
     instruction_ui->setActive(true); // Deactivates itself after timer.
    }

@@ -85,6 +85,7 @@ namespace gl3::game::ui
 
         /// ImGui window flags for styling the instruction window.
         static constexpr ImGuiWindowFlags flags =
+            ImGuiWindowFlags_NoInputs |
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |
             ImGuiWindowFlags_NoTitleBar |

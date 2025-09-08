@@ -139,6 +139,7 @@ EditorUISystem::reset>(this);
         bool is_triangle = false;                            /**< Whether selected shape is a triangle. */
         float selected_z_rotation = 0.f;                     /**< Rotation angle around Z-axis for entity creation. */
         bool generate_physics_comp = true;                   /**< Whether to generate physics component when creating the object(s). */
+        bool is_sensor = false;                              /**< Whether the physics body of this object is only a sensor */
         bool use_color = false;                               /**< Whether to apply custom coloring or texture to entity creation. */
         bool repeatTextureOnX = true;                        /**< Whether to repeat the texture on the x-axis. */
         glm::vec4 selected_color = {1.0f, 1.0f, 1.0f, 1.0f}; /**< Color used for entity creation. */

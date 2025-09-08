@@ -259,6 +259,7 @@ namespace gl3::engine::editor
                     };
                     object.zLayer = selected_layer;
                     object.repeatTextureX = repeatTextureOnX;
+                    object.isSensor = is_sensor;
                     ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, compute_group_AABB});
                     if (compute_group_AABB)
                     {
@@ -303,6 +304,7 @@ namespace gl3::engine::editor
                 };
                 object.zLayer = selected_layer;
                 object.repeatTextureX = repeatTextureOnX;
+                object.isSensor = is_sensor;
                 ecs::EventDispatcher::dispatcher.trigger(
                     ui::EditorTileSelectedEvent{object, compute_group_AABB});
                 if (compute_group_AABB)
@@ -383,6 +385,7 @@ namespace gl3::engine::editor
         styleWindow();
         ImGui::PushStyleColor(ImGuiCol_Text, UINeonColors::windowBgColor);
         ImGui::PushFont(ui::FontManager::getFont("PixeloidSans-Bold"));
+        ImGui::SetNextWindowFocus();
         ImGui::Begin("Tile Panel", nullptr, flags);
         if (ImGui::IsWindowHovered())
         {
@@ -506,7 +509,7 @@ namespace gl3::engine::editor
         ImGui::Separator();
 
         ImGui::Text("Select tag:");
-        const std::vector<std::string> tagButtonIDs{"platform", "obstacle", "visual"};
+        const std::vector<std::string> tagButtonIDs{"platform", "obstacle", "visual", "gravity"};
         highlightSelectedButton(tagButtonIDs);
         ImGui::Text("Custom tag:");
         ImGui::SameLine();
@@ -521,9 +524,9 @@ namespace gl3::engine::editor
         {
             selected_tag = tag_input_buffer;
         }
-        if (selected_tag == "visual")
+        if (selected_tag == "visual" || selected_tag == "gravity")
         {
-            generate_physics_comp = false;
+            is_sensor = true;
         }
         ImGui::Separator();
 
@@ -552,8 +555,12 @@ namespace gl3::engine::editor
                     "Negative values are further away from the camera \n (mostly used for rendering transparent objects first)");
             }
 
-            ImGui::Text("Generate PhysicsComponent");
-            if (!compute_group_AABB)ImGui::Checkbox("##PhysicsComp", &generate_physics_comp);
+            ImGui::Text("Physics:");
+            if (!compute_group_AABB)
+            {
+                ImGui::Checkbox("Generate PhysicsComponent", &generate_physics_comp);
+                ImGui::Checkbox("Body is Sensor", &is_sensor);
+            }
 
             ImGui::Text("Position Offset from Cell Center:");
             if (ImGui::IsItemHovered())
@@ -644,6 +651,7 @@ namespace gl3::engine::editor
                     };
                     object.zLayer = selected_layer;
                     object.repeatTextureX = repeatTextureOnX;
+                    object.isSensor = is_sensor;
                     ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, compute_group_AABB});
                     if (compute_group_AABB)
                     {

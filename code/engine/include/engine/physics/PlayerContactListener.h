@@ -71,7 +71,7 @@ namespace gl3::engine::physics
                     b2Body_GetUserData(b2Shape_GetBody(event.visitorShapeId))));
                 auto& tagB = registry.get<ecs::TagComponent>(sensorB).tag;
                 if (tagA != "player" && tagB != "player") continue;
-                if (tagA == "jump" && !jumpMechanicTriggered)
+                if (tagA == "gravity" && !jumpMechanicTriggered)
                 //a sensor object to set additional on jump logic (e.g. double jump)
                 {
                     ecs::EventDispatcher::dispatcher.trigger(ecs::GravityChange{event.sensorShapeId});
@@ -94,7 +94,7 @@ namespace gl3::engine::physics
 
                 if (tagA != "player" && tagB != "player") continue;
 
-                if (tagA == "jump")
+                if (tagA == "gravity")
                 {
                     jumpMechanicTriggered = false; // ready for next time
                 }

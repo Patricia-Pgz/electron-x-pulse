@@ -14,8 +14,8 @@ namespace gl3::game::ui
         ImGui::PushFont(font);
         ImGui::Begin("Hints", nullptr, flags);
         const auto windowSize = ImGui::GetWindowSize();
-        ImGui::GetStyle().WindowPadding = ImVec2(windowSize.x * 0.08f, windowSize.y * 0.08f);
         ImGui::GetStyle().ItemSpacing = ImVec2(40, 40);
+        ImGui::SetCursorPos({windowSize.x * 0.03f, windowSize.y * 0.15f});
         const std::string text1 = "Press SPACE to Jump & ESC to Open/Close Menu";
         const std::string text = edit_mode ? text1 + " & ENTER to Start/Reset Play-Mode" : text1;
         ImGui::Text(text.c_str());
@@ -37,8 +37,8 @@ namespace gl3::game::ui
 
     void InstructionUI::update(const float deltaTime)
     {
-        if (timer <= 0.f || game.isPaused()) return;
-        drawHints(ImGui::GetMainViewport(), engine::ui::FontManager::getFont("PixeloidSans"), deltaTime);
+        if (timer <= 0.f || (game.isPaused() && !edit_mode)) return;
+        drawHints(ImGui::GetMainViewport(), engine::ui::FontManager::getFont("PixeloidSans-Bold"), deltaTime);
     }
 
     void InstructionUI::setActive(const bool setActive)
