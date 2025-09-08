@@ -506,7 +506,7 @@ namespace gl3::engine::editor
         ImGui::Separator();
 
         ImGui::Text("Select tag:");
-        const std::vector<std::string> tagButtonIDs{"platform", "obstacle"};
+        const std::vector<std::string> tagButtonIDs{"platform", "obstacle", "visual"};
         highlightSelectedButton(tagButtonIDs);
         ImGui::Text("Custom tag:");
         ImGui::SameLine();
@@ -521,6 +521,10 @@ namespace gl3::engine::editor
         {
             selected_tag = tag_input_buffer;
         }
+        if (selected_tag == "visual")
+        {
+            generate_physics_comp = false;
+        }
         ImGui::Separator();
 
         ImGui::Text("Z-Rotation:");
@@ -533,7 +537,7 @@ namespace gl3::engine::editor
         ImGui::Separator();
 
         ImGui::Checkbox("Advanced Settings", &advancedSettings);
-        if(advancedSettings)
+        if (advancedSettings)
         {
             ImGui::Text("Render Layer:");
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.3f);

@@ -471,6 +471,17 @@ namespace gl3::game::state
         if (!paused)
         {
             level_time += deltaTime;
+            auto entities = game.getRegistry().view<engine::ecs::TagComponent, engine::ecs::TransformComponent>();
+            for (auto& entity : entities)
+            {
+                auto tag = entities.get<engine::ecs::TagComponent>(entity).tag;
+                auto& transform = entities.get<engine::ecs::TransformComponent>(entity);
+                //Move objects that are only visual, without collider
+                if(tag == "visual")
+                {
+                    transform.position.x += current_level->currentLevelSpeed * -1 * deltaTime;
+                }
+            }
             delayLevelEnd(deltaTime);
         }
     }
