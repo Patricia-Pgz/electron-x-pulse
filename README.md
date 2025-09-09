@@ -10,7 +10,7 @@ framework to quickly create similar sidescrollers.
 | Target Platform(s) | Windows                                                                  |
 | Start Date         | 01.11.2024                                                               |
 | Study Program      | Games Engineering B.Sc.                                                  |
-| Engine Version     | Electrine 0.1                                                            |
+| Engine Version     | Electrine 0.0.1                                                            |
 
 ## Abstract
 
@@ -52,7 +52,7 @@ This is a simple quick start guide on how to clone my project and get it running
    <span style="font-size: 90%; color: gray;">Note: This clones the project with all needed external submodules.
    See the [External Libraries section](#libs) for details.</span>
    ```bash
-   git clone --recursive --depth 1 https://gitlab2.informatik.uni-wuerzburg.de/GE/Teaching/gl3/projects/2024/29-gl3-pongratz.git
+   git clone --recursive --depth 1 https://github.com/Patricia-Pgz/electron-x-pulse.git
    ```
 
 2. Once cloned, you can open the root folder in CLion. And load the `CMAKEList.txt` file from the "code" folder.
