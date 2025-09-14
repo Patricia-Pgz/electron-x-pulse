@@ -24,7 +24,10 @@ target_link_libraries(${EXE_FILE}
 )
 
 # Copy assets to output dir before launch
-add_custom_command(TARGET ${EXE_FILE} PRE_BUILD
+add_custom_command(
+        TARGET ${EXE_FILE} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${EXE_FILE}>/assets
+        ${CMAKE_SOURCE_DIR}/assets
+        $<TARGET_FILE_DIR:${EXE_FILE}>/assets
 )
+
