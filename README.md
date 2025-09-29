@@ -1,6 +1,8 @@
 This repository includes a c++, OpenGL-based 2D side-scrolling platformer game with a level editor and an engine
 framework to quickly create similar sidescrollers.
 
+![](images/Cover.png)
+
 # GameLab Project Repository
 
 | General Info       |                                                                          |
