@@ -141,7 +141,7 @@ EditorUISystem::reset>(this);
         bool generate_physics_comp = true;                   /**< Whether to generate physics component when creating the object(s). */
         bool is_sensor = false;                              /**< Whether the physics body of this object is only a sensor */
         bool use_color = false;                               /**< Whether to apply custom coloring or texture to entity creation. */
-        bool repeatTextureOnX = true;                        /**< Whether to repeat the texture on the x-axis. */
+        bool repeatTextureOnX = false;                        /**< Whether to repeat the texture on the x-axis. */
         glm::vec4 selected_color = {1.0f, 1.0f, 1.0f, 1.0f}; /**< Color used for entity creation. */
         EditorSystem* editor_system;                          /**< Pointer to the main editor system instance. */
         float final_beat_position = 0.f;                      /**< Position of final beat for timing music-synced editing. */

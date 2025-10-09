@@ -162,6 +162,14 @@ namespace gl3::engine::levelLoading
             editModeActive = !editModeActive;
             ecs::EventDispatcher::dispatcher.trigger(ui::EditModeButtonPress{editModeActive});
         }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {20.f, 20.f});
+            ImGui::BeginTooltip();
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Still experimental!");
+            ImGui::EndTooltip();
+            ImGui::PopStyleVar();
+        }
         if (pushedStyle)
         {
             ImGui::PopStyleColor(3);

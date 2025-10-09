@@ -109,7 +109,7 @@ namespace gl3::engine::rendering
                     {
                         renderComp.shader.setInt("useTexture", 1);
                         renderComp.texture->bind(0);
-                        if(renderComp.repeatX <= 0)
+                        if(!renderComp.repeatX)
                         {
                             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
                             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -126,7 +126,7 @@ namespace gl3::engine::rendering
                             const float pixelsPerSecond = levelLoading::LevelManager::getCurrentLevel()->
                                 currentLevelSpeed;
 
-                            const float uvPerSecond = pixelsPerSecond * renderComp.repeatX / transform.scale.x;
+                            const float uvPerSecond = pixelsPerSecond * renderComp.repeatAmount / transform.scale.x;
 
                             renderComp.uvOffset.x += transform.parallaxFactor * uvPerSecond * game.getDeltaTime();
                             renderComp.uvOffset.x = std::fmod(renderComp.uvOffset.x, 1.0f);

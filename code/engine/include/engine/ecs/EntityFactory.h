@@ -90,7 +90,8 @@ namespace gl3::engine::ecs
         glm::vec4 gradientTopColor = {1, 1, 1, 1}; /**< Top color for gradient effects. */
         glm::vec4 gradientBottomColor = {1, 1, 1, 1}; /**< Bottom color for gradient effects. */
         const rendering::Texture* texture = nullptr;
-        float repeatX = 0.f; /**< How often the texture is repeated on x */
+        bool repeatX = false; /**< If the texture is repeated on x */
+        float repeatAmount = 0.f; /**< How often the texture is repeated on x */
         glm::vec4 uv; /**< UV coordinates for texture mapping. */
         glm::vec2 uvOffset = {0.0f, 0.0f}; /**< Offset applied to UV mapping. */
         bool isActive = true;
@@ -385,17 +386,17 @@ namespace gl3::engine::ecs
         static RenderComponent createRenderComponent(GameObject& object,
                                                      const rendering::Texture* texture)
         {
-            float repeatX = 1.f;
+            float repeatXMultiplier = 1.f;
             if (texture)
             {
-                if (!texture->isTileSet() && object.repeatTextureX)
+                if (object.repeatTextureX)
                 {
                     //repeat texture on x to keep textures aspect ratio
                     const float texAspect = static_cast<float>(texture->getWidth()) / static_cast<float>(texture->getHeight());
-                    repeatX = object.scale.x / (object.scale.y * texAspect);
+                    repeatXMultiplier = object.scale.x / (object.scale.y * texAspect);
                 } else
                 {
-                    repeatX = 0.f;
+                    repeatXMultiplier = 0.f;
                 }
             }
             //use gradient shader
@@ -406,7 +407,7 @@ namespace gl3::engine::ecs
             }
             const auto data = object.isTriangle
                                   ? getTriangleVertices(1.f, 1.f, object.uv)
-                                  : getBoxVertices(1.f, 1.f, object.uv, repeatX);
+                                  : getBoxVertices(1.f, 1.f, object.uv, repeatXMultiplier);
             const std::vector<float> vertices = data.vertices;
             const std::vector<unsigned int> indices = data.indices;
             const std::string vertexPath = !object.vertexShaderPath.empty()
@@ -422,7 +423,8 @@ namespace gl3::engine::ecs
                 object.gradientTopColor,
                 object.gradientBottomColor,
                 texture,
-                repeatX,
+                object.repeatTextureX,
+                repeatXMultiplier,
                 object.uv
             );
         }

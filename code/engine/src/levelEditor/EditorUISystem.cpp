@@ -385,7 +385,6 @@ namespace gl3::engine::editor
         styleWindow();
         ImGui::PushStyleColor(ImGuiCol_Text, UINeonColors::windowBgColor);
         ImGui::PushFont(ui::FontManager::getFont("PixeloidSans-Bold"));
-        ImGui::SetNextWindowFocus();
         ImGui::Begin("Tile Panel", nullptr, flags);
         if (ImGui::IsWindowHovered())
         {
@@ -615,7 +614,7 @@ namespace gl3::engine::editor
 
         if (ImGui::RadioButton("Texture", !use_color))
         {
-            use_color = false;
+            use_color = !use_color;
         }
 
         if (use_color)
