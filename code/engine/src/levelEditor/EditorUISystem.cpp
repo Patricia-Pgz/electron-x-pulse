@@ -27,7 +27,7 @@ namespace gl3::engine::editor
     }
 
     ///Delete all entities from the registry, that have their TransformComponent position at the currently selected cell's position.
-    void EditorUISystem::deleteAllAtSelectedPosition() const
+    void EditorUISystem::deleteAllAtSelectedCell() const
     {
         auto& registry = game.getRegistry();
         const auto& view = registry.view<ecs::TransformComponent, ecs::TagComponent>();
@@ -74,7 +74,7 @@ namespace gl3::engine::editor
         // Also remove any level objects at these positions:
         for (const auto& cell : selected_grid_cells)
         {
-            levelLoading::LevelManager::removeAllObjectsAtPosition({cell.x, cell.y});
+            levelLoading::LevelManager::removeAllObjectsInGridCell({cell.x, cell.y}, grid_spacing);
         }
 
         //Signal to remove items from grouping cache
@@ -86,19 +86,19 @@ namespace gl3::engine::editor
 
 
     /// Draws the Editor grid overlay for selecting cells and placing tiles.
-    void EditorUISystem::drawGrid(const float gridSpacing)
+    void EditorUISystem::drawGrid()
     {
         const ImVec2 screenSize = imgui_io->DisplaySize;
         grid_center = ImVec2(screenSize.x * 0.5f, screenSize.y * 0.5f);
         ImDrawList* drawList = ImGui::GetBackgroundDrawList();
 
-        const int verticalLines = static_cast<int>(screenSize.x / gridSpacing);
-        const int horizontalLines = static_cast<int>(screenSize.y / gridSpacing);
+        const int verticalLines = static_cast<int>(screenSize.x / grid_spacing);
+        const int horizontalLines = static_cast<int>(screenSize.y / grid_spacing);
 
         // vertical lines
         for (int i = -verticalLines; i <= verticalLines; ++i)
         {
-            const float xPos = (static_cast<float>(i) + grid_offset) * gridSpacing;
+            const float xPos = (static_cast<float>(i) + grid_offset) * grid_spacing;
             drawList->AddLine(ImVec2(grid_center.x + xPos, screenSize.y), ImVec2(grid_center.x + xPos, -screenSize.y),
                               IM_COL32(100, 100, 100, 255));
         }
@@ -106,7 +106,7 @@ namespace gl3::engine::editor
         // horizontal lines
         for (int j = -horizontalLines; j <= horizontalLines; ++j)
         {
-            const float yPos = (static_cast<float>(j) + grid_offset) * gridSpacing;
+            const float yPos = (static_cast<float>(j) + grid_offset) * grid_spacing;
             drawList->AddLine(ImVec2(screenSize.x, grid_center.y + yPos), ImVec2(-screenSize.x, grid_center.y + yPos),
                               IM_COL32(100, 100, 100, 255));
         }
@@ -171,7 +171,7 @@ namespace gl3::engine::editor
             // Convert snapped cell back to screen space for drawing
             const glm::vec2 cellScreenPos = rendering::MVPMatrixHelper::toScreen(
                 game.getContext(), static_cast<float>(cellX), static_cast<float>(cellY));
-            const float cellSize = gridSpacing;
+            const float cellSize = grid_spacing;
 
             // Define cell rectangle (centered at cellScreenPos) where hovered
             const ImVec2 cellTopLeft(cellScreenPos.x - cellSize * 0.5f, cellScreenPos.y - cellSize * 0.5f);
@@ -192,8 +192,8 @@ namespace gl3::engine::editor
             const auto screenPos = rendering::MVPMatrixHelper::toScreen(
                 game.getContext(), cell.x, cell.y);
 
-            ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
-            ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
+            ImVec2 topLeft(screenPos.x - grid_spacing * 0.5f, screenPos.y - grid_spacing * 0.5f);
+            ImVec2 bottomRight(screenPos.x + grid_spacing * 0.5f, screenPos.y + grid_spacing * 0.5f);
 
             drawList->AddRect(topLeft, bottomRight, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
         }
@@ -203,8 +203,8 @@ namespace gl3::engine::editor
             const auto screenPos = rendering::MVPMatrixHelper::toScreen(
                 game.getContext(), cell.x, cell.y);
 
-            ImVec2 topLeft(screenPos.x - gridSpacing * 0.5f, screenPos.y - gridSpacing * 0.5f);
-            ImVec2 bottomRight(screenPos.x + gridSpacing * 0.5f, screenPos.y + gridSpacing * 0.5f);
+            ImVec2 topLeft(screenPos.x - grid_spacing * 0.5f, screenPos.y - grid_spacing * 0.5f);
+            ImVec2 bottomRight(screenPos.x + grid_spacing * 0.5f, screenPos.y + grid_spacing * 0.5f);
 
             drawList->AddRect(topLeft, bottomRight, IM_COL32(0, 0, 255, 255), 0.0f, 0, 2.0f);
         }
@@ -417,7 +417,7 @@ namespace gl3::engine::editor
             ImGui::SameLine();
             if (ImGui::Button("Delete Selected Element"))
             {
-                deleteAllAtSelectedPosition();
+                deleteAllAtSelectedCell();
             }
         }
 
@@ -689,7 +689,7 @@ namespace gl3::engine::editor
     void EditorUISystem::createCustomUI()
     {
         DrawTileSelectionPanel();
-        drawGrid(pixelsPerMeter);
+        drawGrid();
     }
 
     void EditorUISystem::update(const float deltaTime)

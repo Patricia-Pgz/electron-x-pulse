@@ -55,8 +55,9 @@ namespace gl3::engine::levelLoading
          * @brief Removes all game objects located at the specified position from the current level.
          *
          * @param position Position to remove objects from.
+         * @param gridSpacing The spacing of one grid cell (in pixels per meter)
          */
-        static void removeAllObjectsAtPosition(glm::vec2 position);
+        static void removeAllObjectsInGridCell(glm::vec2 position, float gridSpacing);
 
         /**
          * @brief Adds a group of game objects to the currently loaded level.

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <glaze/json/read.hpp>
 
+#include "engine/Constants.h"
+
 namespace gl3::engine::levelLoading
 {
     int LevelManager::most_recent_loaded_lvl_ID = 0;
@@ -111,8 +113,9 @@ namespace gl3::engine::levelLoading
         level->objects.push_back(object);
     }
 
-    void LevelManager::removeAllObjectsAtPosition(glm::vec2 position)
+    void LevelManager::removeAllObjectsInGridCell(const glm::vec2 position, const float gridSpacing)
     {
+        const float spacing = gridSpacing / pixelsPerMeter;
         const auto it = loaded_levels.find(most_recent_loaded_lvl_ID);
         if (it == loaded_levels.end() || !it->second)
         {
@@ -126,8 +129,11 @@ namespace gl3::engine::levelLoading
         std::erase_if(objects,
                       [&](const GameObject& obj)
                       {
-                          return obj.position.x == position.x && obj.position.y == position.y && obj.tag != "background"
-                              && obj.tag != "ground" && obj.tag != "sky";
+                          const bool inXBounds = obj.position.x >= position.x - spacing / 2 && obj.position.x <=
+                              position.x + spacing / 2;
+                          const bool inYBounds = obj.position.y >= position.y - spacing / 2 && obj.position.y <=
+                              position.y + spacing / 2;
+                          return inXBounds && inYBounds;
                       });
         std::vector<std::string> groupsToRemove;
 
@@ -136,7 +142,11 @@ namespace gl3::engine::levelLoading
             auto& groupObjs = group.children;
             std::erase_if(groupObjs, [&](const GameObject& obj)
             {
-                return obj.position.x == position.x && obj.position.y == position.y;
+                const bool inXBounds = obj.position.x >= position.x - spacing / 2 && obj.position.x <= position.x +
+                    spacing / 2;
+                const bool inYBounds = obj.position.y >= position.y - spacing / 2 && obj.position.y <= position.y +
+                    spacing / 2;
+                return inXBounds && inYBounds;
             });
 
             if (group.children.empty())
