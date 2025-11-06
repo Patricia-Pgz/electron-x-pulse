@@ -11,6 +11,19 @@
 namespace gl3::engine::ui
 {
     /**
+     * Signal to finish grouping and possibly start new group
+     */
+    struct FinalizeGroup
+    {
+
+    };
+
+    /**
+ * Signal to cancel grouping
+ */
+    struct CancelGrouping{};
+
+    /**
  * Button to change to edit mode was pressed.
  */
     struct EditModeButtonPress
@@ -28,25 +41,11 @@ namespace gl3::engine::ui
     };
 
     /**
-     * Signals to generate a group from (previously saved) tile selection.
-     */
-    struct EditorGenerateGroup
-    {
-    };
-
-    /**
      * Signals that a tile that was about to be grouped was deleted.
      */
     struct EditorGroupTileDeleted
     {
         std::vector<ImVec2> selectedCells;
-    };
-
-    /**
-     * Signals that grouping was canceled
-     */
-    struct EditorCancelGrouping
-    {
     };
 
 

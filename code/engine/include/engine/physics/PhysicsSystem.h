@@ -63,7 +63,6 @@ namespace gl3::engine::physics
                 PlayerContactListener::checkForPlayerCollision(game.getRegistry(), game.getPlayer(),
                                                                world);
 
-                updateGroupObjects();
                 //update entities based on physics step
                 const auto& entities = game.getRegistry().view<
                     ecs::TagComponent, ecs::TransformComponent,
@@ -106,31 +105,6 @@ namespace gl3::engine::physics
                 accumulator -= fixed_time_step;
             }
         };
-
-        /**
-         * @brief Updates positions of grouped child objects based on their parent physics body.
-         *
-         * Ensures that child transforms follow their parent's physics body with an offset.
-         */
-        void updateGroupObjects() const
-        {
-            //update grouped objects based on parent physics body
-            auto& registry = game.getRegistry();
-            const auto groupObjs = registry.view<ecs::TransformComponent, ecs::ParentComponent>();
-
-            for (const auto obj : groupObjs)
-            {
-                const auto& parentComp = groupObjs.get<ecs::ParentComponent>(obj);
-                if (!registry.valid(parentComp.parentEntity)) return;
-                const auto parentBody = registry.get<ecs::PhysicsComponent>(parentComp.parentEntity).body;
-                const auto parentPos = b2Body_GetPosition(parentBody);
-
-                auto& transform = groupObjs.get<ecs::TransformComponent>(obj);
-                transform.position = {
-                    parentPos.x + parentComp.localOffset.x, parentPos.y + parentComp.localOffset.y, 0.f
-                };
-            }
-        }
 
         /**
          * @brief Marks a Box2D body for safe deletion after the physics step.

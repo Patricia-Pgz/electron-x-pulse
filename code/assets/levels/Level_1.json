@@ -1,1 +1,2574 @@
-{"audioFile":"SensesShort.wav","velocityMultiplier":1,"playerStartPosX":-2,"groundLevel":-1.5,"clearColor":[1,1,1,1],"gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"backgrounds":[{"position":[-0,1.95,0],"scale":[19.2,6.9,0.1],"rotation":0,"color":[0,0,1,1],"tag":"background","isTriangle":false,"textureName":"geometry1","uv":[0,0,1,1],"generatePhysicsComp":false,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0.05,"zLayer":-2,"isSensor":false,"repeatTextureX":true},{"position":[-0,1.95,0],"scale":[19.2,6.9,0.1],"rotation":0,"color":[0,0,1,1],"tag":"background","isTriangle":false,"textureName":"geometry3","uv":[0,0,1,1],"generatePhysicsComp":false,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0.5,"zLayer":-1,"isSensor":false,"repeatTextureX":true},{"position":[-0,-3.45,0],"scale":[19.2,3.9,0.1],"rotation":0,"color":[1,0,0,1],"tag":"ground","isTriangle":false,"textureName":"groundlvl1","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":1,"zLayer":0,"isSensor":false,"repeatTextureX":true}],"groups":[],"objects":[{"position":[-2,-1.15,0],"scale":[0.7,0.7,0],"rotation":0,"color":[1,0,0,1],"tag":"player","isTriangle":false,"textureName":"cyanPlayer","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[4,-1,0],"scale":[1,1,0.1],"rotation":0,"color":[0.2,0.4,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[5,-1.25,0],"scale":[0.5,0.5,0],"rotation":0,"color":[1,0,0,1],"tag":"obstacle","isTriangle":true,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[11,-1,0],"scale":[2,1,0],"rotation":0,"color":[0,0.2,0.6,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[16,-1,0],"scale":[1,1,0.1],"rotation":0,"color":[0.5,0,0.5,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[18,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0.6,0.3,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[20,0,0],"scale":[1,3,0],"rotation":0,"color":[0.5,0,0.5,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[22,0.5,0],"scale":[1,4,0],"rotation":0,"color":[0.6,0.3,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[28,-1,0],"scale":[1,1,0],"rotation":0,"color":[0.2,0.4,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[29,-1.25,0],"scale":[0.5,0.5,0],"rotation":0,"color":[1,0,0,1],"tag":"obstacle","isTriangle":true,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[30,-1,0],"scale":[1,1,0],"rotation":0,"color":[0,0,1,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[32,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0,0.2,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[38,-1,0],"scale":[1,1,0],"rotation":0,"color":[0.6,0.3,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[39,-1.25,0],"scale":[0.5,0.5,0],"rotation":0,"color":[1,0,0,1],"tag":"obstacle","isTriangle":true,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[40,-1,0],"scale":[1,1,0],"rotation":0,"color":[0.7,0.4,0.9,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[41,-1.25,0],"scale":[0.5,0.5,0],"rotation":0,"color":[1,0,0,1],"tag":"obstacle","isTriangle":true,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[42,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0.6,0.3,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[43,-1.25,0],"scale":[0.5,0.5,0],"rotation":0,"color":[1,0,0,1],"tag":"obstacle","isTriangle":true,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[47,-1,0],"scale":[1,1,0],"rotation":0,"color":[0,0,1,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[50,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0,0.2,0.6,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[52,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0,0.2,0.6,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[54,-1,0],"scale":[2,1,0],"rotation":0,"color":[0.4,0,0.6,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[56,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0.1,0.3,0.7,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[58,-1,0],"scale":[1,1,0],"rotation":0,"color":[0.6,0.3,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[60,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0.1,0.3,0.7,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[62,0,0],"scale":[1,3,0],"rotation":0,"color":[0.7,0.4,0.9,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[64,-1,0],"scale":[1,1,0],"rotation":0,"color":[0,0.2,0.6,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[66,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0.7,0.4,0.9,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[68,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0.7,0.4,0.9,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[70,-1,0],"scale":[1,1,0],"rotation":0,"color":[0.7,0.4,0.9,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[72,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0.7,0.4,0.9,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[74,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0.6,0.3,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[76,0,0],"scale":[1,3,0],"rotation":0,"color":[0.5,0,0.5,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[78,0.5,0],"scale":[1,4,0],"rotation":0,"color":[0.6,0.3,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[80,2,0],"scale":[3,1,0],"rotation":0,"color":[0.2,0.4,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[80,2.75,0],"scale":[0.5,0.5,0],"rotation":0,"color":[1,0,0,1],"tag":"obstacle","isTriangle":true,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[84,3,0],"scale":[2,1,0],"rotation":0,"color":[0.7,0.4,0.9,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[84,3.75,0],"scale":[0.5,0.5,0],"rotation":0,"color":[1,0,0,1],"tag":"obstacle","isTriangle":true,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[86,-1,0],"scale":[1,1,0],"rotation":0,"color":[0.2,0.4,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[91,-1,0],"scale":[1,1,0],"rotation":0,"color":[0,0.2,0.6,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[93,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0,0.2,0.6,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[98,-1,0],"scale":[1,1,0],"rotation":0,"color":[0.2,0.4,0.8,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[100,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0.5,0,0.5,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[102,0,0],"scale":[1,3,0],"rotation":0,"color":[0.1,0.3,0.7,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[104,0.5,0],"scale":[1,4,0],"rotation":0,"color":[0.1,0.3,0.7,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[106,1,0],"scale":[1,5,0],"rotation":0,"color":[0,0.2,0.6,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[108,-0.5,0],"scale":[1,2,0],"rotation":0,"color":[0.5,0,0.5,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[110,0,0],"scale":[1,3,0],"rotation":0,"color":[0,0.2,0.6,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[112,0.5,0],"scale":[1,4,0],"rotation":0,"color":[0.3,0.6,1,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true},{"position":[114,1,0],"scale":[1,5,0],"rotation":0,"color":[0,0.2,0.6,1],"tag":"platform","isTriangle":false,"textureName":"","uv":[0,0,1,1],"generatePhysicsComp":true,"generateRenderComp":true,"vertexShaderPath":"","fragmentShaderPath":"","gradientTopColor":[1,1,1,1],"gradientBottomColor":[1,1,1,1],"parallaxFactor":0,"zLayer":0,"isSensor":false,"repeatTextureX":true}]}
+{
+  "audioFile": "SensesShort.wav",
+  "velocityMultiplier": 1,
+  "playerStartPosX": -2,
+  "groundLevel": -1.5,
+  "clearColor": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "gradientTopColor": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "gradientBottomColor": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "backgrounds": [
+    {
+      "position": [
+        -0,
+        1.95,
+        0
+      ],
+      "scale": [
+        19.2,
+        6.9,
+        0.1
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "tag": "background",
+      "isTriangle": false,
+      "textureName": "geometry1",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": false,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0.05,
+      "zLayer": -2,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        -0,
+        1.95,
+        0
+      ],
+      "scale": [
+        19.2,
+        6.9,
+        0.1
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "tag": "background",
+      "isTriangle": false,
+      "textureName": "geometry3",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": false,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0.5,
+      "zLayer": -1,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        -0,
+        -3.45,
+        0
+      ],
+      "scale": [
+        19.2,
+        3.9,
+        0.1
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "ground",
+      "isTriangle": false,
+      "textureName": "groundlvl1",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 1,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    }
+  ],
+  "groups": [],
+  "objects": [
+    {
+      "position": [
+        -2,
+        -1.15,
+        0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "player",
+      "isTriangle": false,
+      "textureName": "cyanPlayer",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        4,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0.1
+      ],
+      "rotation": 0,
+      "color": [
+        0.2,
+        0.4,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        5,
+        -1.25,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": true,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        11,
+        -1,
+        0
+      ],
+      "scale": [
+        2,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0.2,
+        0.6,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        16,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0.1
+      ],
+      "rotation": 0,
+      "color": [
+        0.5,
+        0,
+        0.5,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        18,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.6,
+        0.3,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        20,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        3,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.5,
+        0,
+        0.5,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        22,
+        0.5,
+        0
+      ],
+      "scale": [
+        1,
+        4,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.6,
+        0.3,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        28,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.2,
+        0.4,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        29,
+        -1.25,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": true,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        30,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        32,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0.2,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        38,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.6,
+        0.3,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        39,
+        -1.25,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": true,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        40,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.7,
+        0.4,
+        0.9,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        41,
+        -1.25,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": true,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        42,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.6,
+        0.3,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        43,
+        -1.25,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": true,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        47,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        50,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0.2,
+        0.6,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        52,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0.2,
+        0.6,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        54,
+        -1,
+        0
+      ],
+      "scale": [
+        2,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.4,
+        0,
+        0.6,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        56,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.1,
+        0.3,
+        0.7,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        58,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.6,
+        0.3,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        60,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.1,
+        0.3,
+        0.7,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        62,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        3,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.7,
+        0.4,
+        0.9,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        64,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0.2,
+        0.6,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        66,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.7,
+        0.4,
+        0.9,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        68,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.7,
+        0.4,
+        0.9,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        70,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.7,
+        0.4,
+        0.9,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        72,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.7,
+        0.4,
+        0.9,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        74,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.6,
+        0.3,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        76,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        3,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.5,
+        0,
+        0.5,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        78,
+        0.5,
+        0
+      ],
+      "scale": [
+        1,
+        4,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.6,
+        0.3,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        80,
+        2,
+        0
+      ],
+      "scale": [
+        3,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.2,
+        0.4,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        80,
+        2.75,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": true,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        84,
+        3,
+        0
+      ],
+      "scale": [
+        2,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.7,
+        0.4,
+        0.9,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        84,
+        3.75,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "tag": "obstacle",
+      "isTriangle": true,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        86,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.2,
+        0.4,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        91,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0.2,
+        0.6,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        93,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0.2,
+        0.6,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        98,
+        -1,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.2,
+        0.4,
+        0.8,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        100,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.5,
+        0,
+        0.5,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        102,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        3,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.1,
+        0.3,
+        0.7,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        104,
+        0.5,
+        0
+      ],
+      "scale": [
+        1,
+        4,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.1,
+        0.3,
+        0.7,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        106,
+        1,
+        0
+      ],
+      "scale": [
+        1,
+        5,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0.2,
+        0.6,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        108,
+        -0.5,
+        0
+      ],
+      "scale": [
+        1,
+        2,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.5,
+        0,
+        0.5,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        110,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        3,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0.2,
+        0.6,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        112,
+        0.5,
+        0
+      ],
+      "scale": [
+        1,
+        4,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0.3,
+        0.6,
+        1,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    },
+    {
+      "position": [
+        114,
+        1,
+        0
+      ],
+      "scale": [
+        1,
+        5,
+        0
+      ],
+      "rotation": 0,
+      "color": [
+        0,
+        0.2,
+        0.6,
+        1
+      ],
+      "tag": "platform",
+      "isTriangle": false,
+      "textureName": "",
+      "uv": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "generatePhysicsComp": true,
+      "generateRenderComp": true,
+      "vertexShaderPath": "",
+      "fragmentShaderPath": "",
+      "gradientTopColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "gradientBottomColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "parallaxFactor": 0,
+      "zLayer": 0,
+      "isSensor": false,
+      "repeatTextureX": true
+    }
+  ],
+  "currentGroupIDs": 0
+}

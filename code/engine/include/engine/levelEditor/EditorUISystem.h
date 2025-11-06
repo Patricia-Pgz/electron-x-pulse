@@ -127,7 +127,7 @@ namespace gl3::engine::editor
         bool is_mouse_in_grid = true;
         /**< Whether the mouse is currently interacting with the grid vs. with the imgui ui. */
         bool multi_select_enabled = false; /**< Enables multi-selection mode. */
-        bool compute_group_AABB = false; /**< Flag to compute axis-aligned bounding box for groups. */
+        bool is_grouping = false; /**< Flag to compute axis-aligned bounding box for groups. */
         ImVec2 grid_center = {0.f, 0.f};
         float grid_spacing; /**< The grid spacing for each cell in pixelspermeter */
         float grid_spacing_factor = 1.f; /**< The factor to apply to customize the grid spacing */

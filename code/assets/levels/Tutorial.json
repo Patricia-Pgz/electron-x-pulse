@@ -265,7 +265,7 @@
   ],
   "groups": [
     {
-      "name": "1",
+      "ID": "1",
       "children": [
         {
           "position": [
@@ -508,7 +508,7 @@
           "repeatTextureX": true
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           11,
           -1,
@@ -558,7 +558,7 @@
       }
     },
     {
-      "name": "2",
+      "ID": "2",
       "children": [
         {
           "position": [
@@ -657,7 +657,7 @@
           "repeatTextureX": true
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           11.5,
           0,
@@ -707,7 +707,7 @@
       }
     },
     {
-      "name": "3",
+      "ID": "3",
       "children": [
         {
           "position": [
@@ -806,7 +806,7 @@
           "repeatTextureX": true
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           12.5,
           1,
@@ -2153,5 +2153,6 @@
       "isSensor": false,
       "repeatTextureX": true
     }
-  ]
+  ],
+  "currentGroupIDs": 3
 }

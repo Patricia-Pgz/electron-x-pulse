@@ -265,7 +265,7 @@
   ],
   "groups": [
     {
-      "name": "1",
+      "ID": "1",
       "children": [
         {
           "position": [
@@ -1228,7 +1228,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           19.5,
           4.5,
@@ -1278,7 +1278,7 @@
       }
     },
     {
-      "name": "2",
+      "ID": "2",
       "children": [
         {
           "position": [
@@ -1425,7 +1425,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           11.5,
           -2,
@@ -1475,7 +1475,7 @@
       }
     },
     {
-      "name": "4",
+      "ID": "3",
       "children": [
         {
           "position": [
@@ -1574,7 +1574,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           37.5,
           3,
@@ -1624,7 +1624,7 @@
       }
     },
     {
-      "name": "5",
+      "ID": "4",
       "children": [
         {
           "position": [
@@ -2107,7 +2107,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           49,
           -1.5,
@@ -2157,7 +2157,7 @@
       }
     },
     {
-      "name": "6",
+      "ID": "5",
       "children": [
         {
           "position": [
@@ -2256,7 +2256,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           52.5,
           -2,
@@ -2306,7 +2306,7 @@
       }
     },
     {
-      "name": "7",
+      "ID": "6",
       "children": [
         {
           "position": [
@@ -2597,7 +2597,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           53,
           1.5,
@@ -2647,7 +2647,7 @@
       }
     },
     {
-      "name": "11",
+      "ID": "7",
       "children": [
         {
           "position": [
@@ -2746,7 +2746,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           65.5,
           0,
@@ -2796,7 +2796,7 @@
       }
     },
     {
-      "name": "12",
+      "ID": "8",
       "children": [
         {
           "position": [
@@ -2943,7 +2943,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           68,
           -2,
@@ -2993,7 +2993,7 @@
       }
     },
     {
-      "name": "13",
+      "ID": "9",
       "children": [
         {
           "position": [
@@ -3332,7 +3332,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           71,
           5,
@@ -3382,7 +3382,7 @@
       }
     },
     {
-      "name": "14",
+      "ID": "10",
       "children": [
         {
           "position": [
@@ -3529,7 +3529,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           77,
           4,
@@ -3579,7 +3579,7 @@
       }
     },
     {
-      "name": "15",
+      "ID": "11",
       "children": [
         {
           "position": [
@@ -3822,7 +3822,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           81,
           5,
@@ -3872,7 +3872,7 @@
       }
     },
     {
-      "name": "17",
+      "ID": "12",
       "children": [
         {
           "position": [
@@ -4019,7 +4019,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           95,
           0,
@@ -4069,7 +4069,7 @@
       }
     },
     {
-      "name": "19",
+      "ID": "13",
       "children": [
         {
           "position": [
@@ -4168,7 +4168,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           16.5,
           3,
@@ -4218,7 +4218,7 @@
       }
     },
     {
-      "name": "17",
+      "ID": "14",
       "children": [
         {
           "position": [
@@ -4413,7 +4413,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           5,
           -2,
@@ -4463,7 +4463,7 @@
       }
     },
     {
-      "name": "18",
+      "ID": "15",
       "children": [
         {
           "position": [
@@ -4562,7 +4562,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           49.5,
           4,
@@ -4612,7 +4612,7 @@
       }
     },
     {
-      "name": "16",
+      "ID": "16",
       "children": [
         {
           "position": [
@@ -4711,7 +4711,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           25.5,
           4.07,
@@ -4761,7 +4761,7 @@
       }
     },
     {
-      "name": "17",
+      "ID": "17",
       "children": [
         {
           "position": [
@@ -4860,7 +4860,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           37.5,
           2.08,
@@ -4910,7 +4910,7 @@
       }
     },
     {
-      "name": "18",
+      "ID": "18",
       "children": [
         {
           "position": [
@@ -5009,7 +5009,7 @@
           "repeatTextureX": false
         }
       ],
-      "colliderAABB": {
+      "parent": {
         "position": [
           45.5,
           -2,
@@ -8516,5 +8516,6 @@
       "isSensor": false,
       "repeatTextureX": false
     }
-  ]
+  ],
+  "currentGroupIDs": 18
 }

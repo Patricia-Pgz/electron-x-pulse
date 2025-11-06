@@ -8,13 +8,10 @@
 
 namespace gl3::engine::ecs
 {
-
     /**
-     * Signal that you added/deleted a RenderComponent or entity with RenderComponent, e.g. to trigger render sorting according to ZLayerComponent.
-     */
-    struct RenderComponentContainerChange
-    {
-    };
+ * Signal that instances to render have changed for back to front sorting.
+ */
+    struct RenderComponentContainerChange{};
 
     /**
     * Use GameStateChange event to track your current game state, and react to it changing.

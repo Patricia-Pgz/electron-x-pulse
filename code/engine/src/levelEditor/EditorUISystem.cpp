@@ -1,6 +1,5 @@
 #include "engine/levelEditor/EditorUISystem.h"
 #include "../../../game/src/Game.h"
-#include "engine/Constants.h"
 #include "engine/ecs/EntityFactory.h"
 #include "engine/userInterface/UIConstants.h"
 #include "engine/ecs/EventDispatcher.h"
@@ -42,30 +41,31 @@ namespace gl3::engine::editor
             {
                 if (transform.position.x == cell.x && transform.position.y == cell.y)
                 {
-                    //handle grouped entity
-                    if (registry.any_of<ecs::ParentComponent>(entity))
+                    // handle grouped entity
+                    if (registry.any_of<ecs::PhysicsGroup>(entity))
                     {
-                        const auto parent = registry.get<ecs::ParentComponent>(entity).parentEntity;
-                        auto& groupChildren = registry.get<ecs::GroupComponent>(parent).childEntities;
-                        if (!groupChildren.empty())
+                        auto& groupingInfo = registry.get<ecs::PhysicsGroup>(entity);
+                        const entt::entity parentEntity = groupingInfo.root;
+
+                        // Destroy the shape if it exists
+                        if (b2Shape_IsValid(groupingInfo.shapeId))
+                            b2DestroyShape(groupingInfo.shapeId, false);
+
+                        // Decrement parent count
+                        if (registry.valid(parentEntity) && registry.any_of<ecs::PhysicsGroupParent>(parentEntity))
                         {
-                            //erase entity from group
-                            std::erase_if(groupChildren,
-                                          [&](const entt::entity& child)
-                                          {
-                                              return child == entity;
-                                          });
-                            // recalculate parent collider
-                            auto newAABB = physics::PhysicsSystem::computeGroupAABB(groupChildren, registry);
-                            ecs::EntityFactory::setPosition(registry, parent, newAABB.position);
-                            ecs::EntityFactory::setScale(registry, parent, newAABB.scale);
-                        }
-                        else
-                        {
-                            // delete parent if no more children
-                            ecs::EntityFactory::markEntityForDeletion(parent);
+                            auto& parent = registry.get<ecs::PhysicsGroupParent>(parentEntity);
+                            parent.childCount--;
+
+                            // If no children remain, destroy parent
+                            if (parent.childCount <= 0)
+                            {
+                                ecs::EntityFactory::markEntityForDeletion(parentEntity);
+                            }
                         }
                     }
+
+                    // Mark this tile entity for deletion
                     ecs::EntityFactory::markEntityForDeletion(entity);
                 }
             }
@@ -75,12 +75,6 @@ namespace gl3::engine::editor
         for (const auto& cell : selected_grid_cells)
         {
             levelLoading::LevelManager::removeAllObjectsInGridCell({cell.x, cell.y}, grid_spacing);
-        }
-
-        //Signal to remove items from grouping cache
-        if (!selected_group_cells.empty())
-        {
-            ecs::EventDispatcher::dispatcher.trigger(ui::EditorGroupTileDeleted{selected_grid_cells});
         }
     }
 
@@ -260,8 +254,8 @@ namespace gl3::engine::editor
                     object.zLayer = selected_layer;
                     object.repeatTextureX = repeatTextureOnX;
                     object.isSensor = is_sensor;
-                    ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, compute_group_AABB});
-                    if (compute_group_AABB)
+                    ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, is_grouping});
+                    if (is_grouping)
                     {
                         selected_group_cells.push_back(cell);
                     }
@@ -306,8 +300,8 @@ namespace gl3::engine::editor
                 object.repeatTextureX = repeatTextureOnX;
                 object.isSensor = is_sensor;
                 ecs::EventDispatcher::dispatcher.trigger(
-                    ui::EditorTileSelectedEvent{object, compute_group_AABB});
-                if (compute_group_AABB)
+                    ui::EditorTileSelectedEvent{object, is_grouping});
+                if (is_grouping)
                 {
                     selected_group_cells.push_back(cell);
                 }
@@ -438,11 +432,11 @@ namespace gl3::engine::editor
             multi_select_enabled = !multi_select_enabled;
             if (!multi_select_enabled)
             {
-                if (!selected_group_cells.empty())ecs::EventDispatcher::dispatcher.trigger(ui::EditorCancelGrouping{});
+                if (!selected_group_cells.empty())ecs::EventDispatcher::dispatcher.trigger(ui::CancelGrouping{});
                 //generate group, if active group selection already exists, but multi select is exited without hitting generate group
                 selected_group_cells.clear();
                 selected_grid_cells.clear();
-                compute_group_AABB = false;
+                is_grouping = false;
             }
         }
         if (pushed)
@@ -456,10 +450,10 @@ namespace gl3::engine::editor
         }
         if (multi_select_enabled)
         {
-            if (ImGui::RadioButton("Generate Group Physics Collider", compute_group_AABB))
+            if (ImGui::RadioButton("Generate Group Physics Collider", is_grouping))
             {
-                compute_group_AABB = !compute_group_AABB;
-                if (!selected_group_cells.empty())ecs::EventDispatcher::dispatcher.trigger(ui::EditorCancelGrouping{});
+                is_grouping = !is_grouping;
+                if (!selected_group_cells.empty())ecs::EventDispatcher::dispatcher.trigger(ui::CancelGrouping{});
                 selected_grid_cells.clear();
                 selected_group_cells.clear();
             }
@@ -467,13 +461,13 @@ namespace gl3::engine::editor
             {
                 ImGui::SetTooltip("Tracks all Tiles placed until Generate Group");
             }
-            if (compute_group_AABB)
+            if (is_grouping)
             {
-                if (ImGui::Button("Generate Group"))
+                if (ImGui::Button("Finalize Group"))
                 {
                     if (!selected_group_cells.empty())
                     {
-                        ecs::EventDispatcher::dispatcher.trigger(ui::EditorGenerateGroup{});
+                        ecs::EventDispatcher::dispatcher.trigger(ui::FinalizeGroup{});
                         selected_grid_cells.clear();
                         selected_group_cells.clear();
                     }
@@ -555,7 +549,7 @@ namespace gl3::engine::editor
             }
 
             ImGui::Text("Physics:");
-            if (!compute_group_AABB)
+            if (!is_grouping)
             {
                 ImGui::Checkbox("Generate PhysicsComponent", &generate_physics_comp);
                 ImGui::Checkbox("Body is Sensor", &is_sensor);
@@ -651,8 +645,8 @@ namespace gl3::engine::editor
                     object.zLayer = selected_layer;
                     object.repeatTextureX = repeatTextureOnX;
                     object.isSensor = is_sensor;
-                    ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, compute_group_AABB});
-                    if (compute_group_AABB)
+                    ecs::EventDispatcher::dispatcher.trigger(ui::EditorTileSelectedEvent{object, is_grouping});
+                    if (is_grouping)
                     {
                         selected_group_cells.push_back(cell);
                     }
@@ -702,7 +696,7 @@ namespace gl3::engine::editor
     {
         is_mouse_in_grid = true;
         multi_select_enabled = false;
-        compute_group_AABB = false;
+        is_grouping = false;
         grid_offset = 0.5f;
         selected_grid_cells.clear();
         selected_group_cells.clear();

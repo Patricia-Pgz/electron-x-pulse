@@ -127,39 +127,39 @@ namespace gl3::game::state
      */
     void LevelPlayState::createGroupedEntities(entt::registry& registry, const b2WorldId physicsWorld) const
     {
-        auto& objGroup = current_level->groups;
-        for (auto group = objGroup.begin(); group != objGroup.end();)
+        for (auto& objGroups = current_level->groups; auto& [ID, children, parent] : objGroups)
         {
-            if (!group->children.empty())
+            if(children.empty())return;
+
+            const auto current_parent_entity = engine::ecs::EntityFactory::createDefaultEntity(
+                    parent, registry, physicsWorld);
+            auto current_parent_body_id = registry.get<engine::ecs::PhysicsComponent>(current_parent_entity).body;
+            registry.emplace<engine::ecs::PhysicsGroupParent>(current_parent_entity, current_parent_body_id, 0);
+#
+            for (auto& child : children)
             {
-                //compute AABB if it is still on standard values
-                if (group->colliderAABB.scale.x <= 1.f || group->colliderAABB.scale.y <= 1.f)
-                {
-                    const auto collider = engine::physics::PhysicsSystem::computeGroupAABB(group->children);
-                    group->colliderAABB.position = collider.position;
-                    group->colliderAABB.scale = collider.scale;
-                    group->colliderAABB.tag = group->colliderAABB.tag == "undefined"? "platform" : group->children[0].tag;
-                }
-                group->colliderAABB.generateRenderComp = false;
-                entt::entity groupAABBEntity = engine::ecs::EntityFactory::createDefaultEntity(
-                    group->colliderAABB, registry, physicsWorld);
-                std::vector<entt::entity> childEntities;
+                auto entity = engine::ecs::EntityFactory::createDefaultEntity(child, registry, physicsWorld);
+                const auto parentPos = registry.get<engine::ecs::TransformComponent>(current_parent_entity).position;
+                glm::vec2 localOffset = {
+                    child.position.x - parentPos.x,
+                    child.position.y - parentPos.y
+                };
 
-                for (auto& obj : group->children)
-                {
-                    obj.generatePhysicsComp = false;
-                    glm::vec2 localOffset = {
-                        obj.position.x - group->colliderAABB.position.x, obj.position.y - group->colliderAABB.position.y
-                    };
-                    const entt::entity entity = engine::ecs::EntityFactory::createDefaultEntity(
-                        obj, registry, physicsWorld);
-                    registry.emplace<engine::ecs::ParentComponent>(entity, groupAABBEntity, localOffset);
-                    childEntities.push_back(entity);
-                }
+                // Create a shape for this child entity
+                const b2ShapeDef shapeDef = b2DefaultShapeDef();
+                const b2Polygon polygon = b2MakeOffsetBox(
+                    child.scale.x * 0.5f,
+                    child.scale.y * 0.5f,
+                    {localOffset.x, localOffset.y},
+                    b2MakeRot(child.zRotation)
+                );
+                b2ShapeId shapeId = b2CreatePolygonShape(current_parent_body_id, &shapeDef, &polygon);
 
-                registry.emplace<engine::ecs::GroupComponent>(groupAABBEntity, childEntities);
+                // Attach ECS PhysicsGroup linking child to parent
+                registry.emplace<engine::ecs::PhysicsGroup>(entity, current_parent_entity, localOffset, shapeId);
 
-                ++group;
+                // Increment the parent’s child count
+                registry.patch<engine::ecs::PhysicsGroupParent>(current_parent_entity, [](auto& pgp) { ++pgp.childCount; });
             }
         }
     }

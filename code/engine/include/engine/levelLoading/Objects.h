@@ -43,9 +43,9 @@ struct GameObject
  */
 struct GameObjectGroup
 {
-    std::string name; /**< Name identifier for the group */
+    int ID = 0;
     std::vector<GameObject> children; /**< Child objects within the group */
-    GameObject colliderAABB; /**< Axis-aligned bounding box collider for the group */
+    GameObject parent; /**< parent for the group */
 };
 
 /**
@@ -77,4 +77,5 @@ struct Level
     float currentLevelSpeed = 1.f; /**< Current speed of the level */
     float levelLength = 0.f; /**< Length of the level in seconds*/
     float finalBeatIndex = 0.f; /**< Final beat index for synchronization */
+    int currentGroupIDs = 0; /**< For unique ID generation for groups */
 };

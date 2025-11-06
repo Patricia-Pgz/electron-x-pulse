@@ -9,109 +9,93 @@ namespace gl3::engine::editor
     {
         ecs::EventDispatcher::dispatcher.sink<ui::EditorTileSelectedEvent>().connect<&
             EditorSystem::onTileSelected>(this);
-        ecs::EventDispatcher::dispatcher.sink<ui::EditorGenerateGroup>().connect<&
-            EditorSystem::onGenerateGroup>(this);
-        ecs::EventDispatcher::dispatcher.sink<ui::EditorGroupTileDeleted>().connect<&
-            EditorSystem::onGroupTileDeleted>(this);
-        ecs::EventDispatcher::dispatcher.sink<ui::EditorCancelGrouping>().connect<&
-    EditorSystem::onGroupCanceled>(this);
-        ecs::EventDispatcher::dispatcher.sink<ui::LevelUnload>().connect<&
-EditorSystem::onGroupCanceled>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::FinalizeGroup>().connect<&
+            EditorSystem::onFinalizeGroup>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::CancelGrouping>().connect<&
+            EditorSystem::onGroupCanceled>(this);
     }
 
     EditorSystem::~EditorSystem()
     {
         ecs::EventDispatcher::dispatcher.sink<ui::EditorTileSelectedEvent>().disconnect<&
             EditorSystem::onTileSelected>(this);
-        ecs::EventDispatcher::dispatcher.sink<ui::EditorGenerateGroup>().disconnect<&
-            EditorSystem::onGenerateGroup>(this);
-        ecs::EventDispatcher::dispatcher.sink<ui::EditorGroupTileDeleted>().disconnect<&
-            EditorSystem::onGroupTileDeleted>(this);
-        ecs::EventDispatcher::dispatcher.sink<ui::EditorCancelGrouping>().disconnect<&
-EditorSystem::onGroupCanceled>(this);
-        ecs::EventDispatcher::dispatcher.sink<ui::LevelUnload>().disconnect<&
-EditorSystem::onGroupCanceled>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::FinalizeGroup>().disconnect<&
+            EditorSystem::onFinalizeGroup>(this);
+        ecs::EventDispatcher::dispatcher.sink<ui::CancelGrouping>().disconnect<&
+            EditorSystem::onGroupCanceled>(this);
     }
 
     void EditorSystem::onTileSelected(ui::EditorTileSelectedEvent& event)
     {
+        auto& reg = game.getRegistry();
+        const b2WorldId physicsWorld = game.getPhysicsWorld();
+
+        // Avoid creating physics for grouped tiles individually
         event.object.generatePhysicsComp = event.group ? false : event.object.generatePhysicsComp;
-        const auto entity = ecs::EntityFactory::createDefaultEntity(event.object, game.getRegistry(),
-                                                                    game.getPhysicsWorld());
-        //save children for later grouping
+
+        // Create the visual/game entity
+        const auto entity = ecs::EntityFactory::createDefaultEntity(event.object, reg, physicsWorld);
+
         if (event.group)
         {
-            grouped_child_entities.push_back(entity);
-            grouped_child_objects.push_back(event.object);
-            return;
+            // If no current group body exists, create a parent body and entity
+            if (B2_ID_EQUALS(current_parent_body_id, b2_nullBodyId))
+            {
+                current_group.parent = event.object;
+                current_group.parent.textureName = "";
+                current_group.parent.isSensor = true;
+                current_group.parent.generatePhysicsComp = true;
+                current_group.parent.generateRenderComp = false;
+                current_parent_entity = ecs::EntityFactory::createDefaultEntity(
+                    current_group.parent, reg, physicsWorld);
+                current_parent_body_id = reg.get<ecs::PhysicsComponent>(current_parent_entity).body;
+                reg.emplace<ecs::PhysicsGroupParent>(current_parent_entity, current_parent_body_id, 0);
+            }
+
+            // Compute local offset relative to parent body
+            const auto parentPos = reg.get<ecs::TransformComponent>(current_parent_entity).position;
+            glm::vec2 localOffset = {
+                event.object.position.x - parentPos.x,
+                event.object.position.y - parentPos.y
+            };
+
+            // Create a shape for this child tile
+            const b2ShapeDef shapeDef = b2DefaultShapeDef();
+            const b2Polygon polygon = b2MakeOffsetBox(
+                event.object.scale.x * 0.5f,
+                event.object.scale.y * 0.5f,
+                {localOffset.x, localOffset.y},
+                b2MakeRot(event.object.zRotation)
+            );
+            b2ShapeId shapeId = b2CreatePolygonShape(current_parent_body_id, &shapeDef, &polygon);
+
+            // Attach ECS PhysicsGroup linking child to parent
+            reg.emplace<ecs::PhysicsGroup>(entity, current_parent_entity, localOffset, shapeId);
+
+            // Increment the parent’s child count
+            reg.patch<ecs::PhysicsGroupParent>(current_parent_entity, [](auto& pgp) { ++pgp.childCount; });
+            current_group.children.push_back(event.object);
         }
-        levelLoading::LevelManager::addObjectToCurrentLevel(event.object);
+        else
+        {
+            levelLoading::LevelManager::addObjectToCurrentLevel(event.object);
+        }
         ecs::EventDispatcher::dispatcher.trigger(ecs::RenderComponentContainerChange{});
     }
 
-    void EditorSystem::onGroupTileDeleted(const ui::EditorGroupTileDeleted& event)
+
+    void EditorSystem::onFinalizeGroup(const ui::FinalizeGroup& event)
     {
-        if (grouped_child_entities.empty() || grouped_child_objects.empty())return;
-        //Delete the child GameObjects and entities, that are at the selected positions.
-        for (const auto& cell : event.selectedCells)
-        {
-            std::erase_if(grouped_child_objects,
-                          [&](const GameObject& obj)
-                          {
-                              return obj.position.x == cell.x && obj.position.y == cell.y;
-                          });
-            std::erase_if(grouped_child_entities,
-                          [&](auto& entity)
-                          {
-                              const auto transform = game.getRegistry().get<ecs::TransformComponent>(entity);
-                              if (transform.position.x == cell.x && transform.position.y == cell.y)
-                              {
-                                  return true;
-                              }
-                                  return false;
-                          });
-        }
+        levelLoading::LevelManager::addGroupToCurrentLevel(current_group);
+        current_group = {};
+        current_parent_body_id = b2_nullBodyId;
+        current_parent_entity = entt::null;
     }
 
-    void EditorSystem::onGenerateGroup(ui::EditorGenerateGroup& event)
+    void EditorSystem::onGroupCanceled(const ui::CancelGrouping& event)
     {
-        if (grouped_child_entities.empty() || grouped_child_objects.empty())return;
-        auto& registry = game.getRegistry();
-
-        //generate parent physics AABB
-        auto parentAABB = physics::PhysicsSystem::computeGroupAABB(grouped_child_objects);
-        parentAABB.zLayer = -1;
-        parentAABB.generateRenderComp = false;
-        parentAABB.tag = grouped_child_objects[0].tag;
-        entt::entity parentAABBEntity = ecs::EntityFactory::createDefaultEntity(
-            parentAABB, registry, game.getPhysicsWorld());
-
-        //Set children localOffsets and ParentComponent & parent's GroupComponent
-        for (auto& entity : grouped_child_entities)
-        {
-            auto& transform = registry.get<ecs::TransformComponent>(entity);
-            glm::vec2 localOffset = {
-                transform.position.x - parentAABB.position.x, transform.position.y - parentAABB.position.y
-            };
-            registry.emplace<ecs::ParentComponent>(entity, parentAABBEntity, localOffset);
-        }
-        registry.emplace<ecs::GroupComponent>(parentAABBEntity, grouped_child_entities);
-
-        //add group to currentLvl (for saving)
-        int groupCount = static_cast<int>(levelLoading::LevelManager::getCurrentLevel()->groups.size()) + 1;
-        GameObjectGroup group;
-        group.name = std::to_string(groupCount);
-        group.children = grouped_child_objects;
-        group.colliderAABB = parentAABB;
-        levelLoading::LevelManager::addGroupToCurrentLevel(group);
-
-        grouped_child_entities.clear();
-        grouped_child_objects.clear();
-    }
-
-    void EditorSystem::onGroupCanceled()
-    {
-        grouped_child_entities.clear();
-        grouped_child_objects.clear();
+        current_group = {};
+        current_parent_body_id = b2_nullBodyId;
+        current_parent_entity = entt::null;
     }
 } // gl3

@@ -34,9 +34,9 @@ struct glz::meta<GameObjectGroup>
 {
     using T = GameObjectGroup;
     static constexpr auto value = glz::object(
-        "name", &T::name,
+        "ID", &T::ID,
         "children", &T::children,
-        "colliderAABB", &T::colliderAABB
+        "parent", &T::parent
     );
 };
 
@@ -95,6 +95,7 @@ struct glz::meta<Level>
         "gradientBottomColor", &T::gradientBottomColor,
         "backgrounds", &T::backgrounds,
         "groups", &T::groups,
-        "objects", &T::objects
+        "objects", &T::objects,
+        "currentGroupIDs", &T::currentGroupIDs
     );
 };

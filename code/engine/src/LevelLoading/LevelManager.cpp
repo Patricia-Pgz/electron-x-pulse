@@ -135,7 +135,7 @@ namespace gl3::engine::levelLoading
                               position.y + spacing / 2;
                           return inXBounds && inYBounds;
                       });
-        std::vector<std::string> groupsToRemove;
+        std::vector<int> groupsToRemove;
 
         for (auto& group : level->groups)
         {
@@ -151,18 +151,18 @@ namespace gl3::engine::levelLoading
 
             if (group.children.empty())
             {
-                groupsToRemove.push_back(group.name);
+                groupsToRemove.push_back(group.ID);
             }
         }
 
         // erase emptied groups
-        for (const auto& name : groupsToRemove)
+        for (const auto ID : groupsToRemove)
         {
-            removeGroupByName(name);
+            removeGroupByID(ID);
         }
     }
 
-    void LevelManager::addGroupToCurrentLevel(const GameObjectGroup& group)
+    void LevelManager::addGroupToCurrentLevel(GameObjectGroup& group)
     {
         const auto it = loaded_levels.find(most_recent_loaded_lvl_ID);
         if (it == loaded_levels.end() || !it->second)
@@ -171,10 +171,11 @@ namespace gl3::engine::levelLoading
         }
 
         Level* level = it->second.get();
+        group.ID = ++level->currentGroupIDs;
         level->groups.push_back(group);
     }
 
-    void LevelManager::removeGroupByName(const std::string& groupName)
+    void LevelManager::removeGroupByID(const int ID)
     {
         const auto it = loaded_levels.find(most_recent_loaded_lvl_ID);
         if (it == loaded_levels.end() || !it->second)
@@ -187,7 +188,7 @@ namespace gl3::engine::levelLoading
 
         std::erase_if(groups, [&](const GameObjectGroup& group)
         {
-            return group.name == groupName;
+            return group.ID == ID;
         });
     }
 
@@ -221,7 +222,7 @@ namespace gl3::engine::levelLoading
             {
                 roundObjectData(element);
             }
-            roundObjectData(group.colliderAABB);
+            roundObjectData(group.parent);
         }
         for (auto& element : level->objects)
         {

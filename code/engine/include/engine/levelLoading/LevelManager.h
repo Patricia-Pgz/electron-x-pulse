@@ -64,14 +64,14 @@ namespace gl3::engine::levelLoading
          *
          * @param group The GameObjectGroup to add.
          */
-        static void addGroupToCurrentLevel(const GameObjectGroup& group);
+        static void addGroupToCurrentLevel(GameObjectGroup& group);
 
         /**
          * @brief Removes a group of objects from the current level by its name.
          *
-         * @param groupName Name of the group to remove.
+         * @param ID  of the group to remove.
          */
-        static void removeGroupByName(const std::string& groupName);
+        static void removeGroupByID(int ID);
 
         /**
           * @brief Saves the current level's data back to disk.

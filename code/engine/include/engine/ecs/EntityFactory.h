@@ -20,25 +20,20 @@ namespace gl3::engine::ecs
     };
 
     /**
-     * @brief Component for grouping child entities under a parent.
-     *
-     * Holds a reference to the parent entity and the child's local offset relative to the parent.
-     * @note Add this component to child entities that belong to a group.
+     * @brief Component for grouping entities under one physics body
      */
-    struct ParentComponent
-    {
-        entt::entity parentEntity;
+    struct PhysicsGroup {
+        entt::entity root;       // Has the body this shape belongs to
         glm::vec2 localOffset;
+        b2ShapeId shapeId;       // The specific Box2D shape
     };
 
     /**
-     * @brief Component for parent entities that group multiple child entities.
-     *
-     * Contains a vector of child entities that belong to this group.
+     * Parent for Physics Group
      */
-    struct GroupComponent
-    {
-        std::vector<entt::entity> childEntities;
+    struct PhysicsGroupParent {
+        b2BodyId bodyID = b2_nullBodyId;
+        int childCount = 0;
     };
 
     /**
@@ -197,7 +192,7 @@ namespace gl3::engine::ecs
         }
 
         /**
-         * Destroys an entities PhysicsComponent the correct way, if it has one.
+         * Destroys an entities PhysicsComponent or Shapes the correct way, if it has some.
          * @param registry The current enTT registry
          * @param entity The entity of which to destroy the Physics Component
          */
@@ -206,30 +201,50 @@ namespace gl3::engine::ecs
             if (!registry.valid(entity))
                 return;
 
+            // Handle grouped shape-only entities
+            if (registry.all_of<PhysicsGroup>(entity))
+            {
+                auto& group = registry.get<PhysicsGroup>(entity);
+                if (b2Shape_IsValid(group.shapeId))
+                {
+                    b2DestroyShape(group.shapeId, false);
+                    group.shapeId = b2_nullShapeId;
+                }
+                registry.remove<PhysicsGroup>(entity);
+                return; // grouped entities don't own a body
+            }
+
+            // Handle normal physics components
             if (registry.all_of<PhysicsComponent>(entity))
             {
                 auto& physicsComp = registry.get<PhysicsComponent>(entity);
 
                 if (b2Body_IsValid(physicsComp.body))
                 {
-                    //destroy all shapes
-                    for (b2ShapeId shape : physicsComp.sensorShapes) {
-                        if (b2Shape_IsValid(shape)) {
+                    // Destroy sensor shapes first
+                    for (const b2ShapeId shape : physicsComp.sensorShapes)
+                    {
+                        if (b2Shape_IsValid(shape))
                             b2DestroyShape(shape, false);
-                        }
                     }
                     physicsComp.sensorShapes.clear();
-                    if (b2Shape_IsValid(physicsComp.shape)) {
+
+                    // Destroy main shape
+                    if (b2Shape_IsValid(physicsComp.shape))
+                    {
                         b2DestroyShape(physicsComp.shape, false);
+                        physicsComp.shape = b2_nullShapeId;
                     }
 
-                    //destroy body
+                    // Finally destroy the body
                     b2DestroyBody(physicsComp.body);
                     physicsComp.body = b2_nullBodyId;
                 }
+
+                registry.remove<PhysicsComponent>(entity);
             }
-            registry.remove<PhysicsComponent>(entity);
         }
+
 
         /**
          * @brief Mark an entity to be deleted later.

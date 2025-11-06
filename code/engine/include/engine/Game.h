@@ -8,6 +8,11 @@
 
 namespace gl3::engine
 {
+ namespace ecs
+ {
+  struct PhysicsGroup;
+ }
+
  namespace physics
  {
   class PhysicsSystem;
