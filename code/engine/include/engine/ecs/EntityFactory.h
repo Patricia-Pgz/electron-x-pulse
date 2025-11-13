@@ -22,10 +22,11 @@ namespace gl3::engine::ecs
     /**
      * @brief Component for grouping entities under one physics body
      */
-    struct PhysicsGroup {
-        entt::entity root;       // Has the body this shape belongs to
-        glm::vec2 localOffset;
-        b2ShapeId shapeId;       // The specific Box2D shape
+    struct PhysicsGroupChild {
+        entt::entity root = entt::null;       // Has the body this shape belongs to
+        glm::vec2 localOffset = {0.f, 0.f};
+        b2ShapeId shapeId = b2_nullShapeId;       // The specific Box2D shape
+        bool isActive = true;
     };
 
     /**
@@ -34,6 +35,7 @@ namespace gl3::engine::ecs
     struct PhysicsGroupParent {
         b2BodyId bodyID = b2_nullBodyId;
         int childCount = 0;
+        int visibleChildren = 0;
     };
 
     /**
@@ -202,15 +204,15 @@ namespace gl3::engine::ecs
                 return;
 
             // Handle grouped shape-only entities
-            if (registry.all_of<PhysicsGroup>(entity))
+            if (registry.all_of<PhysicsGroupChild>(entity))
             {
-                auto& group = registry.get<PhysicsGroup>(entity);
+                auto& group = registry.get<PhysicsGroupChild>(entity);
                 if (b2Shape_IsValid(group.shapeId))
                 {
                     b2DestroyShape(group.shapeId, false);
                     group.shapeId = b2_nullShapeId;
                 }
-                registry.remove<PhysicsGroup>(entity);
+                registry.remove<PhysicsGroupChild>(entity);
                 return; // grouped entities don't own a body
             }
 

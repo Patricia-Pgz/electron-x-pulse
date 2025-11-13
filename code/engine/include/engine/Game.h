@@ -10,7 +10,7 @@ namespace gl3::engine
 {
  namespace ecs
  {
-  struct PhysicsGroup;
+  struct PhysicsGroupChild;
  }
 
  namespace physics

@@ -265,7 +265,7 @@
   ],
   "groups": [
     {
-      "ID": "1",
+      "ID": 1,
       "children": [
         {
           "position": [
@@ -553,12 +553,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": 0,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": true
       }
     },
     {
-      "ID": "2",
+      "ID": 2,
       "children": [
         {
           "position": [
@@ -702,12 +702,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": 0,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": true
       }
     },
     {
-      "ID": "3",
+      "ID": 3,
       "children": [
         {
           "position": [
@@ -851,7 +851,7 @@
         ],
         "parallaxFactor": 0,
         "zLayer": 0,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": true
       }
     }

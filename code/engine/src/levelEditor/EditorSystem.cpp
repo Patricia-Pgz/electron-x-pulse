@@ -51,7 +51,6 @@ namespace gl3::engine::editor
                 current_parent_body_id = reg.get<ecs::PhysicsComponent>(current_parent_entity).body;
                 reg.emplace<ecs::PhysicsGroupParent>(current_parent_entity, current_parent_body_id, 0);
             }
-
             // Compute local offset relative to parent body
             const auto parentPos = reg.get<ecs::TransformComponent>(current_parent_entity).position;
             glm::vec2 localOffset = {
@@ -70,10 +69,10 @@ namespace gl3::engine::editor
             b2ShapeId shapeId = b2CreatePolygonShape(current_parent_body_id, &shapeDef, &polygon);
 
             // Attach ECS PhysicsGroup linking child to parent
-            reg.emplace<ecs::PhysicsGroup>(entity, current_parent_entity, localOffset, shapeId);
+            reg.emplace<ecs::PhysicsGroupChild>(entity, current_parent_entity, localOffset, shapeId);
 
             // Increment the parent’s child count
-            reg.patch<ecs::PhysicsGroupParent>(current_parent_entity, [](auto& pgp) { ++pgp.childCount; });
+            reg.patch<ecs::PhysicsGroupParent>(current_parent_entity, [](auto& pgp) { ++pgp.childCount;  ++pgp.visibleChildren;});
             current_group.children.push_back(event.object);
         }
         else

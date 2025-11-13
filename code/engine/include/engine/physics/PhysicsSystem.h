@@ -34,11 +34,6 @@ namespace gl3::engine::physics
                 PhysicsSystem::onPlayerJump>(this);
         }
 
-        [[nodiscard]] float getFixedTimeStep() const
-        {
-            return fixed_time_step;
-        }
-
         /// Event triggered after the physics step completes
         using event_t = events::Event<PhysicsSystem>;
         event_t onAfterPhysicsStep;
@@ -54,57 +49,172 @@ namespace gl3::engine::physics
          */
         void runPhysicsStep()
         {
-            if (!game.getRegistry().valid(game.getPlayer()) || !is_active) return;
+            if (!is_active || !game.getRegistry().valid(game.getPlayer()))
+                return;
+
             accumulator += game.getDeltaTime();
-            if (accumulator >= fixed_time_step)
+            if (accumulator < FIXED_TIME_STEP)
+                return;
+
+            auto& registry = game.getRegistry();
+            const b2WorldId world = game.getPhysicsWorld();
+
+            // Physics Step
+            b2World_Step(world, FIXED_TIME_STEP, SUB_STEP_COUNT);
+            PlayerContactListener::checkForPlayerCollision(registry, game.getPlayer(), world);
+
+            const float leftBound = game.getContext().getWorldWindowBounds()[0];
+
+            // Sync physics and parent components
+            const auto phyView = registry.view<
+                ecs::TransformComponent,
+                ecs::TagComponent,
+                ecs::PhysicsComponent
+            >();
+
+            for (const auto entity : phyView)
             {
-                const b2WorldId world = game.getPhysicsWorld();
-                b2World_Step(world, fixed_time_step, sub_step_count);
-                PlayerContactListener::checkForPlayerCollision(game.getRegistry(), game.getPlayer(),
-                                                               world);
+                auto& tc = phyView.get<ecs::TransformComponent>(entity);
+                auto& pc = phyView.get<ecs::PhysicsComponent>(entity);
 
-                //update entities based on physics step
-                const auto& entities = game.getRegistry().view<
-                    ecs::TagComponent, ecs::TransformComponent,
-                    ecs::PhysicsComponent>();
+                if (!pc.isActive || !b2Body_IsValid(pc.body))
+                    continue;
 
-                for (auto& entity : entities)
+                if (registry.any_of<ecs::PhysicsGroupParent>(entity))
                 {
-                    const auto& physics_comp = entities.get<ecs::PhysicsComponent>(entity);
-                    if (!b2Body_IsValid(physics_comp.body) || !physics_comp.isActive)
-                    {
-                        continue;
-                    }
-                    auto& transformComp = entities.get<ecs::TransformComponent>(entity);
-
-                    //Check if most right point of object is still in window
-                    if (transformComp.position.x + transformComp.scale.x * 0.5f < game.getContext().
-                        getWorldWindowBounds()[0])
-                    {
-                        b2Body_SetAwake(physics_comp.body, false);
-                    }
-                    else
-                    {
-                        b2Body_SetAwake(physics_comp.body, true);
-                        auto [p, q] = b2Body_GetTransform(physics_comp.body);
-                        transformComp.position.x = p.x;
-                        transformComp.position.y = p.y;
-                    }
+                    updateParentPhysics(tc, pc);
+                    continue;
                 }
 
-                onAfterPhysicsStep.invoke();
-
-                //wait for physics step, before setting player grounded from other classes/events
-                if (player_jump_this_frame)
-                {
-                    PlayerContactListener::playerGrounded = !player_jump_this_frame;
-                    player_jump_this_frame = false;
-                }
-
-                processDeletions();
-                accumulator -= fixed_time_step;
+                updateStandardPhysics(tc, pc, leftBound);
             }
-        };
+
+            // Sync group children
+            const auto childView = registry.view<
+                ecs::PhysicsGroupChild,
+                ecs::TransformComponent
+            >();
+
+            for (auto [child, physChild, childTC] : childView.each())
+            {
+                updateChildEntity(physChild, childTC, registry, leftBound);
+            }
+
+            // Cleanup
+            onAfterPhysicsStep.invoke();
+
+            if (player_jump_this_frame)
+            {
+                PlayerContactListener::playerGrounded = false;
+                player_jump_this_frame = false;
+            }
+
+            processDeletions();
+            accumulator -= FIXED_TIME_STEP;
+        }
+
+        /**
+         * Utility: Rotate Child Transform according to Parent.
+         * @param offset The child's local offset to the Parent.
+         * @param rotationDeg The Parent's (new) zRotation.
+         * @return
+         */
+        static glm::vec3 rotatedOffset(const glm::vec2& offset, const float rotationDeg)
+        {
+            const float rot = glm::radians(rotationDeg);
+
+            return {
+                offset.x * cos(rot) - offset.y * sin(rot),
+                offset.x * sin(rot) + offset.y * cos(rot),
+                0.f
+            };
+        }
+
+        /**
+         * @brief Updates a group parent according to the physics step.
+         * @param tc TransformComponent of the parent entity.
+         * @param pc PhysicsComponent of the parent entity.
+         */
+        static void updateParentPhysics(
+            ecs::TransformComponent& tc,
+            const ecs::PhysicsComponent& pc)
+        {
+            b2Body_SetAwake(pc.body, true);
+            auto [p, q] = b2Body_GetTransform(pc.body);
+
+            tc.position.x = p.x;
+            tc.position.y = p.y;
+        }
+
+        /**
+         * @brief Updates entities according to the physics step.
+         * @param tc TransformComponent of the entity.
+         * @param pc PhysicsComponent of the entity.
+         * @param leftBound Left window bound for visibility check.
+         */
+        static void updateStandardPhysics(
+            ecs::TransformComponent& tc,
+            const ecs::PhysicsComponent& pc,
+            const float leftBound)
+        {
+            const float rightEdge = tc.position.x + tc.scale.x * 0.5f;
+            const bool visible = rightEdge >= leftBound;
+
+            b2Body_SetAwake(pc.body, visible);
+
+            if (visible)
+            {
+                auto [p, q] = b2Body_GetTransform(pc.body);
+                tc.position.x = p.x;
+                tc.position.y = p.y;
+            }
+        }
+
+        /**
+         * @brief Updates group children according to their parent
+         * @param physChild PhysicsGroupChild component reference of the child entity.
+         * @param childTC TransformComponent of the child.
+         * @param registry The current EnTT Registry.
+         * @param leftBound The left window bound for visibility checking.
+         */
+        static void updateChildEntity(
+            ecs::PhysicsGroupChild& physChild,
+            ecs::TransformComponent& childTC,
+            entt::registry& registry,
+            const float leftBound)
+        {
+            if (!registry.valid(physChild.root)) return;
+
+            if (!registry.all_of<ecs::TransformComponent, ecs::PhysicsComponent>(physChild.root))
+                return;
+
+            const auto& parentTC = registry.get<ecs::TransformComponent>(physChild.root);
+            auto& parentPhysComp = registry.get<ecs::PhysicsComponent>(physChild.root);
+
+            if (!parentPhysComp.isActive)
+                return;
+
+            if (const float rightEdge = childTC.position.x + childTC.scale.x * 0.5f; rightEdge >= leftBound)
+            {
+                const glm::vec3 offset = rotatedOffset(physChild.localOffset, parentTC.zRotation);
+                childTC.position = parentTC.position + offset;
+                childTC.zRotation = parentTC.zRotation;
+                return;
+            }
+
+            if (physChild.isActive)
+            {
+                auto& [bodyID, childCount, visibleChildren] = registry.get<ecs::PhysicsGroupParent>(physChild.root);
+                --visibleChildren;
+                physChild.isActive = false;
+
+                if (visibleChildren <= 0)
+                {
+                    parentPhysComp.isActive = false;
+                }
+            }
+        }
+
 
         /**
          * @brief Marks a Box2D body for safe deletion after the physics step.
@@ -224,8 +334,8 @@ namespace gl3::engine::physics
         }
 
     private:
-        const float fixed_time_step = 1.0f / 60.0f; ///< Fixed physics timestep (60Hz)
-        const int sub_step_count = 4; ///< Number of Box2D sub-steps per physics step
+        static constexpr float FIXED_TIME_STEP = 1.0f / 60.0f; ///< Fixed physics timestep (60Hz)
+        static constexpr int SUB_STEP_COUNT = 4; ///< Number of Box2D sub-steps per physics step
         float accumulator = 0.f; ///< Accumulates elapsed time to run fixed timestep
 
         bool player_jump_this_frame = false; ///< Tracks if player jumped this frame to update grounded state

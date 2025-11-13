@@ -265,7 +265,7 @@
   ],
   "groups": [
     {
-      "ID": "1",
+      "ID": 1,
       "children": [
         {
           "position": [
@@ -1273,12 +1273,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "2",
+      "ID": 2,
       "children": [
         {
           "position": [
@@ -1470,12 +1470,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "3",
+      "ID": 3,
       "children": [
         {
           "position": [
@@ -1619,12 +1619,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "4",
+      "ID": 4,
       "children": [
         {
           "position": [
@@ -2152,12 +2152,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "5",
+      "ID": 5,
       "children": [
         {
           "position": [
@@ -2301,12 +2301,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "6",
+      "ID": 6,
       "children": [
         {
           "position": [
@@ -2642,12 +2642,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "7",
+      "ID": 7,
       "children": [
         {
           "position": [
@@ -2791,12 +2791,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "8",
+      "ID": 8,
       "children": [
         {
           "position": [
@@ -2988,12 +2988,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "9",
+      "ID": 9,
       "children": [
         {
           "position": [
@@ -3377,12 +3377,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "10",
+      "ID": 10,
       "children": [
         {
           "position": [
@@ -3574,12 +3574,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "11",
+      "ID": 11,
       "children": [
         {
           "position": [
@@ -3867,12 +3867,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "12",
+      "ID": 12,
       "children": [
         {
           "position": [
@@ -4064,12 +4064,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "13",
+      "ID": 13,
       "children": [
         {
           "position": [
@@ -4213,12 +4213,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "14",
+      "ID": 14,
       "children": [
         {
           "position": [
@@ -4458,12 +4458,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "15",
+      "ID": 15,
       "children": [
         {
           "position": [
@@ -4607,12 +4607,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "16",
+      "ID": 16,
       "children": [
         {
           "position": [
@@ -4756,12 +4756,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "17",
+      "ID": 17,
       "children": [
         {
           "position": [
@@ -4905,12 +4905,12 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     },
     {
-      "ID": "18",
+      "ID": 18,
       "children": [
         {
           "position": [
@@ -5054,7 +5054,7 @@
         ],
         "parallaxFactor": 0,
         "zLayer": -1,
-        "isSensor": false,
+        "isSensor": true,
         "repeatTextureX": false
       }
     }

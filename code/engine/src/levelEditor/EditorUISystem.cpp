@@ -35,16 +35,17 @@ namespace gl3::engine::editor
         {
             const auto transform = view.get<ecs::TransformComponent>(entity);
             const auto tag = view.get<ecs::TagComponent>(entity).tag;
-            if (tag == "background" || tag == "ground" || tag == "sky") continue;
+            //Don't destroy backgrounds or Physics Parents in Editor
+            if (tag == "background" || tag == "ground" || tag == "sky" || registry.any_of<ecs::PhysicsGroupParent>(entity)) continue;
 
             for (const auto& cell : selected_grid_cells)
             {
                 if (transform.position.x == cell.x && transform.position.y == cell.y)
                 {
                     // handle grouped entity
-                    if (registry.any_of<ecs::PhysicsGroup>(entity))
+                    if (registry.any_of<ecs::PhysicsGroupChild>(entity))
                     {
-                        auto& groupingInfo = registry.get<ecs::PhysicsGroup>(entity);
+                        auto& groupingInfo = registry.get<ecs::PhysicsGroupChild>(entity);
                         const entt::entity parentEntity = groupingInfo.root;
 
                         // Destroy the shape if it exists
@@ -55,7 +56,8 @@ namespace gl3::engine::editor
                         if (registry.valid(parentEntity) && registry.any_of<ecs::PhysicsGroupParent>(parentEntity))
                         {
                             auto& parent = registry.get<ecs::PhysicsGroupParent>(parentEntity);
-                            parent.childCount--;
+                            --parent.childCount;
+                            --parent.visibleChildren;
 
                             // If no children remain, destroy parent
                             if (parent.childCount <= 0)

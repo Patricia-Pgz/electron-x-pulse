@@ -156,10 +156,10 @@ namespace gl3::game::state
                 b2ShapeId shapeId = b2CreatePolygonShape(current_parent_body_id, &shapeDef, &polygon);
 
                 // Attach ECS PhysicsGroup linking child to parent
-                registry.emplace<engine::ecs::PhysicsGroup>(entity, current_parent_entity, localOffset, shapeId);
+                registry.emplace<engine::ecs::PhysicsGroupChild>(entity, current_parent_entity, localOffset, shapeId);
 
                 // Increment the parent’s child count
-                registry.patch<engine::ecs::PhysicsGroupParent>(current_parent_entity, [](auto& pgp) { ++pgp.childCount; });
+                registry.patch<engine::ecs::PhysicsGroupParent>(current_parent_entity, [](auto& pgp) { ++pgp.childCount; ++pgp.visibleChildren;});
             }
         }
     }
