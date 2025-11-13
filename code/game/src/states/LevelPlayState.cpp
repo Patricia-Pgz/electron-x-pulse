@@ -129,10 +129,10 @@ namespace gl3::game::state
     {
         for (auto& objGroups = current_level->groups; auto& [ID, children, parent] : objGroups)
         {
-            if(children.empty())return;
+            if (children.empty())return;
 
             const auto current_parent_entity = engine::ecs::EntityFactory::createDefaultEntity(
-                    parent, registry, physicsWorld);
+                parent, registry, physicsWorld);
             auto current_parent_body_id = registry.get<engine::ecs::PhysicsComponent>(current_parent_entity).body;
             registry.emplace<engine::ecs::PhysicsGroupParent>(current_parent_entity, current_parent_body_id, 0);
 #
@@ -159,7 +159,11 @@ namespace gl3::game::state
                 registry.emplace<engine::ecs::PhysicsGroupChild>(entity, current_parent_entity, localOffset, shapeId);
 
                 // Increment the parent’s child count
-                registry.patch<engine::ecs::PhysicsGroupParent>(current_parent_entity, [](auto& pgp) { ++pgp.childCount; ++pgp.visibleChildren;});
+                registry.patch<engine::ecs::PhysicsGroupParent>(current_parent_entity, [](auto& pgp)
+                {
+                    ++pgp.childCount;
+                    ++pgp.visibleChildren;
+                });
             }
         }
     }
@@ -351,12 +355,27 @@ namespace gl3::game::state
             transform.scale = transform.initialScale;
             transform.zRotation = transform.initialZRotation;
 
-            //Some entities don't have a Physics Component
+            //Some entities have a Physics Component
             if (registry.any_of<engine::ecs::PhysicsComponent>(entity))
             {
+                registry.get<engine::ecs::PhysicsComponent>(entity).isActive = true;
                 engine::ecs::EntityFactory::setPosition(registry, entity, transform.initialPosition);
                 engine::ecs::EntityFactory::setScale(registry, entity, transform.initialScale);
                 engine::ecs::EntityFactory::SetRotation(registry, entity, transform.initialZRotation);
+            }
+
+            //Reset Physics Group Parents
+            if (registry.any_of<engine::ecs::PhysicsGroupParent>(entity))
+            {
+                registry.patch<engine::ecs::PhysicsGroupParent>(entity, [](auto& parent)
+                {
+                    parent.visibleChildren = parent.childCount;
+                });
+            }
+
+            if (registry.any_of<engine::ecs::PhysicsGroupChild>(entity))
+            {
+                registry.patch<engine::ecs::PhysicsGroupChild>(entity, [](auto& child) { child.isActive = true; });
             }
         }
     }
@@ -382,7 +401,8 @@ namespace gl3::game::state
 
         dynamic_cast<Game&>(game).setPaused(true);
 
-        b2Body_SetLinearVelocity(game.getRegistry().get<engine::ecs::PhysicsComponent>(current_player).body, {0.f, 0.f});
+        b2Body_SetLinearVelocity(game.getRegistry().get<engine::ecs::PhysicsComponent>(current_player).body,
+                                 {0.f, 0.f});
 
         setSystemsActive(false);
         menu_ui->setActive(true);
