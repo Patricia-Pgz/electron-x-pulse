@@ -317,7 +317,7 @@ namespace gl3::engine::editor
         ImGui::PopStyleColor(3);
     }
 
-    void EditorUISystem::highlightSelectedButton(const std::vector<std::string>& buttonIDs)
+    void EditorUISystem::highlightSelectedButtons(const std::vector<std::string>& buttonIDs)
     {
         int counter = 0;
         for (const auto& id : buttonIDs)
@@ -505,7 +505,7 @@ namespace gl3::engine::editor
 
         ImGui::Text("Select tag:");
         const std::vector<std::string> tagButtonIDs{"platform", "obstacle", "visual", "gravity"};
-        highlightSelectedButton(tagButtonIDs);
+        highlightSelectedButtons(tagButtonIDs);
         ImGui::Text("Custom tag:");
         ImGui::SameLine();
         ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.2f);

@@ -1,8 +1,41 @@
 #pragma once
 #include <engine/userInterface/IUISubSystem.h>
 
+#include "engine/userInterface/UIConstants.h"
+
 namespace gl3::engine::levelLoading
 {
+    /**
+     * Helper function for uniformly styling windows.
+     * @note call @ref popWindowStyle() to remove styling again.
+     * @param windowSize The current window size.
+     */
+    inline void styleWindow(const ImVec2 windowSize)
+    {
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UINeonColors::pastelNeonViolet2);
+        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
+        ImGui::PushStyleColor(ImGuiCol_SliderGrab, UINeonColors::pastelNeonViolet);
+        ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 4.f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {windowSize.x * 0.08f, windowSize.y * 0.145f});
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(20, 20));
+    }
+
+    /**
+     * @brief Removes the ImGui styles, that were added by @ref styleWindow()
+     */
+    inline void popWindowStyle()
+    {
+        ImGui::PopStyleColor(8);
+        ImGui::PopStyleVar(5);
+    }
+
     /**
      * @class LevelSelectUISystem
      * @brief User Interface system for selecting levels within the game.
@@ -52,5 +85,6 @@ namespace gl3::engine::levelLoading
         void createLevelSelection();
 
         bool editModeActive = false; ///< Tracks whether the UI is in edit mode, adjusting visual features.
+        bool isDeletingLvl = false; ///< User activated level deletion mode.
     };
 }

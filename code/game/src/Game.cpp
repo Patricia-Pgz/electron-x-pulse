@@ -6,6 +6,7 @@
 #include "GameStateManager.h"
 #include "engine/audio/AudioSystem.h"
 #include "engine/ecs/EntityFactory.h"
+#include "engine/levelLoading/LevelCreationUI.h"
 #include "ui/FinishUI.h"
 #include "ui/InGameMenuUI.h"
 #include "ui/InstructionUI.h"
@@ -45,5 +46,6 @@ namespace gl3::game
         ui_system->registerSubsystem<ui::InstructionUI>();
         ui_system->registerSubsystem<ui::FinishUI>();
         ui_system->registerSubsystem<engine::editor::EditorUISystem>();
+        ui_system->registerSubsystem<engine::levelLoading::LevelCreationUISystem>();
     }
 }

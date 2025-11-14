@@ -12,7 +12,7 @@ namespace gl3::game::ui
     void styleWindow(const ImVec2 windowSize)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(windowSize.x * 0.08, windowSize.y * 0.14));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(windowSize.x * 0.08f, windowSize.y * 0.14f));
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(40, 40));
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, 10));

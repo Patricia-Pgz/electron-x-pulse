@@ -11,29 +11,6 @@
 
 namespace gl3::engine::levelLoading
 {
-    void styleWindow(const ImVec2 windowSize)
-    {
-        ImGui::PushStyleColor(ImGuiCol_FrameBg, UINeonColors::pastelNeonViolet);
-        ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, UINeonColors::pastelNeonViolet2);
-        ImGui::PushStyleColor(ImGuiCol_FrameBgActive, UINeonColors::pastelNeonViolet);
-        ImGui::PushStyleColor(ImGuiCol_Button, UINeonColors::pastelNeonViolet);
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::pastelNeonViolet2);
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, UINeonColors::Cyan);
-        ImGui::PushStyleColor(ImGuiCol_SliderGrab, UINeonColors::pastelNeonViolet);
-        ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, UINeonColors::Cyan);
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 4.f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {windowSize.x * 0.08f, windowSize.y * 0.145f});
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(20, 20));
-    }
-
-    void popStyle()
-    {
-        ImGui::PopStyleColor(8);
-        ImGui::PopStyleVar(5);
-    }
-
     void LevelSelectUISystem::DrawLevelButtons()
     {
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetStyle().ItemSpacing.x * 2.f);
@@ -166,7 +143,7 @@ namespace gl3::engine::levelLoading
         {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {20.f, 20.f});
             ImGui::BeginTooltip();
-            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Still experimental!");
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Experimental!");
             ImGui::EndTooltip();
             ImGui::PopStyleVar();
         }
@@ -174,7 +151,27 @@ namespace gl3::engine::levelLoading
         {
             ImGui::PopStyleColor(3);
         }
+
+        if(editModeActive)
+        {
+            ImGui::SameLine();
+            const auto addLvlTextSize = ImGui::CalcTextSize("Add Level");
+            const ImVec2 addButtonSize = {addLvlTextSize.x + padding.x, addLvlTextSize.y + padding.y};
+            if (ImGui::Button("Add Level", addButtonSize))
+            {
+                ecs::EventDispatcher::dispatcher.trigger(ui::CreateLevel{});
+            }
+
+            ImGui::SameLine();
+            const auto deleteLvlTextSize = ImGui::CalcTextSize("Delete Level");
+            const ImVec2 deleteButtonSize = {deleteLvlTextSize.x + padding.x, deleteLvlTextSize.y + padding.y};
+            if (ImGui::Button("Delete Level", deleteButtonSize))
+            {
+                isDeletingLvl = !isDeletingLvl;
+            }
+        }
         ImGui::PopFont();
+
 
         ImGui::PushFont(ui::FontManager::getFont("pixeloid-bold-30"));
 
@@ -191,7 +188,7 @@ namespace gl3::engine::levelLoading
         }
         ImGui::PopFont();
 
-        popStyle();
+        popWindowStyle();
         ImGui::PopFont();
         ImGui::End();
     }

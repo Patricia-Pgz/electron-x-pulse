@@ -120,7 +120,7 @@ namespace gl3::engine::editor
          * @brief Highlights selected buttons given their IDs.
          * @param buttonIDs Vector of button identifier strings.
          */
-        void highlightSelectedButton(const std::vector<std::string>& buttonIDs);
+        void highlightSelectedButtons(const std::vector<std::string>& buttonIDs);
 
     private:
         void reset();

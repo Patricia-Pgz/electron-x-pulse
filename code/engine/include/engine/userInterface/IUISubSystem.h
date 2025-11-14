@@ -6,6 +6,19 @@
 namespace gl3::engine::ui
 {
     /**
+     *
+     * @param padding A ImVec2 padding to apply around the button text.
+     * @param text The button text from which to calculate the button size.
+     * @return ImVec2 button size computed with the parameters.
+     */
+    inline ImVec2 CalculateButtonSize(const ImVec2 padding, const char* text)
+    {
+        const auto editTextSize = ImGui::CalcTextSize(text);
+        return ImVec2 {editTextSize.x + padding.x, editTextSize.y + padding.y};
+    }
+
+
+    /**
      * @class IUISubsystem
      * @brief Interface for all in-game UI systems.
      *

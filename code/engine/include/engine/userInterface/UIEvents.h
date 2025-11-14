@@ -31,6 +31,14 @@ namespace gl3::engine::ui
         bool edit = true;
     };
 
+
+    /**
+     * Signal to start creating a new level. (Or cancel creation -> openOrCloseOverlay = false)
+     */
+    struct CreateLevel
+    {
+    };
+
     /**
      * Tile was selected in editor. This signals to place it in game.
      */
