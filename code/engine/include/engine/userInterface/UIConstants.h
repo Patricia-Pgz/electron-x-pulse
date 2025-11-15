@@ -20,4 +20,6 @@ struct UINeonColors
     static constexpr auto Pink = ImVec4(1.0f, 0.2f, 0.8f, 1.0f);
     static constexpr auto Orange = ImVec4(1.0f, 0.5f, 0.0f, 1.0f);
     static constexpr auto Green = ImVec4(0.2f, 1.0f, 0.2f, 1.0f);
+    static constexpr auto Red = ImVec4(1.0f, 0.2f, 0.2f, 1.0f);
+
 };

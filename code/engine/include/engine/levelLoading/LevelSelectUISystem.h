@@ -86,5 +86,6 @@ namespace gl3::engine::levelLoading
 
         bool editModeActive = false; ///< Tracks whether the UI is in edit mode, adjusting visual features.
         bool isDeletingLvl = false; ///< User activated level deletion mode.
+        bool borderColorChanged = false; ///< Border Color changes for Deletion Mode.
     };
 }

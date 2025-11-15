@@ -106,7 +106,15 @@ namespace gl3::engine::levelLoading
             {1.f, 0.f}
         );
 
+        if(borderColorChanged)
+        {
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, UINeonColors::Red);
+        }
         DrawLevelButtons();
+        if(borderColorChanged)
+        {
+            ImGui::PopStyleColor();
+        }
 
         ImGui::GetWindowDrawList()->AddImage(
             rendering::TextureManager::getUITexture("LvlSelectBGTop1")->getID(),
@@ -163,12 +171,24 @@ namespace gl3::engine::levelLoading
             }
 
             ImGui::SameLine();
+            if (isDeletingLvl)
+            {
+                ImGui::PushStyleColor(ImGuiCol_Border, UINeonColors::Red);
+            }
+            borderColorChanged = isDeletingLvl;
+
             const auto deleteLvlTextSize = ImGui::CalcTextSize("Delete Level");
             const ImVec2 deleteButtonSize = {deleteLvlTextSize.x + padding.x, deleteLvlTextSize.y + padding.y};
             if (ImGui::Button("Delete Level", deleteButtonSize))
             {
                 isDeletingLvl = !isDeletingLvl;
             }
+
+            if (borderColorChanged)
+            {
+                ImGui::PopStyleColor();
+            }
+
         }
         ImGui::PopFont();
 
